@@ -1,0 +1,87 @@
+# 7dtd-loadgen — LiteNetLib join bots for 7 Days to Die dedicated
+.DEFAULT_GOAL := help
+ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+PROJ := $(ROOT)/src/LoadGen/LoadGen.csproj
+EXE  := $(ROOT)/src/LoadGen/bin/Release/net8.0/7dtd-loadgen
+SCRIPTS := $(ROOT)/scripts
+
+# Prefer a local SDK if present (cache or ~/.dotnet)
+DOTNET_ROOT ?= $(firstword \
+	$(wildcard $(HOME)/.cache/dotnet-sdk) \
+	$(wildcard $(HOME)/.dotnet) \
+	)
+ifneq ($(DOTNET_ROOT),)
+  export DOTNET_ROOT
+  export PATH := $(DOTNET_ROOT):$(PATH)
+endif
+
+.PHONY: help build selftest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean
+
+help:
+	@echo "7dtd-loadgen"
+	@echo ""
+	@echo "  make build               Build 7dtd-loadgen"
+	@echo "  make selftest            In-process join + respawn CI gate"
+	@echo "  make test                Python golden-wire + RealEarth scenario gates"
+	@echo "  make dedicated-4k        Start RWG 4096 dedicated (POI/sleepers, no RealEarth)"
+	@echo "  make dedicated           Alias of dedicated-4k"
+	@echo "  make join                Join bots to stock dedicated (bots use port 26902)"
+	@echo "  make dedicated-realearth Start RealEarth dedicated (sibling project)"
+	@echo "  make join-realearth      Join bots to RealEarth dedicated"
+	@echo "  make scenarios           List RealEarth loadgen scenario ids"
+	@echo "  make clean               Remove build outputs"
+	@echo ""
+	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
+	@echo "See ../RUNBOOK.md for the full workflow, port model, dashboard access, and scaling."
+	@echo ""
+	@echo "Bot knobs:    LOADGEN_MODE(probe|join|self-test-join) LOADGEN_HOST LOADGEN_PORT"
+	@echo "              LOADGEN_COUNT LOADGEN_CONCURRENCY LOADGEN_RAMP_MS LOADGEN_TIMEOUT"
+	@echo "              LOADGEN_BOT_MODE LOADGEN_BOT_MIX LOADGEN_ACTIONS LOADGEN_SEED"
+	@echo "              LOADGEN_NO_SPAWN LOADGEN_PACE_MS LOADGEN_MIN_PASS_RATE LOADGEN_QUIET"
+	@echo "Server knobs: RE_WORLD_NAME(Navezgane|RWG|Pregen..) RE_SERVER_MAX_PLAYERS(default 64,"
+	@echo "              raise to 1024 for the 1000 ladder) RE_WORLD_GEN_SIZE RE_WORLD_GEN_SEED"
+	@echo "              RE_GAME_NAME RE_DEDICATED_USERDATA RE_DEDICATED_FOREGROUND REALEARTH_ROOT"
+	@echo "              RE_SCENARIO_PACK=h500|everest  LOADGEN_LIVE_REALEARTH=1 (live pytest)"
+
+build:
+	dotnet build "$(PROJ)" -c Release -v q
+	@echo "OK → $(EXE)"
+
+selftest: build
+	@"$(EXE)" --self-test-join --actions 24 --seed 7
+
+test: build
+	@command -v uv >/dev/null && cd "$(ROOT)" && uv run --with pytest pytest tests -q --tb=short \
+		|| python3 -m pytest tests -q --tb=short
+
+dedicated dedicated-4k:
+	@chmod +x "$(SCRIPTS)/start_dedicated_prefab.sh"
+	@RE_WORLD_NAME=RWG RE_WORLD_GEN_SIZE=4096 RE_WORLD_GEN_SEED=botpoi4k \
+		RE_GAME_NAME=BotPoi4k \
+		"$(SCRIPTS)/start_dedicated_prefab.sh"
+
+join: build
+	@chmod +x "$(SCRIPTS)/run_loadgen.sh"
+	@LOADGEN_MODE=join LOADGEN_PORT=$${LOADGEN_PORT:-26902} \
+		LOADGEN_COUNT=$${LOADGEN_COUNT:-6} LOADGEN_TIMEOUT=$${LOADGEN_TIMEOUT:-3600000} \
+		"$(SCRIPTS)/run_loadgen.sh"
+
+# RealEarth: expand/mod/world via sibling 7days-realworld; bots here (:26902)
+dedicated-realearth:
+	@chmod +x "$(SCRIPTS)/start_dedicated_realearth.sh"
+	@"$(SCRIPTS)/start_dedicated_realearth.sh"
+
+join-realearth: build
+	@chmod +x "$(SCRIPTS)/run_loadgen.sh"
+	@LOADGEN_MODE=join LOADGEN_PORT=$${LOADGEN_PORT:-26902} \
+		LOADGEN_COUNT=$${LOADGEN_COUNT:-6} LOADGEN_TIMEOUT=$${LOADGEN_TIMEOUT:-600000} \
+		LOADGEN_BOT_MODE=$${LOADGEN_BOT_MODE:-wander} \
+		"$(SCRIPTS)/run_loadgen.sh"
+
+scenarios:
+	@chmod +x "$(SCRIPTS)/run_scenario.sh"
+	@"$(SCRIPTS)/run_scenario.sh" --list
+
+clean:
+	rm -rf "$(ROOT)/src/LoadGen/bin" "$(ROOT)/src/LoadGen/obj"
+	@echo "OK clean"

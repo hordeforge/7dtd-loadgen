@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>7dtd-loadgen</AssemblyName>
+    <RootNamespace>SevenDTD.LoadGen</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <!-- Prefer game LiteNetLib (protocol-compatible with dedicated). Override: -p:GameDir=... -->
+    <GameDir Condition="'$(GameDir)'==''">$(HOME)/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server</GameDir>
+    <GameManaged>$(GameDir)/7DaysToDieServer_Data/Managed</GameManaged>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(GameManaged)/LiteNetLib.dll')">
+    <Reference Include="LiteNetLib">
+      <HintPath>$(GameManaged)/LiteNetLib.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="!Exists('$(GameManaged)/LiteNetLib.dll')">
+    <PackageReference Include="LiteNetLib" Version="1.2.0" />
+  </ItemGroup>
+</Project>

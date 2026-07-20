@@ -1,0 +1,314 @@
+{
+  "schema": "7dtd.loadgen.scenarios.v1",
+  "notes": "In-game LiteNetLib bot scenarios for RealEarth dedicated. Server bring-up lives in sibling 7days-realworld; bots and gates live here.",
+  "defaults": {
+    "host": "127.0.0.1",
+    "port": 26902,
+    "telnetPort": 8081,
+    "telnetPasswordEnv": "SEVENDTD_TELNET_PASSWORD",
+    "telnetPasswordDefault": "retest",
+    "userdata": "~/.cache/realearth-dedicated",
+    "realearthRoot": "../7days-realworld"
+  },
+  "scenarios": [
+    {
+      "id": "re-h500-probe",
+      "title": "RealEarth H500 connectivity probe",
+      "purpose": "LiteNet reachability against dedicated with RealEarth + YDim expand + H500 world",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500"
+        }
+      },
+      "client": {
+        "mode": "probe",
+        "count": 8,
+        "timeoutMs": 12000,
+        "minPassRate": 0.95
+      },
+      "gates": [
+        "dedicated listening on port",
+        "probe pass rate >= minPassRate"
+      ]
+    },
+    {
+      "id": "re-h500-join-wander",
+      "title": "RealEarth H500 join + wander (SharedFixed MP shape)",
+      "purpose": "Join cohort walks on expanded-height H500; exercises chunk send, tall terrain, RealEarth inject under load",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 6,
+        "timeoutMs": 600000,
+        "botMode": "wander",
+        "death": "none",
+        "actions": 48,
+        "minPassRate": 0.8,
+        "noSpawnZombies": false
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "at least one client reaches joined stage"
+      ]
+    },
+    {
+      "id": "re-h500-join-demolition",
+      "title": "RealEarth H500 demolition pressure",
+      "purpose": "Dynamite on tall columns stresses block ticker, falling blocks, chunk resend under expand",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 4,
+        "timeoutMs": 900000,
+        "botMode": "demolition",
+        "maxDynamite": 80,
+        "actions": 64,
+        "minPassRate": 0.75
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "demolition mode selected in JOIN_SUMMARY"
+      ]
+    },
+    {
+      "id": "re-h500-mp-sharedfixed",
+      "title": "RealEarth H500 co-located MP (SharedFixed)",
+      "purpose": "Multiple bots share one origin story; combat-safe coords on RealEarth dedicated config",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500",
+          "RE_MP_ORIGIN": "SharedFixed"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 8,
+        "timeoutMs": 600000,
+        "botMode": "mixed",
+        "actions": 40,
+        "minPassRate": 0.8,
+        "rampMs": 400
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "server RealEarth config MultiplayerOriginMode=SharedFixed"
+      ]
+    },
+    {
+      "id": "re-everest-join-soak",
+      "title": "RealEarth Everest pack join soak",
+      "purpose": "Longer join on full DEM height-test pack (network DEM or cached); tall Y + stream tiles",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_HeightTest",
+          "RE_SCENARIO_PACK": "everest"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 6,
+        "timeoutMs": 1800000,
+        "botMode": "wander",
+        "actions": 80,
+        "minPassRate": 0.7
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "no mass disconnect in first 2 minutes"
+      ],
+      "optional": true
+    },
+    {
+      "id": "re-selftest-client-path",
+      "title": "In-process client path (CI, no dedicated)",
+      "purpose": "Gate join/action/death/respawn state machine without RealEarth server; always run in make test",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 24,
+        "seed": 7
+      },
+      "gates": [
+        "PASS: self-test-join"
+      ],
+      "ci": true
+    },
+    {
+      "id": "re-p0-p1-offline-gate",
+      "title": "RealEarth P0/P1 offline product gate (CI)",
+      "purpose": "Validate sibling RealEarth config (real height, fail-closed, SharedFixed MP template) + scenario registry for expand/inject soaks; no dedicated required",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 12,
+        "seed": 11
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "realearth FailClosedMissingTiles=true",
+        "realearth EngineHeightStockSafe=false",
+        "realearth.mp MultiplayerOriginMode=SharedFixed",
+        "IMPLEMENTATION_PLAN.md present"
+      ],
+      "priority": "P0-P1",
+      "ci": true
+    },
+    {
+      "id": "re-p1-inject-selftest-manifest",
+      "title": "Self-test with run manifest for RealEarth inject campaigns",
+      "purpose": "CI path that writes 7dtd.loadgen.run.v1 manifest (cohort metadata for APM pairing)",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 16,
+        "seed": 3,
+        "writeRunManifest": true
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "run_manifest schema 7dtd.loadgen.run.v1"
+      ],
+      "priority": "P1",
+      "ci": true
+    },
+    {
+      "id": "re-phase-offline-gate",
+      "title": "RealEarth P0–P8 offline phase inventory (CI)",
+      "purpose": "Assert sibling ships ExpandProductGuard, SessionOriginPolicy, StampSurfaceY, SessionStateStore, DensityBudget, CdnTilePolicy, SparseYScaffold + fail-closed product path",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 8,
+        "seed": 17
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "P0–P8 modules present in RealEarth Source",
+        "EngineHeightMod uses TileSamplePolicy"
+      ],
+      "priority": "P0-P8",
+      "ci": true
+    },
+    {
+      "id": "re-session-save-offline-gate",
+      "title": "RealEarth world-save session persist (CI)",
+      "purpose": "Session dual-write to GameIO save dir + mod Config; SaveWorld/SaveWorldState hooks; RestoreSnapshot",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 8,
+        "seed": 19
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "WorldSavePath + SessionStateStore.PreferredSessionPath",
+        "WorldSavePostfix hooked"
+      ],
+      "priority": "session",
+      "ci": true
+    },
+    {
+      "id": "re-origin-remap-offline-gate",
+      "title": "RealEarth origin slide entity/claim remap (CI)",
+      "purpose": "OriginSlideRemap covers players/vehicles/land claims; SoloSlide fails closed when multiplayer",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 8,
+        "seed": 23
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "OriginSlideRemap.RemapAll wired",
+        "SharedFixed MP template"
+      ],
+      "priority": "origin",
+      "ci": true
+    },
+    {
+      "id": "re-tall-solid-runtime-poi-gate",
+      "title": "RealEarth full solid fill + runtime POI (CI)",
+      "purpose": "EffectiveFullDualFillMaxSurface + RuntimePoiInject density budget path present for expanded engine",
+      "server": null,
+      "client": {
+        "mode": "self-test-join",
+        "actions": 8,
+        "seed": 29
+      },
+      "gates": [
+        "PASS: self-test-join",
+        "EffectiveFullDualFillMaxSurface",
+        "EnableRuntimePoiInject"
+      ],
+      "priority": "tall-poi",
+      "ci": true
+    },
+    {
+      "id": "re-h500-tall-solid-join",
+      "title": "RealEarth H500 tall solid columns under join load",
+      "purpose": "Live evidence: full dual fill at peak gameY≈500 with YDim expand; walk/dig columns",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 4,
+        "timeoutMs": 900000,
+        "botMode": "wander",
+        "actions": 64,
+        "minPassRate": 0.75
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "server logs FullSolidBlockFillMax or Height inject maxH>=500"
+      ],
+      "optional": true
+    },
+    {
+      "id": "re-session-reload-live",
+      "title": "RealEarth session save/reload across quit (live)",
+      "purpose": "Live: resession/world save writes realearth.session.json; restart restores absolute origin",
+      "server": {
+        "script": "start_dedicated_realearth.sh",
+        "env": {
+          "RE_WORLD_NAME": "RealEarth_H500",
+          "RE_SCENARIO_PACK": "h500"
+        }
+      },
+      "client": {
+        "mode": "join",
+        "count": 2,
+        "timeoutMs": 600000,
+        "botMode": "wander",
+        "actions": 32,
+        "minPassRate": 0.7
+      },
+      "gates": [
+        "join pass rate >= minPassRate",
+        "realearth.session.json present under save or mod Config after run"
+      ],
+      "optional": true
+    }
+  ]
+}
