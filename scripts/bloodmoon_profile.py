@@ -95,8 +95,11 @@ def alive():
 
 
 def start_server():
+    # Unique save per run: reusing a save from a crashed/saturated run reloads its
+    # persisted entities + stale player profiles and poisons the load (bot churn).
+    game_name = f"BloodMoonStd_{time.strftime('%m%d_%H%M%S')}"
     env = dict(os.environ, DOTNET_ROOT=DOTNET, RE_WORLD_NAME="Navezgane",
-               RE_GAME_NAME="BloodMoonStd", RE_SERVER_MAX_PLAYERS=str(max(PLAYERS, 64)),
+               RE_GAME_NAME=game_name, RE_SERVER_MAX_PLAYERS=str(max(PLAYERS, 64)),
                RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5")
     log(f"starting server (MaxSpawnedZombies={max(ZOMBIES,64)}, maxplayers={max(PLAYERS,64)})...")
     subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
