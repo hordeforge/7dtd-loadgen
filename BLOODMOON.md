@@ -49,6 +49,11 @@ exploding cops/demolishers are a top-3 cost, unique to the endgame composition),
 `GameManager.UpdateTick` ~36 ms overall. Notably `AstarManager.UpdateGraphs` stayed low
 (~4 ms) - the shipped pathfinding throttle (P1) holds even here.
 
+**Measured capacity (2026-07-20, everything-on + replication stride 2):** 64 players
+sustain **~147 endgame zombies at 20 TPS**; sustained break by ~245. At the ceiling
+the tick is fully attributed: TickEntities 63%, OnUpdateEntities 30%
+(stride-halved), chunk send 5% (see `7dtd-optimizer/docs/RESULTS.md` 3h).
+
 So 64p + endgame blood moon is a **saturation ceiling**, not a steady-state baseline:
 it defines where the server falls over (entity tick + network replication + explosions,
 in that order), and every optimization lever should be judged against moving that
