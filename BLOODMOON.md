@@ -56,6 +56,11 @@ load sustains **~232 zombies (+58%)**, breaking at ~279-378. At the ceiling
 the tick is fully attributed: TickEntities 63%, OnUpdateEntities 30%
 (stride-halved), chunk send 5% (see `7dtd-optimizer/docs/RESULTS.md` 3h).
 
+Note on "20 TPS": the full entity-sim/replication tick is gated at ~20 Hz
+regardless of the server frame rate (measured - see
+`7dtd-optimizer/docs/RESULTS.md` 3k); raising `settargetfps` smooths delivery
+jitter but does not change TPS or these capacity numbers.
+
 So 64p + endgame blood moon is a **saturation ceiling**, not a steady-state baseline:
 it defines where the server falls over (entity tick + network replication + explosions,
 in that order), and every optimization lever should be judged against moving that
