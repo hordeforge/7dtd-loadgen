@@ -28,6 +28,11 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   the default 64).
 - **High gamestage.** `gamestage <playerId> <stage>` is a real **setter** (not just a
   reader) - the profile sets every player to `BM_GAMESTAGE` for endgame AI/loot scaling.
+- **Bench godmode.** The profile enables `es benchgod on` (EfficientServer
+  diagnostic, v1.16.2): bots are damage-immune, so the horde keeps ACTIVE targets
+  instead of collapsing into a spawn-equilibrium plateau when level-1 bots die
+  (the 8-player sweep hit that plateau at ~250 standing zombies with 93.7% CPU
+  headroom - the game, not the server, was the cap).
 - **Server caps raised.** `--start-server` sets `RE_MAX_ZOMBIES` (=> `MaxSpawnedZombies`)
   and `RE_ENEMY_DIFFICULTY=5` via [`scripts/start_dedicated_prefab.sh`](scripts/start_dedicated_prefab.sh)
   so the game does not throttle its own spawns against the load.

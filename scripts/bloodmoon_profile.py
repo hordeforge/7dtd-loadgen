@@ -219,6 +219,11 @@ def main():
     bots, joined = join_ramped(PLAYERS)
     log(f"players stable: {joined}/{PLAYERS}")
     set_gamestage(GAMESTAGE)
+    # Bench godmode (mod diagnostic): level-1 bots die to endgame zombies in
+    # seconds, collapsing target anchors into a spawn-equilibrium plateau instead
+    # of an active siege. Immortal bots keep the horde attacking.
+    telnet(["es benchgod on"], settle=1)
+    log("benchgod on (bots immortal - active-siege load)")
     log(f"spawning endgame mix to {ZOMBIES}...")
     za = spawn_endgame(ZOMBIES)
     time.sleep(8)  # let the spawn churn settle before reading steady-state health
