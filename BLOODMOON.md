@@ -49,8 +49,10 @@ exploding cops/demolishers are a top-3 cost, unique to the endgame composition),
 `GameManager.UpdateTick` ~36 ms overall. Notably `AstarManager.UpdateGraphs` stayed low
 (~4 ms) - the shipped pathfinding throttle (P1) holds even here.
 
-**Measured capacity (2026-07-20, everything-on + replication stride 2):** 64 players
-sustain **~147 endgame zombies at 20 TPS**; sustained break by ~245. At the ceiling
+**Measured capacity:** with a static replication stride 2 (2026-07-20), 64 players
+sustain **~147 endgame zombies at 20 TPS** (break by ~245). Under the **v1.13.0
+shipping defaults** (2026-07-21, adaptive governor managing the throttles), the same
+load sustains **~232 zombies (+58%)**, breaking at ~279-378. At the ceiling
 the tick is fully attributed: TickEntities 63%, OnUpdateEntities 30%
 (stride-halved), chunk send 5% (see `7dtd-optimizer/docs/RESULTS.md` 3h).
 

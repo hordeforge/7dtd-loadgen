@@ -1,0 +1,30 @@
+[
+ {
+  "zombies": 93,
+  "frame_ms": 50.0
+ },
+ {
+  "zombies": 93,
+  "frame_ms": 65.2
+ },
+ {
+  "zombies": 185,
+  "frame_ms": 50.0
+ },
+ {
+  "zombies": 185,
+  "frame_ms": 50.0
+ },
+ {
+  "zombies": 232,
+  "frame_ms": 51.2
+ },
+ {
+  "zombies": 279,
+  "frame_ms": 78.5
+ },
+ {
+  "zombies": 378,
+  "frame_ms": 105.9
+ }
+]
