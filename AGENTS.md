@@ -1,7 +1,7 @@
 # AGENTS.md - 7dtd-loadgen
 
 LiteNetLib **load-test clients** for **7 Days to Die** dedicated servers
-(target **V3.0.1**). Bots join the real game protocol, wander, optionally take
+(target **V3.1.0**). Bots join the real game protocol, wander, optionally take
 pressure, die, respawn, and rejoin until a wall-clock timeout.
 
 Not a full game client. Not a profiler. Not an optimizer.
@@ -103,4 +103,14 @@ documented dedicated-start scripts the operator runs.
 
 ## RealEarth
 
-[`docs/REALEARTH.md`](docs/REALEARTH.md) — scenario catalog; server scripts stay in `../7days-realworld`.
+[`docs/REALEARTH.md`](docs/REALEARTH.md) - scenario catalog; server scripts stay in `../7days-realworld`.
+
+## Stock-game research -> 7dtd-research
+
+Anything that studies the **stock** dedicated server belongs in
+[`../7dtd-research/`](../7dtd-research/), not here: reverse-engineering
+narratives (`docs/`), the Mono.Cecil dump tooling (`tools/`), wire/protocol
+analysis, and engine cost/loop RE. This repo owns load generation and LiteNetLib test clients;
+it does not host stock-game RE docs or dumpers. When RE is needed, add it
+under `../7dtd-research/` and link back. How to RE:
+[`../7dtd-research/docs/re-methodology.md`](../7dtd-research/docs/re-methodology.md).

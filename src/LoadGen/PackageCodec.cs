@@ -84,7 +84,7 @@ public static class PackageCodec
     }
 
     /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.</summary>
-    public static readonly VersionInfo GameVersion = new(1, 3, 1, 4); // EGameReleaseType.V=1
+    public static readonly VersionInfo GameVersion = new(1, 3, 10, 14); // EGameReleaseType.V=1; V3.1.0 (b14)
 
     public readonly record struct VersionInfo(byte ReleaseType, int Major, int Minor, int Build);
 
@@ -401,10 +401,11 @@ public static class PackageCodec
 
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
-        if (ver != "V 3.0.1")
-            return $"VersionLongString want 'V 3.0.1' got '{ver}' (Minor packed)";
+        if (ver != "V 3.1.0")
+            return $"VersionLongString want 'V 3.1.0' got '{ver}' (Minor packed)";
 
-        // Live capture from dedicated (channel0, uncompressed PackageIds, version 1/3/1/4, count 189)
+        // Historical live capture from V3.0.1 dedicated (channel0, PackageIds 1/3/1/4, count 189).
+        // Envelope/version fields below pin that fixture, not the current GameVersion fallback.
         // First 48 hex bytes of real RECV; full body not needed if envelope+version+count parse.
         byte[] liveHead = Convert.FromHexString(
             "00BC12000000000100B8120000000001030000000100000004000000BD000000144E65745061636B6167655061636B61");
@@ -418,12 +419,12 @@ public static class PackageCodec
         int liveContent = BitConverter.ToInt32(liveHead, 9);
         if (liveContent != 0x12B8) return $"live contentLen want 4792 got {liveContent}";
         if (BitConverter.ToUInt16(liveHead, 13) != 0) return "live pkgId want 0";
-        // version at offset 15: release=1 major=3 minor=1 build=4
+        // version at offset 15 in the V3.0.1 fixture: release=1 major=3 minor=1 build=4
         if (liveHead[15] != 1
             || BitConverter.ToInt32(liveHead, 16) != 3
             || BitConverter.ToInt32(liveHead, 20) != 1
             || BitConverter.ToInt32(liveHead, 24) != 4)
-            return "live version fields";
+            return "live version fields (historical V3.0.1 fixture)";
         if (BitConverter.ToInt32(liveHead, 28) != 0xBD)
             return "live map count want 189";
 
