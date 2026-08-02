@@ -404,29 +404,40 @@ public static class PackageCodec
         if (ver != "V 3.1.0")
             return $"VersionLongString want 'V 3.1.0' got '{ver}' (Minor packed)";
 
-        // Historical live capture from V3.0.1 dedicated (channel0, PackageIds 1/3/1/4, count 189).
-        // Envelope/version fields below pin that fixture, not the current GameVersion fallback.
-        // First 48 hex bytes of real RECV; full body not needed if envelope+version+count parse.
-        byte[] liveHead = Convert.FromHexString(
+        // Dual live PackageIds head fixtures (channel0, uncompressed, pkgId 0, maps=189).
+        // Envelope fields are identical across 3.0.1 and 3.1.0; only VersionInformation
+        // Major/Minor/Build differ. Captured from dedicated RECV (first 48 bytes).
+        static string? CheckLivePackageIdsHead(byte[] liveHead, int minor, int build, string label)
+        {
+            if (liveHead[0] != 0) return label + " hex channel";
+            int livePayload = BitConverter.ToInt32(liveHead, 1);
+            if (livePayload != 0x12BC) return label + $" payloadSize want 4796 got {livePayload}";
+            if (liveHead[5] != 0 || liveHead[6] != 0) return label + " comp/enc";
+            if (BitConverter.ToUInt16(liveHead, 7) != 1) return label + " count";
+            int liveContent = BitConverter.ToInt32(liveHead, 9);
+            if (liveContent != 0x12B8) return label + $" contentLen want 4792 got {liveContent}";
+            if (BitConverter.ToUInt16(liveHead, 13) != 0) return label + " pkgId want 0";
+            // version @15: release:u8 major:i32 minor:i32 build:i32
+            if (liveHead[15] != 1
+                || BitConverter.ToInt32(liveHead, 16) != 3
+                || BitConverter.ToInt32(liveHead, 20) != minor
+                || BitConverter.ToInt32(liveHead, 24) != build)
+                return label + " version fields";
+            if (BitConverter.ToInt32(liveHead, 28) != 0xBD)
+                return label + " map count want 189";
+            return null;
+        }
+
+        // Historical V3.0.1 (b4): minor=1 build=4
+        byte[] liveHead301 = Convert.FromHexString(
             "00BC12000000000100B8120000000001030000000100000004000000BD000000144E65745061636B6167655061636B61");
-        // Extend with zeros so parser can attempt; incomplete payload should fail map parse but
-        // envelope fields must match observed capture.
-        if (liveHead[0] != 0) return "live hex channel";
-        int livePayload = BitConverter.ToInt32(liveHead, 1);
-        if (livePayload != 0x12BC) return $"live payloadSize want 4796 got {livePayload}";
-        if (liveHead[5] != 0 || liveHead[6] != 0) return "live comp/enc";
-        if (BitConverter.ToUInt16(liveHead, 7) != 1) return "live count";
-        int liveContent = BitConverter.ToInt32(liveHead, 9);
-        if (liveContent != 0x12B8) return $"live contentLen want 4792 got {liveContent}";
-        if (BitConverter.ToUInt16(liveHead, 13) != 0) return "live pkgId want 0";
-        // version at offset 15 in the V3.0.1 fixture: release=1 major=3 minor=1 build=4
-        if (liveHead[15] != 1
-            || BitConverter.ToInt32(liveHead, 16) != 3
-            || BitConverter.ToInt32(liveHead, 20) != 1
-            || BitConverter.ToInt32(liveHead, 24) != 4)
-            return "live version fields (historical V3.0.1 fixture)";
-        if (BitConverter.ToInt32(liveHead, 28) != 0xBD)
-            return "live map count want 189";
+        // Live V3.1.0 (b14): minor=10 build=14 (captured 2026-08-02 Navezgane join)
+        byte[] liveHead310 = Convert.FromHexString(
+            "00BC12000000000100B8120000000001030000000A0000000E000000BD000000144E65745061636B6167655061636B61");
+        var err301 = CheckLivePackageIdsHead(liveHead301, minor: 1, build: 4, label: "v3.0.1 fixture");
+        if (err301 != null) return err301;
+        var err310 = CheckLivePackageIdsHead(liveHead310, minor: 10, build: 14, label: "v3.1.0 fixture");
+        if (err310 != null) return err310;
 
         return null;
     }
