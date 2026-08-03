@@ -75,3 +75,15 @@ record, and documentation of any protocol-version restriction.
 - 2026-07-17: realism. R41 pace jitter (+/-20% per-bot think time so a cohort does not act in lockstep and create synthetic synchronized load spikes). R42 varied per-bot chunk view distance (4..12 chunks) so cohort chunk residency spreads realistically instead of every client demanding an identical bubble.
 - R63: loadgen Traverse mode (BotMode.Traverse=9) - straight-line roam, exempt from the 45m origin leash + 20km outer leash, relies on GroundAdopted for Y. Built+selftest PASS.
 - R63 FINDING: Traverse steady chunk stream = 1.78 MB/s, IDENTICAL to wander (1.76). Bots stay ~70m from spawn with Y pinned at 72.0 despite 95% walk actions => 7DTD SERVER-SIDE MOVEMENT VALIDATION clamps client position updates exceeding walk-speed, so LiteNetLib bots cannot escape the spawn area. Steady chunk bandwidth does NOT scale with movement mode (reinforces R56: chunk streaming is a join-time burst, not a steady lag driver). To make bots truly roam, movement must respect server speed validation (small deltas at realistic walk speed) - deeper protocol work, deferred. Traverse leash removal is correct; caveat documented.
+
+## Residual (V3.1.0, 2026-08-03)
+
+| Residual | Status | Notes |
+|---|---|---|
+| GameVersion pin `(1,3,10,14)` / display V 3.1.0 | **done** | PackageCodec + dual PackageIds fixtures 3.0.1+3.1.0 |
+| Golden-wire PackageIds head | **done** | maps=189 live capture; tests 12/12 historical |
+| Early join "still initializing" kick | **ops** | Wait for world ready; not version mismatch |
+| Login deny reason 14 on some soaks | **open if repro** | Earlier misread; re-verify if full bot soaks fail after ready |
+| H500 / expanded-world live validate | open | Next checkbox above |
+| EAC/encrypted servers | unsupported | Documented non-goal unless scoped |
+| Named workload profiles in-repo | partial | Canonical profiles live under `7dtd-apm/plans/` |
