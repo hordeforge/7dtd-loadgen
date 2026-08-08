@@ -162,6 +162,49 @@ static class Program
         // so the profile is repeatable.
         var botMix = new List<(ActionLoop.BotMode mode, int weight)>();
 
+        // Named workload profiles (TODO "Add named workload profiles"): preset
+        // cohort defaults applied before the arg loop so an explicit flag on the
+        // same command line always overrides the profile.
+        string profile = "";
+        for (int i = 0; i < args.Length; i++)
+            if (args[i] == "--profile" && i + 1 < args.Length) profile = args[++i];
+        switch (profile)
+        {
+            case "probe": // one bot, bounded steps, no death: join + handshake health
+                count = 1; concurrency = 1; opt.ActionCount = 20;
+                opt.TimeoutMs = 120_000; timeoutSet = true;
+                deathSet = true; opt.Death = ActionLoop.DeathMethod.None;
+                break;
+            case "join-burst": // many simultaneous joins, short steps, no death
+                count = 24; concurrency = 24; opt.ActionCount = 10;
+                opt.TimeoutMs = 120_000; timeoutSet = true;
+                deathSet = true; opt.Death = ActionLoop.DeathMethod.None;
+                break;
+            case "steady-wander": // endless wander for a soak window
+                count = 8; concurrency = 8; opt.ActionCount = 0;
+                opt.TimeoutMs = 900_000; timeoutSet = true;
+                break;
+            case "death-soak": // combat + self-kill + respawn loop
+                count = 6; concurrency = 6; opt.ActionCount = 60;
+                opt.Mode = ActionLoop.BotMode.Combat; modeSet = true;
+                opt.Death = ActionLoop.DeathMethod.Suicide; deathSet = true;
+                opt.Respawn = true; opt.MaxLives = 0;
+                opt.TimeoutMs = 600_000; timeoutSet = true;
+                break;
+            case "mixed": // weighted wander/combat mix with deaths and respawns
+                count = 12; concurrency = 12; opt.Mode = ActionLoop.BotMode.Mixed; modeSet = true;
+                opt.Death = ActionLoop.DeathMethod.Suicide; deathSet = true;
+                opt.Respawn = true;
+                opt.TimeoutMs = 600_000; timeoutSet = true;
+                break;
+            case "":
+                break;
+            default:
+                Console.Error.WriteLine(
+                    $"FAIL: unknown --profile '{profile}' (probe|join-burst|steady-wander|death-soak|mixed)");
+                return 3;
+        }
+
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--host" && i + 1 < args.Length) opt.Host = args[++i];
@@ -802,6 +845,8 @@ static class Program
             "  --self-test-join    In-process mock 7DTD join + actions (CI gate)\n" +
             "\n" +
             "Join bot flags:\n" +
+            "  --profile probe|join-burst|steady-wander|death-soak|mixed\n" +
+            "      preset cohort defaults; explicit flags override per key\n" +
             "  --mode wander|mixed|chatty|combat|patrol|chaos\n" +
             "      default: wander (walk until world death)\n" +
             "  --death none|...   default none: never self-kill; wait for world death\n" +
