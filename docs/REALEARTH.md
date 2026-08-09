@@ -1,10 +1,10 @@
 # RealEarth scenarios (loadgen)
 
 **Owns:** LiteNetLib bot scenarios against a RealEarth dedicated world.  
-**Not:** server install, YDim expand, packs, or product status (sibling **`7days-realworld`**).
+**Not:** server install, YDim expand, packs, or product status (sibling **`7dtd-realworld`**).
 
 In-game client load for **RealEarth** reuses this project’s LiteNetLib bots.
-Server install, YDim expand, and packs stay in sibling **`7days-realworld`**.
+Server install, YDim expand, and packs stay in sibling **`7dtd-realworld`**.
 
 ## Layout
 
@@ -14,7 +14,7 @@ Server install, YDim expand, and packs stay in sibling **`7days-realworld`**.
 | Start RealEarth dedicated | [`scripts/start_dedicated_realearth.sh`](../scripts/start_dedicated_realearth.sh) |
 | Run named scenario | [`scripts/run_scenario.sh`](../scripts/run_scenario.sh) |
 | Pytest gates | [`tests/test_realearth_scenarios.py`](../tests/test_realearth_scenarios.py) |
-| RealEarth server scripts | `../7days-realworld/scripts/start_dedicated_minimal.sh` |
+| RealEarth server scripts | `../7dtd-realworld/scripts/start_dedicated_minimal.sh` |
 
 The RealEarth dedicated `ServerPort` is **26900** (height-test serverconfig).
 Bots do NOT connect there: LiteNetLib clients speak to the data port **26902**
@@ -100,11 +100,11 @@ scenario id + world name + port in the APM workload notes / loadgen manifest.
 
 | Doc | Role |
 |---|---|
-| Product hub | [`../../7days-realworld/docs/INDEX.md`](../../7days-realworld/docs/INDEX.md) |
-| Product status | [`../../7days-realworld/docs/MODIFICATIONS.md`](../../7days-realworld/docs/MODIFICATIONS.md) |
-| MP origin policy | [`../../7days-realworld/docs/MULTIPLAYER_STREAMING.md`](../../7days-realworld/docs/MULTIPLAYER_STREAMING.md) |
-| Streamed architecture | [`../../7days-realworld/docs/realearth-runtime.md`](../../7days-realworld/docs/realearth-runtime.md) |
-| Height expand | [`../../7days-realworld/docs/HEIGHT_LIMITS.md`](../../7days-realworld/docs/HEIGHT_LIMITS.md) |
+| Product hub | [`../../7dtd-realworld/docs/INDEX.md`](../../7dtd-realworld/docs/INDEX.md) |
+| Product status | [`../../7dtd-realworld/docs/MODIFICATIONS.md`](../../7dtd-realworld/docs/MODIFICATIONS.md) |
+| MP origin policy | [`../../7dtd-realworld/docs/MULTIPLAYER_STREAMING.md`](../../7dtd-realworld/docs/MULTIPLAYER_STREAMING.md) |
+| Streamed architecture | [`../../7dtd-realworld/docs/realearth-runtime.md`](../../7dtd-realworld/docs/realearth-runtime.md) |
+| Height expand | [`../../7dtd-realworld/docs/HEIGHT_LIMITS.md`](../../7dtd-realworld/docs/HEIGHT_LIMITS.md) |
 | APM | [`../../7dtd-apm/docs/APM.md`](../../7dtd-apm/docs/APM.md) |
 | Host topology | [`../../7dtd-optimizer/docs/HOST_TUNING.md`](../../7dtd-optimizer/docs/HOST_TUNING.md) |
 

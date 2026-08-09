@@ -1,7 +1,7 @@
 # 7dtd-loadgen documentation
 
 **Owns:** doc index for this project.  
-**Not:** product RealEarth design (sibling `7days-realworld`).
+**Not:** product RealEarth design (sibling `7dtd-realworld`).
 
 | Doc | Role |
 |---|---|
@@ -17,7 +17,7 @@
 | APM | [`../../7dtd-apm/docs/APM.md`](../../7dtd-apm/docs/APM.md) |
 | Canonical load profile | [`../../7dtd-apm/docs/LOAD_PROFILE.md`](../../7dtd-apm/docs/LOAD_PROFILE.md) |
 | Host topology | [`../../7dtd-optimizer/docs/HOST_TUNING.md`](../../7dtd-optimizer/docs/HOST_TUNING.md) |
-| RealEarth product hub | [`../../7days-realworld/docs/INDEX.md`](../../7days-realworld/docs/INDEX.md) |
+| RealEarth product hub | [`../../7dtd-realworld/docs/INDEX.md`](../../7dtd-realworld/docs/INDEX.md) |
 | Measured scale laws | [`../../7dtd-optimizer/docs/measured-scaling.md`](../../7dtd-optimizer/docs/measured-scaling.md) |
 
 Prefer the root README for day-to-day operators. Canonical **wire RE** for clone work lives in research:

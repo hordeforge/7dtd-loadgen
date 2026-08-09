@@ -96,14 +96,14 @@ with server config and APM session IDs when comparing runs.
 |---|---|
 | `../7dtd-apm` | Capture/compare while load runs; may call public runners only |
 | `../7dtd-optimizer` | Optim under test; independent install |
-| `../7days-realworld` | Optional RealEarth world under test; bots used to live under its tools |
+| `../7dtd-realworld` | Optional RealEarth world under test; bots used to live under its tools |
 
 Do not silently install mods into game trees from loadgen except via explicit
 documented dedicated-start scripts the operator runs.
 
 ## RealEarth
 
-[`docs/REALEARTH.md`](docs/REALEARTH.md) - scenario catalog; server scripts stay in `../7days-realworld`.
+[`docs/REALEARTH.md`](docs/REALEARTH.md) - scenario catalog; server scripts stay in `../7dtd-realworld`.
 
 ## Stock-game research -> 7dtd-research
 

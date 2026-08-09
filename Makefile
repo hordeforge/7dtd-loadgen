@@ -66,7 +66,7 @@ join: build
 		LOADGEN_COUNT=$${LOADGEN_COUNT:-6} LOADGEN_TIMEOUT=$${LOADGEN_TIMEOUT:-3600000} \
 		"$(SCRIPTS)/run_loadgen.sh"
 
-# RealEarth: expand/mod/world via sibling 7days-realworld; bots here (:26902)
+# RealEarth: expand/mod/world via sibling 7dtd-realworld; bots here (:26902)
 dedicated-realearth:
 	@chmod +x "$(SCRIPTS)/start_dedicated_realearth.sh"
 	@"$(SCRIPTS)/start_dedicated_realearth.sh"

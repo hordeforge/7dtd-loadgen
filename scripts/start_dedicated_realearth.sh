@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Start a RealEarth-enabled dedicated server for loadgen bot scenarios.
-# Delegates install/expand/world prep to sibling 7days-realworld; keeps bot ownership here.
+# Delegates install/expand/world prep to sibling 7dtd-realworld; keeps bot ownership here.
 #
 #   ./scripts/start_dedicated_realearth.sh
 #   RE_SCENARIO_PACK=h500 RE_WORLD_NAME=RealEarth_H500 ./scripts/start_dedicated_realearth.sh
@@ -11,14 +11,14 @@
 #   make join-realearth
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-RE_ROOT="${REALEARTH_ROOT:-$ROOT/../7days-realworld}"
+RE_ROOT="${REALEARTH_ROOT:-$ROOT/../7dtd-realworld}"
 PACK="${RE_SCENARIO_PACK:-h500}"
 WORLD_NAME="${RE_WORLD_NAME:-}"
 USERDATA="${RE_DEDICATED_USERDATA:-$HOME/.cache/realearth-dedicated}"
 
 if [[ ! -d "$RE_ROOT" ]]; then
   echo "ERROR: RealEarth project not found at $RE_ROOT" >&2
-  echo "Set REALEARTH_ROOT or keep sibling layout Desktop/7dtd/{7dtd-loadgen,7days-realworld}" >&2
+  echo "Set REALEARTH_ROOT or keep sibling layout Desktop/7dtd/{7dtd-loadgen,7dtd-realworld}" >&2
   exit 1
 fi
 
@@ -28,7 +28,7 @@ case "$PACK" in
     echo "=== loadgen → RealEarth dedicated (H500 staged peak) ==="
     # Ensure H500 pack exists (offline synthetic; no DEM network)
     if [[ ! -d "$RE_ROOT/data/samples/height_test_500/tiles" ]]; then
-      echo "Building H500 sample pack in 7days-realworld..."
+      echo "Building H500 sample pack in 7dtd-realworld..."
       make -C "$RE_ROOT" height-map-500
     fi
     # Install pack + mod into dedicated Mods (expand + SharedFixed config)
@@ -62,7 +62,7 @@ export SEVENDTD_GAME_DIR="${SEVENDTD_GAME_DIR:-$HOME/.local/share/Steam/steamapp
 echo "RealEarth root: $RE_ROOT"
 echo "World:          $WORLD_NAME"
 echo "UserData:       $USERDATA"
-echo "Port:           26900 (see 7days-realworld/scripts/serverconfig_height_test.xml)"
+echo "Port:           26900 (see 7dtd-realworld/scripts/serverconfig_height_test.xml)"
 echo "Bots:           cd $ROOT && LOADGEN_PORT=26902 make join-realearth"
 
 # Prefer long-running minimal dedicated (leaves server up for bots)

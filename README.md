@@ -73,10 +73,10 @@ Server userdata defaults to `~/.cache/7dtd-loadgen` (`RE_DEDICATED_USERDATA`).
 
 Telnet (for scouts / diagnostics): `127.0.0.1:8081` password `retest`.
 
-## RealEarth (sibling `7days-realworld`)
+## RealEarth (sibling `7dtd-realworld`)
 
 In-game client tests for RealEarth **reuse this loadgen**. Server expand/mod/world
-setup stays in `7days-realworld`; bots and scenario gates live here.
+setup stays in `7dtd-realworld`; bots and scenario gates live here.
 
 ```bash
 make scenarios
@@ -200,7 +200,7 @@ Current protocol, workload, and operations work is tracked in
 
 ## Relationship to other repos
 
-- **7days-realworld** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
+- **7dtd-realworld** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
   Load-test bots used to live under `tools/simulated_client/`; they now live here.
 - **7dtd-apm**: dedicated efficiency / APM toolkit (separate concern).
 

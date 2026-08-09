@@ -17,7 +17,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_FILE = ROOT / "scripts" / "scenarios" / "realearth.json"
-REALEARTH_ROOT = Path(os.environ.get("REALEARTH_ROOT", ROOT.parent / "7days-realworld"))
+REALEARTH_ROOT = Path(os.environ.get("REALEARTH_ROOT", ROOT.parent / "7dtd-realworld"))
 START_RE = ROOT / "scripts" / "start_dedicated_realearth.sh"
 RUN_SCENARIO = ROOT / "scripts" / "run_scenario.sh"
 EXE = ROOT / "src" / "LoadGen" / "bin" / "Release" / "net8.0" / "7dtd-loadgen"
@@ -191,7 +191,7 @@ def test_realearth_scripts_exist_and_are_executable_bits():
 
 
 def test_realearth_sibling_project_layout():
-    """Bots stay in loadgen; RealEarth server scripts stay in 7days-realworld."""
+    """Bots stay in loadgen; RealEarth server scripts stay in 7dtd-realworld."""
     assert REALEARTH_ROOT.is_dir(), (
         f"RealEarth sibling missing at {REALEARTH_ROOT}; set REALEARTH_ROOT"
     )
