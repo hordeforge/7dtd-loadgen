@@ -193,6 +193,28 @@ def spawn_endgame(target):
     return cur
 
 
+def spawn_bloodmoon():
+    """Trigger a genuine blood-moon horde (party-scaled waves from the AIDirector).
+
+    There is no `bloodmoon` console command in V3.1.0 (RE: aidirector.md). The
+    blood moon is driven by GameStats[58]=BloodMoonDay; the component starts
+    the horde at dusk (hour 22) on that day. So: set the day's time to dusk and
+    set BloodMoonDay to today. The AIDirector then spawns the party-scaled
+    waves through its normal path (AIDirectorBloodMoonComponent), which is what
+    a real blood-moon path profile needs - not telnet-spawned zombies.
+
+    Returns the current day the blood moon is scheduled for.
+    """
+    # 1-based day: WorldTimeToDays(worldTime)/24000 + 1.
+    out = telnet(["gettime"], settle=1.0)
+    m = re.search(r"Day\s+(\d+)", out)
+    day = int(m.group(1)) if m else 1
+    telnet([f"settime {day} 22 0"], settle=2.0)
+    telnet([f"setgamestat BloodMoonDay {day}"], settle=1.0)
+    log(f"blood moon triggered: day {day}, time 22:00, BloodMoonDay={day}")
+    return day
+
+
 def snapshot():
     telnet(["apm dump"])
     time.sleep(1.5)

@@ -35,6 +35,9 @@ MAX_PLAYERS="${RE_SERVER_MAX_PLAYERS:-64}"
 # hard (that is the point of the stress ladder).
 MAX_ZOMBIES="${RE_MAX_ZOMBIES:-64}"
 ENEMY_DIFFICULTY="${RE_ENEMY_DIFFICULTY:-1}"
+# DynamicMesh off by default (keeps non-mesh measurement baselines unchanged);
+# RE_DYNAMIC_MESH=1 enables it for mesh-streaming A/Bs.
+DYNAMIC_MESH="${RE_DYNAMIC_MESH:-false}"
 CONFIG_SRC="$ROOT/scripts/serverconfig_loadgen.xml"
 
 # Publish Mono JIT method address ranges for Linux perf. Without this, managed
@@ -150,6 +153,7 @@ repls = {
     "DayNightLength": "40",
     "DayLightLength": "12",
     "BuildCreate": "false",
+    "DynamicMeshEnabled": "$DYNAMIC_MESH",
 }
 for k, v in repls.items():
     src = re.sub(rf'name="{k}"\s*value="[^"]*"', f'name="{k}" value="{v}"', src)
