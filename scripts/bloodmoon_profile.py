@@ -142,15 +142,16 @@ def join_ramped(target):
 
 def set_gamestage(stage):
     ids = player_ids()
-    # Try the known command forms; log which is accepted (get-only builds will error).
-    for tmpl in (f"setgamestage {{i}} {stage}", f"gamestage {{i}} {stage}"):
-        r = telnet([tmpl.format(i=pid) for pid in ids[:2]], settle=1.5)
-        if "unknown command" not in r.lower() and "error" not in r.lower():
-            telnet([tmpl.format(i=pid) for pid in ids], settle=2)
-            log(f"  gamestage set via '{tmpl.split()[0]}' -> {stage}")
-            return tmpl.split()[0]
-    log("  gamestage set command not accepted (build may derive it from level); skipping")
-    return None
+    # No `setgamestage` command exists (gamestage is read-only); game stage is
+    # derived from player XP/level. Give each bot enough XP to reach a level
+    # whose gameStage approximates the target. GS is level-dominated; ~250 GS
+    # needs a high level, so grant a large flat XP (the blood-moon party budget
+    # scales with party game stage, see research aidirector.md).
+    for pid in ids:
+        telnet([f"givexp {pid} 5000000"], settle=0.6)
+    log(f"  gamestage boosted via givexp -> ~{stage} target")
+    time.sleep(3)
+    return "givexp"
 
 
 def spawn_endgame(target):
