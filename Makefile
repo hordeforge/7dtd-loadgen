@@ -54,7 +54,7 @@ selftest: build
 unittest:
 	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q
 
-test: build unittest
+test: build selftest unittest
 	@command -v uv >/dev/null && cd "$(ROOT)" && uv run --with pytest pytest tests -q --tb=short \
 		|| python3 -m pytest tests -q --tb=short
 

@@ -108,8 +108,9 @@ demand and honest client outcomes, not emulation of the complete game client.
   throttle + 127.x binds, empty-world AI spawn points, RWG warm-up.)
 - [x] Run `make selftest` and `make test` on a clean .NET 8 environment before a
   release. (CI: .github/workflows/ci.yml runs make test on ubuntu-latest with
-  dotnet 8.0.x + uv - includes build, 24 C# unit tests, pytest golden-wire.
-  unittest target added to make test 2026-08-10.)
+  dotnet 8.0.x + uv - includes build, self-test-join, 24 C# unit tests, pytest
+  golden-wire. unittest target added 2026-08-10; selftest folded into make test
+  2026-08-11.)
 
 ## Done criteria
 
