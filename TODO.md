@@ -42,8 +42,10 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Workload quality
 
-- [ ] Add named workload profiles for probe, join burst, steady wander,
-  death/respawn soak, and mixed actions.
+- [x] Add named workload profiles for probe, join burst, steady wander,
+  death/respawn soak, and mixed actions. (Implemented: `--profile`
+  probe|join-burst|steady-wander|death-soak|mixed, presets before arg loop,
+  documented in README 2026-08-10.)
 - [ ] Add deterministic ramp-up and ramp-down controls to avoid accidental
   connection spikes.
 - [ ] Report achieved join rate, active-client curve, action rate, deaths,
