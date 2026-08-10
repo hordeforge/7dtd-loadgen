@@ -272,7 +272,7 @@ the sibling `7dtd-apm` project to decide whether a change improved performance.
 
 ```bash
 make selftest  # in-process mock join and respawn; no game server required
-make test      # build plus Python golden-wire/self-test checks
+make test      # build + self-test-join + 24 C# unit tests + pytest gates
 make clean     # remove C# bin/ and obj/
 ```
 
