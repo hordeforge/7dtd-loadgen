@@ -64,3 +64,48 @@ public sealed class JoinStateMachineTests
         Assert.Equal(JoinStage.PackageIdsReceived, sm.Stage);
     }
 }
+
+/// <summary>
+/// Rejoin contract: a per-attempt JoinStateMachine that hits a terminal
+/// pre-join state is discarded and a fresh one starts the next attempt; a
+/// joined machine is frozen and never retried. This models RunWithRejoin's
+/// loop (new machine per attempt until the session wall clock expires).
+/// </summary>
+public sealed class RejoinPolicyTests
+{
+    [Fact]
+    public void FreshMachine_StartsClean_AfterTerminalFail()
+    {
+        var attempt1 = new JoinStateMachine();
+        attempt1.Advance(JoinStage.PackageIdsReceived);
+        attempt1.Fail("kick");
+        Assert.True(attempt1.IsTerminal);
+
+        // Retry = brand new machine, no state carried over.
+        var attempt2 = new JoinStateMachine();
+        Assert.Equal(JoinStage.Created, attempt2.Stage);
+        Assert.False(attempt2.IsTerminal);
+        Assert.Empty(attempt2.PackageIds);
+    }
+
+    [Fact]
+    public void JoinedMachine_IsFrozen_NoRetry()
+    {
+        var sm = new JoinStateMachine();
+        sm.MarkJoined();
+        sm.Fail("late-kick"); // Fail is a no-op after Joined
+        Assert.Equal(JoinStage.Joined, sm.Stage);
+        Assert.False(sm.IsTerminal);
+        Assert.True(sm.IsJoined);
+    }
+
+    [Fact]
+    public void Disconnect_AfterJoined_StillCountsAsJoined()
+    {
+        var sm = new JoinStateMachine();
+        sm.MarkJoined();
+        sm.Advance(JoinStage.Disconnected); // terminal, but EverJoined recorded
+        Assert.Equal(JoinStage.Disconnected, sm.Stage);
+        Assert.True(sm.IsJoined); // EverJoined survives the terminal transition
+    }
+}
