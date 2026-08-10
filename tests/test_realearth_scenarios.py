@@ -24,6 +24,15 @@ EXE = ROOT / "src" / "LoadGen" / "bin" / "Release" / "net8.0" / "7dtd-loadgen"
 DLL = ROOT / "src" / "LoadGen" / "bin" / "Release" / "net8.0" / "7dtd-loadgen.dll"
 PROJ = ROOT / "src" / "LoadGen" / "LoadGen.csproj"
 
+# Tests that assert on the 7dtd-realworld sibling (product assumptions, layout,
+# height-test serverconfig) only run when the sibling is present; a single-repo
+# CI checkout does not have it. Same guard pattern as the live-server tests.
+REALEARTH_PRESENT = REALEARTH_ROOT.is_dir()
+needs_realearth_sibling = pytest.mark.skipif(
+    not REALEARTH_PRESENT,
+    reason="7dtd-realworld sibling not checked out; set REALEARTH_ROOT",
+)
+
 
 def _dotnet_env() -> dict[str, str]:
     env = os.environ.copy()
@@ -92,6 +101,7 @@ def test_realearth_scenario_registry_schema():
             assert "script" in s["server"]
 
 
+@needs_realearth_sibling
 def test_realearth_p0_p1_offline_product_assumptions():
     """P0/P1 gate: expand product path + fail-closed + plan artifact in sibling."""
     assert (REALEARTH_ROOT / "docs" / "IMPLEMENTATION_PLAN.md").is_file()
@@ -109,6 +119,7 @@ def test_realearth_p0_p1_offline_product_assumptions():
     assert (REALEARTH_ROOT / "Source" / "RealEarth" / "InjectPatchStats.cs").is_file()
 
 
+@needs_realearth_sibling
 def test_realearth_p0_through_p8_phase_modules_shipped():
     """Every IMPLEMENTATION_PLAN priority has a shipped module (offline bar)."""
     src = REALEARTH_ROOT / "Source" / "RealEarth"
@@ -190,6 +201,7 @@ def test_realearth_scripts_exist_and_are_executable_bits():
         assert "set -euo pipefail" in text
 
 
+@needs_realearth_sibling
 def test_realearth_sibling_project_layout():
     """Bots stay in loadgen; RealEarth server scripts stay in 7dtd-realworld."""
     assert REALEARTH_ROOT.is_dir(), (
@@ -204,6 +216,7 @@ def test_realearth_sibling_project_layout():
     assert int(mp.get("SeaLevelGameY", 0)) == 100
 
 
+@needs_realearth_sibling
 def test_realearth_default_port_tracks_height_test_server():
     """RealEarth scenarios join the height-test server's data port (ServerPort+2).
 
