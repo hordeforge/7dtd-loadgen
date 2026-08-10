@@ -11,3 +11,6 @@ __pycache__/
 .ruff_cache/
 *.log
 *.pdb
+
+# Local harness runtime state (reconnect logs etc.)
+server/
