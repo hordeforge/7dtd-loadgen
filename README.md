@@ -130,6 +130,16 @@ its LiteNetLib RTT during the action loop; the cohort stats JSON reports ping
 p50/p95/max and spikes over 150 ms (client-perceived lag, distinct from
 server tick stall).
 
+**Stock join flake under churn (root cause closed 2026-08-10 in
+`7dtd-research/docs/network.md` §4.0):** >12-bot cohorts can trigger a stock
+race where `LiteNetLibAuthWrapperServer.ConnectionRequestCheck` enumerates
+`ConnectionManager.Clients.List` on the socket-receive thread
+(`UnsyncedEvents=true`) while the main thread mutates it -> `Collection was
+modified` in `CreateEvent` -> `RemoteConnectionClose`. Use `--ramp-ms` to
+stagger arrivals or keep cohorts <=12 for measurement runs; a second churn bug
+(`NetPackageMinEventFire.write` NRE on null itemValue, `protocol-packages.md`
+§6.23) also drops clients under load.
+
 For a heterogeneous cohort (a real population, not one behaviour), `--bot-mix`
 takes a weighted list, e.g. `traverse:35,wander:15,combat:20,bait:15,demolition:10,chatty:5`;
 modes are assigned deterministically by client id so runs are repeatable. It
