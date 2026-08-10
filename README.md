@@ -59,6 +59,12 @@ LOADGEN_COUNT=32 LOADGEN_TIMEOUT=3600000 make join
 
 # Prefer natural/scouts pressure (no admin kill fallback)
 7dtd-loadgen --join --count 6 --no-kill-fallback --timeout 3600000
+
+# Reproducible runs: write a run manifest (schema 7dtd.loadgen.run.v1) that
+# records server build, world/seed, bots, concurrency, seed, and pressure
+# settings alongside --stats-json cohort output
+7dtd-loadgen --join --count 6 --seed 7 --ramp-ms 3000 \
+  --run-manifest run.json --stats-json stats.json
 ```
 
 ### Dedicated worlds
