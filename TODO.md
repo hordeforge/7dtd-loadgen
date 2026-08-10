@@ -92,7 +92,10 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Documentation and release
 
-- [ ] Add a complete baseline/candidate example integrated with `7dtd-apm`.
+- [x] Add a complete baseline/candidate example integrated with `7dtd-apm`.
+  (Exists: ../7dtd-apm/plans/profile.canonical.json (heavy 64p canonical),
+  profile.tiers.json (incl. tier-moderate former baseline), campaign.default.json;
+  loadgen README links them.)
 - [x] Add troubleshooting for ports, per-IP throttling, empty worlds, and RWG
   warm-up. (2026-08-10: README Troubleshooting section - UDP port+2, per-IP
   throttle + 127.x binds, empty-world AI spawn points, RWG warm-up.)
