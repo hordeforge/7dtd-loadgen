@@ -179,6 +179,17 @@ LOADGEN_SPAWN_EVERY_MS=15000 \
 Run the executable with `--help` for the complete option list supported by the
 current build.
 
+## Verified game builds
+
+Join + golden-wire fixtures are verified against **7DTD V3.1.0 (b14)** dedicated
+(`GameVersion 1.3.10.14`, `PackageCodec.GameVersion`). The join client reads the
+server's version from `NetPackagePackageIds` and builds its `PlayerLogin` from it
+(VersionAuthorizer compares `LongStringNoBuild`, e.g. "V 3.1"), so joining a
+nearby minor/branch build works without a client change; the golden-wire body
+size constants and `PackageIds` map count (189) are V3.1.0-specific and fail
+loudly (`FAIL golden-wire`) on a different build - bump `GameVersion` and
+re-verify against the new dump before shipping a fixture for another release.
+
 ## Reading results
 
 Each client logs its join stage, actions, death cause, respawn count, and final
