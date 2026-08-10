@@ -219,6 +219,10 @@ Current protocol, workload, and operations work is tracked in
 - **7dtd-realworld** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
   Load-test bots used to live under `tools/simulated_client/`; they now live here.
 - **7dtd-apm**: dedicated efficiency / APM toolkit (separate concern).
+- **7dtd-research**: stock-engine RE corpus; wire layouts here are cross-checked
+  against its IL-derived docs (`protocol-packages.md` §6.23), and the stock
+  join-churn race it documents (`network.md` §4.0) is what `--ramp-ms`
+  mitigates.
 
 ## Notes
 
