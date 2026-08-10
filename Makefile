@@ -15,14 +15,15 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean
+.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean
 
 help:
 	@echo "7dtd-loadgen"
 	@echo ""
 	@echo "  make build               Build 7dtd-loadgen"
 	@echo "  make selftest            In-process join + respawn CI gate"
-	@echo "  make test                Python golden-wire + RealEarth scenario gates"
+	@echo "  make unittest            C# unit tests (JoinStateMachine, RampDelay, JoinGate)"
+	@echo "  make test                C# unit tests + Python golden-wire/RealEarth gates"
 	@echo "  make dedicated-4k        Start RWG 4096 dedicated (POI/sleepers, no RealEarth)"
 	@echo "  make dedicated           Alias of dedicated-4k"
 	@echo "  make join                Join bots to stock dedicated (bots use port 26902)"
@@ -50,7 +51,10 @@ build:
 selftest: build
 	@"$(EXE)" --self-test-join --actions 24 --seed 7
 
-test: build
+unittest:
+	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q
+
+test: build unittest
 	@command -v uv >/dev/null && cd "$(ROOT)" && uv run --with pytest pytest tests -q --tb=short \
 		|| python3 -m pytest tests -q --tb=short
 
