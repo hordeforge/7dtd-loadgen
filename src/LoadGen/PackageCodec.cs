@@ -499,6 +499,17 @@ public static class PackageCodec
         if (ro + 4 != rtsBody.Length) return $"RTS tail want nearEntityId i32 at {ro}, body {rtsBody.Length}";
         if (BitConverter.ToInt32(rtsBody, ro) != 77) return "RTS nearEntityId want 77";
 
+        // PlayerSpawnedInWorld: respawnReason:i32, position:Vector3i (3xi32 via
+        // StreamUtils.Write), entityId:i32 (write IL=16). Parse back.
+        var spawn = BuildPlayerSpawnedInWorld(1, respawnReason: 3, posX: 10, posY: 20, posZ: 30, entityId: 99);
+        var spawnBody = ExtractBody(spawn);
+        if (spawnBody.Length != 4 + 12 + 4) return $"SpawnedInWorld body len={spawnBody.Length} want 20";
+        if (BitConverter.ToInt32(spawnBody, 0) != 3) return "SpawnedInWorld respawnReason want 3";
+        if (BitConverter.ToInt32(spawnBody, 4) != 10 || BitConverter.ToInt32(spawnBody, 8) != 20
+            || BitConverter.ToInt32(spawnBody, 12) != 30)
+            return "SpawnedInWorld position mismatch";
+        if (BitConverter.ToInt32(spawnBody, 16) != 99) return "SpawnedInWorld entityId want 99";
+
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
         if (ver != "V 3.1.0")
