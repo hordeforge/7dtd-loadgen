@@ -74,8 +74,11 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] Add a prominent warning when telnet zombie spawning or admin kill fallback
   is enabled. (2026-08-10: WARNING line at JOIN_LOAD when either is active,
   naming which, with --no-spawn-zombies/--no-kill-fallback guidance.)
-- [ ] Add graceful shutdown handling that stops telnet pressure and writes a
-  final cohort summary.
+- [x] Add graceful shutdown handling that stops telnet pressure and writes a
+  final cohort summary. (Normal completion: spawnCts.Cancel + spawn/horde
+  task join before the summary + gate return, Program.cs; Ctrl-C/ProcessExit:
+  DisconnectAllActive frees player slots; the final summary is only written on
+  normal completion - Ctrl-C is an emergency stop, not a measurement end.)
 - [ ] Document host resource limits and safe scaling guidance for large cohorts.
 
 ## Documentation and release
