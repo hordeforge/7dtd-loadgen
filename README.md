@@ -242,6 +242,10 @@ nearby minor/branch build works without a client change; the golden-wire body
 size constants and `PackageIds` map count (189) are V3.1.0-specific and fail
 loudly (`FAIL golden-wire`) on a different build - bump `GameVersion` and
 re-verify against the new dump before shipping a fixture for another release.
+**Live re-verified 2026-08-10:** a full join against the stock V3.1.0 dedi
+reported `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
+`LoginAnswered: allowed=True` - the golden-wire's map count and the census
+(`docs/network.md`: 189 of 193 registered) match observed traffic exactly.
 
 ## Reading results
 
