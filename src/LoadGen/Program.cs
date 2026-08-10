@@ -602,7 +602,16 @@ public static class Program
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] JOIN_LOAD count={count} concurrency={concurrency} " +
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
-            $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} bind=127.x multi-ip");
+            $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} killFallback={killFallback} " +
+            $"bind=127.x multi-ip");
+        if (spawnZombies || killFallback)
+            Console.WriteLine(
+                $"[{DateTime.UtcNow:O}] WARNING: server-side pressure active - " +
+                (spawnZombies ? "telnet zombie spawning on " : "") +
+                (spawnZombies && killFallback ? " and " : "") +
+                (killFallback ? "admin kill fallback" : "") +
+                ". These modify the world and raise server load; use --no-spawn-zombies " +
+                "and/or --no-kill-fallback for a pure join/action measurement.");
         var results = new System.Collections.Concurrent.ConcurrentBag<(
             int id, int rc, JoinStage stage, int walks, int jumps, int crouches, int aims, int turns,
             int strafes, int looks, int chats, int breaks, int attacks,
