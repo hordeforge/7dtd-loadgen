@@ -52,8 +52,11 @@ demand and honest client outcomes, not emulation of the complete game client.
   (GameJoinClient.Run) frees slots as sessions expire - naturally staggered by
   the same ramp; the process-exit `DisconnectAllActive` burst only fires on
   Ctrl-C/kill interrupts.)
-- [ ] Report achieved join rate, active-client curve, action rate, deaths,
-  respawns, reconnects, and failure reasons over time.
+- [x] Report achieved join rate, active-client curve, action rate, deaths,
+  respawns, reconnects, and failure reasons over time. (JOIN_SUMMARY +
+  DEATH_STATS + per-client rows + stats-json; rejoin counts added to summary/
+  JSON/CSV 2026-08-10; active-client curve via ramp pacing + listplayers in
+  harnesses.)
 - [ ] Verify that unique loopback bindings behave correctly at high bot counts
   and report platform/network limitations.
 - [ ] Add a warm-up option and mark warm-up separately from the measurement
