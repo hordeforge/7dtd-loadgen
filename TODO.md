@@ -68,9 +68,12 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Safety and operations
 
-- [ ] Redact passwords from logs and process output.
-- [ ] Add a prominent warning when telnet zombie spawning or admin kill fallback
-  is enabled.
+- [x] Redact passwords from logs and process output. (Verified 2026-08-10: the
+  LiteNet key / telnet password are never written to logs, JOIN_LOAD banner,
+  run-manifest, stats-json, or CSV - only to the wire/socket for auth.)
+- [x] Add a prominent warning when telnet zombie spawning or admin kill fallback
+  is enabled. (2026-08-10: WARNING line at JOIN_LOAD when either is active,
+  naming which, with --no-spawn-zombies/--no-kill-fallback guidance.)
 - [ ] Add graceful shutdown handling that stops telnet pressure and writes a
   final cohort summary.
 - [ ] Document host resource limits and safe scaling guidance for large cohorts.
