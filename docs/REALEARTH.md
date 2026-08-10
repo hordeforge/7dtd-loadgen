@@ -48,6 +48,9 @@ make join-realearth
 
 # Optional pytest live gates (server must already listen on 26900):
 LOADGEN_LIVE_REALEARTH=1 make test
+# Note: the sibling-dependent tests (layout, height-test port, P0/P1, P0-P8
+# module inventory) run only when ../7dtd-realworld is checked out; in a
+# single-repo CI checkout they skip (see tests/test_realearth_scenarios.py).
 ```
 
 ## Scenario catalog
