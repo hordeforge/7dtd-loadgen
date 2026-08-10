@@ -9,6 +9,10 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 - [x] RealEarth scenario catalog + loadgen scripts/tests.
 - [ ] Live-validate H500 join/demolition against expanded dedicated.
+  (Blocked on realworld product lane: needs the YDim=16384 expanded dedi -
+  `7dtd-realworld make engine-expand` + `install-height-500`. Sample verified
+  well-formed 2026-08-10: peak_elev_m=468, sea 32, full solid inject, previews
+  present; the expanded-server retarget is realworld's next item.)
 
 - [x] Validate the join, action, death, respawn, and rejoin paths against the
   currently supported 7DTD dedicated-server release. (2026-08-10: stock
