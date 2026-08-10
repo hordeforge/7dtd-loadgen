@@ -246,6 +246,10 @@ re-verify against the new dump before shipping a fixture for another release.
 reported `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
 `LoginAnswered: allowed=True` - the golden-wire's map count and the census
 (`docs/network.md`: 189 of 193 registered) match observed traffic exactly.
+The post-login package set received by a fresh bot (ConfigFile x42, AuthState,
+IdMapping, WorldSpawnPoints, WorldInfo, WorldAreas, PlayerLoginAnswer,
+PlayerId, Localization, DecoUpdate; no EntitySpawn without other entities)
+matches the documented join path (`7dtd-research/docs/network.md` §3b).
 
 ## Reading results
 
