@@ -7,7 +7,9 @@ exploding cops + demolishers, a screamer) so runs are reproducible - unlike an
 RNG game horde. Zombies are telnet-spawned (bypasses the MaxSpawnedZombies world cap,
 which otherwise limits the game's own spawns to ~MaxSpawnedZombies x1.9 on a blood
 moon). Players join on a gentle ramp (~1/s) to avoid the connect/disconnect storm that
-64 simultaneous joins triggers.
+64 simultaneous joins triggers (root cause closed 2026-08-10: stock receive-thread
+client-list race in LiteNetLib event dispatch, `7dtd-research/docs/network.md` §4.0;
+the ~1 join/s ramp avoids it - validated 24 bots @ 3 s ramp, 0 drops vs 302 non-ramped).
 
 Env: BM_PLAYERS (64), BM_ZOMBIES (1000), BM_GAMESTAGE (250), BM_HOLD_S (0 = hold until
 Ctrl-C; >0 = teardown after N s). Requires a dedicated server reachable on telnet; use
