@@ -7,6 +7,13 @@ optionally take world damage / admin pressure, log deaths, respawn, and rejoin
 until a wall-clock timeout. Useful for dedicated capacity and multiplayer soak
 tests.
 
+**EAC/encrypted servers are unsupported.** The join client parses the
+`serverUseEAC` flag from `NetPackagePackageIds` and logs a NOTE, then proceeds
+and typically fails the login/encryption handshake - it does not implement the
+EAC client or the encrypted channel. Do not imply current support for
+EAC-enabled or encrypted servers (see `TODO.md` Protocol compatibility); run
+bots against EAC-off test servers only.
+
 ## Requirements
 
 - .NET 8 SDK
