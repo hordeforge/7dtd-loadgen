@@ -88,8 +88,9 @@ demand and honest client outcomes, not emulation of the complete game client.
 ## Documentation and release
 
 - [ ] Add a complete baseline/candidate example integrated with `7dtd-apm`.
-- [ ] Add troubleshooting for ports, per-IP throttling, empty worlds, and RWG
-  warm-up.
+- [x] Add troubleshooting for ports, per-IP throttling, empty worlds, and RWG
+  warm-up. (2026-08-10: README Troubleshooting section - UDP port+2, per-IP
+  throttle + 127.x binds, empty-world AI spawn points, RWG warm-up.)
 - [ ] Run `make selftest` and `make test` on a clean .NET 8 environment before a
   release.
 

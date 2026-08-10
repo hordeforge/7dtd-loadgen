@@ -216,6 +216,22 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
   (`--no-spawn-zombies --no-kill-fallback`) so the measurement is join/action
   cost only, and use `--ramp-ms` for a deterministic active-client curve.
 
+## Troubleshooting
+
+- **Bots never connect (UDP):** the game UDP port is `ServerPort + 2` (e.g.
+  26902 for 26900). Verify the server listens on both; `ss -ulnp` shows the
+  UDP socket. Join against `--port 26902`, not 26900.
+- **Joins stall / `Limiting connect rate from that IP!`:** the dedicated server
+  rate-limits per-IP connections (500 ms window). Unique `127.x.x.x` binds
+  bypass it; if several bots share an IP, slow the cohort with `--ramp-ms` or
+  drop `--concurrency`.
+- **Empty world, no zombies spawn:** empty height-test maps often lack AI spawn
+  points. Use a stock pregen or RWG 4k (see `start_dedicated_prefab.sh`), or
+  enable `--spawn-zombies` (telnet) to place zombies explicitly.
+- **RWG warm-up is slow:** first RWG generation takes minutes; join after the
+  log shows `createWorld() done`. For repeatable loads use a fixed world
+  (`RE_WORLD_NAME=pregen06k01` or a saved RWG) instead of regenerating per run.
+
 ## Verified game builds
 
 Join + golden-wire fixtures are verified against **7DTD V3.1.0 (b14)** dedicated
