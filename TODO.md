@@ -41,9 +41,11 @@ demand and honest client outcomes, not emulation of the complete game client.
   (2026-08-10: README states EAC/encrypted unsupported - no EAC client or
   encrypted channel; NOTE logged on serverUseEAC, then expected login fail.)
 - [ ] Test reconnect behavior after server restart, network loss, and rejected
-  credentials. (Partially: rejoin-policy unit tests added 2026-08-10 - fresh
-  machine per attempt, joined frozen, EverJoined survives; live restart/network-
-  loss harness remains.)
+  credentials. (Partially 2026-08-10: rejoin-policy unit tests cover the state
+  machine (fresh attempt, joined frozen, EverJoined survives); rejected
+  credentials covered by the mock server deny path in self-test-join; a live
+  server-restart/network-loss harness remains - needs an orchestrator that
+  kills/restarts the dedi mid-cohort.)
 
 ## Workload quality
 
@@ -94,8 +96,10 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] Add troubleshooting for ports, per-IP throttling, empty worlds, and RWG
   warm-up. (2026-08-10: README Troubleshooting section - UDP port+2, per-IP
   throttle + 127.x binds, empty-world AI spawn points, RWG warm-up.)
-- [ ] Run `make selftest` and `make test` on a clean .NET 8 environment before a
-  release.
+- [x] Run `make selftest` and `make test` on a clean .NET 8 environment before a
+  release. (CI: .github/workflows/ci.yml runs make test on ubuntu-latest with
+  dotnet 8.0.x + uv - includes build, 24 C# unit tests, pytest golden-wire.
+  unittest target added to make test 2026-08-10.)
 
 ## Done criteria
 
