@@ -28,6 +28,16 @@ public static class Program
         return (int)Math.Min(int.MaxValue, (long)botIndex * rampMs / (count - 1));
     }
 
+    /// <summary>
+    /// Join gate: pass when the successful-client rate meets --min-pass-rate.
+    /// The 1e-9 epsilon absorbs float division rounding at exact equality.
+    /// </summary>
+    public static bool JoinGatePass(int passed, int total, double minPassRate)
+    {
+        double rate = total == 0 ? 0 : (double)passed / total;
+        return rate + 1e-9 >= minPassRate;
+    }
+
     static int Main(string[] args)
     {
         // Game LiteNetLib logs via UnityEngine.Debug when Logger is null; pure .NET crashes
@@ -712,7 +722,7 @@ public static class Program
                 ["timeout_alive"] = timedOut,
                 ["disconnect"] = disc,
                 ["minPassRate"] = minPassRate,
-                ["gatePass"] = rate + 1e-9 >= minPassRate,
+                ["gatePass"] = JoinGatePass(pass, count, minPassRate),
             };
             var ping = PingStats.Summary();
             payload["pingSamples"] = ping.count;
@@ -780,7 +790,7 @@ public static class Program
             File.WriteAllText(csvPath, csv.ToString());
             Console.WriteLine($"DEATH_CSV {csvPath}");
         }
-        return rate + 1e-9 >= minPassRate ? 0 : 1;
+        return JoinGatePass(pass, count, minPassRate) ? 0 : 1;
     }
 
     static int RunProbe(string[] args)

@@ -51,3 +51,38 @@ public sealed class RampDelayTests
         Assert.Equal(int.MaxValue, Program.RampDelayMs(999_999, 1_000_000, int.MaxValue));
     }
 }
+
+/// <summary>Join gate: pass rate vs --min-pass-rate (epsilon for float rounding).</summary>
+public sealed class JoinGateTests
+{
+    [Fact]
+    public void MeetsThreshold_Passes()
+    {
+        Assert.True(Program.JoinGatePass(12, 12, 1.0));
+        Assert.True(Program.JoinGatePass(11, 12, 0.9));
+    }
+
+    [Fact]
+    public void BelowThreshold_Fails()
+    {
+        Assert.False(Program.JoinGatePass(8, 12, 0.9));   // 66% < 90%
+        Assert.False(Program.JoinGatePass(0, 1, 1.0));
+    }
+
+    [Fact]
+    public void EmptyCohort_PassesOnlyAtZeroBar()
+    {
+        // No successes and no failures: passes only when the bar is 0.0,
+        // fails for any positive min-pass-rate.
+        Assert.True(Program.JoinGatePass(0, 0, 0.0));
+        Assert.False(Program.JoinGatePass(0, 0, 0.1));
+    }
+
+    [Fact]
+    public void ExactEquality_EpsilonAbsorbsRounding()
+    {
+        // 1/3 vs 0.333... min: float division rounding must not flip the gate.
+        Assert.True(Program.JoinGatePass(1, 3, 1.0 / 3.0));
+        Assert.True(Program.JoinGatePass(2, 3, 2.0 / 3.0));
+    }
+}
