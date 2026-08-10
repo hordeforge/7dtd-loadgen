@@ -471,6 +471,34 @@ public static class PackageCodec
         if (off + 8 != loginBody.Length) return $"Login tail want 8-byte u64 at {off}, body {loginBody.Length}";
         if (BitConverter.ToUInt64(loginBody, off) != 0xDEADBEEF) return "Login discordUserId mismatch";
 
+        // RequestToSpawnPlayer: chunkViewDim:i16, PlayerProfile.Write (v5),
+        // nearEntityId:i32. Parse back and verify sequence.
+        var rts = BuildRequestToSpawnPlayer(1, chunkViewDim: 8, nearEntityId: 77, isMale: false);
+        var rtsBody = ExtractBody(rts);
+        int ro = 0;
+        if (rtsBody.Length < 2) return "RTS body too short";
+        if (BitConverter.ToInt16(rtsBody, ro) != 8) return "RTS chunkViewDim want 8";
+        ro += 2;
+        if (BitConverter.ToInt32(rtsBody, ro) != 5) return "RTS profile version want 5";
+        ro += 4;
+        string rtsStr()
+        {
+            int len = 0, shift = 0, b;
+            do { b = rtsBody[ro++]; len |= (b & 0x7f) << shift; shift += 7; } while ((b & 0x80) != 0);
+            if (ro + len > rtsBody.Length) throw new InvalidDataException("RTS str overflow");
+            var s = System.Text.Encoding.UTF8.GetString(rtsBody, ro, len);
+            ro += len;
+            return s;
+        }
+        if (rtsStr() != "BaseMale") return "RTS archetype want BaseMale";
+        if (rtsBody[ro++] != 0) return "RTS isMale want false";
+        if (rtsStr() != "White") return "RTS raceName want White";
+        if (rtsBody[ro++] != 0) return "RTS variantNumber want 0";
+        foreach (var want in new[] { "", "", "", "", "", "Blue01" }) // hair, hairColor, mustache, chops, beard, eyeColor
+            if (rtsStr() != want) return $"RTS profile field want '{want}'";
+        if (ro + 4 != rtsBody.Length) return $"RTS tail want nearEntityId i32 at {ro}, body {rtsBody.Length}";
+        if (BitConverter.ToInt32(rtsBody, ro) != 77) return "RTS nearEntityId want 77";
+
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
         if (ver != "V 3.1.0")
