@@ -135,10 +135,13 @@ server tick stall).
 race where `LiteNetLibAuthWrapperServer.ConnectionRequestCheck` enumerates
 `ConnectionManager.Clients.List` on the socket-receive thread
 (`UnsyncedEvents=true`) while the main thread mutates it -> `Collection was
-modified` in `CreateEvent` -> `RemoteConnectionClose`. Use `--ramp-ms` to
-stagger arrivals or keep cohorts <=12 for measurement runs; a second churn bug
-(`NetPackageMinEventFire.write` NRE on null itemValue, `protocol-packages.md`
-§6.23) also drops clients under load.
+modified` in `CreateEvent` -> `RemoteConnectionClose`. **Validated workaround
+(2026-08-10):** `--ramp-ms 3000` with 24 concurrent bots -> 0 race exceptions
+and ~0 client drops over a 4 min window (vs 302 `RemoteConnectionClose` in the
+same cohort without ramp). Keep cohorts <=12 for non-ramped measurement runs.
+A second stock bug is pacing-independent and also drops clients: the
+`NetPackageMinEventFire.write` NRE on null `itemValue` (zombie-cop explosions,
+`protocol-packages.md` §6.23) fired 60x in the same ramped run.
 
 For a heterogeneous cohort (a real population, not one behaviour), `--bot-mix`
 takes a weighted list, e.g. `traverse:35,wander:15,combat:20,bait:15,demolition:10,chatty:5`;
