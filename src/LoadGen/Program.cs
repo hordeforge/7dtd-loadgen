@@ -443,7 +443,7 @@ public static class Program
             var sessionSw = Stopwatch.StartNew();
             int accWalks = 0, accJumps = 0, accCrouch = 0, accAim = 0, accTurn = 0;
             int accStrafe = 0, accLook = 0, accChat = 0, accBreak = 0, accAtk = 0;
-            int accDrown = 0, accSuicide = 0, accKilled = 0, accDeaths = 0, accRespawns = 0;
+            int accDrown = 0, accSuicide = 0, accKilled = 0, accDeaths = 0, accRespawns = 0, accRejoins = 0;
             int lastRc = 1;
             JoinStateMachine last = new();
             int attempt = 0;
@@ -522,6 +522,7 @@ public static class Program
                 accKilled += last.KilledActions;
                 accDeaths += last.DeathCount;
                 accRespawns += last.RespawnCount;
+                accRejoins += attempt > 1 ? 1 : 0; // every retry past the first is a rejoin
 
                 // Intentional end of budget (walked until timeout) or hard fail without join.
                 // Recompute remaining fresh: a join attempt can burn most of the
@@ -569,6 +570,7 @@ public static class Program
             last.KilledActions = accKilled;
             last.DeathCount = accDeaths;
             last.RespawnCount = accRespawns;
+            last.RejoinCount = accRejoins;
             return (lastRc, last);
         }
 
@@ -605,7 +607,7 @@ public static class Program
             int id, int rc, JoinStage stage, int walks, int jumps, int crouches, int aims, int turns,
             int strafes, int looks, int chats, int breaks, int attacks,
             int drowns, int suicides, int killed, bool died, string deathCause, int entityId, string mode,
-            int deathCount, int respawnCount)>();
+            int deathCount, int respawnCount, int rejoinCount)>();
         var gate = new SemaphoreSlim(concurrency);
         var tasks = Enumerable.Range(0, count).Select(i => Task.Run(async () =>
         {
@@ -622,13 +624,14 @@ public static class Program
                     results.Add((id, rc, s.Stage, s.WalkActions, s.JumpActions, s.CrouchActions, s.AimActions,
                         s.TurnActions, s.StrafeActions, s.LookActions, s.ChatActions, s.BreakBlockActions,
                         s.AttackActions, s.DrownActions, s.SuicideActions, s.KilledActions, s.Died,
-                        s.DeathCause, s.EntityId, s.BotModeName, s.DeathCount, s.RespawnCount));
+                        s.DeathCause, s.EntityId, s.BotModeName, s.DeathCount, s.RespawnCount,
+                        s.RejoinCount));
                 }
                 catch (Exception ex)
                 {
                     if (i < 5)
                         Console.WriteLine($"[{DateTime.UtcNow:O}] join#{id} EX: {ex.GetType().Name}: {ex.Message}");
-                    results.Add((id, 1, JoinStage.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, "exception", -1, opt.Mode.ToString(), 0, 0));
+                    results.Add((id, 1, JoinStage.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, "exception", -1, opt.Mode.ToString(), 0, 0, 0));
                 }
             }
             finally { gate.Release(); }
@@ -672,19 +675,21 @@ public static class Program
         int diedEx = results.Count(r => r.deathCause == "exception");
         int totalDeaths = results.Sum(r => r.deathCount);
         int totalRespawns = results.Sum(r => r.respawnCount);
+        int totalRejoins = results.Sum(r => r.rejoinCount);
 
         var report =
             $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
             $"JOIN_ACTIONS walks={walks} jumps={jumps} crouch={crouches} aim={aims} turn={turns} " +
             $"strafe={strafes} look={looks} chat={chats} break={breaks} attack={attacks} " +
-            $"diedClients={died} totalDeaths={totalDeaths} totalRespawns={totalRespawns}\n" +
+            $"diedClients={died} totalDeaths={totalDeaths} totalRespawns={totalRespawns} " +
+            $"totalRejoins={totalRejoins}\n" +
             $"DEATH_STATS total={count} died={died} alive={count - died} " +
             $"world_killed={worldKilled} world_drown={worldDrown} world_radiation={worldRad} " +
             $"timeout_alive={timedOut} disconnect={disc} self_kill={selfKill} exception={diedEx}\n" +
             $"DEATH_HISTOGRAM {string.Join(" ", byCause)}\n" +
             string.Join("\n", results.OrderBy(r => r.id).Take(30).Select(r =>
                 $"  id={r.id} rc={r.rc} mode={r.mode} entity={r.entityId} w={r.walks} j={r.jumps} " +
-                $"deaths={r.deathCount} respawns={r.respawnCount} " +
+                $"deaths={r.deathCount} respawns={r.respawnCount} rejoins={r.rejoinCount} " +
                 $"lastDied={r.died} cause={r.deathCause}"));
         Console.WriteLine(report);
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
@@ -718,6 +723,7 @@ public static class Program
                 ["diedClients"] = died,
                 ["totalDeaths"] = totalDeaths,
                 ["totalRespawns"] = totalRespawns,
+                ["totalRejoins"] = totalRejoins,
                 ["world_killed"] = worldKilled,
                 ["timeout_alive"] = timedOut,
                 ["disconnect"] = disc,
@@ -778,14 +784,14 @@ public static class Program
             var csv = new System.Text.StringBuilder();
             csv.AppendLine(
                 "id,rc,mode,stage,entityId,walks,jumps,crouches,aims,turns,strafes,looks,chats," +
-                "breaks,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount");
+                "breaks,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount,rejoinCount");
             foreach (var r in results.OrderBy(x => x.id))
             {
                 csv.AppendLine(
                     $"{r.id},{r.rc},{r.mode},{r.stage},{r.entityId},{r.walks},{r.jumps}," +
                     $"{r.crouches},{r.aims},{r.turns},{r.strafes},{r.looks},{r.chats}," +
                     $"{r.breaks},{r.attacks},{r.drowns},{r.suicides},{r.killed},{r.died}," +
-                    $"{r.deathCause},{r.deathCount},{r.respawnCount}");
+                    $"{r.deathCause},{r.deathCount},{r.respawnCount},{r.rejoinCount}");
             }
             File.WriteAllText(csvPath, csv.ToString());
             Console.WriteLine($"DEATH_CSV {csvPath}");

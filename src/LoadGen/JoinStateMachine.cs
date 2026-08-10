@@ -56,6 +56,8 @@ public sealed class JoinStateMachine
     public int DeathCount { get; set; }
     /// <summary>Successful respawns after a death.</summary>
     public int RespawnCount { get; set; }
+    /// <summary>Rejoin attempts after an early disconnect (retries past the first).</summary>
+    public int RejoinCount { get; set; }
     /// <summary>Waiting for server PlayerId / SpawnedInWorld after RequestToSpawnPlayer.</summary>
     public bool AwaitingRespawn { get; set; }
     /// <summary>True once we adopted the server's authoritative ground Y.</summary>
