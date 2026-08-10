@@ -206,7 +206,10 @@ make clean     # remove C# bin/ and obj/
 
 The mock tests validate protocol layouts and state transitions, but a live
 server run is still required to validate compatibility with a particular 7DTD
-release.
+release. `--golden-wire` cross-checks package body layouts against the
+independent IL-derived wire docs in `7dtd-research/docs/protocol-packages.md`
+§6.23 (e.g. `NetPackageEntityPosAndRot`: `rot:Vector3` at byte 17 when
+`bUseQRotation=false`, `qrot:Quaternion` when true - both sources agree).
 
 Current protocol, workload, and operations work is tracked in
 [`TODO.md`](TODO.md).
