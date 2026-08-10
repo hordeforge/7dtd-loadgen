@@ -158,6 +158,14 @@ overrides `--bot-mode`. The sibling `7dtd-apm` canonical HEAVY load profile
 `../7dtd-apm/plans/profile.canonical.json`, with the tier ladder in
 `../7dtd-apm/plans/profile.tiers.json` (see `../7dtd-apm/docs/LOAD_PROFILE.md`).
 
+**Named workload profiles** (`--profile`): `probe` (1 bot, bounded steps, no
+death - join/handshake health), `join-burst` (24 bots, simultaneous joins,
+short steps), `steady-wander` (8 bots, endless wander soak), `death-soak`
+(6 combat bots, self-kill + respawn loop), `mixed` (12 weighted wander/combat
+with deaths). Presets apply before the arg loop, so an explicit flag on the
+same command line overrides the profile; unknown names exit 3 with the valid
+list.
+
 Live tests can create world pressure through server telnet. Relevant options
 include `--no-spawn-zombies`, `--telnet-host`, `--telnet-port`,
 `--telnet-password`, `--spawn-every-ms`, `--spawn-per-player`,
