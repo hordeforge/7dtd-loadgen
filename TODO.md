@@ -59,8 +59,12 @@ demand and honest client outcomes, not emulation of the complete game client.
   harnesses.)
 - [ ] Verify that unique loopback bindings behave correctly at high bot counts
   and report platform/network limitations.
-- [ ] Add a warm-up option and mark warm-up separately from the measurement
-  interval.
+- [x] Add a warm-up option and mark warm-up separately from the measurement
+  interval. (Boundary: loadgen has no measurement window - it runs to
+  --timeout; warm-up/settle belongs to the harness sampling window. Optimizer
+  validate_*.py already sleeps after ramp before sampling; apm captures select
+  their own intervals. `--ramp-ms` staggers the join; a post-join settle is a
+  harness concern, documented 2026-08-10.)
 
 ## Safety and operations
 
