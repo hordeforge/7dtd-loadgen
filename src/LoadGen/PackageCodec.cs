@@ -427,6 +427,50 @@ public static class PackageCodec
         if (contentLen != 2 + GoldenBodySize.EntityPosAndRotNoQ)
             return $"contentLen={contentLen} want {2 + GoldenBodySize.EntityPosAndRotNoQ}";
 
+        // PlayerLogin body: 8 fields (name, platform user+token, crossplatform
+        // user+token, version, compVersion, discordId). Parse the body back and
+        // verify the sequence (string fields: 4-byte length + UTF8; u64 at tail).
+        var login = BuildPlayerLogin(1, "golden", "V 3.1.0", "V 3.1.0", discordUserId: 0xDEADBEEF);
+        var loginBody = ExtractBody(login);
+        int off = 0;
+        string ReadStr()
+        {
+            // BinaryReader.ReadString uses 7-bit length encoding (server-side
+            // NetPackagePlayerLogin::read calls ReadString, IL=37).
+            int len = 0, shift = 0, b;
+            do
+            {
+                if (off >= loginBody.Length)
+                    throw new InvalidDataException($"login 7-bit len overflows at {off}");
+                b = loginBody[off++];
+                len |= (b & 0x7f) << shift;
+                shift += 7;
+            } while ((b & 0x80) != 0);
+            if (off + len > loginBody.Length)
+                throw new InvalidDataException($"login string len={len} at {off} overflows body {loginBody.Length}");
+            string s = System.Text.Encoding.UTF8.GetString(loginBody, off, len);
+            off += len;
+            return s;
+        }
+        if (ReadStr() != "golden") return "Login name mismatch";
+        // PlatformUserIdentifierAbs.FromStream(BinaryReader) reads: ReadBoolean()
+        // (presence), ReadByte() (type, discarded), then platform + userId strings.
+        void ReadUserPair(string wantPlatform)
+        {
+            if (loginBody[off++] != 1) throw new InvalidDataException("user presence flag want 1");
+            if (loginBody[off++] != 1) throw new InvalidDataException("user type byte want 1");
+            if (ReadStr() != wantPlatform) throw new InvalidDataException($"platform want {wantPlatform}");
+            if (ReadStr() != "golden") throw new InvalidDataException("userId want golden");
+        }
+        ReadUserPair("Local");   // platformUserAndToken
+        if (ReadStr() != "") return "Login platform token want empty";
+        ReadUserPair("Local");   // crossplatformUserAndToken
+        if (ReadStr() != "") return "Login crossplatform token want empty";
+        if (ReadStr() != "V 3.1.0") return "Login version mismatch";
+        if (ReadStr() != "V 3.1.0") return "Login compVersion mismatch";
+        if (off + 8 != loginBody.Length) return $"Login tail want 8-byte u64 at {off}, body {loginBody.Length}";
+        if (BitConverter.ToUInt64(loginBody, off) != 0xDEADBEEF) return "Login discordUserId mismatch";
+
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
         if (ver != "V 3.1.0")
