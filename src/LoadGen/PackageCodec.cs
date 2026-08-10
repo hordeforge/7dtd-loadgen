@@ -637,17 +637,22 @@ public static class PackageCodec
         bool allowed,
         string data = "")
     {
+        // Server-side write IL (NetPackagePlayerLoginAnswer::write, IL=46):
+        // bAllowed:bool, data:string, platformLobbyId (PlatformLobbyId.Write =
+        // u8 platform + string lobbyId, IL=12), platformUserAndToken.Item1
+        // (ToStream = u8 flag + platform/name strings), Item2 token:string,
+        // crossplatformUserAndToken.Item1, Item2 token:string. All always
+        // present; the client gates on bAllowed in ProcessPackage, not here.
         return FrameChannelPackage(0, packageId, w =>
         {
             w.Write(allowed);
             w.Write(data ?? "");
-            // PlatformLobbyId.Write — write empty/minimal: typically platform byte + strings
-            // Discovery incomplete; write zeros the reader tolerates if denied path not used
-            w.Write((byte)0); // minimal lobby id
-            WritePlatformUser(w, null, null);
-            w.Write("");
-            WritePlatformUser(w, null, null);
-            w.Write("");
+            w.Write((byte)0); // PlatformLobbyId.Write: platform u8 (none)
+            w.Write("");      // PlatformLobbyId.Write: lobbyId string
+            WritePlatformUser(w, null, null); // ToStream: writes u8 0 (null user)
+            w.Write("");      // token
+            WritePlatformUser(w, null, null); // crossplatform
+            w.Write("");      // token
         });
     }
 
