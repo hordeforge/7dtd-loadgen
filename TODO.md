@@ -46,8 +46,12 @@ demand and honest client outcomes, not emulation of the complete game client.
   death/respawn soak, and mixed actions. (Implemented: `--profile`
   probe|join-burst|steady-wander|death-soak|mixed, presets before arg loop,
   documented in README 2026-08-10.)
-- [ ] Add deterministic ramp-up and ramp-down controls to avoid accidental
-  connection spikes.
+- [x] Add deterministic ramp-up and ramp-down controls to avoid accidental
+  connection spikes. (Ramp-up: `--ramp-ms` linear stagger, validated
+  2026-08-10. Ramp-down: per-bot graceful `DisconnectAll` at each session end
+  (GameJoinClient.Run) frees slots as sessions expire - naturally staggered by
+  the same ramp; the process-exit `DisconnectAllActive` burst only fires on
+  Ctrl-C/kill interrupts.)
 - [ ] Report achieved join rate, active-client curve, action rate, deaths,
   respawns, reconnects, and failure reasons over time.
 - [ ] Verify that unique loopback bindings behave correctly at high bot counts
