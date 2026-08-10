@@ -194,6 +194,28 @@ LOADGEN_SPAWN_EVERY_MS=15000 \
 Run the executable with `--help` for the complete option list supported by the
 current build.
 
+## Host resource limits and scaling
+
+Bots are lightweight clients but not free. Practical ceilings on a mid-range
+dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
+
+- **Threads/memory:** each live bot pins one ThreadPool thread (~1 MB stack,
+  provisioned up-front so `--ramp-ms` is the real gate; see the JOIN_LOAD
+  comment in `Program.cs`). 1000 bots = ~1 GB of thread stacks before game
+  cost. Prefer fewer bots + server-side zombie spawn for load, not more bots.
+- **Loopback IPs:** unique `127.x.x.x` binds bypass the server's per-IP 500 ms
+  connect throttle, but the usable space is one /8 (~254 addresses on
+  `127.0.0.0/8` if the host does not reserve subnets). Above that, bots share
+  IPs and the throttle re-engages (slower join, not an error).
+- **Server-side caps:** the dedicated server has its own limits that bound a
+  bot cohort - MaxPlayers (join denial past it, `NetPackagePlayerDenied`
+  reason 2), the LiteNetLib join-churn race under >12 simultaneous joins
+  (mitigate with `--ramp-ms`, see the Verified-game-builds / join-flake note
+  above), and world-spawn caps (MaxSpawnedZombies).
+- **Measurement hygiene:** for perf A/B, disable telnet pressure
+  (`--no-spawn-zombies --no-kill-fallback`) so the measurement is join/action
+  cost only, and use `--ramp-ms` for a deterministic active-client curve.
+
 ## Verified game builds
 
 Join + golden-wire fixtures are verified against **7DTD V3.1.0 (b14)** dedicated
