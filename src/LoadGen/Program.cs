@@ -607,7 +607,7 @@ public static class Program
         if (spawnZombies || killFallback)
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] WARNING: server-side pressure active - " +
-                (spawnZombies ? "telnet zombie spawning on " : "") +
+                (spawnZombies ? "telnet zombie spawning" : "") +
                 (spawnZombies && killFallback ? " and " : "") +
                 (killFallback ? "admin kill fallback" : "") +
                 ". These modify the world and raise server load; use --no-spawn-zombies " +
