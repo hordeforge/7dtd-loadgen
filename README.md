@@ -39,6 +39,7 @@ make selftest
 
 # Start a 4k RWG dedicated with POIs/sleepers (vanilla, RealEarth disabled)
 make dedicated-4k
+# RE_DYNAMIC_MESH=1 enables DynamicMesh in the test world (mesh-streaming A/Bs)
 
 # Join 6 bots for up to 1 hour (default port 26902)
 make join
