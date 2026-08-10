@@ -10,8 +10,11 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] RealEarth scenario catalog + loadgen scripts/tests.
 - [ ] Live-validate H500 join/demolition against expanded dedicated.
 
-- [ ] Validate the join, action, death, respawn, and rejoin paths against the
-  currently supported 7DTD dedicated-server release.
+- [x] Validate the join, action, death, respawn, and rejoin paths against the
+  currently supported 7DTD dedicated-server release. (2026-08-10: stock
+  V3.1.0 dedi live - 16/20/24/28-bot cohorts joined, walked, died, respawned,
+  rejoined; self-test-join PASS in make selftest; blood-moon cohort 12/12
+  joined.)
 - [x] Add run-manifest format (`7dtd.loadgen.run.v1` via `--run-manifest`; stats-json includes scenarioId)
 - [x] RealEarth P0/P1 offline scenarios (`re-p0-p1-offline-gate`, `re-p1-inject-selftest-manifest`)
 - [x] Add a checked-in run-manifest format containing server build, world/seed,
