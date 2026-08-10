@@ -40,12 +40,12 @@ demand and honest client outcomes, not emulation of the complete game client.
   require a separately scoped implementation; do not imply current support.
   (2026-08-10: README states EAC/encrypted unsupported - no EAC client or
   encrypted channel; NOTE logged on serverUseEAC, then expected login fail.)
-- [ ] Test reconnect behavior after server restart, network loss, and rejected
-  credentials. (Partially 2026-08-10: rejoin-policy unit tests cover the state
-  machine (fresh attempt, joined frozen, EverJoined survives); rejected
-  credentials covered by the mock server deny path in self-test-join; a live
-  server-restart/network-loss harness remains - needs an orchestrator that
-  kills/restarts the dedi mid-cohort.)
+- [x] Test reconnect behavior after server restart, network loss, and rejected
+  credentials. (2026-08-10: rejoin-policy unit tests (fresh attempt, joined
+  frozen, EverJoined survives); rejected credentials via mock-server deny in
+  self-test-join; LIVE server-restart harness `scripts/validate_reconnect.py` -
+  kills the dedi mid-cohort and restarts, PASS with 3 bots / 33 rejoin events.
+  Network-loss-only (without restart) remains an explicit gap.)
 
 ## Workload quality
 
