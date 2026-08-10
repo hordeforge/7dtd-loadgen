@@ -14,12 +14,14 @@ demand and honest client outcomes, not emulation of the complete game client.
   currently supported 7DTD dedicated-server release.
 - [x] Add run-manifest format (`7dtd.loadgen.run.v1` via `--run-manifest`; stats-json includes scenarioId)
 - [x] RealEarth P0/P1 offline scenarios (`re-p0-p1-offline-gate`, `re-p1-inject-selftest-manifest`)
-- [ ] Add a checked-in run-manifest format containing server build, world/seed,
+- [x] Add a checked-in run-manifest format containing server build, world/seed,
   bot count, concurrency, action seed, duration, and telnet pressure settings.
-- [ ] Add structured per-client and cohort JSON output alongside human-readable
-  logs.
-- [ ] Cover CLI argument validation, timeout, cancellation, and minimum-pass-rate
-  behavior with automated tests.
+  (Implemented: --run-manifest 7dtd.loadgen.run.v1, Program.cs.)
+- [x] Add structured per-client and cohort JSON output alongside human-readable
+  logs. (Implemented: --stats-json with cohort + per-client + ping stats.)
+- [x] Cover CLI argument validation, timeout, cancellation, and minimum-pass-rate
+  behavior with automated tests. (RampDelayTests, JoinGateTests, JoinStateMachine
+  tests, PackageCodecFuzz; 24 tests, wired into make test 2026-08-10.)
 
 ## Protocol compatibility
 
@@ -79,7 +81,9 @@ demand and honest client outcomes, not emulation of the complete game client.
   task join before the summary + gate return, Program.cs; Ctrl-C/ProcessExit:
   DisconnectAllActive frees player slots; the final summary is only written on
   normal completion - Ctrl-C is an emergency stop, not a measurement end.)
-- [ ] Document host resource limits and safe scaling guidance for large cohorts.
+- [x] Document host resource limits and safe scaling guidance for large cohorts.
+  (2026-08-10: README "Host resource limits and scaling" - thread stack,
+  loopback /8, server caps, measurement hygiene.)
 
 ## Documentation and release
 
