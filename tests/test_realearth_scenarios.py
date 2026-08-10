@@ -204,19 +204,29 @@ def test_realearth_sibling_project_layout():
     assert int(mp.get("SeaLevelGameY", 0)) == 100
 
 
-def test_realearth_default_port_is_26900_not_stock_join_default():
-    """RealEarth height-test serverconfig uses 26900; stock loadgen join often 26902."""
+def test_realearth_default_port_tracks_height_test_server():
+    """RealEarth scenarios join the height-test server's data port (ServerPort+2).
+
+    The serverconfig declares the LiteNetLib ServerPort; the client data socket
+    is that port + 2 (see run_scenario.sh). Bots must target 26902 for a
+    ServerPort=26900 server, never a stray stock default.
+    """
+    import re
+
     cfg = (REALEARTH_ROOT / "scripts" / "serverconfig_height_test.xml").read_text(
         encoding="utf-8"
     )
-    assert 'name="ServerPort" value="26900"' in cfg
+    m = re.search(r'name="ServerPort" value="(\d+)"', cfg)
+    assert m, "ServerPort missing from height-test serverconfig"
+    server_port = int(m.group(1))
+    assert server_port == 26900
     doc = _load_scenarios()
-    assert int(doc["defaults"]["port"]) == 26900
+    assert int(doc["defaults"]["port"]) == server_port + 2
     for s in doc["scenarios"]:
         if s.get("server"):
             # live scenarios inherit default port unless overridden
             port = s.get("client", {}).get("port", doc["defaults"]["port"])
-            assert int(port) == 26900, s["id"]
+            assert int(port) == server_port + 2, s["id"]
 
 
 def test_ci_scenario_selftest_join_path():
