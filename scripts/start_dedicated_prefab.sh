@@ -36,8 +36,13 @@ MAX_PLAYERS="${RE_SERVER_MAX_PLAYERS:-64}"
 MAX_ZOMBIES="${RE_MAX_ZOMBIES:-64}"
 ENEMY_DIFFICULTY="${RE_ENEMY_DIFFICULTY:-1}"
 # DynamicMesh off by default (keeps non-mesh measurement baselines unchanged);
-# RE_DYNAMIC_MESH=1 enables it for mesh-streaming A/Bs.
+# RE_DYNAMIC_MESH=1 enables it for mesh-streaming A/Bs. Stock V3.1.0 ParseBool
+# accepts only True/False - normalize any truthy input (1/yes/on/true).
 DYNAMIC_MESH="${RE_DYNAMIC_MESH:-false}"
+case "${DYNAMIC_MESH,,}" in
+  1|yes|on|true) DYNAMIC_MESH="true" ;;
+  *)             DYNAMIC_MESH="false" ;;
+esac
 CONFIG_SRC="$ROOT/scripts/serverconfig_loadgen.xml"
 
 # Publish Mono JIT method address ranges for Linux perf. Without this, managed
