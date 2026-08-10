@@ -23,14 +23,22 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Protocol compatibility
 
-- [ ] Document which protocol/game builds are verified and fail clearly on a
-  known-incompatible handshake.
-- [ ] Expand golden-wire fixtures for every packet shape sent during join,
-  movement, death, and respawn.
-- [ ] Decide whether EAC-enabled/encrypted servers are explicitly unsupported or
+- [x] Document which protocol/game builds are verified and fail clearly on a
+  known-incompatible handshake. (2026-08-10: README "Verified game builds" -
+  V3.1.0 pin, adaptive join via server PackageIds version, golden-wire fails
+  loud on mismatch.)
+- [x] Expand golden-wire fixtures for every packet shape sent during join,
+  movement, death, and respawn. (2026-08-10: EntityPosAndRot bUseQ path,
+  PlayerLogin field sequence, RequestToSpawnPlayer + PlayerProfile v5,
+  PlayerSpawnedInWorld body.)
+- [x] Decide whether EAC-enabled/encrypted servers are explicitly unsupported or
   require a separately scoped implementation; do not imply current support.
+  (2026-08-10: README states EAC/encrypted unsupported - no EAC client or
+  encrypted channel; NOTE logged on serverUseEAC, then expected login fail.)
 - [ ] Test reconnect behavior after server restart, network loss, and rejected
-  credentials.
+  credentials. (Partially: rejoin-policy unit tests added 2026-08-10 - fresh
+  machine per attempt, joined frozen, EverJoined survives; live restart/network-
+  loss harness remains.)
 
 ## Workload quality
 
