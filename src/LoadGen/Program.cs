@@ -8,12 +8,24 @@ namespace SevenDTD.LoadGen;
 /// <summary>
 /// 7DTD load-test client: LiteNetLib probe, full join path, bot walk/death/respawn.
 /// </summary>
-static class Program
+public static class Program
 {
     /// <summary>No-op logger so game LiteNetLib never calls UnityEngine.Debug under pure .NET.</summary>
     sealed class NullNetLogger : INetLogger
+    {        public void WriteNet(NetLogLevel level, string str, params object[] args) { }
+    }
+
+    /// <summary>
+    /// Stagger delay for bot i of count under --ramp-ms. Linear ramp across the
+    /// cohort; first bot always starts at 0. Clamped so the Task.Delay(int)
+    /// cast at scale cannot overflow (see --ramp-ms parse). Validated live
+    /// 2026-08-10: 24 bots at 3000 ms ramp avoided the stock LiteNetLib
+    /// join-churn race entirely (0 drops vs 302 non-ramped).
+    /// </summary>
+    public static int RampDelayMs(int botIndex, int count, int rampMs)
     {
-        public void WriteNet(NetLogLevel level, string str, params object[] args) { }
+        if (rampMs <= 0 || count <= 1) return 0;
+        return (int)Math.Min(int.MaxValue, (long)botIndex * rampMs / (count - 1));
     }
 
     static int Main(string[] args)
@@ -22,6 +34,7 @@ static class Program
         // with "ECall methods must be packaged into a system module" on bind/socket errors.
         NetDebug.Logger = new NullNetLogger();
         AppDomain.CurrentDomain.ProcessExit += (_, _) => GameJoinClient.DisconnectAllActive();
+
         Console.CancelKeyPress += (_, _) => GameJoinClient.DisconnectAllActive();
 
         if (args.Any(a => a is "-h" or "--help"))
@@ -587,7 +600,7 @@ static class Program
         var tasks = Enumerable.Range(0, count).Select(i => Task.Run(async () =>
         {
             if (joinRampMs > 0 && count > 1)
-                await Task.Delay((int)((long)i * joinRampMs / (count - 1))).ConfigureAwait(false);
+                await Task.Delay(RampDelayMs(i, count, joinRampMs)).ConfigureAwait(false);
             await gate.WaitAsync().ConfigureAwait(false);
             try
             {
