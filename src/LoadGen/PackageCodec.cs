@@ -205,7 +205,9 @@ public static class PackageCodec
         float x, float y, float z,
         float rotX, float rotY, float rotZ,
         bool onGround,
-        byte channel = 0)
+        byte channel = 0,
+        bool useQRotation = false,
+        float qX = 0f, float qY = 0f, float qZ = 0f, float qW = 1f)
     {
         return FrameChannelPackage(channel, packageId, w =>
         {
@@ -213,10 +215,20 @@ public static class PackageCodec
             w.Write(x);
             w.Write(y);
             w.Write(z);
-            w.Write(false); // bUseQRotation
-            w.Write(rotX);
-            w.Write(rotY);
-            w.Write(rotZ);
+            w.Write(useQRotation);
+            if (!useQRotation)
+            {
+                w.Write(rotX);
+                w.Write(rotY);
+                w.Write(rotZ);
+            }
+            else
+            {
+                w.Write(qX);
+                w.Write(qY);
+                w.Write(qZ);
+                w.Write(qW);
+            }
             w.Write(onGround);
         });
     }
@@ -292,6 +304,8 @@ public static class PackageCodec
     {
         // entityId(4)+pos3f(12)+bUseQ(1)+rot3f(12)+onGround(1) = 30 when !bUseQ
         public const int EntityPosAndRotNoQ = 30;
+        // entityId(4)+pos3f(12)+bUseQ(1)+qrot4f(16)+onGround(1) = 34 when bUseQ
+        public const int EntityPosAndRotQ = 34;
         // entityId(4)+bUseQ(1)+rot3i16(6)+dPos3i16(6)+onGround(1)+steps i16(2) = 20 when !bUseQ
         // (qrot only when bUseQ=true; never both). contentLen with pkgId = 22.
         public const int EntityRelPosAndRotNoQ = 20;
@@ -331,6 +345,20 @@ public static class PackageCodec
         // rot floats at offset 17
         if (Math.Abs(BitConverter.ToSingle(posBody, 17) - 10f) > 1e-5)
             return "PosAndRot rot.x mismatch (want Single)";
+
+        // PosAndRot bUseQ path: qrot 4xf32 replaces rot 3xf32 (body 34, no rot tail)
+        var posQ = BuildEntityPosAndRot(
+            99, 42, 1.5f, 2.5f, 3.5f, 0f, 0f, 0f, true, useQRotation: true,
+            qX: 0f, qY: 0f, qZ: 0f, qW: 1f);
+        var posQBody = ExtractBody(posQ);
+        if (posQBody.Length != GoldenBodySize.EntityPosAndRotQ)
+            return $"PosAndRot bUseQ body len={posQBody.Length} want {GoldenBodySize.EntityPosAndRotQ}";
+        if (posQBody[16] != 1)
+            return "PosAndRot bUseQ bUseQRotation want true";
+        if (Math.Abs(BitConverter.ToSingle(posQBody, 29) - 1f) > 1e-5)
+            return "PosAndRot qrot.w mismatch (want 1f at 29)";
+        if (posQBody[33] != 1)
+            return "PosAndRot qrot tail onGround mismatch (want 1 at 33)";
 
         // RelPosAndRot — !bUseQ: rot Int16 only (NO qrot). Live server contentLen=22.
         var relFrame = BuildEntityRelPosAndRot(
