@@ -25,7 +25,8 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   **exploders** (`zombieFatCop`, `zombieDemolition`), and a `zombieScreamer` - ~15%
   exploders. Telnet spawn **bypasses the `MaxSpawnedZombies` world cap** (which the
   server otherwise scales to only `MaxSpawnedZombies x1.9` on a blood moon, ~122 at
-  the default 64).
+  the default 64; the 1.9x is `AIDirectorBloodMoonParty.Tick`'s
+  `AIDirector.CanSpawn(1.9f)` gate - [`7dtd-research/docs/aidirector.md`](../../7dtd-research/docs/aidirector.md)).
 - **High gamestage.** `gamestage <playerId> <stage>` is a real **setter** (not just a
   reader) - the profile sets every player to `BM_GAMESTAGE` for endgame AI/loot scaling.
 - **Bench godmode.** The profile enables `es benchgod on` (EfficientServer
