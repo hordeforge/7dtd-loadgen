@@ -101,6 +101,10 @@
 
 	<property name="BloodMoonFrequency" value="0"/>
 	<property name="BloodMoonRange" value="0"/>
+	<!-- NOTE: 0 does NOT disable the blood moon - the sandbox sync falls back to
+	     the 7-day default (research aidirector.md, live-observed 2026-08-11:
+	     "BloodMoon starting for day 7" with this 0). Use the BloodMoonFrequency
+	     gamepref for real control. -->
 	<property name="BloodMoonWarning" value="8"/>
 	<property name="BloodMoonEnemyCount" value="8"/>
 
@@ -123,5 +127,8 @@
 	<property name="LootAbundance" value="100"/>
 	<property name="LootRespawnDays" value="7"/>
 	<property name="AirDropFrequency" value="0"/>
+	<!-- NOTE: AirDropFrequency is a no-op for the stock schedule (research
+	     aidirector.md, live-observed 2026-08-11: a drop fired with this 0).
+	     The cctor defaults (every 3 days, 12:00, first on day 3-4) apply. -->
 	<property name="AirDropMarker" value="false"/>
 </ServerSettings>
