@@ -301,7 +301,10 @@ Current protocol, workload, and operations work is tracked in
 - **7dtd-research**: stock-engine RE corpus; wire layouts here are cross-checked
   against its IL-derived docs (`protocol-packages.md` §6.23), and the stock
   join-churn race it documents (`network.md` §4.0) is what `--ramp-ms`
-  mitigates.
+  mitigates. This repo's server wrapper is also the **live-verification rig** for
+  scheduled stock behavior: the research corpus's live runs (air drop, wandering
+  horde, blood-moon start; `settime`-driven, bot-joined) boot through
+  `scripts/start_dedicated_*.sh` - see `7dtd-research/docs/re-methodology.md` 5e.
 
 ## Notes
 
