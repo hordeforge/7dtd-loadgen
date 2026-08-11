@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean
+.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check
 
 help:
 	@echo "7dtd-loadgen"
@@ -30,6 +30,8 @@ help:
 	@echo "  make dedicated-realearth Start RealEarth dedicated (sibling project)"
 	@echo "  make join-realearth      Join bots to RealEarth dedicated"
 	@echo "  make scenarios           List RealEarth loadgen scenario ids"
+	@echo "  make research-save-check Verify every probe save against the research codecs"
+	@echo "                          (7dtd-research make save-roundtrip-all; needs the sibling repo)"
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
@@ -89,3 +91,10 @@ scenarios:
 clean:
 	rm -rf "$(ROOT)/src/LoadGen/bin" "$(ROOT)/src/LoadGen/obj"
 	@echo "OK clean"
+
+# Run the research corpus's round-trip checker over every probe save this rig
+# produced (main.ttw, region files, chunk bodies, decoration/multiblocks/nim)
+# plus the shipped Navezgane world header. Needs the sibling 7dtd-research repo
+# at ../7dtd-research. Exits non-zero on the first broken save.
+research-save-check:
+	@cd "$(ROOT)/../7dtd-research" && make save-roundtrip-all
