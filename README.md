@@ -303,8 +303,14 @@ Current protocol, workload, and operations work is tracked in
   join-churn race it documents (`network.md` §4.0) is what `--ramp-ms`
   mitigates. This repo's server wrapper is also the **live-verification rig** for
   scheduled stock behavior: the research corpus's live runs (air drop, wandering
-  horde, blood-moon start; `settime`-driven, bot-joined) boot through
-  `scripts/start_dedicated_*.sh` - see `7dtd-research/docs/re-methodology.md` 5e.
+  horde, blood-moon start, save-format round-trips, weather state; `settime`-driven,
+  bot-joined) boot through `scripts/start_dedicated_*.sh` - see
+  `7dtd-research/docs/re-methodology.md` 5e. Any save these sessions produce is
+  machine-checked against the documented on-disk codecs by
+  `7dtd-research/tools/save_roundtrip_check.py` (`make save-roundtrip` there):
+  main.ttw, region files, chunk bodies, decoration/multiblocks, id mappings -
+  and the stock server itself boots the probe saves back (game-reader round-trip,
+  `save-region.md` §1).
 
 ## Notes
 
