@@ -127,8 +127,9 @@
 	<property name="LootAbundance" value="100"/>
 	<property name="LootRespawnDays" value="7"/>
 	<property name="AirDropFrequency" value="0"/>
-	<!-- NOTE: AirDropFrequency is a no-op for the stock schedule (research
-	     aidirector.md, live-observed 2026-08-11: a drop fired with this 0).
-	     The cctor defaults (every 3 days, 12:00, first on day 3-4) apply. -->
+	<!-- AirDropFrequency feeds the stock schedule via the sandbox option
+	     (SetupAirDropTimeRanges: 0 -> default 3/3 day-count, so the cctor
+	     3-day cadence applies; live-observed 2026-08-11: day-4 then day-7
+	     drops at 12:00 - research aidirector.md). Not a no-op, but 0 = stock. -->
 	<property name="AirDropMarker" value="false"/>
 </ServerSettings>
