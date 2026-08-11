@@ -31,6 +31,13 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   headroom: `SleeperVolume.UpdateSpawn` gates on `AIDirector.CanSpawn(2.1f)`
   ([`7dtd-research/docs/spawning.md`](../7dtd-research/docs/spawning.md) 8, and the
   `RE_MAX_ZOMBIES` comment in `scripts/start_dedicated_prefab.sh`).
+- **Day-7 blood moon fires regardless of the config's 0.** The generated
+  serverconfig sets `BloodMoonFrequency=0`, which the sandbox sync treats as the
+  **7-day default** (live-observed 2026-08-11: `SetDay` logged `freq 7` and
+  `BloodMoon starting for day 7` at dusk -
+  [`7dtd-research/docs/aidirector.md`](../7dtd-research/docs/aidirector.md)).
+  The profile's `BloodMoonFrequency`/`BloodMoonRange` gameprefs are the real
+  levers; a 0 does not disable the horde.
 - **High gamestage.** `gamestage <playerId> <stage>` is a real **setter** (not just a
   reader) - the profile sets every player to `BM_GAMESTAGE` for endgame AI/loot scaling.
 - **Bench godmode.** The profile enables `es benchgod on` (EfficientServer
