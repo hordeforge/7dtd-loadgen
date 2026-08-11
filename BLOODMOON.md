@@ -38,8 +38,11 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   [`7dtd-research/docs/aidirector.md`](../7dtd-research/docs/aidirector.md)).
   The profile's `BloodMoonFrequency`/`BloodMoonRange` gameprefs are the real
   levers; a 0 does not disable the horde.
-- **High gamestage.** `gamestage <playerId> <stage>` is a real **setter** (not just a
-  reader) - the profile sets every player to `BM_GAMESTAGE` for endgame AI/loot scaling.
+- **High gamestage.** The stock `gamestage` console command is **read-only**
+  (client-side formula display; Execute IL=115 uses `GetPrimaryPlayer`), so the
+  profile boosts every bot via `givexp <id> 5000000` - XP persists by player
+  name across reconnects (live-verified 2026-08-12: a reconnected bot's BM
+  party line rose to "GS 2 ... enemy max 1030").
 - **Bench godmode.** The profile enables `es benchgod on` (EfficientServer
   diagnostic, v1.16.2): bots are damage-immune, so the horde keeps ACTIVE targets
   instead of collapsing into a spawn-equilibrium plateau when level-1 bots die
