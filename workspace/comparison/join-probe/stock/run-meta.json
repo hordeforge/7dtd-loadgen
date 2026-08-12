@@ -1,0 +1,8 @@
+{
+  "scenario": "join-probe",
+  "sut": "stock",
+  "startedAt": "2026-08-12T06:32:34Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
+  "loadgen": {"git": "3771f57", "dirtyFiles": "9"},
+  "zdtd": {"git": "761f037", "dirtyFiles": "9"}
+}

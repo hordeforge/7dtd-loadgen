@@ -2,15 +2,15 @@
  "axes": {
   "join": {
    "stock": {
-    "fail": 0,
-    "firstPass": "[2026-08-12T04:50:08.2611624Z] [join#1] PASS joined entity=171 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T04:50:08.2611624Z] [join#1] PASS joined entity=171 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "pass": 1
+    "fail": 8,
+    "firstPass": null,
+    "lastPass": null,
+    "pass": 0
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T04:51:16.3208442Z] [join#1] PASS joined entity=112 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T04:51:16.3208442Z] [join#1] PASS joined entity=112 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T06:27:36.4540965Z] [join#1] PASS joined entity=113 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T06:27:36.4540965Z] [join#1] PASS joined entity=113 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    }
   },
@@ -20,7 +20,7 @@
      "StartGame done": "StartGame done",
      "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-probe_stock, GameModeSurvival"
     },
-    "exec": 14,
+    "exec": 2,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -97,9 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 3,
-     "INF": 345,
-     "WRN": 12
+     "EXC": 2,
+     "INF": 363,
+     "WRN": 11
     },
     "telnetCloseErrors": 6
    },
@@ -112,7 +112,7 @@
      "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-probe/zdtd/world"
     },
     "severity": {
-     "INF": 54,
+     "INF": 65,
      "WRN": 2
     }
    }
@@ -121,17 +121,17 @@
    "stock": {
     "count": 9,
     "files": {
-     "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1351680,
+     "Navezgane/join-probe_stock/Region/r.0.0.7rg": 872448,
      "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
-     "Navezgane/join-probe_stock/blockmappings.nim": 22708,
-     "Navezgane/join-probe_stock/decoration.7dt": 1282927,
-     "Navezgane/join-probe_stock/itemmappings.nim": 8,
-     "Navezgane/join-probe_stock/main.ttw": 11002,
-     "Navezgane/join-probe_stock/main.ttw.bak": 11002,
+     "Navezgane/join-probe_stock/blockmappings.nim": 25957,
+     "Navezgane/join-probe_stock/decoration.7dt": 1282876,
+     "Navezgane/join-probe_stock/itemmappings.nim": 45,
+     "Navezgane/join-probe_stock/main.ttw": 10390,
+     "Navezgane/join-probe_stock/main.ttw.bak": 264,
      "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-     "Navezgane/join-probe_stock/multiblocks.7dt": 4068
+     "Navezgane/join-probe_stock/multiblocks.7dt": 3711
     },
-    "totalBytes": 3404555
+    "totalBytes": 2916851
    },
    "zdtd": {
     "count": 120,
@@ -217,7 +217,7 @@
      "c_-20_34.zch": 262416,
      "c_-21_19.zch": 336144
     },
-    "totalBytes": 34876144
+    "totalBytes": 34877440
    }
   },
   "telnet": {
@@ -225,42 +225,110 @@
     "banner": {
      "Difficulty": "1",
      "Game mode": "GameModeSurvival",
-     "Game name": "join-probe_stock",
-     "Max players": "64",
-     "Server IP": "118.189.191.239",
+     "Game name": "PlaytestNav",
+     "Max players": "8",
+     "Server IP": "Any",
      "Server port": "26900",
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.35,
+    "clockRateGameMinPerRealSec": null,
     "day": [
      "1",
      "07",
      "00"
     ],
     "entities": {
-     "alive": 1,
-     "count": 1,
+     "alive": 0,
+     "count": 0,
      "dead": 0,
-     "types": {
-      "EntityPlayer": 1
-     }
+     "types": {}
+    },
+    "gamestats": {
+     "AirDropFrequency": "3",
+     "AirDropMarker": "True",
+     "AllowedViewDistance": "6",
+     "AnimalCount": "0",
+     "AutoParty": "False",
+     "BedrollExpiryTime": "45",
+     "BiomeGSModifier": "100",
+     "BiomeLSModifier": "100",
+     "BiomeProgression": "True",
+     "BlockDamageAI": "100",
+     "BlockDamageAIBM": "100",
+     "BlockDamagePlayer": "100",
+     "BloodMoonDay": "0",
+     "BloodMoonEnemyCount": "8",
+     "BloodMoonWarning": "1",
+     "CameraRestrictionMode": "0",
+     "ChunkStabilityEnabled": "True",
+     "CurrentRoundIx": "0",
+     "DayLightLength": "18",
+     "DayLimitActive": "False",
+     "DayLimitThisRound": "0",
+     "DayNightLength": "60",
+     "DeathPenalty": "1",
+     "DropOnDeath": "1",
+     "DropOnQuit": "0",
+     "EnemyCount": "0",
+     "EnemyDifficulty": "1",
+     "EnemySpawnMode": "True",
+     "FragLimitActive": "False",
+     "FragLimitThisRound": "0",
+     "GameDifficulty": "1",
+     "GameModeId": "1",
+     "GameState": "1",
+     "GlobalGSModifier": "100",
+     "GlobalLSModifier": "100",
+     "IsCreativeMenuEnabled": "True",
+     "IsFlyingEnabled": "True",
+     "IsPlayerCollisionEnabled": "True",
+     "IsPlayerDamageEnabled": "True",
+     "IsResetMapOnRestart": "False",
+     "IsSaveSupplyCrates": "True",
+     "IsSpawnEnemies": "True",
+     "IsSpawnNearOtherPlayer": "False",
+     "IsTeleportEnabled": "False",
+     "IsVersionCheckDone": "False",
+     "JarRefund": "60",
+     "LandClaimCount": "5",
+     "LandClaimDeadZone": "30",
+     "LandClaimDecayMode": "0",
+     "LandClaimExpiryTime": "7",
+     "LandClaimOfflineDelay": "0",
+     "LandClaimOfflineDurabilityModifier": "4",
+     "LandClaimOnlineDurabilityModifier": "4",
+     "LandClaimSize": "41",
+     "LootAbundance": "100",
+     "LootRespawnDays": "7",
+     "OptionsPOICulling": "1",
+     "PartySharedKillRange": "100",
+     "PlayerKillingMode": "0",
+     "QuestProgressionDailyLimit": "4",
+     "ScoreDiedMultiplier": "-5",
+     "ScorePlayerKillMultiplier": "0",
+     "ScoreZombieKillMultiplier": "1",
+     "ShowAllPlayersOnMap": "False",
+     "ShowFriendPlayerOnMap": "True",
+     "ShowSpawnWindow": "False",
+     "StormFreq": "100",
+     "TimeLimitActive": "False",
+     "TimeLimitThisRound": "0",
+     "TimeOfDayIncPerSec": "6",
+     "TwitchBloodMoonAllowed": "True",
+     "XPMultiplier": "100",
+     "ZombieHordeMeter": "True"
     },
     "players": {
-     "count": 1,
-     "rows": [
-      {
-       "id": 171,
-       "name": "EntityPlayer"
-      }
-     ]
+     "count": 0,
+     "rows": []
     },
     "reportedTotal": null,
     "unknownCommands": []
    },
    "zdtd": {
     "banner": {
-     "Difficulty": "2",
+     "Difficulty": "1",
      "Game mode": "GameModeSurvival",
      "Game name": "stock",
      "Max players": "64",
@@ -269,11 +337,11 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.4118,
+    "clockRateGameMinPerRealSec": 0.3684,
     "day": [
      "1",
      "07",
-     "00"
+     "06"
     ],
     "entities": {
      "alive": 11,
@@ -288,11 +356,48 @@
       "zombie": 1
      }
     },
+    "gamestats": {
+     "AirDropFrequency": "3",
+     "BedrollExpiryTime": "45",
+     "BlockDamageAI": "100",
+     "BlockDamageAIBM": "100",
+     "BlockDamagePlayer": "100",
+     "BloodMoonDay": "7",
+     "BloodMoonEnemyCount": "8",
+     "BloodMoonWarning": "1",
+     "DayLightLength": "18",
+     "DayNightLength": "60",
+     "DeathPenalty": "1",
+     "DropOnDeath": "1",
+     "EnemyDifficulty": "1",
+     "EnemySpawnMode": "True",
+     "GameDifficulty": "1",
+     "GameState": "1",
+     "IsSpawnEnemies": "True",
+     "JarRefund": "60",
+     "LandClaimCount": "5",
+     "LandClaimDeadZone": "30",
+     "LandClaimDecayMode": "0",
+     "LandClaimExpiryTime": "7",
+     "LandClaimOfflineDelay": "0",
+     "LandClaimOfflineDurabilityModifier": "4",
+     "LandClaimOnlineDurabilityModifier": "4",
+     "LandClaimSize": "41",
+     "LootAbundance": "100",
+     "LootRespawnDays": "7",
+     "PartySharedKillRange": "100",
+     "PlayerKillingMode": "0",
+     "QuestProgressionDailyLimit": "4",
+     "ShowFriendPlayerOnMap": "True",
+     "StormFreq": "100",
+     "TimeOfDayIncPerSec": "6",
+     "XPMultiplier": "100"
+    },
     "players": {
      "count": 1,
      "rows": [
       {
-       "id": 112,
+       "id": 113,
        "name": "REFake1"
       }
      ]
@@ -304,9 +409,14 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.35 zdtd=0.4118; 60-min day = 0.4)",
-  "telnet: entity count differs (stock=1 zdtd=11)"
+  "join: PASS count differs (stock=0 zdtd=1)",
+  "join: FAIL count differs (stock=8 zdtd=0)",
+  "join: stock had zero PASS joins",
+  "log: EXC (exception) line count differs (stock=2 zdtd=0)",
+  "telnet: game day/time differs between servers (clock-rate check unavailable)",
+  "telnet: entity count differs (stock=0 zdtd=11)",
+  "telnet: player count differs (stock=0 zdtd=1)",
+  "gamestats: 1 shared stat(s) differ (BloodMoonDay: 0 vs 7)"
  ],
  "scenario": "join-probe"
 }

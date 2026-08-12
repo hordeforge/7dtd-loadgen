@@ -137,3 +137,25 @@ record, and documentation of any protocol-version restriction.
 | H500 / expanded-world live validate | open | Next checkbox above |
 | EAC/encrypted servers | unsupported | Documented non-goal unless scoped |
 | Named workload profiles in-repo | partial | Canonical profiles live under `7dtd-apm/plans/` |
+
+## SUT comparison harness (2026-08-12)
+
+- [x] Server-under-test abstraction: `scripts/compare_sut.sh` boots stock or
+  zdtd from one scenario config (catalog `scripts/scenarios/sut.json`, env
+  overrides win), captures the observable surface per side, diffs into
+  REPORT.md + diff.json. `make compare-sut` / `compare-list` / `compare-all`.
+- [x] Observable surface axes: join outcome, server log categories (stock
+  [ScriptOrder] noise + harness telnet-close errors excluded), telnet
+  gettime/listents/listplayers, gamestats on shared names, save inventory.
+- [x] Run metadata (loadgen/zdtd git hashes, env, timestamps) in every report.
+- [x] JOINED join-moment contract in the client (orchestrators wait on it).
+- [x] Post-ready health check (process + UDP listener + console) so a dead
+  side fails loudly instead of reporting a phantom "ran with 0 joins".
+- [x] Findings loop: stock EXC NREs (stock wart), clock rate + ambient-seed
+  divergences recorded in zdtd PROVENANCE 3.9, gamestats mismatches fixed
+  (zdtd wire units + harness config alignment).
+- [ ] playtest-compare (7dtd-playtest `make playtest-compare`) first live run.
+- [ ] Scenario breadth: horde-lite (spawn pressure) and join-fast catalog
+  scenarios live.
+- [ ] Stock ready gate: reduce residual denial flakiness (5 FAILs observed on
+  one run despite StartGame-done gate; check ConnectionManager accept window).
