@@ -45,14 +45,18 @@ fully-local-network model.
 
 - `7dtd-connect` ships the switch: `CLIENT_PLATFORM=local ./scripts/launch_client.sh`
   backs up the game's `platform.cfg`, selects `platform=Local,
-  crossplatform=None`, and restores on exit. Playtest launches flow the env
-  through, so `CLIENT_PLATFORM=local make playtest-...` uses it too.
-- Unverified live: does the game honor `platform=Local` in its own
-  `platform.cfg`, and does Steam DRM still gate launch? (The server honors the
-  file; the client side is untested in this workspace.)
+  crossplatform=None`, and restores on exit (self-healing after a hard kill).
+  Playtest launches flow the env through, so `CLIENT_PLATFORM=local make
+  playtest-...` uses it too.
+- **Live-verified 2026-08-12**: the real client (Proton) with
+  `CLIENT_PLATFORM=local` joined a stock dedicated as `PltfmId='Local_maci'`
+  with the full auth chain passing (PlayerSlots, PlatformAuth, BansAndWhitelist,
+  Crossplay, Encryption, Finalizer) and reached `PlayerSpawnedInWorld`
+  (EntityID 177). Steam DRM did not gate the Proton launch; the game honored
+  `platform=Local`.
 - Identity changes `Steam_...` -> `Local_...`; player records/saves key off it
   (fine for disposable test servers).
-- Cleanest architecture if it works: zero mods, zero Steam.
+- Cleanest architecture: zero mods, zero Steam. No server-side bypass needed.
 
 ## Option B: server-side Steam-auth bypass mod
 
