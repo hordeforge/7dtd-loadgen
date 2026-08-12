@@ -186,3 +186,6 @@ record, and documentation of any protocol-version restriction.
   re-run to confirm flake vs real.
 - [ ] Triage zdtd persist fails from playtest-compare persist: persist_setup_blockmeta,
   persist_setup_te (block-metadata / tile-entity persistence round-trip).
+- [ ] Triage soak_long zdtd fail: seeded ambient zombies near spawn kill the
+  player in ~12s (stock soak survived 900s). Ambient-seed divergence manifest.
+  Fix likely in zdtd init_world seeding or the soak's spawn handling.
