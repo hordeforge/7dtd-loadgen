@@ -82,6 +82,7 @@ SPAWN_ENTITY="${COMPARE_SPAWN_ENTITY:-${CAT_SPAWN_ENT:-}}"
 SPAWN_PER_PLAYER="${COMPARE_SPAWN_PER_PLAYER:-${CAT_SPAWN_PER:-}}"
 SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
+WORLD_NAME="${COMPARE_WORLD:-Navezgane}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
@@ -103,7 +104,7 @@ for sut in $SUTS; do
         "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
       STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
       USERDATA="$run_dir/userdata"
-      RE_WORLD_NAME=Navezgane RE_GAME_NAME="${SCENARIO_ID}_stock" \
+      RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="${SCENARIO_ID}_stock" \
         RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
         bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
       ready=0
@@ -139,7 +140,7 @@ for sut in $SUTS; do
       ZDTD_CFG="$run_dir/serverconfig.xml"
       cat >"$ZDTD_CFG" <<EOF
 <ServerSettings>
-  <property name="GameWorld" value="Navezgane"/>
+  <property name="GameWorld" value="$WORLD_NAME"/>
   <property name="GameName" value="${SCENARIO_ID}_zdtd"/>
   <property name="ServerMaxPlayerCount" value="64"/>
   <property name="MaxSpawnedZombies" value="16"/>
@@ -156,7 +157,7 @@ for sut in $SUTS; do
 </ServerSettings>
 EOF
       RE_SUT_PORT=27120 RE_SUT_ADMIN_PORT=8082 RE_SUT_WORLD="$run_dir/world" \
-        RE_SUT_WORLD_NAME=Navezgane RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
+        RE_SUT_WORLD_NAME="$WORLD_NAME" RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
         RE_SUT_LOGFILE="$run_dir/server.log" \
         bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
       ready=0
