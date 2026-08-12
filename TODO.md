@@ -171,4 +171,7 @@ record, and documentation of any protocol-version restriction.
   The suite's runner is a Harmony Postfix on GameManager.gmUpdate; no
   wait_ready/ready lines appeared, so Tick did not reach the ready gate. Triage:
   client world-load stuck (fresh Navezgane save) vs gmUpdate hook not firing on
-  this build. Re-try with an existing (non-fresh) save and watch the connect log.
+  this build. Re-tried clean (FRESH=0, then FRESH=1 on a fully clean machine):
+  same stall (8.5 min saveIndicator, no results) - a playtest-flow issue in the
+  Steam-auth + BotMod stack (the Local-mode client loaded fine). Needs a
+  playtest-side triage: BotMod partial-join state or world-init stall.
