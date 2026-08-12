@@ -1,25 +1,26 @@
 # Stock-vs-zdtd comparison: join-probe
 
-- stock: ran 2026-08-12T06:26:13Z | loadgen 7183347 (dirty) | zdtd 761f037 (dirty) | client count=1 actions=0 timeout=60000ms
-- zdtd: ran 2026-08-12T06:27:36Z | loadgen 7183347 (dirty) | zdtd 761f037 (dirty) | client count=1 actions=0 timeout=60000ms
+- stock: ran 2026-08-12T08:19:56Z | loadgen 041ba78 (dirty) | zdtd 6d25107 (dirty) | client count=1 actions=0 timeout=60000ms
+- zdtd: ran 2026-08-12T08:21:12Z | loadgen 041ba78 (dirty) | zdtd 6d25107 (dirty) | client count=1 actions=0 timeout=60000ms
 
 ## Join outcome
 
 | axis | stock | zdtd |
 |---|---|---|
-| PASS joined | 0 | 1 |
-| FAIL | 8 | 0 |
+| PASS joined | 1 | 1 |
+| FAIL | 0 | 0 |
+| first pass | `[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T08:21:12.3449647Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
-| EXC lines | 2 | 0 |
-| INF lines | 363 | 65 |
-| WRN lines | 11 | 2 |
-| telnet commands | 2 | n/a |
-- stock: 6 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
-- stock ERR/EXC lines: ERR=0 EXC=2
+| EXC lines | 3 | 0 |
+| INF lines | 373 | 56 |
+| WRN lines | 12 | 2 |
+| telnet commands | 15 | n/a |
+- stock: 8 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
+- stock ERR/EXC lines: ERR=0 EXC=3
 
 Boot evidence per side:
 - `stock.StartGame done` = `StartGame done`
@@ -33,14 +34,27 @@ Boot evidence per side:
 ## Telnet snapshot (gettime / listents / listplayers)
 
 - stock day/time: Day 1, 07:00
-- zdtd day/time: Day 1, 07:06
+- zdtd day/time: Day 1, 07:03
+- clock rate (game-min per real-sec): stock=0.35 zdtd=0.4 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
-| entities total | 0 | 11 |
-| entities alive | 0 | 11 |
-| players | 0 | 1 |
+| entities total | 7 | 11 |
+| entities alive | 7 | 11 |
+| players | 1 | 1 |
+- stock entity types: EntityPlayer=1, EntityZombie=6
 - zdtd entity types: animal=1, player=1, trader=6, turret=1, vehicle=1, zombie=1
+
+## Server banner (telnet greeting)
+
+| field | stock | zdtd |
+|---|---|---|
+| Server port | 26900 | 27120 |
+| Max players | 64 | 64 |
+| Game mode | GameModeSurvival | GameModeSurvival |
+| World | Navezgane | Navezgane |
+| Game name | join-probe_stock | stock |
+| Difficulty | 1 | 1 |
 
 ## Gamestats (compared on shared names)
 
@@ -51,7 +65,7 @@ Boot evidence per side:
 | BlockDamageAI | 100 | 100 |
 | BlockDamageAIBM | 100 | 100 |
 | BlockDamagePlayer | 100 | 100 |
-| BloodMoonDay | 0 | 7 |
+| BloodMoonDay | 7 | 7 |
 | BloodMoonEnemyCount | 8 | 8 |
 | BloodMoonWarning | 1 | 1 |
 | DayLightLength | 18 | 18 |
@@ -81,25 +95,21 @@ Boot evidence per side:
 | StormFreq | 100 | 100 |
 | TimeOfDayIncPerSec | 6 | 6 |
 | XPMultiplier | 100 | 100 |
+- all shared gamestats match
 - stock-only (38, no zdtd equivalent): AirDropMarker, AllowedViewDistance, AnimalCount, AutoParty, BiomeGSModifier, BiomeLSModifier, BiomeProgression, CameraRestrictionMode, ChunkStabilityEnabled, CurrentRoundIx, DayLimitActive, DayLimitThisRound
   ... and 26 more
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 9 file(s), 2848 KiB
-- zdtd: 120 file(s), 34060 KiB
+- stock: 9 file(s), 3475 KiB
+- zdtd: 120 file(s), 34059 KiB
 - stock keys: Navezgane/join-probe_stock/Region/r.0.0.7rg, Navezgane/join-probe_stock/Region/r.1.1.7rg, Navezgane/join-probe_stock/blockmappings.nim, Navezgane/join-probe_stock/decoration.7dt, Navezgane/join-probe_stock/itemmappings.nim, Navezgane/join-probe_stock/main.ttw, Navezgane/join-probe_stock/main.ttw.bak, Navezgane/join-probe_stock/main.ttw.ext.bak
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch
 
 ## Findings
 
-- join: PASS count differs (stock=0 zdtd=1)
-- join: FAIL count differs (stock=8 zdtd=0)
-- join: stock had zero PASS joins
-- log: EXC (exception) line count differs (stock=2 zdtd=0)
-- telnet: game day/time differs between servers (clock-rate check unavailable)
-- telnet: entity count differs (stock=0 zdtd=11)
-- telnet: player count differs (stock=0 zdtd=1)
-- gamestats: 1 shared stat(s) differ (BloodMoonDay: 0 vs 7)
+- log: EXC (exception) line count differs (stock=3 zdtd=0)
+- telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)
+- telnet: entity count differs (stock=7 zdtd=11)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

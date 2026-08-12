@@ -2,15 +2,15 @@
  "axes": {
   "join": {
    "stock": {
-    "fail": 8,
-    "firstPass": null,
-    "lastPass": null,
-    "pass": 0
+    "fail": 0,
+    "firstPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T06:27:36.4540965Z] [join#1] PASS joined entity=113 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T06:27:36.4540965Z] [join#1] PASS joined entity=113 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T08:21:12.3449647Z] [join#1] PASS joined entity=112 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T08:21:12.3449647Z] [join#1] PASS joined entity=112 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    }
   },
@@ -20,7 +20,7 @@
      "StartGame done": "StartGame done",
      "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-probe_stock, GameModeSurvival"
     },
-    "exec": 2,
+    "exec": 15,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -97,11 +97,11 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 2,
-     "INF": 363,
-     "WRN": 11
+     "EXC": 3,
+     "INF": 373,
+     "WRN": 12
     },
-    "telnetCloseErrors": 6
+    "telnetCloseErrors": 8
    },
    "zdtd": {
     "boot": {
@@ -112,7 +112,7 @@
      "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-probe/zdtd/world"
     },
     "severity": {
-     "INF": 65,
+     "INF": 56,
      "WRN": 2
     }
    }
@@ -121,17 +121,17 @@
    "stock": {
     "count": 9,
     "files": {
-     "Navezgane/join-probe_stock/Region/r.0.0.7rg": 872448,
-     "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
-     "Navezgane/join-probe_stock/blockmappings.nim": 25957,
+     "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1499136,
+     "Navezgane/join-probe_stock/Region/r.1.1.7rg": 724992,
+     "Navezgane/join-probe_stock/blockmappings.nim": 26257,
      "Navezgane/join-probe_stock/decoration.7dt": 1282876,
-     "Navezgane/join-probe_stock/itemmappings.nim": 45,
-     "Navezgane/join-probe_stock/main.ttw": 10390,
-     "Navezgane/join-probe_stock/main.ttw.bak": 264,
+     "Navezgane/join-probe_stock/itemmappings.nim": 69,
+     "Navezgane/join-probe_stock/main.ttw": 11002,
+     "Navezgane/join-probe_stock/main.ttw.bak": 10390,
      "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-     "Navezgane/join-probe_stock/multiblocks.7dt": 3711
+     "Navezgane/join-probe_stock/multiblocks.7dt": 3830
     },
-    "totalBytes": 2916851
+    "totalBytes": 3558816
    },
    "zdtd": {
     "count": 120,
@@ -217,7 +217,7 @@
      "c_-20_34.zch": 262416,
      "c_-21_19.zch": 336144
     },
-    "totalBytes": 34877440
+    "totalBytes": 34876144
    }
   },
   "telnet": {
@@ -225,24 +225,27 @@
     "banner": {
      "Difficulty": "1",
      "Game mode": "GameModeSurvival",
-     "Game name": "PlaytestNav",
-     "Max players": "8",
-     "Server IP": "Any",
+     "Game name": "join-probe_stock",
+     "Max players": "64",
+     "Server IP": "118.189.191.239",
      "Server port": "26900",
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": null,
+    "clockRateGameMinPerRealSec": 0.35,
     "day": [
      "1",
      "07",
      "00"
     ],
     "entities": {
-     "alive": 0,
-     "count": 0,
+     "alive": 7,
+     "count": 7,
      "dead": 0,
-     "types": {}
+     "types": {
+      "EntityPlayer": 1,
+      "EntityZombie": 6
+     }
     },
     "gamestats": {
      "AirDropFrequency": "3",
@@ -257,7 +260,7 @@
      "BlockDamageAI": "100",
      "BlockDamageAIBM": "100",
      "BlockDamagePlayer": "100",
-     "BloodMoonDay": "0",
+     "BloodMoonDay": "7",
      "BloodMoonEnemyCount": "8",
      "BloodMoonWarning": "1",
      "CameraRestrictionMode": "0",
@@ -270,7 +273,7 @@
      "DeathPenalty": "1",
      "DropOnDeath": "1",
      "DropOnQuit": "0",
-     "EnemyCount": "0",
+     "EnemyCount": "5",
      "EnemyDifficulty": "1",
      "EnemySpawnMode": "True",
      "FragLimitActive": "False",
@@ -280,8 +283,8 @@
      "GameState": "1",
      "GlobalGSModifier": "100",
      "GlobalLSModifier": "100",
-     "IsCreativeMenuEnabled": "True",
-     "IsFlyingEnabled": "True",
+     "IsCreativeMenuEnabled": "False",
+     "IsFlyingEnabled": "False",
      "IsPlayerCollisionEnabled": "True",
      "IsPlayerDamageEnabled": "True",
      "IsResetMapOnRestart": "False",
@@ -320,8 +323,13 @@
      "ZombieHordeMeter": "True"
     },
     "players": {
-     "count": 0,
-     "rows": []
+     "count": 1,
+     "rows": [
+      {
+       "id": 177,
+       "name": "EntityPlayer"
+      }
+     ]
     },
     "reportedTotal": null,
     "unknownCommands": []
@@ -337,11 +345,11 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.3684,
+    "clockRateGameMinPerRealSec": 0.4,
     "day": [
      "1",
      "07",
-     "06"
+     "03"
     ],
     "entities": {
      "alive": 11,
@@ -397,7 +405,7 @@
      "count": 1,
      "rows": [
       {
-       "id": 113,
+       "id": 112,
        "name": "REFake1"
       }
      ]
@@ -409,14 +417,9 @@
  },
  "compared": true,
  "findings": [
-  "join: PASS count differs (stock=0 zdtd=1)",
-  "join: FAIL count differs (stock=8 zdtd=0)",
-  "join: stock had zero PASS joins",
-  "log: EXC (exception) line count differs (stock=2 zdtd=0)",
-  "telnet: game day/time differs between servers (clock-rate check unavailable)",
-  "telnet: entity count differs (stock=0 zdtd=11)",
-  "telnet: player count differs (stock=0 zdtd=1)",
-  "gamestats: 1 shared stat(s) differ (BloodMoonDay: 0 vs 7)"
+  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+  "telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)",
+  "telnet: entity count differs (stock=7 zdtd=11)"
  ],
  "scenario": "join-probe"
 }

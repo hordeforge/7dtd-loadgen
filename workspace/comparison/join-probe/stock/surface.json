@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T06:32:33.8801404Z] [join#1] PASS joined entity=177 walks=1047 jumps=134 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T06:32:33.8801404Z] [join#1] PASS joined entity=177 walks=1047 jumps=134 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -10,7 +10,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-probe_stock, GameModeSurvival"
   },
-  "exec": 16,
+  "exec": 15,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,8 +88,8 @@
   },
   "severity": {
    "EXC": 3,
-   "INF": 377,
-   "WRN": 13
+   "INF": 373,
+   "WRN": 12
   },
   "telnetCloseErrors": 8
  },
@@ -101,31 +101,31 @@
    "timeoutMs": "60000"
   },
   "loadgen": {
-   "dirtyFiles": "9",
-   "git": "3771f57"
+   "dirtyFiles": "3",
+   "git": "041ba78"
   },
   "scenario": "join-probe",
-  "startedAt": "2026-08-12T06:32:34Z",
+  "startedAt": "2026-08-12T08:19:56Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "9",
-   "git": "761f037"
+   "dirtyFiles": "18",
+   "git": "6d25107"
   }
  },
  "saves": {
   "count": 9,
   "files": {
-   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1495040,
-   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
-   "Navezgane/join-probe_stock/blockmappings.nim": 26331,
+   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1499136,
+   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 724992,
+   "Navezgane/join-probe_stock/blockmappings.nim": 26257,
    "Navezgane/join-probe_stock/decoration.7dt": 1282876,
-   "Navezgane/join-probe_stock/itemmappings.nim": 67,
+   "Navezgane/join-probe_stock/itemmappings.nim": 69,
    "Navezgane/join-probe_stock/main.ttw": 11002,
    "Navezgane/join-probe_stock/main.ttw.bak": 10390,
    "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-probe_stock/multiblocks.7dt": 3847
+   "Navezgane/join-probe_stock/multiblocks.7dt": 3830
   },
-  "totalBytes": 3550713
+  "totalBytes": 3558816
  },
  "sut": "stock",
  "telnet": {
@@ -180,7 +180,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "6",
+   "EnemyCount": "5",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",
