@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: join-fast
 
-- stock: ran 2026-08-12T13:54:41Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
-- zdtd: ran 2026-08-12T13:55:19Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
+- stock: ran 2026-08-12T15:04:25Z | loadgen 911c7e9 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
+- zdtd: ran 2026-08-12T15:05:03Z | loadgen 911c7e9 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
 
 ## Join outcome
 
@@ -9,14 +9,14 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T13:55:16.3022276Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T15:04:12.6386583Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T15:05:00.3325427Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
 | EXC lines | 4 | 0 |
-| INF lines | 342 | 56 |
+| INF lines | 343 | 56 |
 | WRN lines | 15 | 2 |
 | telnet commands | 9 | n/a |
 - stock: 4 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
@@ -55,6 +55,19 @@ Boot evidence per side:
 | World | Navezgane | Navezgane |
 | Game name | join-fast_stock | stock |
 | Difficulty | 1 | 1 |
+
+## stock APM (7dtd-apm capture window; no zdtd equivalent format)
+
+- session: session_20260812_150352_pid3928586
+- lag verdict: server met its tick deadline this window
+- layer scores: cpu=55.0, io=10.0, memory_cache=40.0, runtime_gc=40.0, scheduler=25.0, sync_locks=0.0
+- app_sim: reason=collector produced no usable evidence
+- cpu: cycles=78425137193.0, instructions=117529829228.0, ipc=1.499, main_thread_cpu_pct=40.3, main_thread_share_of_process=0.751
+- io: main_thread_slow_io=0, slow_block_lines=0
+- memory_cache: cache_miss_rate=0.1426, cache_misses=386433307.0, cache_references=2710693051.0, fd_growth=-14, rss_growth_mb_per_s=-8.825
+- runtime_gc: collect_a_little_hits=49520, slow_gc_lines=0, stw_pause_count=3, stw_pause_total_ms=27.2, stw_pause_worst_ms=10.2
+- scheduler: blocks_over_10ms=549, disk_block_ms=38.5, disk_block_share=0.0013, main_runq_stall_events=0, main_runq_stall_ms=0, main_thread_offcpu_ms=17528.1, note=off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks
+- sync_locks: main_thread_futex_wait_ms=102.7, main_thread_futex_wait_share=0.0034, scope=main_thread, slow_futex_lines=0, slow_futex_per_second=0.0, threshold_ms=5
 
 ## Gamestats (compared on shared names)
 
@@ -101,7 +114,7 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 10 file(s), 3032 KiB
+- stock: 10 file(s), 3072 KiB
 - zdtd: 117 file(s), 32562 KiB
 - stock keys: Navezgane/join-fast_stock/Region/r.-1.0.7rg, Navezgane/join-fast_stock/Region/r.-1.1.7rg, Navezgane/join-fast_stock/Region/r.0.0.7rg, Navezgane/join-fast_stock/blockmappings.nim, Navezgane/join-fast_stock/decoration.7dt, Navezgane/join-fast_stock/itemmappings.nim, Navezgane/join-fast_stock/main.ttw, Navezgane/join-fast_stock/main.ttw.bak
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch

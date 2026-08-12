@@ -1,9 +1,10 @@
 {
  "apm": null,
+ "apmStock": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T13:57:05.3893910Z] [join#1] PASS joined entity=112 walks=240 jumps=32 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T13:57:05.3893910Z] [join#1] PASS joined entity=112 walks=240 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T15:06:57.1851497Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T15:06:57.1851497Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -31,10 +32,10 @@
   },
   "loadgen": {
    "dirtyFiles": "30",
-   "git": "36e1639"
+   "git": "911c7e9"
   },
   "scenario": "probe-15s",
-  "startedAt": "2026-08-12T13:57:13Z",
+  "startedAt": "2026-08-12T15:07:05Z",
   "sut": "zdtd",
   "zdtd": {
    "dirtyFiles": "12",
@@ -139,7 +140,7 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.4211,
+  "clockRateGameMinPerRealSec": 0.4,
   "day": [
    "1",
    "07",

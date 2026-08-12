@@ -1,9 +1,68 @@
 {
  "apm": null,
+ "apmStock": {
+  "lagVerdict": "server met its tick deadline this window",
+  "layers": {
+   "cpu": 55.0,
+   "io": 10.0,
+   "memory_cache": 40.0,
+   "runtime_gc": 40.0,
+   "scheduler": 25.0,
+   "sync_locks": 0.0
+  },
+  "session": "session_20260812_145945_pid3917793",
+  "signals": {
+   "app_sim": {
+    "reason": "collector produced no usable evidence"
+   },
+   "cpu": {
+    "cycles": 90985574722.0,
+    "instructions": 143151030231.0,
+    "ipc": 1.573,
+    "main_thread_cpu_pct": 42.2,
+    "main_thread_share_of_process": 0.666
+   },
+   "io": {
+    "main_thread_slow_io": 0,
+    "slow_block_lines": 0
+   },
+   "memory_cache": {
+    "cache_miss_rate": 0.1482,
+    "cache_misses": 447251383.0,
+    "cache_references": 3017608534.0,
+    "fd_growth": -14,
+    "rss_growth_mb_per_s": -24.552
+   },
+   "runtime_gc": {
+    "collect_a_little_hits": 52026,
+    "slow_gc_lines": 0,
+    "stw_pause_count": 2,
+    "stw_pause_total_ms": 19.9,
+    "stw_pause_worst_ms": 8.1
+   },
+   "scheduler": {
+    "blocks_over_10ms": 544,
+    "disk_block_ms": 79.5,
+    "disk_block_share": 0.0026,
+    "main_runq_stall_events": 0,
+    "main_runq_stall_ms": 0,
+    "main_thread_offcpu_ms": 16872.1,
+    "note": "off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks"
+   },
+   "sync_locks": {
+    "main_thread_futex_wait_ms": 88.3,
+    "main_thread_futex_wait_share": 0.0029,
+    "scope": "main_thread",
+    "slow_futex_lines": 0,
+    "slow_futex_per_second": 0.0,
+    "threshold_ms": 5
+   }
+  }
+ },
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T13:51:37.2844379Z] [join#2] PASS joined entity=178 walks=1608 jumps=180 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T13:51:37.2902547Z] [join#1] PASS joined entity=177 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T15:01:15.6447592Z] [join#2] PASS joined entity=177 walks=1609 jumps=181 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T15:01:15.6544296Z] [join#1] PASS joined entity=178 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
   "pass": 2
  },
  "log": {
@@ -11,7 +70,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), wander-2bot_stock, GameModeSurvival"
   },
-  "exec": 26,
+  "exec": 18,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,11 +147,11 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 5,
-   "INF": 464,
-   "WRN": 18
+   "EXC": 6,
+   "INF": 441,
+   "WRN": 19
   },
-  "telnetCloseErrors": 10
+  "telnetCloseErrors": 12
  },
  "meta": {
   "client": {
@@ -105,11 +164,11 @@
    "timeoutMs": "90000"
   },
   "loadgen": {
-   "dirtyFiles": "11",
-   "git": "36e1639"
+   "dirtyFiles": "27",
+   "git": "911c7e9"
   },
   "scenario": "wander-2bot",
-  "startedAt": "2026-08-12T13:51:37Z",
+  "startedAt": "2026-08-12T15:01:15Z",
   "sut": "stock",
   "zdtd": {
    "dirtyFiles": "12",
@@ -119,21 +178,21 @@
  "saves": {
   "count": 13,
   "files": {
-   "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1454080,
-   "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 749568,
-   "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 172032,
-   "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 188416,
-   "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 290816,
-   "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 335872,
-   "Navezgane/wander-2bot_stock/blockmappings.nim": 39612,
-   "Navezgane/wander-2bot_stock/decoration.7dt": 1286582,
-   "Navezgane/wander-2bot_stock/itemmappings.nim": 50,
-   "Navezgane/wander-2bot_stock/main.ttw": 41706,
-   "Navezgane/wander-2bot_stock/main.ttw.bak": 41706,
+   "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1437696,
+   "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 1019904,
+   "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
+   "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
+   "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
+   "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
+   "Navezgane/wander-2bot_stock/blockmappings.nim": 31716,
+   "Navezgane/wander-2bot_stock/decoration.7dt": 1286429,
+   "Navezgane/wander-2bot_stock/itemmappings.nim": 77,
+   "Navezgane/wander-2bot_stock/main.ttw": 35020,
+   "Navezgane/wander-2bot_stock/main.ttw.bak": 35020,
    "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
-   "Navezgane/wander-2bot_stock/multiblocks.7dt": 9797
+   "Navezgane/wander-2bot_stock/multiblocks.7dt": 4663
   },
-  "totalBytes": 4610501
+  "totalBytes": 4575781
  },
  "sut": "stock",
  "telnet": {
@@ -147,16 +206,16 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.35,
+  "clockRateGameMinPerRealSec": 0.3333,
   "day": [
    "1",
    "07",
    "00"
   ],
   "entities": {
-   "alive": 8,
+   "alive": 7,
    "count": 8,
-   "dead": 0,
+   "dead": 1,
    "types": {
     "EntityPlayer": 2,
     "EntityZombie": 6
@@ -188,7 +247,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "6",
+   "EnemyCount": "5",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",

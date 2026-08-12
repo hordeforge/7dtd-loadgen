@@ -3,19 +3,20 @@
   "chunk_flush_written": 0,
   "join_fail": 0,
   "join_ok": 1,
-  "net_packets_in": 1265,
-  "net_packets_out": 3833,
+  "net_packets_in": 1258,
+  "net_packets_out": 3820,
   "phase_rejects": 0,
-  "tickMaxNs": 713409276,
-  "tickMeanNs": 2010792,
+  "tickMaxNs": 658771072,
+  "tickMeanNs": 1859327,
   "tickP99Ns": 25165824,
   "tick_overruns": 3,
   "ticks": 1200
  },
+ "apmStock": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -43,10 +44,10 @@
   },
   "loadgen": {
    "dirtyFiles": "38",
-   "git": "36e1639"
+   "git": "911c7e9"
   },
   "scenario": "horde-lite",
-  "startedAt": "2026-08-12T14:00:40Z",
+  "startedAt": "2026-08-12T15:10:37Z",
   "sut": "zdtd",
   "zdtd": {
    "dirtyFiles": "12",

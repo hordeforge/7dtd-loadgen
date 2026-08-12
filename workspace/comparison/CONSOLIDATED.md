@@ -16,7 +16,7 @@ Regenerated from committed per-run evidence (loadgen diff.json, playtest playtes
 | loadgen | probe-15s | DELTAS | ran | ran | n/a | 3 |
 | loadgen | probe-5s | DELTAS | ran | ran | n/a | 4 |
 | loadgen | soak-4bot | DELTAS | ran | ran | n/a | 2 |
-| loadgen | wander-2bot | DELTAS | ran | ran | n/a | 3 |
+| loadgen | wander-2bot | DELTAS | ran | ran | n/a | 2 |
 | playtest | bench | CLEAN | 82/0/0 | 82/0/0 | 157.1 / 128.0 | 0 |
 | playtest | combat | DELTAS | 9/1/0 | 9/1/0 | n/a / n/a | 2 |
 | playtest | core | CLEAN | 18/0/0 | 18/0/0 | n/a / n/a | 0 |
@@ -29,9 +29,9 @@ Regenerated from committed per-run evidence (loadgen diff.json, playtest playtes
 
 ## loadgen/horde-lite - DELTAS
 
-- finding: log: EXC (exception) line count differs (stock=4 zdtd=0)
+- finding: log: EXC (exception) line count differs (stock=3 zdtd=0)
 - finding: telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)
-- finding: telnet: entity count differs (stock=12 zdtd=11)
+- finding: telnet: entity count differs (stock=19 zdtd=11)
 
 ## loadgen/join-fast - DELTAS
 
@@ -63,13 +63,13 @@ Regenerated from committed per-run evidence (loadgen diff.json, playtest playtes
 ## loadgen/join-probe - DELTAS
 
 - finding: log: EXC (exception) line count differs (stock=3 zdtd=0)
-- finding: telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)
+- finding: telnet: game-clock rate differs (stock=0.35 zdtd=0.4211; 60-min day = 0.4)
 - finding: telnet: entity count differs (stock=7 zdtd=11)
 
 ## loadgen/probe-15s - DELTAS
 
 - finding: log: EXC (exception) line count differs (stock=3 zdtd=0)
-- finding: telnet: game-clock rate differs (stock=0.2381 zdtd=0.4211; 60-min day = 0.4)
+- finding: telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)
 - finding: telnet: entity count differs (stock=7 zdtd=11)
 
 ## loadgen/probe-5s - DELTAS
@@ -86,8 +86,7 @@ Regenerated from committed per-run evidence (loadgen diff.json, playtest playtes
 
 ## loadgen/wander-2bot - DELTAS
 
-- finding: log: EXC (exception) line count differs (stock=5 zdtd=0)
-- finding: telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)
+- finding: log: EXC (exception) line count differs (stock=6 zdtd=0)
 - finding: telnet: entity count differs (stock=8 zdtd=12)
 
 ## playtest/combat - DELTAS

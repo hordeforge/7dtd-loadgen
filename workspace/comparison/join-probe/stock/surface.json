@@ -4,54 +4,54 @@
   "lagVerdict": "server met its tick deadline this window",
   "layers": {
    "cpu": 55.0,
-   "io": 15.0,
+   "io": 10.0,
    "memory_cache": 40.0,
    "runtime_gc": 40.0,
    "scheduler": 25.0,
    "sync_locks": 0.0
   },
-  "session": "session_20260812_143425_pid3895093",
+  "session": "session_20260812_145638_pid3913195",
   "signals": {
    "app_sim": {
     "reason": "collector produced no usable evidence"
    },
    "cpu": {
-    "cycles": 85856340966.0,
-    "instructions": 126503212413.0,
-    "ipc": 1.473,
-    "main_thread_cpu_pct": 44.1,
-    "main_thread_share_of_process": 0.699
+    "cycles": 82232541275.0,
+    "instructions": 126820569776.0,
+    "ipc": 1.542,
+    "main_thread_cpu_pct": 40.6,
+    "main_thread_share_of_process": 0.698
    },
    "io": {
     "main_thread_slow_io": 0,
-    "slow_block_lines": 1
+    "slow_block_lines": 0
    },
    "memory_cache": {
-    "cache_miss_rate": 0.1487,
-    "cache_misses": 432462968.0,
-    "cache_references": 2908006586.0,
-    "fd_growth": -7,
-    "rss_growth_mb_per_s": -3.686
+    "cache_miss_rate": 0.1431,
+    "cache_misses": 403403694.0,
+    "cache_references": 2819718947.0,
+    "fd_growth": -13,
+    "rss_growth_mb_per_s": 3.792
    },
    "runtime_gc": {
-    "collect_a_little_hits": 53554,
+    "collect_a_little_hits": 51164,
     "slow_gc_lines": 0,
-    "stw_pause_count": 3,
-    "stw_pause_total_ms": 27.8,
-    "stw_pause_worst_ms": 7.8
+    "stw_pause_count": 2,
+    "stw_pause_total_ms": 18.1,
+    "stw_pause_worst_ms": 7.2
    },
    "scheduler": {
-    "blocks_over_10ms": 543,
-    "disk_block_ms": 58.6,
-    "disk_block_share": 0.002,
+    "blocks_over_10ms": 549,
+    "disk_block_ms": 66.3,
+    "disk_block_share": 0.0022,
     "main_runq_stall_events": 0,
     "main_runq_stall_ms": 0,
-    "main_thread_offcpu_ms": 16270.6,
+    "main_thread_offcpu_ms": 17489.6,
     "note": "off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks"
    },
    "sync_locks": {
-    "main_thread_futex_wait_ms": 114.7,
-    "main_thread_futex_wait_share": 0.0038,
+    "main_thread_futex_wait_ms": 146.2,
+    "main_thread_futex_wait_share": 0.0049,
     "scope": "main_thread",
     "slow_futex_lines": 0,
     "slow_futex_per_second": 0.0,
@@ -61,8 +61,8 @@
  },
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T14:35:26.3342832Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T14:35:26.3342832Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T14:57:39.0411262Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T14:57:39.0411262Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -148,10 +148,10 @@
   },
   "severity": {
    "EXC": 3,
-   "INF": 370,
+   "INF": 373,
    "WRN": 12
   },
-  "telnetCloseErrors": 6
+  "telnetCloseErrors": 8
  },
  "meta": {
   "client": {
@@ -164,11 +164,11 @@
    "timeoutMs": "60000"
   },
   "loadgen": {
-   "dirtyFiles": "4",
-   "git": "cb80add"
+   "dirtyFiles": "27",
+   "git": "911c7e9"
   },
   "scenario": "join-probe",
-  "startedAt": "2026-08-12T14:35:26Z",
+  "startedAt": "2026-08-12T14:57:39Z",
   "sut": "stock",
   "zdtd": {
    "dirtyFiles": "12",
@@ -178,17 +178,17 @@
  "saves": {
   "count": 9,
   "files": {
-   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1458176,
+   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1462272,
    "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
-   "Navezgane/join-probe_stock/blockmappings.nim": 23082,
-   "Navezgane/join-probe_stock/decoration.7dt": 1282876,
-   "Navezgane/join-probe_stock/itemmappings.nim": 30,
-   "Navezgane/join-probe_stock/main.ttw": 11002,
-   "Navezgane/join-probe_stock/main.ttw.bak": 10390,
+   "Navezgane/join-probe_stock/blockmappings.nim": 26187,
+   "Navezgane/join-probe_stock/decoration.7dt": 1282893,
+   "Navezgane/join-probe_stock/itemmappings.nim": 53,
+   "Navezgane/join-probe_stock/main.ttw": 11703,
+   "Navezgane/join-probe_stock/main.ttw.bak": 11091,
    "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-probe_stock/multiblocks.7dt": 3932
+   "Navezgane/join-probe_stock/multiblocks.7dt": 3881
   },
-  "totalBytes": 3510648
+  "totalBytes": 3519240
  },
  "sut": "stock",
  "telnet": {
@@ -202,7 +202,7 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.3333,
+  "clockRateGameMinPerRealSec": 0.35,
   "day": [
    "1",
    "07",

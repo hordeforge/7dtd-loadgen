@@ -2,9 +2,9 @@
  {
   "compared": true,
   "findings": [
-   "log: EXC (exception) line count differs (stock=4 zdtd=0)",
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
    "telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)",
-   "telnet: entity count differs (stock=12 zdtd=11)"
+   "telnet: entity count differs (stock=19 zdtd=11)"
   ],
   "id": "horde-lite",
   "missing": null,
@@ -76,7 +76,7 @@
   "compared": true,
   "findings": [
    "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-   "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: game-clock rate differs (stock=0.35 zdtd=0.4211; 60-min day = 0.4)",
    "telnet: entity count differs (stock=7 zdtd=11)"
   ],
   "id": "join-probe",
@@ -90,7 +90,7 @@
   "compared": true,
   "findings": [
    "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-   "telnet: game-clock rate differs (stock=0.2381 zdtd=0.4211; 60-min day = 0.4)",
+   "telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)",
    "telnet: entity count differs (stock=7 zdtd=11)"
   ],
   "id": "probe-15s",
@@ -131,8 +131,7 @@
  {
   "compared": true,
   "findings": [
-   "log: EXC (exception) line count differs (stock=5 zdtd=0)",
-   "telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)",
+   "log: EXC (exception) line count differs (stock=6 zdtd=0)",
    "telnet: entity count differs (stock=8 zdtd=12)"
   ],
   "id": "wander-2bot",

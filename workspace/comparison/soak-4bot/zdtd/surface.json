@@ -3,19 +3,20 @@
   "chunk_flush_written": 0,
   "join_fail": 0,
   "join_ok": 4,
-  "net_packets_in": 27178,
-  "net_packets_out": 194104,
+  "net_packets_in": 28297,
+  "net_packets_out": 196456,
   "phase_rejects": 0,
-  "tickMaxNs": 2659242762,
-  "tickMeanNs": 4403183,
+  "tickMaxNs": 2940290453,
+  "tickMeanNs": 4385824,
   "tickP99Ns": 50331648,
-  "tick_overruns": 115,
+  "tick_overruns": 96,
   "ticks": 6000
  },
+ "apmStock": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T14:11:50.7536955Z] [join#1] PASS joined entity=113 walks=5050 jumps=644 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T14:11:50.7880807Z] [join#3] PASS joined entity=112 walks=5045 jumps=629 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T15:21:43.2310991Z] [join#3] PASS joined entity=113 walks=5216 jumps=642 deaths=1 respawns=1 lastDied=False l",
+  "lastPass": "[2026-08-12T15:21:43.2529976Z] [join#1] PASS joined entity=115 walks=5236 jumps=614 deaths=1 respawns=1 lastDied=False l",
   "pass": 3
  },
  "log": {
@@ -27,7 +28,7 @@
    "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/soak-4bot/zdtd/world"
   },
   "severity": {
-   "INF": 84,
+   "INF": 88,
    "WRN": 2
   }
  },
@@ -43,10 +44,10 @@
   },
   "loadgen": {
    "dirtyFiles": "46",
-   "git": "36e1639"
+   "git": "911c7e9"
   },
   "scenario": "soak-4bot",
-  "startedAt": "2026-08-12T14:11:51Z",
+  "startedAt": "2026-08-12T15:21:43Z",
   "sut": "zdtd",
   "zdtd": {
    "dirtyFiles": "12",
@@ -54,10 +55,10 @@
   }
  },
  "saves": {
-  "count": 123,
+  "count": 122,
   "files": {
    "allies.zal": 6,
-   "blockmeta.zbm": 52,
+   "blockmeta.zbm": 32,
    "c_-12_28.zch": 262416,
    "c_-12_30.zch": 262416,
    "c_-12_31.zch": 262416,
@@ -137,7 +138,7 @@
    "c_-20_30.zch": 262416,
    "c_-20_32.zch": 262416
   },
-  "totalBytes": 36262724
+  "totalBytes": 35402272
  },
  "sut": "zdtd",
  "telnet": {
@@ -151,11 +152,11 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.3684,
+  "clockRateGameMinPerRealSec": 0.35,
   "day": [
    "1",
    "07",
-   "09"
+   "04"
   ],
   "entities": {
    "alive": 14,
@@ -211,20 +212,20 @@
    "count": 4,
    "rows": [
     {
+     "id": 114,
+     "name": "REFake2"
+    },
+    {
      "id": 113,
-     "name": "REFake1"
-    },
-    {
-     "id": 115,
-     "name": "REFake4"
-    },
-    {
-     "id": 112,
      "name": "REFake3"
     },
     {
-     "id": 114,
-     "name": "REFake2"
+     "id": 115,
+     "name": "REFake1"
+    },
+    {
+     "id": 112,
+     "name": "REFake4"
     }
    ]
   },

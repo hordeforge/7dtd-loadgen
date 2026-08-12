@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T13:51:37.2844379Z] [join#2] PASS joined entity=178 walks=1608 jumps=180 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T13:51:37.2902547Z] [join#1] PASS joined entity=177 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T15:01:15.6447592Z] [join#2] PASS joined entity=177 walks=1609 jumps=181 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T15:01:15.6544296Z] [join#1] PASS joined entity=178 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
     "pass": 2
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T13:53:22.8675054Z] [join#2] PASS joined entity=112 walks=1571 jumps=175 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T13:53:22.8790687Z] [join#1] PASS joined entity=113 walks=1533 jumps=191 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T15:03:01.2071845Z] [join#1] PASS joined entity=112 walks=1561 jumps=193 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T15:03:01.2116076Z] [join#2] PASS joined entity=113 walks=1594 jumps=178 deaths=0 respawns=0 lastDied=False l",
     "pass": 2
    }
   },
@@ -20,7 +20,7 @@
      "StartGame done": "StartGame done",
      "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), wander-2bot_stock, GameModeSurvival"
     },
-    "exec": 26,
+    "exec": 18,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -97,11 +97,11 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 5,
-     "INF": 464,
-     "WRN": 18
+     "EXC": 6,
+     "INF": 441,
+     "WRN": 19
     },
-    "telnetCloseErrors": 10
+    "telnetCloseErrors": 12
    },
    "zdtd": {
     "boot": {
@@ -121,21 +121,21 @@
    "stock": {
     "count": 13,
     "files": {
-     "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1454080,
-     "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 749568,
-     "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 172032,
-     "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 188416,
-     "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 290816,
-     "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 335872,
-     "Navezgane/wander-2bot_stock/blockmappings.nim": 39612,
-     "Navezgane/wander-2bot_stock/decoration.7dt": 1286582,
-     "Navezgane/wander-2bot_stock/itemmappings.nim": 50,
-     "Navezgane/wander-2bot_stock/main.ttw": 41706,
-     "Navezgane/wander-2bot_stock/main.ttw.bak": 41706,
+     "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1437696,
+     "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 1019904,
+     "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
+     "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
+     "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
+     "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
+     "Navezgane/wander-2bot_stock/blockmappings.nim": 31716,
+     "Navezgane/wander-2bot_stock/decoration.7dt": 1286429,
+     "Navezgane/wander-2bot_stock/itemmappings.nim": 77,
+     "Navezgane/wander-2bot_stock/main.ttw": 35020,
+     "Navezgane/wander-2bot_stock/main.ttw.bak": 35020,
      "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
-     "Navezgane/wander-2bot_stock/multiblocks.7dt": 9797
+     "Navezgane/wander-2bot_stock/multiblocks.7dt": 4663
     },
-    "totalBytes": 4610501
+    "totalBytes": 4575781
    },
    "zdtd": {
     "count": 120,
@@ -236,16 +236,16 @@
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.35,
+    "clockRateGameMinPerRealSec": 0.3333,
     "day": [
      "1",
      "07",
      "00"
     ],
     "entities": {
-     "alive": 8,
+     "alive": 7,
      "count": 8,
-     "dead": 0,
+     "dead": 1,
      "types": {
       "EntityPlayer": 2,
       "EntityZombie": 6
@@ -277,7 +277,7 @@
      "DeathPenalty": "1",
      "DropOnDeath": "1",
      "DropOnQuit": "0",
-     "EnemyCount": "6",
+     "EnemyCount": "5",
      "EnemyDifficulty": "1",
      "EnemySpawnMode": "True",
      "FragLimitActive": "False",
@@ -353,7 +353,7 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.4,
+    "clockRateGameMinPerRealSec": 0.35,
     "day": [
      "1",
      "07",
@@ -414,11 +414,11 @@
      "rows": [
       {
        "id": 112,
-       "name": "REFake2"
+       "name": "REFake1"
       },
       {
        "id": 113,
-       "name": "REFake1"
+       "name": "REFake2"
       }
      ]
     },
@@ -429,8 +429,7 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=5 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)",
+  "log: EXC (exception) line count differs (stock=6 zdtd=0)",
   "telnet: entity count differs (stock=8 zdtd=12)"
  ],
  "scenario": "wander-2bot"

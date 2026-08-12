@@ -1,9 +1,68 @@
 {
  "apm": null,
+ "apmStock": {
+  "lagVerdict": "server met its tick deadline this window",
+  "layers": {
+   "cpu": 55.0,
+   "io": 10.0,
+   "memory_cache": 40.0,
+   "runtime_gc": 40.0,
+   "scheduler": 25.0,
+   "sync_locks": 0.0
+  },
+  "session": "session_20260812_150840_pid3935239",
+  "signals": {
+   "app_sim": {
+    "reason": "collector produced no usable evidence"
+   },
+   "cpu": {
+    "cycles": 66946087447.0,
+    "instructions": 90302466451.0,
+    "ipc": 1.349,
+    "main_thread_cpu_pct": 39.0,
+    "main_thread_share_of_process": 0.816
+   },
+   "io": {
+    "main_thread_slow_io": 0,
+    "slow_block_lines": 0
+   },
+   "memory_cache": {
+    "cache_miss_rate": 0.1383,
+    "cache_misses": 344651438.0,
+    "cache_references": 2491897456.0,
+    "fd_growth": -8,
+    "rss_growth_mb_per_s": -6.964
+   },
+   "runtime_gc": {
+    "collect_a_little_hits": 2518,
+    "slow_gc_lines": 0,
+    "stw_pause_count": 1,
+    "stw_pause_total_ms": 8.1,
+    "stw_pause_worst_ms": 6.3
+   },
+   "scheduler": {
+    "blocks_over_10ms": 540,
+    "disk_block_ms": 122.5,
+    "disk_block_share": 0.0041,
+    "main_runq_stall_events": 0,
+    "main_runq_stall_ms": 0,
+    "main_thread_offcpu_ms": 18100.7,
+    "note": "off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks"
+   },
+   "sync_locks": {
+    "main_thread_futex_wait_ms": 66.1,
+    "main_thread_futex_wait_share": 0.0022,
+    "scope": "main_thread",
+    "slow_futex_lines": 0,
+    "slow_futex_per_second": 0.0,
+    "threshold_ms": 5
+   }
+  }
+ },
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T13:59:08.9568927Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T13:59:08.9568927Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T15:08:56.4245366Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T15:08:56.4245366Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -11,7 +70,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), horde-lite_stock, GameModeSurvival"
   },
-  "exec": 16,
+  "exec": 24,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,11 +147,11 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 4,
-   "INF": 376,
-   "WRN": 15
+   "EXC": 3,
+   "INF": 369,
+   "WRN": 16
   },
-  "telnetCloseErrors": 10
+  "telnetCloseErrors": 8
  },
  "meta": {
   "client": {
@@ -106,10 +165,10 @@
   },
   "loadgen": {
    "dirtyFiles": "35",
-   "git": "36e1639"
+   "git": "911c7e9"
   },
   "scenario": "horde-lite",
-  "startedAt": "2026-08-12T13:59:16Z",
+  "startedAt": "2026-08-12T15:09:13Z",
   "sut": "stock",
   "zdtd": {
    "dirtyFiles": "12",
@@ -117,20 +176,19 @@
   }
  },
  "saves": {
-  "count": 10,
+  "count": 9,
   "files": {
    "Navezgane/horde-lite_stock/Region/r.-1.0.7rg": 610304,
    "Navezgane/horde-lite_stock/Region/r.-1.1.7rg": 159744,
-   "Navezgane/horde-lite_stock/Region/r.0.0.7rg": 1441792,
-   "Navezgane/horde-lite_stock/blockmappings.nim": 9871,
-   "Navezgane/horde-lite_stock/decoration.7dt": 1287381,
-   "Navezgane/horde-lite_stock/itemmappings.nim": 46,
-   "Navezgane/horde-lite_stock/main.ttw": 4451,
-   "Navezgane/horde-lite_stock/main.ttw.bak": 3839,
+   "Navezgane/horde-lite_stock/blockmappings.nim": 4196,
+   "Navezgane/horde-lite_stock/decoration.7dt": 1287347,
+   "Navezgane/horde-lite_stock/itemmappings.nim": 8,
+   "Navezgane/horde-lite_stock/main.ttw": 1585,
+   "Navezgane/horde-lite_stock/main.ttw.bak": 1585,
    "Navezgane/horde-lite_stock/main.ttw.ext.bak": 264,
-   "Navezgane/horde-lite_stock/multiblocks.7dt": 1093
+   "Navezgane/horde-lite_stock/multiblocks.7dt": 940
   },
-  "totalBytes": 3518785
+  "totalBytes": 2065973
  },
  "sut": "stock",
  "telnet": {
@@ -151,20 +209,19 @@
    "16"
   ],
   "entities": {
-   "alive": 12,
-   "count": 12,
-   "dead": 0,
+   "alive": 18,
+   "count": 19,
+   "dead": 1,
    "types": {
-    "EntityAnimalRabbit": 2,
     "EntityPlayer": 1,
-    "EntityZombie": 9
+    "EntityZombie": 18
    }
   },
   "gamestats": {
    "AirDropFrequency": "3",
    "AirDropMarker": "True",
    "AllowedViewDistance": "6",
-   "AnimalCount": "1",
+   "AnimalCount": "0",
    "AutoParty": "False",
    "BedrollExpiryTime": "45",
    "BiomeGSModifier": "100",
@@ -186,7 +243,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "9",
+   "EnemyCount": "14",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",

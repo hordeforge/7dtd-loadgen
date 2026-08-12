@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: wander-2bot
 
-- stock: ran 2026-08-12T13:51:37Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=2 actions=0 timeout=90000ms
-- zdtd: ran 2026-08-12T13:53:23Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=2 actions=0 timeout=90000ms
+- stock: ran 2026-08-12T15:01:15Z | loadgen 911c7e9 (dirty) | zdtd b362a79 (dirty) | client count=2 actions=0 timeout=90000ms
+- zdtd: ran 2026-08-12T15:03:01Z | loadgen 911c7e9 (dirty) | zdtd b362a79 (dirty) | client count=2 actions=0 timeout=90000ms
 
 ## Join outcome
 
@@ -9,18 +9,18 @@
 |---|---|---|
 | PASS joined | 2 | 2 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T13:51:37.2844379Z] [join#2] PASS joined entity=178 w` | `[2026-08-12T13:53:22.8675054Z] [join#2] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T15:01:15.6447592Z] [join#2] PASS joined entity=177 w` | `[2026-08-12T15:03:01.2071845Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
-| EXC lines | 5 | 0 |
-| INF lines | 464 | 63 |
-| WRN lines | 18 | 2 |
-| telnet commands | 26 | n/a |
-- stock: 10 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
-- stock ERR/EXC lines: ERR=0 EXC=5
+| EXC lines | 6 | 0 |
+| INF lines | 441 | 63 |
+| WRN lines | 19 | 2 |
+| telnet commands | 18 | n/a |
+- stock: 12 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
+- stock ERR/EXC lines: ERR=0 EXC=6
 
 Boot evidence per side:
 - `stock.StartGame done` = `StartGame done`
@@ -35,12 +35,12 @@ Boot evidence per side:
 
 - stock day/time: Day 1, 07:00
 - zdtd day/time: Day 1, 07:04
-- clock rate (game-min per real-sec): stock=0.35 zdtd=0.4 (60-min day = 0.4)
+- clock rate (game-min per real-sec): stock=0.3333 zdtd=0.35 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
 | entities total | 8 | 12 |
-| entities alive | 8 | 12 |
+| entities alive | 7 | 12 |
 | players | 2 | 2 |
 - stock entity types: EntityPlayer=2, EntityZombie=6
 - zdtd entity types: animal=1, player=2, trader=6, turret=1, vehicle=1, zombie=1
@@ -61,11 +61,24 @@ Boot evidence per side:
 - ticks: 1200
 - join_ok: 2
 - join_fail: 0
-- net_packets_in: 2441
-- net_packets_out: 12006
-- tick_overruns: 11
+- net_packets_in: 2490
+- net_packets_out: 12274
+- tick_overruns: 14
 - phase_rejects: 0
-- tick mean/p99/max ns: 3398592 / 50331648 / 1044435059
+- tick mean/p99/max ns: 3371231 / 50331648 / 1416400522
+
+## stock APM (7dtd-apm capture window; no zdtd equivalent format)
+
+- session: session_20260812_145945_pid3917793
+- lag verdict: server met its tick deadline this window
+- layer scores: cpu=55.0, io=10.0, memory_cache=40.0, runtime_gc=40.0, scheduler=25.0, sync_locks=0.0
+- app_sim: reason=collector produced no usable evidence
+- cpu: cycles=90985574722.0, instructions=143151030231.0, ipc=1.573, main_thread_cpu_pct=42.2, main_thread_share_of_process=0.666
+- io: main_thread_slow_io=0, slow_block_lines=0
+- memory_cache: cache_miss_rate=0.1482, cache_misses=447251383.0, cache_references=3017608534.0, fd_growth=-14, rss_growth_mb_per_s=-24.552
+- runtime_gc: collect_a_little_hits=52026, slow_gc_lines=0, stw_pause_count=2, stw_pause_total_ms=19.9, stw_pause_worst_ms=8.1
+- scheduler: blocks_over_10ms=544, disk_block_ms=79.5, disk_block_share=0.0026, main_runq_stall_events=0, main_runq_stall_ms=0, main_thread_offcpu_ms=16872.1, note=off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks
+- sync_locks: main_thread_futex_wait_ms=88.3, main_thread_futex_wait_share=0.0029, scope=main_thread, slow_futex_lines=0, slow_futex_per_second=0.0, threshold_ms=5
 
 ## Gamestats (compared on shared names)
 
@@ -112,15 +125,14 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 13 file(s), 4502 KiB
+- stock: 13 file(s), 4469 KiB
 - zdtd: 120 file(s), 34060 KiB
 - stock keys: Navezgane/wander-2bot_stock/Region/r.0.0.7rg, Navezgane/wander-2bot_stock/Region/r.0.1.7rg, Navezgane/wander-2bot_stock/Region/r.1.0.7rg, Navezgane/wander-2bot_stock/Region/r.1.1.7rg, Navezgane/wander-2bot_stock/Region/r.2.0.7rg, Navezgane/wander-2bot_stock/Region/r.2.1.7rg, Navezgane/wander-2bot_stock/blockmappings.nim, Navezgane/wander-2bot_stock/decoration.7dt
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch
 
 ## Findings
 
-- log: EXC (exception) line count differs (stock=5 zdtd=0)
-- telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)
+- log: EXC (exception) line count differs (stock=6 zdtd=0)
 - telnet: entity count differs (stock=8 zdtd=12)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

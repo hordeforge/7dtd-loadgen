@@ -342,16 +342,19 @@ EOF
 
   # Run metadata (auditability: what was under test, when, with which knobs).
   # The capture embeds this into surface.json, so a REPORT.md/diff.json always
-  # names the exact loadgen + zdtd revisions it compared.
+  # names the exact loadgen + zdtd revisions it compared. hostLoad lets a
+  # reader judge whether cost numbers (wall, APM) were taken under contention.
   LOADGEN_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   LOADGEN_DIRTY="$(git -C "$ROOT" status --porcelain 2>/dev/null | wc -l)"
   ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" status --porcelain 2>/dev/null | wc -l)"
+  HOST_LOAD="$(cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo unknown)"
   cat >"$run_dir/run-meta.json" <<EOF
 {
   "scenario": "$SCENARIO_ID",
   "sut": "$sut",
   "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "hostLoad": "$HOST_LOAD",
   "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST",
              "spawnEntity": "$SPAWN_ENTITY", "spawnPerPlayer": "$SPAWN_PER_PLAYER", "spawnEveryMs": "$SPAWN_EVERY_MS"},
   "loadgen": {"git": "$LOADGEN_GIT", "dirtyFiles": "$LOADGEN_DIRTY"},
