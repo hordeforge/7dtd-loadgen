@@ -128,7 +128,8 @@ one server the report says NOT COMPARED; it is never reported as compared on
 one side's data alone.
 
 Details, axis definitions, status semantics and current findings:
-[`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md).
+[`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md). Running the real stock client
+against a test server without Steam: [`docs/STOCK_AUTH.md`](docs/STOCK_AUTH.md).
 
 ## Layout
 

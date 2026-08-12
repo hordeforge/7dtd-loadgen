@@ -1,0 +1,73 @@
+# Stock auth model and the no-Steam test-server question
+
+How the stock dedicated validates joins, and the two ways to run the real
+stock client against a test server without valid Steam auth. RE ground truth:
+`../7dtd-research/docs/platform-auth.md` (authorizer chain, Steam/EOS/Local
+platforms). This doc is the operational decision for the harness.
+
+## How join auth works (stock V3.1.0)
+
+A joining player carries a platform identity + auth ticket
+(`PlatformUserIdentifierAbs` + token in the login package). The server runs a
+reflection-discovered **authorizer chain**; each authorizer either passes
+(SyncAllow / WaitAsync -> async callback), fails (SyncDeny -> kick), or is
+skipped (platform mismatch or `AuthorizerActive == false`):
+
+- Steam: `NativePlatformAuthorizer` -> `AuthenticationServer.AuthenticateUser`
+  -> `SteamGameServer.BeginAuthSession(ticket)`; the verdict is the async
+  `ValidateAuthTicketResponse`. Invalid ticket -> kick
+  (`EKickReason.PlatformAuthenticationFailed`, the client shows "Platform auth
+  failed: InvalidTicket"). There is **no stock serverconfig that deactivates
+  this authorizer** (unlike EAC, which `EACEnabled=false` disables).
+- EAC: skipped when `EACEnabled=false` (our test servers).
+- EOS cross-play: `CrossplatformAuthorizer` runs only when cross-play is on.
+
+`Platform.Local` and `Platform.LAN` are first-class platforms with their own
+factories and (for Local) trivial auth: **no ticket**. The stock dedicated with
+`serverplatforms=Steam,LAN,Local,` accepts Local clients without any mod - the
+loadgen bots do this every run (`PltfmId='Local_REFake1'`).
+
+## The problem
+
+The real stock client is a Steam-platform client (its own `platform.cfg` says
+`platform=Steam, crossplatform=EOS`). It presents a Steam ticket; the server
+must validate it via Steamworks. When Steam's session is offline/stale, the
+ticket is invalid and the client is kicked. Observed live 2026-08-12:
+`[NET] Kicked from server: Platform auth failed: InvalidTicket` at 15:19,
+recovered at 15:22 once a synthetic-auth bypass was active.
+
+## Option A: Local/LAN client (no server mod, no Steam)
+
+The server already accepts Local clients. If the **client's** `platform.cfg`
+selects Local (and EOS crossplay off), the client initializes `Platform.Local`
+and joins as `Local_<name>` - no ticket, no Steam dependency, exactly the
+fully-local-network model.
+
+- Unverified live: does the game honor `platform=Local` in its own
+  `platform.cfg`, and does Steam DRM still gate launch? (The server honors the
+  file; the client side is untested in this workspace.)
+- Identity changes `Steam_...` -> `Local_...`; player records/saves key off it
+  (fine for disposable test servers).
+- Cleanest architecture if it works: zero mods, zero Steam.
+
+## Option B: server-side Steam-auth bypass mod
+
+A Harmony patch on the server's Steam auth
+(`AuthenticationServer.AuthenticateUser`) that auto-passes loopback/synthetic
+SteamIds (`7dtd-bot` ships this: `Patch_SteamAuthServer_SyntheticBypass`; the
+parallel FPS-bot session runs it, log line `[BotMod] synthetic auth bypass for
+SteamId=...`).
+
+- Keeps the client 100 % stock (Steam identity, tickets attempted but not
+  validated).
+- It is a mod on the dedicated (extra moving part); the generic authorizer
+  bypass was found too broad and narrowed to the concrete Steam auth server
+  patch.
+
+## Decision
+
+Try Option A first: flip the client `platform.cfg` to `platform=Local,
+crossplatform=None` and join the stock dedicated (watch the `[Auth]` lines for
+`Local_<name>`). If the client refuses Local mode, Option B (the bypass mod) is
+the fallback. The loadgen bots already ride the Local path, so the harness
+itself never needs either option.
