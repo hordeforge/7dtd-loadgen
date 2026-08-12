@@ -32,5 +32,11 @@
   "spawnEveryMs": 15000,
   "snapshotDelayMs": 45000,
   "note": "spawn pressure: 4 zombies/player every 15s; snapshot late to capture the pile-up"
+ },
+ "soak-4bot": {
+  "count": 4,
+  "actions": 0,
+  "timeoutMs": 300000,
+  "note": "sustained multi-bot: 4 bots wander 5 min (stability/leak axis)"
  }
 }
