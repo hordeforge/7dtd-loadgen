@@ -110,3 +110,17 @@ playtest-compare (via CLIENT_PLATFORM=local; reports in ../7dtd-playtest/workspa
 - persist: zdtd-only fails persist_setup_blockmeta, persist_setup_te (persistence gaps).
 - soak_long: zdtd player dies ~12s (seeded zombies near spawn kill the fresh
   player); stock survived 900s.
+
+## World matrix (2026-08-12, make compare-worlds)
+
+| World | stock join | zdtd join | zdtd C2S payload Overflow |
+|---|---|---|---|
+| Navezgane | 1/1 | 1/1 | 0 |
+| Pregen06k01 | 1/1 | **0/1 (join fails)** | 1 |
+| Pregen06k02 | 1/1 | 1/1 | 1 (recovered) |
+| Pregen08k01 | 1/1 | 1/1 | 1 (recovered) |
+| Pregen08k02 | 1/1 | 1/1 | 1 (recovered) |
+| RWG | n/a | unsupported (missing capability) | - |
+
+Signature: the Overflow fires on every pregen (1/join); only Pregen06k01
+breaks the join. Reproducible zdtd defect, in loadgen TODO.
