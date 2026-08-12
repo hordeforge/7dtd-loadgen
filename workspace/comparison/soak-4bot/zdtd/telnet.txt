@@ -1,4 +1,4 @@
-# ts=2026-08-12T12:02:46Z cmd=gettime
+# ts=2026-08-12T14:07:07Z cmd=gettime
 *** Connected with 7DTD server.
 *** Server version: V 3.1.0 Compatibility Version: V3.1.0 b14
 
@@ -12,8 +12,8 @@ Difficulty:  1
 
 Press 'help' to get a list of all commands. Press 
 
-Day 1, 07:07
-# ts=2026-08-12T12:02:48Z cmd=getgamestat
+Day 1, 07:09
+# ts=2026-08-12T14:07:09Z cmd=getgamestat
 GameStat.GameState = 1
 GameStat.GameDifficulty = 1
 GameStat.BloodMoonEnemyCount = 8
@@ -51,27 +51,27 @@ GameStat.LandClaimOfflineDelay = 0
 GameStat.JarRefund = 60
 GameStat.SandboxPreset = 
 GameStat.SandboxCode = 
-# ts=2026-08-12T12:02:50Z cmd=listents
+# ts=2026-08-12T14:07:11Z cmd=listents
 0. id=100, trader, pos=(976.0, 67.0, -1529.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
 1. id=101, trader, pos=(-931.0, 76.0, 1762.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
 2. id=102, trader, pos=(204.0, 77.0, -136.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
 3. id=103, trader, pos=(-1568.0, 71.0, -1184.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
 4. id=104, trader, pos=(459.0, 62.0, 655.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
-5. id=112, player, pos=(-293.5, 60.0, 448.5), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
-6. id=113, player, pos=(-260.0, 60.0, 451.7), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+5. id=112, player, pos=(-264.9, 60.0, 449.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+6. id=113, player, pos=(-256.8, 60.0, 444.4), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
 7. id=107, zombie, pos=(-243.0, 61.0, 409.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
-8. id=108, animal, pos=(-288.8, 61.0, 424.6), rot=(0.0, 19.6, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+8. id=108, animal, pos=(-288.5, 61.0, 424.7), rot=(0.0, 178.4, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
 9. id=109, trader, pos=(-261.0, 61.0, 457.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
 10. id=110, vehicle, pos=(-267.0, 61.0, 445.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
 11. id=111, turret, pos=(-221.0, 61.0, 501.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=150
-12. id=114, player, pos=(-282.9, 60.0, 437.4), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
-13. id=115, player, pos=(-261.2, 60.0, 441.2), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+12. id=114, player, pos=(-285.9, 60.0, 445.2), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+13. id=115, player, pos=(-281.2, 60.0, 436.6), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
 Total of 14 in the game
-# ts=2026-08-12T12:02:52Z cmd=listplayers
-0. id=112, REFake2, pos=(-292.4, 60.0, 454.9), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
-1. id=115, REFake3, pos=(-255.9, 60.0, 436.5), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
-2. id=114, REFake4, pos=(-278.5, 60.0, 430.5), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
-3. id=113, REFake1, pos=(-256.9, 60.0, 445.0), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+# ts=2026-08-12T14:07:13Z cmd=listplayers
+0. id=113, REFake1, pos=(-256.7, 60.0, 435.2), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+1. id=115, REFake4, pos=(-277.6, 60.0, 427.7), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+2. id=112, REFake3, pos=(-261.0, 60.0, 440.4), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+3. id=114, REFake2, pos=(-293.8, 60.0, 448.8), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
 Total of 4 in the game
-# ts=2026-08-12T12:03:06Z cmd=gettime
-Day 1, 07:14
+# ts=2026-08-12T14:07:26Z cmd=gettime
+Day 1, 07:16

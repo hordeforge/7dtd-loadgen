@@ -3,19 +3,19 @@
   "chunk_flush_written": 0,
   "join_fail": 0,
   "join_ok": 1,
-  "net_packets_in": 1257,
-  "net_packets_out": 3804,
+  "net_packets_in": 1265,
+  "net_packets_out": 3833,
   "phase_rejects": 0,
-  "tickMaxNs": 757474544,
-  "tickMeanNs": 2513768,
-  "tickP99Ns": 50331648,
-  "tick_overruns": 9,
+  "tickMaxNs": 713409276,
+  "tickMeanNs": 2010792,
+  "tickP99Ns": 25165824,
+  "tick_overruns": 3,
   "ticks": 1200
  },
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T11:56:16.6524450Z] [join#1] PASS joined entity=112 walks=1044 jumps=133 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T11:56:16.6524450Z] [join#1] PASS joined entity=112 walks=1044 jumps=133 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -43,14 +43,14 @@
   },
   "loadgen": {
    "dirtyFiles": "38",
-   "git": "e36a954"
+   "git": "36e1639"
   },
   "scenario": "horde-lite",
-  "startedAt": "2026-08-12T11:56:24Z",
+  "startedAt": "2026-08-12T14:00:40Z",
   "sut": "zdtd",
   "zdtd": {
    "dirtyFiles": "12",
-   "git": "edd9e16"
+   "git": "b362a79"
   }
  },
  "saves": {
@@ -151,7 +151,7 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.4211,
+  "clockRateGameMinPerRealSec": 0.4,
   "day": [
    "1",
    "07",

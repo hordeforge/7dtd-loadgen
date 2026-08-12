@@ -2,8 +2,8 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T12:02:15.9027945Z] [join#3] PASS joined entity=177 walks=5353 jumps=665 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T12:02:15.9262658Z] [join#1] PASS joined entity=179 walks=5322 jumps=674 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T14:06:35.1535216Z] [join#1] PASS joined entity=180 walks=5322 jumps=674 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T14:06:35.1640726Z] [join#2] PASS joined entity=177 walks=5416 jumps=614 deaths=0 respawns=0 lastDied=False l",
   "pass": 3
  },
  "log": {
@@ -11,7 +11,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), soak-4bot_stock, GameModeSurvival"
   },
-  "exec": 81,
+  "exec": 94,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,11 +88,11 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 13,
-   "INF": 717,
-   "WRN": 44
+   "EXC": 12,
+   "INF": 746,
+   "WRN": 43
   },
-  "telnetCloseErrors": 34
+  "telnetCloseErrors": 30
  },
  "meta": {
   "client": {
@@ -106,38 +106,38 @@
   },
   "loadgen": {
    "dirtyFiles": "43",
-   "git": "e36a954"
+   "git": "36e1639"
   },
   "scenario": "soak-4bot",
-  "startedAt": "2026-08-12T12:02:17Z",
+  "startedAt": "2026-08-12T14:06:35Z",
   "sut": "stock",
   "zdtd": {
    "dirtyFiles": "12",
-   "git": "edd9e16"
+   "git": "b362a79"
   }
  },
  "saves": {
   "count": 17,
   "files": {
-   "Navezgane/soak-4bot_stock/Region/r.0.0.7rg": 2211840,
-   "Navezgane/soak-4bot_stock/Region/r.0.1.7rg": 1265664,
-   "Navezgane/soak-4bot_stock/Region/r.1.0.7rg": 114688,
-   "Navezgane/soak-4bot_stock/Region/r.1.1.7rg": 135168,
+   "Navezgane/soak-4bot_stock/Region/r.0.0.7rg": 1904640,
+   "Navezgane/soak-4bot_stock/Region/r.0.1.7rg": 1032192,
+   "Navezgane/soak-4bot_stock/Region/r.1.0.7rg": 155648,
+   "Navezgane/soak-4bot_stock/Region/r.1.1.7rg": 167936,
    "Navezgane/soak-4bot_stock/Region/r.2.0.7rg": 217088,
    "Navezgane/soak-4bot_stock/Region/r.2.1.7rg": 249856,
-   "Navezgane/soak-4bot_stock/blockmappings.nim": 31695,
-   "Navezgane/soak-4bot_stock/decoration.7dt": 1285732,
+   "Navezgane/soak-4bot_stock/blockmappings.nim": 33046,
+   "Navezgane/soak-4bot_stock/decoration.7dt": 1285783,
    "Navezgane/soak-4bot_stock/drones.dat.bak": 9,
    "Navezgane/soak-4bot_stock/itemmappings.nim": 71,
    "Navezgane/soak-4bot_stock/main.ttw": 36484,
    "Navezgane/soak-4bot_stock/main.ttw.bak": 36484,
    "Navezgane/soak-4bot_stock/main.ttw.ext.bak": 264,
-   "Navezgane/soak-4bot_stock/multiblocks.7dt": 5122,
+   "Navezgane/soak-4bot_stock/multiblocks.7dt": 4323,
    "Navezgane/soak-4bot_stock/power.dat.bak": 5,
    "Navezgane/soak-4bot_stock/turrets.dat.bak": 9,
    "Navezgane/soak-4bot_stock/vehicles.dat.bak": 9
   },
-  "totalBytes": 5590188
+  "totalBytes": 5123847
  },
  "sut": "stock",
  "telnet": {
@@ -159,10 +159,9 @@
   ],
   "entities": {
    "alive": 10,
-   "count": 11,
-   "dead": 1,
+   "count": 10,
+   "dead": 0,
    "types": {
-    "EntityAnimalRabbit": 1,
     "EntityPlayer": 4,
     "EntityZombie": 6
    }
@@ -193,7 +192,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "6",
+   "EnemyCount": "5",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",

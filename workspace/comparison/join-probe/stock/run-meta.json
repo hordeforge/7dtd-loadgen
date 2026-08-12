@@ -1,9 +1,9 @@
 {
   "scenario": "join-probe",
   "sut": "stock",
-  "startedAt": "2026-08-12T11:43:25Z",
+  "startedAt": "2026-08-12T13:47:56Z",
   "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1",
              "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
-  "loadgen": {"git": "e36a954", "dirtyFiles": "3"},
-  "zdtd": {"git": "edd9e16", "dirtyFiles": "18"}
+  "loadgen": {"git": "36e1639", "dirtyFiles": "3"},
+  "zdtd": {"git": "b362a79", "dirtyFiles": "12"}
 }

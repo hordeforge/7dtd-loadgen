@@ -2,8 +2,8 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T12:26:44.2365048Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T12:26:44.2365048Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -88,9 +88,9 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 3,
+   "EXC": 4,
    "INF": 342,
-   "WRN": 12
+   "WRN": 15
   },
   "telnetCloseErrors": 4
  },
@@ -105,15 +105,15 @@
    "timeoutMs": "20000"
   },
   "loadgen": {
-   "dirtyFiles": "5",
-   "git": "0ce2bd1"
+   "dirtyFiles": "19",
+   "git": "36e1639"
   },
   "scenario": "join-fast",
-  "startedAt": "2026-08-12T12:26:46Z",
+  "startedAt": "2026-08-12T13:54:41Z",
   "sut": "stock",
   "zdtd": {
    "dirtyFiles": "12",
-   "git": "edd9e16"
+   "git": "b362a79"
   }
  },
  "saves": {
@@ -122,7 +122,7 @@
    "Navezgane/join-fast_stock/Region/r.-1.0.7rg": 593920,
    "Navezgane/join-fast_stock/Region/r.-1.1.7rg": 163840,
    "Navezgane/join-fast_stock/Region/r.0.0.7rg": 1044480,
-   "Navezgane/join-fast_stock/blockmappings.nim": 8649,
+   "Navezgane/join-fast_stock/blockmappings.nim": 8971,
    "Navezgane/join-fast_stock/decoration.7dt": 1288486,
    "Navezgane/join-fast_stock/itemmappings.nim": 30,
    "Navezgane/join-fast_stock/main.ttw": 3839,
@@ -130,7 +130,7 @@
    "Navezgane/join-fast_stock/main.ttw.ext.bak": 264,
    "Navezgane/join-fast_stock/multiblocks.7dt": 1042
   },
-  "totalBytes": 3104814
+  "totalBytes": 3105136
  },
  "sut": "stock",
  "telnet": {
@@ -144,7 +144,7 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.35,
+  "clockRateGameMinPerRealSec": 0.3333,
   "day": [
    "1",
    "07",

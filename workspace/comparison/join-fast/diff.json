@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T12:26:44.2365048Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
-    "lastPass": "[2026-08-12T12:26:44.2365048Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
+    "firstPass": "[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
+    "lastPass": "[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
     "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T12:27:22.2138899Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
-    "lastPass": "[2026-08-12T12:27:22.2138899Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
+    "firstPass": "[2026-08-12T13:55:16.3022276Z] [join#1] PASS joined entity=112 walks=331 jumps=44 deaths=0 respawns=0 lastDied=False las",
+    "lastPass": "[2026-08-12T13:55:16.3022276Z] [join#1] PASS joined entity=112 walks=331 jumps=44 deaths=0 respawns=0 lastDied=False las",
     "pass": 1
    }
   },
@@ -97,9 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 3,
+     "EXC": 4,
      "INF": 342,
-     "WRN": 12
+     "WRN": 15
     },
     "telnetCloseErrors": 4
    },
@@ -124,7 +124,7 @@
      "Navezgane/join-fast_stock/Region/r.-1.0.7rg": 593920,
      "Navezgane/join-fast_stock/Region/r.-1.1.7rg": 163840,
      "Navezgane/join-fast_stock/Region/r.0.0.7rg": 1044480,
-     "Navezgane/join-fast_stock/blockmappings.nim": 8649,
+     "Navezgane/join-fast_stock/blockmappings.nim": 8971,
      "Navezgane/join-fast_stock/decoration.7dt": 1288486,
      "Navezgane/join-fast_stock/itemmappings.nim": 30,
      "Navezgane/join-fast_stock/main.ttw": 3839,
@@ -132,7 +132,7 @@
      "Navezgane/join-fast_stock/main.ttw.ext.bak": 264,
      "Navezgane/join-fast_stock/multiblocks.7dt": 1042
     },
-    "totalBytes": 3104814
+    "totalBytes": 3105136
    },
    "zdtd": {
     "count": 117,
@@ -233,7 +233,7 @@
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.35,
+    "clockRateGameMinPerRealSec": 0.3333,
     "day": [
      "1",
      "07",
@@ -418,8 +418,8 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)",
+  "log: EXC (exception) line count differs (stock=4 zdtd=0)",
+  "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
   "telnet: entity count differs (stock=7 zdtd=11)"
  ],
  "scenario": "join-fast"

@@ -2,8 +2,8 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T11:52:55.5626002Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T11:52:55.5626002Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T13:57:05.3893910Z] [join#1] PASS joined entity=112 walks=240 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T13:57:05.3893910Z] [join#1] PASS joined entity=112 walks=240 jumps=32 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -15,7 +15,7 @@
    "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/probe-15s/zdtd/world"
   },
   "severity": {
-   "INF": 55,
+   "INF": 56,
    "WRN": 2
   }
  },
@@ -31,14 +31,14 @@
   },
   "loadgen": {
    "dirtyFiles": "30",
-   "git": "e36a954"
+   "git": "36e1639"
   },
   "scenario": "probe-15s",
-  "startedAt": "2026-08-12T11:53:03Z",
+  "startedAt": "2026-08-12T13:57:13Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "10",
-   "git": "edd9e16"
+   "dirtyFiles": "12",
+   "git": "b362a79"
   }
  },
  "saves": {

@@ -2,8 +2,8 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T11:52:17.9994791Z] [join#1] PASS joined entity=177 walks=242 jumps=32 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T11:52:17.9994791Z] [join#1] PASS joined entity=177 walks=242 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T13:56:27.8491420Z] [join#1] PASS joined entity=177 walks=245 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T13:56:27.8491420Z] [join#1] PASS joined entity=177 walks=245 jumps=32 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -88,9 +88,9 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 4,
-   "INF": 342,
-   "WRN": 17
+   "EXC": 3,
+   "INF": 341,
+   "WRN": 12
   },
   "telnetCloseErrors": 4
  },
@@ -106,29 +106,30 @@
   },
   "loadgen": {
    "dirtyFiles": "27",
-   "git": "e36a954"
+   "git": "36e1639"
   },
   "scenario": "probe-15s",
-  "startedAt": "2026-08-12T11:52:25Z",
+  "startedAt": "2026-08-12T13:56:35Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "10",
-   "git": "edd9e16"
+   "dirtyFiles": "12",
+   "git": "b362a79"
   }
  },
  "saves": {
-  "count": 8,
+  "count": 9,
   "files": {
    "Navezgane/probe-15s_stock/Region/r.0.0.7rg": 970752,
-   "Navezgane/probe-15s_stock/Region/r.0.1.7rg": 749568,
-   "Navezgane/probe-15s_stock/blockmappings.nim": 11801,
-   "Navezgane/probe-15s_stock/itemmappings.nim": 67,
+   "Navezgane/probe-15s_stock/Region/r.0.1.7rg": 745472,
+   "Navezgane/probe-15s_stock/blockmappings.nim": 12128,
+   "Navezgane/probe-15s_stock/decoration.7dt": 1282570,
+   "Navezgane/probe-15s_stock/itemmappings.nim": 75,
    "Navezgane/probe-15s_stock/main.ttw": 4210,
    "Navezgane/probe-15s_stock/main.ttw.bak": 264,
    "Navezgane/probe-15s_stock/main.ttw.ext.bak": 264,
    "Navezgane/probe-15s_stock/multiblocks.7dt": 1178
   },
-  "totalBytes": 1738104
+  "totalBytes": 3016913
  },
  "sut": "stock",
  "telnet": {
@@ -142,7 +143,7 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.25,
+  "clockRateGameMinPerRealSec": 0.2381,
   "day": [
    "1",
    "07",

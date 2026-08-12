@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: join-fast
 
-- stock: ran 2026-08-12T12:26:46Z | loadgen 0ce2bd1 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
-- zdtd: ran 2026-08-12T12:27:25Z | loadgen 0ce2bd1 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
+- stock: ran 2026-08-12T13:54:41Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
+- zdtd: ran 2026-08-12T13:55:19Z | loadgen 36e1639 (dirty) | zdtd b362a79 (dirty) | client count=1 actions=0 timeout=20000ms
 
 ## Join outcome
 
@@ -9,18 +9,18 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T12:26:44.2365048Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T12:27:22.2138899Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T13:54:38.3884415Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T13:55:16.3022276Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
-| EXC lines | 3 | 0 |
+| EXC lines | 4 | 0 |
 | INF lines | 342 | 56 |
-| WRN lines | 12 | 2 |
+| WRN lines | 15 | 2 |
 | telnet commands | 9 | n/a |
 - stock: 4 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
-- stock ERR/EXC lines: ERR=0 EXC=3
+- stock ERR/EXC lines: ERR=0 EXC=4
 
 Boot evidence per side:
 - `stock.StartGame done` = `StartGame done`
@@ -35,7 +35,7 @@ Boot evidence per side:
 
 - stock day/time: Day 1, 07:00
 - zdtd day/time: Day 1, 07:03
-- clock rate (game-min per real-sec): stock=0.35 zdtd=0.4 (60-min day = 0.4)
+- clock rate (game-min per real-sec): stock=0.3333 zdtd=0.4 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
@@ -108,8 +108,8 @@ Boot evidence per side:
 
 ## Findings
 
-- log: EXC (exception) line count differs (stock=3 zdtd=0)
-- telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)
+- log: EXC (exception) line count differs (stock=4 zdtd=0)
+- telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)
 - telnet: entity count differs (stock=7 zdtd=11)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

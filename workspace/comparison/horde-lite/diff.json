@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T11:54:55.7203265Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T11:54:55.7203265Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T13:59:08.9568927Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T13:59:08.9568927Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T11:56:16.6524450Z] [join#1] PASS joined entity=112 walks=1044 jumps=133 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T11:56:16.6524450Z] [join#1] PASS joined entity=112 walks=1044 jumps=133 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T14:00:32.1187897Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    }
   },
@@ -97,9 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 3,
-     "INF": 375,
-     "WRN": 12
+     "EXC": 4,
+     "INF": 376,
+     "WRN": 15
     },
     "telnetCloseErrors": 10
    },
@@ -124,15 +124,15 @@
      "Navezgane/horde-lite_stock/Region/r.-1.0.7rg": 610304,
      "Navezgane/horde-lite_stock/Region/r.-1.1.7rg": 159744,
      "Navezgane/horde-lite_stock/Region/r.0.0.7rg": 1441792,
-     "Navezgane/horde-lite_stock/blockmappings.nim": 13408,
+     "Navezgane/horde-lite_stock/blockmappings.nim": 9871,
      "Navezgane/horde-lite_stock/decoration.7dt": 1287381,
-     "Navezgane/horde-lite_stock/itemmappings.nim": 56,
+     "Navezgane/horde-lite_stock/itemmappings.nim": 46,
      "Navezgane/horde-lite_stock/main.ttw": 4451,
      "Navezgane/horde-lite_stock/main.ttw.bak": 3839,
      "Navezgane/horde-lite_stock/main.ttw.ext.bak": 264,
-     "Navezgane/horde-lite_stock/multiblocks.7dt": 1110
+     "Navezgane/horde-lite_stock/multiblocks.7dt": 1093
     },
-    "totalBytes": 3522349
+    "totalBytes": 3518785
    },
    "zdtd": {
     "count": 120,
@@ -240,10 +240,11 @@
      "16"
     ],
     "entities": {
-     "alive": 10,
-     "count": 10,
+     "alive": 12,
+     "count": 12,
      "dead": 0,
      "types": {
+      "EntityAnimalRabbit": 2,
       "EntityPlayer": 1,
       "EntityZombie": 9
      }
@@ -252,7 +253,7 @@
      "AirDropFrequency": "3",
      "AirDropMarker": "True",
      "AllowedViewDistance": "6",
-     "AnimalCount": "0",
+     "AnimalCount": "1",
      "AutoParty": "False",
      "BedrollExpiryTime": "45",
      "BiomeGSModifier": "100",
@@ -346,7 +347,7 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.4211,
+    "clockRateGameMinPerRealSec": 0.4,
     "day": [
      "1",
      "07",
@@ -418,9 +419,9 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.25 zdtd=0.4211; 60-min day = 0.4)",
-  "telnet: entity count differs (stock=10 zdtd=11)"
+  "log: EXC (exception) line count differs (stock=4 zdtd=0)",
+  "telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)",
+  "telnet: entity count differs (stock=12 zdtd=11)"
  ],
  "scenario": "horde-lite"
 }
