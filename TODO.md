@@ -190,3 +190,6 @@ record, and documentation of any protocol-version restriction.
 - [ ] Triage soak_long zdtd fail: seeded ambient zombies near spawn kill the
   player in ~12s (stock soak survived 900s). Ambient-seed divergence manifest.
   Fix likely in zdtd init_world seeding or the soak's spawn handling.
+- [ ] Triage horde-lite: stock accumulates spawned zombies (7->11 at late
+  snapshot); zdtd listents stays at ambient 11 - the loadgen spawn pressure is
+  not listents-visible on zdtd (spawn mechanism or zdtd spawn handling).
