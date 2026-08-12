@@ -165,6 +165,10 @@ def test_full_comparison_pipeline(tmp_path):
     assert "loadgen abc1234" in report
     assert "zdtd def5678 (dirty)" in report
     assert "compared" in report.lower() or "findings" in report.lower()
+    # A trailing slash must not empty the scenario name (regression guard).
+    r2 = _py([str(TOOLS / "sut_report.py"), str(tmp_path / "scenario") + os.sep])
+    assert r2.returncode == 0, r2.stderr
+    assert "# Stock-vs-zdtd comparison: scenario" in r2.stdout
     diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
     assert diff["compared"] is True
     assert any(f.startswith("telnet: entity count differs") for f in diff["findings"])

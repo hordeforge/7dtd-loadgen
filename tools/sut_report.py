@@ -46,7 +46,7 @@ def main():
         print(__doc__, file=sys.stderr)
         return 2
     out_dir = sys.argv[1]
-    scenario = os.path.basename(out_dir)
+    scenario = os.path.basename(os.path.normpath(out_dir))
     stock = load(os.path.join(out_dir, "stock"))
     zdtd = load(os.path.join(out_dir, "zdtd"))
     if stock is None and zdtd is None:
