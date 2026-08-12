@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut
+.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all
 
 help:
 	@echo "7dtd-loadgen"
@@ -108,5 +108,15 @@ research-save-check:
 # report. Needs the sibling zdtd repo (ZDTD_ROOT) + a stock install.
 #   make compare-sut            # join-probe on both servers (default)
 #   SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
+#   make compare-list           # scenario ids from scripts/scenarios/sut.json
+#   make compare-all            # every catalog scenario on both servers
 compare-sut:
 	bash scripts/compare_sut.sh --scenario "${SCENARIO:-join-probe}" --sut "${SUT:-all}"
+
+compare-list:
+	bash scripts/compare_sut.sh --list
+
+compare-all:
+	bash scripts/compare_sut.sh --list | while read -r id; do \
+		bash scripts/compare_sut.sh --scenario "$$id" --sut all || exit 1; \
+	done

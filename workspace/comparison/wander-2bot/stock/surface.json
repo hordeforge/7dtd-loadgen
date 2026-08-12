@@ -1,0 +1,177 @@
+{
+ "join": {
+  "fail": 0,
+  "firstPass": "[2026-08-12T05:22:31.1283119Z] [join#2] PASS joined entity=172 walks=1608 jumps=180 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T05:22:31.1283120Z] [join#1] PASS joined entity=171 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
+  "pass": 2
+ },
+ "log": {
+  "boot": {
+   "StartGame done": "StartGame done",
+   "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), wander-2bot_stock, GameModeSurvival"
+  },
+  "exec": 25,
+  "gamestats": {
+   "AirDropFrequency": "0",
+   "AirDropMarker": "True",
+   "AllowedViewDistance": "12",
+   "AnimalCount": "0",
+   "AutoParty": "False",
+   "BedrollExpiryTime": "45",
+   "BiomeGSModifier": "100",
+   "BiomeLSModifier": "100",
+   "BiomeProgression": "True",
+   "BlockDamageAI": "100",
+   "BlockDamageAIBM": "100",
+   "BlockDamagePlayer": "100",
+   "BloodMoonDay": "0",
+   "BloodMoonEnemyCount": "8",
+   "BloodMoonWarning": "8",
+   "CameraRestrictionMode": "0",
+   "ChunkStabilityEnabled": "True",
+   "CurrentRoundIx": "0",
+   "DayLightLength": "18",
+   "DayLimitActive": "False",
+   "DayLimitThisRound": "0",
+   "DayNightLength": "60",
+   "DeathPenalty": "XPOnly",
+   "DropOnDeath": "1",
+   "DropOnQuit": "0",
+   "EnemyCount": "0",
+   "EnemyDifficulty": "Normal",
+   "EnemySpawnMode": "True",
+   "FragLimitActive": "False",
+   "FragLimitThisRound": "0",
+   "GameDifficulty": "2",
+   "GameModeId": "0",
+   "GameState": "0",
+   "GlobalGSModifier": "100",
+   "GlobalLSModifier": "100",
+   "IsCreativeMenuEnabled": "False",
+   "IsFlyingEnabled": "False",
+   "IsPlayerCollisionEnabled": "True",
+   "IsPlayerDamageEnabled": "True",
+   "IsResetMapOnRestart": "False",
+   "IsSaveSupplyCrates": "True",
+   "IsSpawnEnemies": "True",
+   "IsSpawnNearOtherPlayer": "False",
+   "IsTeleportEnabled": "False",
+   "IsVersionCheckDone": "False",
+   "JarRefund": "60",
+   "LandClaimCount": "5",
+   "LandClaimDeadZone": "30",
+   "LandClaimDecayMode": "0",
+   "LandClaimExpiryTime": "3",
+   "LandClaimOfflineDelay": "0",
+   "LandClaimOfflineDurabilityModifier": "32",
+   "LandClaimOnlineDurabilityModifier": "32",
+   "LandClaimSize": "41",
+   "LootAbundance": "100",
+   "LootRespawnDays": "7",
+   "OptionsPOICulling": "0",
+   "PartySharedKillRange": "100",
+   "PlayerKillingMode": "KillStrangersOnly",
+   "QuestProgressionDailyLimit": "4",
+   "ScoreDiedMultiplier": "-5",
+   "ScorePlayerKillMultiplier": "1",
+   "ScoreZombieKillMultiplier": "1",
+   "ShowAllPlayersOnMap": "False",
+   "ShowFriendPlayerOnMap": "True",
+   "ShowSpawnWindow": "False",
+   "StormFreq": "0",
+   "TimeLimitActive": "False",
+   "TimeLimitThisRound": "0",
+   "TimeOfDayIncPerSec": "20",
+   "TwitchBloodMoonAllowed": "True",
+   "XPMultiplier": "100",
+   "ZombieHordeMeter": "False"
+  },
+  "severity": {
+   "EXC": 6,
+   "INF": 439,
+   "WRN": 22
+  },
+  "telnetCloseErrors": 10
+ },
+ "meta": {
+  "client": {
+   "actions": "0",
+   "count": "2",
+   "host": "127.0.0.1",
+   "timeoutMs": "90000"
+  },
+  "loadgen": {
+   "dirtyFiles": "4",
+   "git": "8cdc5e2"
+  },
+  "scenario": "wander-2bot",
+  "startedAt": "2026-08-12T05:22:31Z",
+  "sut": "stock",
+  "zdtd": {
+   "dirtyFiles": "0",
+   "git": "f8edf28"
+  }
+ },
+ "saves": {
+  "count": 13,
+  "files": {
+   "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1974272,
+   "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 393216,
+   "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
+   "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
+   "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
+   "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
+   "Navezgane/wander-2bot_stock/blockmappings.nim": 32146,
+   "Navezgane/wander-2bot_stock/decoration.7dt": 1286446,
+   "Navezgane/wander-2bot_stock/itemmappings.nim": 50,
+   "Navezgane/wander-2bot_stock/main.ttw": 35404,
+   "Navezgane/wander-2bot_stock/main.ttw.bak": 35404,
+   "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
+   "Navezgane/wander-2bot_stock/multiblocks.7dt": 3881
+  },
+  "totalBytes": 4486075
+ },
+ "sut": "stock",
+ "telnet": {
+  "banner": {
+   "Difficulty": "1",
+   "Game mode": "GameModeSurvival",
+   "Game name": "wander-2bot_stock",
+   "Max players": "64",
+   "Server IP": "118.189.191.239",
+   "Server port": "26900",
+   "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
+   "World": "Navezgane"
+  },
+  "clockRateGameMinPerRealSec": 0.3684,
+  "day": [
+   "1",
+   "07",
+   "00"
+  ],
+  "entities": {
+   "alive": 3,
+   "count": 3,
+   "dead": 0,
+   "types": {
+    "EntityAnimalRabbit": 1,
+    "EntityPlayer": 2
+   }
+  },
+  "players": {
+   "count": 2,
+   "rows": [
+    {
+     "id": 171,
+     "name": "EntityPlayer"
+    },
+    {
+     "id": 172,
+     "name": "EntityPlayer"
+    }
+   ]
+  },
+  "reportedTotal": null,
+  "unknownCommands": []
+ }
+}

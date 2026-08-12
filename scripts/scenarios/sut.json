@@ -1,0 +1,14 @@
+{
+  "join-probe": {
+    "count": 1, "actions": 0, "timeoutMs": 60000,
+    "note": "single bot joins, wanders until timeout; join handshake + world enter"
+  },
+  "wander-2bot": {
+    "count": 2, "actions": 0, "timeoutMs": 90000,
+    "note": "two bots wander; second-peer interest + chunk stream fanout"
+  },
+  "join-fast": {
+    "count": 1, "actions": 0, "timeoutMs": 20000,
+    "note": "short join smoke; 20s client window"
+  }
+}

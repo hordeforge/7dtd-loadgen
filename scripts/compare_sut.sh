@@ -30,8 +30,13 @@ while [[ $# -gt 0 ]]; do
         *) echo "ERROR: --sut must be stock|zdtd|all" >&2; exit 2 ;;
       esac
       shift 2 ;;
+    --list)
+      python3 -c "import json,sys; print('\n'.join(json.load(open(sys.argv[1]))))" \
+        "$ROOT/scripts/scenarios/sut.json"
+      exit 0 ;;
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
+      echo "       $0 --list"
       exit 0 ;;
     *) echo "ERROR: unknown arg $1" >&2; exit 2 ;;
   esac
@@ -42,10 +47,21 @@ if [[ -z "$SCENARIO_ID" || -z "$SUTS" ]]; then
   exit 2
 fi
 
-# Client knobs (identical for both servers - the "same scenario config").
-COUNT="${COMPARE_COUNT:-1}"
-ACTIONS="${COMPARE_ACTIONS:-0}"
-TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-60000}"
+# Scenario knobs: env (if explicitly set) wins, then the catalog, then
+# defaults. The catalog is scripts/scenarios/sut.json.
+read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT < <(
+  python3 -c "
+import json, sys
+try:
+    s = json.load(open('$ROOT/scripts/scenarios/sut.json'))['$SCENARIO_ID']
+    print(s['count'], s['actions'], s['timeoutMs'])
+except (KeyError, OSError, ValueError):
+    print('', '', '')
+" 2>/dev/null || echo "  "
+)
+COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
+ACTIONS="${COMPARE_ACTIONS:-${CAT_ACTIONS:-0}}"
+TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-${CAT_TIMEOUT:-60000}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
