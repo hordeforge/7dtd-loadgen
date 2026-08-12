@@ -182,30 +182,13 @@ EOF
   fi
   echo "  $sut healthy (process, UDP $BOT_PORT, console)"
 
-  # Login-ready gate: the ready line means the world is up, but stock's
-  # ConnectionManager can still deny logins briefly after StartGame done
-  # (live-observed 5 denials on one run). Probe with one real join; proceed
-  # only once a bot actually enters the world. The probe runs its full short
-  # lifecycle (join -> wander -> timeout disconnect): killing the wrapper
-  # would orphan the dotnet client, which then keeps its session alive and
-  # pollutes the player/join axes (live-observed players=2 on zdtd).
-  probe_ok=0
-  for _ in $(seq 1 4); do
-    rm -f "$run_dir/probe.log"
-    LOADGEN_MODE=join LOADGEN_COUNT=1 LOADGEN_ACTIONS=0 \
-      LOADGEN_TIMEOUT=8000 LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
-      bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/probe.log" 2>&1 &
-    PROBE_PID=$!
-    wait "$PROBE_PID" || true
-    if grep -q "JOINED entity=" "$run_dir/probe.log" 2>/dev/null; then probe_ok=1; break; fi
-    echo "  login probe did not join; retrying" >&2
-    sleep 3
-  done
-  if [[ "$probe_ok" != 1 ]]; then
-    echo "  ERROR: $sut never accepted a login after ready; see probe.log" >&2
-    exit 1
-  fi
-  echo "  $sut login-ready (probe joined)"
+  # Small settle so the connection manager is accepting logins. No separate
+  # login probe: a probe's join + disconnect recycles its loopback bind, which
+  # the real client then reuses and stock's per-IP throttle drops at LiteNet
+  # level (live-observed 8 recv=0 fails). The client's own rejoin loop plus the
+  # honest zero-PASS finding are the right failure surface for the residual
+  # post-ready denial window.
+  sleep 5
 
   # Run the client - the SAME scenario on both servers. Run it in the
   # background so the telnet snapshot happens while the bot is connected
