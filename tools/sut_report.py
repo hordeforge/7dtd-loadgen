@@ -204,7 +204,7 @@ def main():
         lines.append(f"- zdtd unknown commands: {zt['unknownCommands']}")
 
     # ---- zdtd APM (reported, not compared: stock has no equivalent) ----
-    za = (zt or {}).get("apm") if zt else None
+    za = zdtd.get("apm") if zdtd else None
     if za:
         lines.append("\n## zdtd APM (last snapshot; no stock equivalent)\n")
         for k in ("ticks", "join_ok", "join_fail", "net_packets_in", "net_packets_out",

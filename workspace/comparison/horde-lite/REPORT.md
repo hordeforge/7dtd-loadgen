@@ -56,6 +56,17 @@ Boot evidence per side:
 | Game name | horde-lite_stock | stock |
 | Difficulty | 1 | 1 |
 
+## zdtd APM (last snapshot; no stock equivalent)
+
+- ticks: 1200
+- join_ok: 1
+- join_fail: 0
+- net_packets_in: 1223
+- net_packets_out: 3727
+- tick_overruns: 15
+- phase_rejects: 0
+- tick mean/p99/max ns: 3070987 / 50331648 / 1121474416
+
 ## Gamestats (compared on shared names)
 
 | stat | stock | zdtd |
