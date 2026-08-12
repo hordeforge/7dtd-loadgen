@@ -198,4 +198,7 @@ record, and documentation of any protocol-version restriction.
   Found via COMPARE_WORLD=Pregen06k01 join-fast; REPRODUCED consistently (2/2
   runs). The client sends LoginSent, zdtd logs payload failed error=Overflow,
   then answers with a 356-byte LoginAnswer - the NetPackagePlayerLogin decode
-  overflows on this world. zdtd bug to fix.
+  overflows on this world. The loadgen login body is world-independent, so
+  the likely mechanism is a fragmented/partial C2S frame decoded as complete
+  (world-load timing shifts the packet coalescing) - a C2S reassembly gap in
+  zdtd. zdtd bug to fix.
