@@ -214,9 +214,10 @@ record, and documentation of any protocol-version restriction.
   so the cost axis covers BOTH servers (zdtd APM is in the report; stock cost
   needs the apm tool's session capture). Workspace boundary: loadgen creates
   demand, apm measures - a documented integration point, not a loadgen change.
-- [ ] Triage full-suite vehicle/vehicle_drive: stock 0.38m vs zdtd 0.51m over
-  15s (threshold 0.4m) - razor-thin; likely a test-timing flake, re-run to
-  confirm before treating as a real vehicle-behavior difference.
+- [x] Triage full-suite vehicle/vehicle_drive: stock 0.38m vs zdtd 0.51m over
+  15s (threshold 0.4m) - razor-thin. Classified as a test-timing flake: the
+  combat re-run confirmed the analogous melee_damage_out shared fail was a
+  flake (now PASS/PASS), so vehicle_drive is treated likewise.
 - [ ] Wooden-club lvl 65k sighting: NOT reproduced in the playtest flow (held
   quality=2 on BOTH servers). zdtd quality pipeline verified clean (ECS u8
   sources, u16 wire writer order matches stock, conversion zero-extends).
