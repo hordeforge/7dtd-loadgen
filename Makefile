@@ -122,3 +122,10 @@ compare-all:
 	bash scripts/compare_sut.sh --list | while read -r id; do \
 		bash scripts/compare_sut.sh --scenario "$$id" --sut all || exit 1; \
 	done
+
+# Same scenario (join-fast) on every supported world: the world matrix.
+# Worlds that cannot run on a server are recorded, not faked.
+compare-worlds:
+	bash scripts/compare_sut.sh --scenario join-fast --sut all || true
+	COMPARE_WORLD=Pregen06k01 bash scripts/compare_sut.sh --scenario join-fast --sut all || true
+	COMPARE_WORLD=Pregen08k01 bash scripts/compare_sut.sh --scenario join-fast --sut all || true
