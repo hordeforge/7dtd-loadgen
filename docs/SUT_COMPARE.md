@@ -7,7 +7,11 @@ harness artifact vs known divergence), never a pass to fake.
 
 Sibling of [`scripts/compare_sut.sh`](../scripts/compare_sut.sh) (orchestrator)
 and `tools/sut_{telnet,capture,report}.py`; the playtest twin lives in
-`../7dtd-playtest` (`make playtest-compare`).
+`../7dtd-playtest` (`make playtest-compare`). The playtest flow needs the
+client in Local mode (`CLIENT_PLATFORM=local`, see `STOCK_AUTH.md`): the
+Steam-auth + BotMod client stalls in the loading screen, the Local client
+runs the suites (validated: smoke 5/5, core 18/18, mp 6/6, demo + persist
+surfaced zdtd findings).
 
 ## Loop
 
