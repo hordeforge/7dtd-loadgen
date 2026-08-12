@@ -1,0 +1,206 @@
+{
+ "join": {
+  "fail": 0,
+  "firstPass": "[2026-08-12T10:08:06.9136965Z] [join#1] PASS joined entity=112 walks=1051 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T10:08:06.9136965Z] [join#1] PASS joined entity=112 walks=1051 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "pass": 1
+ },
+ "log": {
+  "boot": {
+   "config port=": "zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8082 webui_port=0 password=open authority=correct wire_chunks=on",
+   "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Navezgane dtm=6144x6144 spawn=(-273,61,449)",
+   "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Navezgane dtm=6144x6144 spawn=(-273,61,449)",
+   "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
+   "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/horde-lite/zdtd/world"
+  },
+  "severity": {
+   "INF": 56,
+   "WRN": 2
+  }
+ },
+ "meta": {
+  "client": {
+   "actions": "0",
+   "count": "1",
+   "host": "127.0.0.1",
+   "timeoutMs": "60000"
+  },
+  "loadgen": {
+   "dirtyFiles": "1",
+   "git": "cf01239"
+  },
+  "scenario": "horde-lite",
+  "startedAt": "2026-08-12T10:08:07Z",
+  "sut": "zdtd",
+  "zdtd": {
+   "dirtyFiles": "16",
+   "git": "edd9e16"
+  }
+ },
+ "saves": {
+  "count": 120,
+  "files": {
+   "allies.zal": 6,
+   "blockmeta.zbm": 32,
+   "c_-12_28.zch": 262416,
+   "c_-12_30.zch": 262416,
+   "c_-12_31.zch": 262416,
+   "c_-12_33.zch": 262416,
+   "c_-13_23.zch": 262416,
+   "c_-13_26.zch": 336144,
+   "c_-13_27.zch": 262416,
+   "c_-13_28.zch": 262416,
+   "c_-13_31.zch": 262416,
+   "c_-13_32.zch": 262416,
+   "c_-14_23.zch": 262416,
+   "c_-14_24.zch": 262416,
+   "c_-14_26.zch": 262416,
+   "c_-14_27.zch": 262416,
+   "c_-14_28.zch": 336144,
+   "c_-14_29.zch": 262416,
+   "c_-14_30.zch": 336144,
+   "c_-14_31.zch": 262416,
+   "c_-14_32.zch": 262416,
+   "c_-14_33.zch": 262416,
+   "c_-14_34.zch": 262416,
+   "c_-15_22.zch": 262416,
+   "c_-15_23.zch": 262416,
+   "c_-15_24.zch": 262416,
+   "c_-15_28.zch": 860432,
+   "c_-15_29.zch": 860432,
+   "c_-15_30.zch": 860432,
+   "c_-15_31.zch": 262416,
+   "c_-15_32.zch": 262416,
+   "c_-15_33.zch": 262416,
+   "c_-15_34.zch": 262416,
+   "c_-16_22.zch": 262416,
+   "c_-16_23.zch": 262416,
+   "c_-16_27.zch": 262416,
+   "c_-16_28.zch": 860432,
+   "c_-16_29.zch": 860432,
+   "c_-16_30.zch": 860432,
+   "c_-17_22.zch": 262416,
+   "c_-17_25.zch": 262416,
+   "c_-17_27.zch": 336144,
+   "c_-17_28.zch": 336144,
+   "c_-17_29.zch": 262416,
+   "c_-17_30.zch": 336144,
+   "c_-17_32.zch": 262416,
+   "c_-17_33.zch": 336144,
+   "c_-17_34.zch": 262416,
+   "c_-17_36.zch": 336144,
+   "c_-18_22.zch": 262416,
+   "c_-18_23.zch": 262416,
+   "c_-18_24.zch": 262416,
+   "c_-18_25.zch": 262416,
+   "c_-18_26.zch": 336144,
+   "c_-18_27.zch": 336144,
+   "c_-18_28.zch": 860432,
+   "c_-18_29.zch": 262416,
+   "c_-18_30.zch": 262416,
+   "c_-18_31.zch": 262416,
+   "c_-18_33.zch": 262416,
+   "c_-18_34.zch": 262416,
+   "c_-19_26.zch": 262416,
+   "c_-19_27.zch": 262416,
+   "c_-19_28.zch": 262416,
+   "c_-19_29.zch": 262416,
+   "c_-19_30.zch": 262416,
+   "c_-19_31.zch": 262416,
+   "c_-19_33.zch": 262416,
+   "c_-20_22.zch": 336144,
+   "c_-20_23.zch": 262416,
+   "c_-20_24.zch": 262416,
+   "c_-20_25.zch": 262416,
+   "c_-20_26.zch": 262416,
+   "c_-20_27.zch": 262416,
+   "c_-20_28.zch": 262416,
+   "c_-20_29.zch": 262416,
+   "c_-20_30.zch": 262416,
+   "c_-20_32.zch": 262416,
+   "c_-20_34.zch": 262416,
+   "c_-21_19.zch": 336144
+  },
+  "totalBytes": 34876144
+ },
+ "sut": "zdtd",
+ "telnet": {
+  "banner": {
+   "Difficulty": "1",
+   "Game mode": "GameModeSurvival",
+   "Game name": "stock",
+   "Max players": "64",
+   "Server IP": "127.0.0.1",
+   "Server port": "27120",
+   "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
+   "World": "Navezgane"
+  },
+  "clockRateGameMinPerRealSec": 0.35,
+  "day": [
+   "1",
+   "07",
+   "04"
+  ],
+  "entities": {
+   "alive": 11,
+   "count": 11,
+   "dead": 0,
+   "types": {
+    "animal": 1,
+    "player": 1,
+    "trader": 6,
+    "turret": 1,
+    "vehicle": 1,
+    "zombie": 1
+   }
+  },
+  "gamestats": {
+   "AirDropFrequency": "3",
+   "BedrollExpiryTime": "45",
+   "BlockDamageAI": "100",
+   "BlockDamageAIBM": "100",
+   "BlockDamagePlayer": "100",
+   "BloodMoonDay": "7",
+   "BloodMoonEnemyCount": "8",
+   "BloodMoonWarning": "1",
+   "DayLightLength": "18",
+   "DayNightLength": "60",
+   "DeathPenalty": "1",
+   "DropOnDeath": "1",
+   "EnemyDifficulty": "1",
+   "EnemySpawnMode": "True",
+   "GameDifficulty": "1",
+   "GameState": "1",
+   "IsSpawnEnemies": "True",
+   "JarRefund": "60",
+   "LandClaimCount": "5",
+   "LandClaimDeadZone": "30",
+   "LandClaimDecayMode": "0",
+   "LandClaimExpiryTime": "7",
+   "LandClaimOfflineDelay": "0",
+   "LandClaimOfflineDurabilityModifier": "4",
+   "LandClaimOnlineDurabilityModifier": "4",
+   "LandClaimSize": "41",
+   "LootAbundance": "100",
+   "LootRespawnDays": "7",
+   "PartySharedKillRange": "100",
+   "PlayerKillingMode": "0",
+   "QuestProgressionDailyLimit": "4",
+   "ShowFriendPlayerOnMap": "True",
+   "StormFreq": "100",
+   "TimeOfDayIncPerSec": "6",
+   "XPMultiplier": "100"
+  },
+  "players": {
+   "count": 1,
+   "rows": [
+    {
+     "id": 112,
+     "name": "REFake1"
+    }
+   ]
+  },
+  "reportedTotal": null,
+  "unknownCommands": []
+ }
+}

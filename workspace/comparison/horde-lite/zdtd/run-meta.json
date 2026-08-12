@@ -1,0 +1,8 @@
+{
+  "scenario": "horde-lite",
+  "sut": "zdtd",
+  "startedAt": "2026-08-12T10:08:07Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
+  "loadgen": {"git": "cf01239", "dirtyFiles": "1"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "16"}
+}
