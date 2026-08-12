@@ -174,3 +174,13 @@ record, and documentation of any protocol-version restriction.
   Steam-auth + BotMod client stalls in the loading screen. With the Local
   client, playtest-compare smoke validated live: PASS 5/5 both servers, no
   per-case differences (evidence committed in 7dtd-playtest).
+
+## Playtest-compare demo findings (2026-08-12, CLIENT_PLATFORM=local)
+
+- [ ] Triage zdtd-only demo fails (zdtd bugs, not deliberate divergences):
+  combat/zombie_death_loot, economy/item_drop_entity, economy/loot_bag_pickup.
+- [ ] Triage shared fail combat/melee_damage_out (both servers FAIL - harness
+  or common gameplay gap).
+- [ ] Stock-only fails (sleeper_wake, zombie_or_npc_nearby,
+  zombie_target_has_health) correlate with the stock zombie-spawn flakiness;
+  re-run to confirm flake vs real.
