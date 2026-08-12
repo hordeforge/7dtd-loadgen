@@ -92,7 +92,10 @@ world; the session-end `PASS joined` summary is too late).
 
 `tests/test_sut_compare.py` covers the pipeline offline (synthetic run dirs):
 normalization, clock-rate derivation, bracket-format listents rows, NOT
-COMPARED path, gamestats comparison.
+COMPARED path, gamestats comparison, stock apmStock extraction + report
+rendering. `tests/test_consolidated_report.py` covers the consolidated
+overview classification (CLEAN / DELTAS / ONE-SIDE) from synthetic evidence.
+Both run in `make test` (no servers required).
 
 ## Evidence dirs and world tagging
 
