@@ -50,7 +50,13 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
       echo "       $0 --list"
-      echo "       $0 --world <name> (default Navezgane)"
+      echo "       $0 --world <name> (default Navezgane; non-default worlds get"
+      echo "                          a -<world> tagged evidence dir)"
+      echo "Env knobs: COMPARE_COUNT COMPARE_ACTIONS COMPARE_TIMEOUT_MS"
+      echo "          COMPARE_SPAWN_ENTITY/PER_PLAYER/EVERY_MS COMPARE_SNAPSHOT_DELAY_MS"
+      echo "          COMPARE_WORLD COMPARE_HOST COMPARE_TELNET_PASSWORD"
+      echo "          COMPARE_APM=0|1 (stock cost capture; default 1)"
+      echo "          COMPARE_APM_SECONDS (capture window; default 30)"
       exit 0 ;;
     *) echo "ERROR: unknown arg $1" >&2; exit 2 ;;
   esac
