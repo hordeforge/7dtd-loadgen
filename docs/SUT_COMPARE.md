@@ -110,6 +110,9 @@ playtest-compare (via CLIENT_PLATFORM=local; reports in ../7dtd-playtest/workspa
 - persist: zdtd-only fails persist_setup_blockmeta, persist_setup_te (persistence gaps).
 - soak_long: zdtd player dies ~12s (seeded zombies near spawn kill the fresh
   player); stock survived 900s.
+- full suite: stock 80/5, zdtd 81/4; same known findings plus
+  vehicle/vehicle_drive (stock 0.38m vs zdtd 0.51m, threshold 0.4 - razor-thin,
+  likely a test-timing flake).
 
 ## World matrix (2026-08-12, make compare-worlds)
 
