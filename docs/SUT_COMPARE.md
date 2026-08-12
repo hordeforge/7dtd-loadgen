@@ -48,6 +48,7 @@ telnet console.
 |---|---|---|
 | join outcome | loadgen.log | PASS/FAIL counts, first/last pass |
 | server log categories | server.log | severity counts; stock skips `[ScriptOrder]` frame noise and harness telnet-close IOExceptions (counted separately) |
+| server banner | telnet greeting | max players, difficulty, world, game name; mismatches are findings |
 | day/time + clock rate | telnet gettime (twice) | rate = game-min per real-sec over the snapshot window; comparable across boot-time offsets |
 | entity counts | telnet listents | total / alive / per-type breakdown |
 | player counts | telnet listplayers | players connected at snapshot time |
