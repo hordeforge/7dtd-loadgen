@@ -43,6 +43,10 @@ selects Local (and EOS crossplay off), the client initializes `Platform.Local`
 and joins as `Local_<name>` - no ticket, no Steam dependency, exactly the
 fully-local-network model.
 
+- `7dtd-connect` ships the switch: `CLIENT_PLATFORM=local ./scripts/launch_client.sh`
+  backs up the game's `platform.cfg`, selects `platform=Local,
+  crossplatform=None`, and restores on exit. Playtest launches flow the env
+  through, so `CLIENT_PLATFORM=local make playtest-...` uses it too.
 - Unverified live: does the game honor `platform=Local` in its own
   `platform.cfg`, and does Steam DRM still gate launch? (The server honors the
   file; the client side is untested in this workspace.)
