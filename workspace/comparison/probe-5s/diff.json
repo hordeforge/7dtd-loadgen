@@ -2,25 +2,25 @@
  "axes": {
   "join": {
    "stock": {
-    "fail": 0,
-    "firstPass": "[2026-08-12T09:27:44.2270867Z] [join#2] PASS joined entity=177 walks=1609 jumps=181 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T09:27:44.3144069Z] [join#1] PASS joined entity=178 walks=1585 jumps=198 deaths=0 respawns=0 lastDied=False l",
-    "pass": 2
+    "fail": 1,
+    "firstPass": null,
+    "lastPass": null,
+    "pass": 0
    },
    "zdtd": {
-    "fail": 0,
-    "firstPass": "[2026-08-12T09:29:42.8408178Z] [join#1] PASS joined entity=112 walks=1560 jumps=193 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T09:29:42.8509252Z] [join#2] PASS joined entity=113 walks=1594 jumps=178 deaths=0 respawns=0 lastDied=False l",
-    "pass": 2
+    "fail": 1,
+    "firstPass": null,
+    "lastPass": null,
+    "pass": 0
    }
   },
   "log": {
    "stock": {
     "boot": {
      "StartGame done": "StartGame done",
-     "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), wander-2bot_stock, GameModeSurvival"
+     "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), probe-5s_stock, GameModeSurvival"
     },
-    "exec": 26,
+    "exec": 6,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -97,11 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 6,
-     "INF": 466,
-     "WRN": 21
-    },
-    "telnetCloseErrors": 10
+     "INF": 279,
+     "WRN": 8
+    }
    },
    "zdtd": {
     "boot": {
@@ -109,119 +107,42 @@
      "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Navezgane dtm=6144x6144 spawn=(-273,61,449)",
      "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Navezgane dtm=6144x6144 spawn=(-273,61,449)",
      "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
-     "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/wander-2bot/zdtd/world"
+     "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/probe-5s/zdtd/world"
     },
     "severity": {
-     "INF": 63,
+     "INF": 44,
      "WRN": 2
     }
    }
   },
   "saves": {
    "stock": {
-    "count": 13,
+    "count": 5,
     "files": {
-     "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1196032,
-     "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 1028096,
-     "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
-     "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
-     "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
-     "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
-     "Navezgane/wander-2bot_stock/blockmappings.nim": 31559,
-     "Navezgane/wander-2bot_stock/decoration.7dt": 1286429,
-     "Navezgane/wander-2bot_stock/itemmappings.nim": 28,
-     "Navezgane/wander-2bot_stock/main.ttw": 35020,
-     "Navezgane/wander-2bot_stock/main.ttw.bak": 35020,
-     "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
-     "Navezgane/wander-2bot_stock/multiblocks.7dt": 4085
+     "Navezgane/probe-5s_stock/blockmappings.nim": 8,
+     "Navezgane/probe-5s_stock/itemmappings.nim": 8,
+     "Navezgane/probe-5s_stock/main.ttw": 470,
+     "Navezgane/probe-5s_stock/main.ttw.bak": 264,
+     "Navezgane/probe-5s_stock/main.ttw.ext.bak": 264
     },
-    "totalBytes": 4341525
+    "totalBytes": 1014
    },
    "zdtd": {
-    "count": 120,
+    "count": 11,
     "files": {
      "allies.zal": 6,
      "blockmeta.zbm": 32,
-     "c_-12_28.zch": 262416,
-     "c_-12_30.zch": 262416,
-     "c_-12_31.zch": 262416,
-     "c_-12_33.zch": 262416,
-     "c_-13_23.zch": 262416,
-     "c_-13_26.zch": 336144,
-     "c_-13_27.zch": 262416,
-     "c_-13_28.zch": 262416,
-     "c_-13_31.zch": 262416,
-     "c_-13_32.zch": 262416,
-     "c_-14_23.zch": 262416,
-     "c_-14_24.zch": 262416,
-     "c_-14_26.zch": 262416,
-     "c_-14_27.zch": 262416,
-     "c_-14_28.zch": 336144,
-     "c_-14_29.zch": 262416,
-     "c_-14_30.zch": 336144,
-     "c_-14_31.zch": 262416,
-     "c_-14_32.zch": 262416,
-     "c_-14_33.zch": 262416,
-     "c_-14_34.zch": 262416,
-     "c_-15_22.zch": 262416,
-     "c_-15_23.zch": 262416,
-     "c_-15_24.zch": 262416,
-     "c_-15_28.zch": 860432,
-     "c_-15_29.zch": 860432,
-     "c_-15_30.zch": 860432,
-     "c_-15_31.zch": 262416,
-     "c_-15_32.zch": 262416,
-     "c_-15_33.zch": 262416,
-     "c_-15_34.zch": 262416,
-     "c_-16_22.zch": 262416,
-     "c_-16_23.zch": 262416,
-     "c_-16_27.zch": 262416,
-     "c_-16_28.zch": 860432,
-     "c_-16_29.zch": 860432,
-     "c_-16_30.zch": 860432,
-     "c_-17_22.zch": 262416,
-     "c_-17_25.zch": 262416,
      "c_-17_27.zch": 336144,
      "c_-17_28.zch": 336144,
-     "c_-17_29.zch": 262416,
-     "c_-17_30.zch": 336144,
-     "c_-17_32.zch": 262416,
-     "c_-17_33.zch": 336144,
-     "c_-17_34.zch": 262416,
-     "c_-17_36.zch": 336144,
-     "c_-18_22.zch": 262416,
-     "c_-18_23.zch": 262416,
-     "c_-18_24.zch": 262416,
-     "c_-18_25.zch": 262416,
-     "c_-18_26.zch": 336144,
-     "c_-18_27.zch": 336144,
-     "c_-18_28.zch": 860432,
-     "c_-18_29.zch": 262416,
-     "c_-18_30.zch": 262416,
-     "c_-18_31.zch": 262416,
-     "c_-18_33.zch": 262416,
-     "c_-18_34.zch": 262416,
-     "c_-19_26.zch": 262416,
-     "c_-19_27.zch": 262416,
-     "c_-19_28.zch": 262416,
-     "c_-19_29.zch": 262416,
-     "c_-19_30.zch": 262416,
-     "c_-19_31.zch": 262416,
-     "c_-19_33.zch": 262416,
-     "c_-20_22.zch": 336144,
-     "c_-20_23.zch": 262416,
-     "c_-20_24.zch": 262416,
-     "c_-20_25.zch": 262416,
-     "c_-20_26.zch": 262416,
-     "c_-20_27.zch": 262416,
-     "c_-20_28.zch": 262416,
-     "c_-20_29.zch": 262416,
-     "c_-20_30.zch": 262416,
-     "c_-20_32.zch": 262416,
-     "c_-20_34.zch": 262416,
-     "c_-21_19.zch": 336144
+     "claims.zlc": 6,
+     "clock.zcl": 12,
+     "containers.zct": 86,
+     "entities.zen": 56,
+     "vending.zvn": 6,
+     "weather.zwt": 264,
+     "workstations.zws": 6
     },
-    "totalBytes": 34877440
+    "totalBytes": 672762
    }
   },
   "telnet": {
@@ -229,25 +150,24 @@
     "banner": {
      "Difficulty": "1",
      "Game mode": "GameModeSurvival",
-     "Game name": "wander-2bot_stock",
+     "Game name": "probe-5s_stock",
      "Max players": "64",
      "Server IP": "118.189.191.239",
      "Server port": "26900",
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.3333,
+    "clockRateGameMinPerRealSec": 0.0,
     "day": [
      "1",
      "07",
      "00"
     ],
     "entities": {
-     "alive": 8,
-     "count": 8,
+     "alive": 6,
+     "count": 6,
      "dead": 0,
      "types": {
-      "EntityPlayer": 2,
       "EntityZombie": 6
      }
     },
@@ -327,17 +247,8 @@
      "ZombieHordeMeter": "True"
     },
     "players": {
-     "count": 2,
-     "rows": [
-      {
-       "id": 177,
-       "name": "EntityPlayer"
-      },
-      {
-       "id": 178,
-       "name": "EntityPlayer"
-      }
-     ]
+     "count": 0,
+     "rows": []
     },
     "reportedTotal": null,
     "unknownCommands": []
@@ -353,19 +264,18 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.35,
+    "clockRateGameMinPerRealSec": 0.4211,
     "day": [
      "1",
      "07",
-     "04"
+     "03"
     ],
     "entities": {
-     "alive": 12,
-     "count": 12,
+     "alive": 10,
+     "count": 10,
      "dead": 0,
      "types": {
       "animal": 1,
-      "player": 2,
       "trader": 6,
       "turret": 1,
       "vehicle": 1,
@@ -410,17 +320,8 @@
      "XPMultiplier": "100"
     },
     "players": {
-     "count": 2,
-     "rows": [
-      {
-       "id": 112,
-       "name": "REFake1"
-      },
-      {
-       "id": 113,
-       "name": "REFake2"
-      }
-     ]
+     "count": 0,
+     "rows": []
     },
     "reportedTotal": null,
     "unknownCommands": []
@@ -429,8 +330,10 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=6 zdtd=0)",
-  "telnet: entity count differs (stock=8 zdtd=12)"
+  "join: stock had zero PASS joins",
+  "join: zdtd had zero PASS joins",
+  "telnet: game-clock rate differs (stock=0.0 zdtd=0.4211; 60-min day = 0.4)",
+  "telnet: entity count differs (stock=6 zdtd=10)"
  ],
- "scenario": "wander-2bot"
+ "scenario": "probe-5s"
 }

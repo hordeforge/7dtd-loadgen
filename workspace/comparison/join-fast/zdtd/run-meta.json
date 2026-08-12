@@ -1,8 +1,8 @@
 {
   "scenario": "join-fast",
   "sut": "zdtd",
-  "startedAt": "2026-08-12T08:37:49Z",
+  "startedAt": "2026-08-12T09:31:37Z",
   "client": {"count": "1", "actions": "0", "timeoutMs": "20000", "host": "127.0.0.1"},
-  "loadgen": {"git": "f2feef0", "dirtyFiles": "2"},
-  "zdtd": {"git": "6d25107", "dirtyFiles": "19"}
+  "loadgen": {"git": "8b8703c", "dirtyFiles": "23"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "16"}
 }

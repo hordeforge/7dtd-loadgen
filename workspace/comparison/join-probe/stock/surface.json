@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T08:19:56.6968431Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T09:23:48.2871577Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T09:23:48.2871577Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -88,8 +88,8 @@
   },
   "severity": {
    "EXC": 3,
-   "INF": 373,
-   "WRN": 12
+   "INF": 372,
+   "WRN": 13
   },
   "telnetCloseErrors": 8
  },
@@ -101,31 +101,31 @@
    "timeoutMs": "60000"
   },
   "loadgen": {
-   "dirtyFiles": "3",
-   "git": "041ba78"
+   "dirtyFiles": "4",
+   "git": "8b8703c"
   },
   "scenario": "join-probe",
-  "startedAt": "2026-08-12T08:19:56Z",
+  "startedAt": "2026-08-12T09:23:48Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "18",
-   "git": "6d25107"
+   "dirtyFiles": "14",
+   "git": "edd9e16"
   }
  },
  "saves": {
   "count": 9,
   "files": {
-   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1499136,
-   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 724992,
-   "Navezgane/join-probe_stock/blockmappings.nim": 26257,
+   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1568768,
+   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
+   "Navezgane/join-probe_stock/blockmappings.nim": 23222,
    "Navezgane/join-probe_stock/decoration.7dt": 1282876,
-   "Navezgane/join-probe_stock/itemmappings.nim": 69,
+   "Navezgane/join-probe_stock/itemmappings.nim": 30,
    "Navezgane/join-probe_stock/main.ttw": 11002,
    "Navezgane/join-probe_stock/main.ttw.bak": 10390,
    "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-probe_stock/multiblocks.7dt": 3830
+   "Navezgane/join-probe_stock/multiblocks.7dt": 3932
   },
-  "totalBytes": 3558816
+  "totalBytes": 3621380
  },
  "sut": "stock",
  "telnet": {
@@ -139,7 +139,7 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.35,
+  "clockRateGameMinPerRealSec": 0.3684,
   "day": [
    "1",
    "07",
@@ -180,7 +180,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "5",
+   "EnemyCount": "6",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",

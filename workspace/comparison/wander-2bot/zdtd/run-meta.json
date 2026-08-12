@@ -1,8 +1,8 @@
 {
   "scenario": "wander-2bot",
   "sut": "zdtd",
-  "startedAt": "2026-08-12T05:24:09Z",
+  "startedAt": "2026-08-12T09:29:43Z",
   "client": {"count": "2", "actions": "0", "timeoutMs": "90000", "host": "127.0.0.1"},
-  "loadgen": {"git": "8cdc5e2", "dirtyFiles": "4"},
-  "zdtd": {"git": "f8edf28", "dirtyFiles": "0"}
+  "loadgen": {"git": "8b8703c", "dirtyFiles": "15"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "16"}
 }

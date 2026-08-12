@@ -1,8 +1,8 @@
 {
   "scenario": "join-probe",
   "sut": "zdtd",
-  "startedAt": "2026-08-12T08:21:12Z",
+  "startedAt": "2026-08-12T09:25:17Z",
   "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
-  "loadgen": {"git": "041ba78", "dirtyFiles": "4"},
-  "zdtd": {"git": "6d25107", "dirtyFiles": "18"}
+  "loadgen": {"git": "8b8703c", "dirtyFiles": "7"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "14"}
 }

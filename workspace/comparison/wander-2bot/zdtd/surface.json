@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T05:24:09.3553066Z] [join#1] PASS joined entity=113 walks=1579 jumps=195 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T05:24:09.3714692Z] [join#2] PASS joined entity=112 walks=1592 jumps=178 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T09:29:42.8408178Z] [join#1] PASS joined entity=112 walks=1560 jumps=193 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T09:29:42.8509252Z] [join#2] PASS joined entity=113 walks=1594 jumps=178 deaths=0 respawns=0 lastDied=False l",
   "pass": 2
  },
  "log": {
@@ -14,7 +14,7 @@
    "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/wander-2bot/zdtd/world"
   },
   "severity": {
-   "INF": 61,
+   "INF": 63,
    "WRN": 2
   }
  },
@@ -26,15 +26,15 @@
    "timeoutMs": "90000"
   },
   "loadgen": {
-   "dirtyFiles": "4",
-   "git": "8cdc5e2"
+   "dirtyFiles": "15",
+   "git": "8b8703c"
   },
   "scenario": "wander-2bot",
-  "startedAt": "2026-08-12T05:24:09Z",
+  "startedAt": "2026-08-12T09:29:43Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "0",
-   "git": "f8edf28"
+   "dirtyFiles": "16",
+   "git": "edd9e16"
   }
  },
  "saves": {
@@ -126,7 +126,7 @@
  "sut": "zdtd",
  "telnet": {
   "banner": {
-   "Difficulty": "2",
+   "Difficulty": "1",
    "Game mode": "GameModeSurvival",
    "Game name": "stock",
    "Max players": "64",
@@ -135,11 +135,11 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.3889,
+  "clockRateGameMinPerRealSec": 0.35,
   "day": [
    "1",
    "07",
-   "00"
+   "04"
   ],
   "entities": {
    "alive": 12,
@@ -154,15 +154,52 @@
     "zombie": 1
    }
   },
+  "gamestats": {
+   "AirDropFrequency": "3",
+   "BedrollExpiryTime": "45",
+   "BlockDamageAI": "100",
+   "BlockDamageAIBM": "100",
+   "BlockDamagePlayer": "100",
+   "BloodMoonDay": "7",
+   "BloodMoonEnemyCount": "8",
+   "BloodMoonWarning": "1",
+   "DayLightLength": "18",
+   "DayNightLength": "60",
+   "DeathPenalty": "1",
+   "DropOnDeath": "1",
+   "EnemyDifficulty": "1",
+   "EnemySpawnMode": "True",
+   "GameDifficulty": "1",
+   "GameState": "1",
+   "IsSpawnEnemies": "True",
+   "JarRefund": "60",
+   "LandClaimCount": "5",
+   "LandClaimDeadZone": "30",
+   "LandClaimDecayMode": "0",
+   "LandClaimExpiryTime": "7",
+   "LandClaimOfflineDelay": "0",
+   "LandClaimOfflineDurabilityModifier": "4",
+   "LandClaimOnlineDurabilityModifier": "4",
+   "LandClaimSize": "41",
+   "LootAbundance": "100",
+   "LootRespawnDays": "7",
+   "PartySharedKillRange": "100",
+   "PlayerKillingMode": "0",
+   "QuestProgressionDailyLimit": "4",
+   "ShowFriendPlayerOnMap": "True",
+   "StormFreq": "100",
+   "TimeOfDayIncPerSec": "6",
+   "XPMultiplier": "100"
+  },
   "players": {
    "count": 2,
    "rows": [
     {
-     "id": 113,
+     "id": 112,
      "name": "REFake1"
     },
     {
-     "id": 112,
+     "id": 113,
      "name": "REFake2"
     }
    ]

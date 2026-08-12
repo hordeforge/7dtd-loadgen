@@ -1,16 +1,16 @@
 {
  "join": {
-  "fail": 0,
-  "firstPass": "[2026-08-12T09:30:56.0412537Z] [join#1] PASS joined entity=177 walks=333 jumps=45 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T09:30:56.0412537Z] [join#1] PASS joined entity=177 walks=333 jumps=45 deaths=0 respawns=0 lastDied=False las",
-  "pass": 1
+  "fail": 1,
+  "firstPass": null,
+  "lastPass": null,
+  "pass": 0
  },
  "log": {
   "boot": {
    "StartGame done": "StartGame done",
-   "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-fast_stock, GameModeSurvival"
+   "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), probe-5s_stock, GameModeSurvival"
   },
-  "exec": 9,
+  "exec": 6,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -87,71 +87,63 @@
    "ZombieHordeMeter": "False"
   },
   "severity": {
-   "EXC": 3,
-   "INF": 343,
-   "WRN": 13
-  },
-  "telnetCloseErrors": 4
+   "INF": 279,
+   "WRN": 8
+  }
  },
  "meta": {
   "client": {
    "actions": "0",
    "count": "1",
    "host": "127.0.0.1",
-   "timeoutMs": "20000"
+   "timeoutMs": "5000"
   },
   "loadgen": {
-   "dirtyFiles": "20",
-   "git": "8b8703c"
+   "dirtyFiles": "1",
+   "git": "c53dcf8"
   },
-  "scenario": "join-fast",
-  "startedAt": "2026-08-12T09:30:58Z",
+  "scenario": "probe-5s",
+  "startedAt": "2026-08-12T08:31:44Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "16",
-   "git": "edd9e16"
+   "dirtyFiles": "18",
+   "git": "6d25107"
   }
  },
  "saves": {
-  "count": 10,
+  "count": 5,
   "files": {
-   "Navezgane/join-fast_stock/Region/r.-1.0.7rg": 593920,
-   "Navezgane/join-fast_stock/Region/r.-1.1.7rg": 163840,
-   "Navezgane/join-fast_stock/Region/r.0.0.7rg": 1093632,
-   "Navezgane/join-fast_stock/blockmappings.nim": 8971,
-   "Navezgane/join-fast_stock/decoration.7dt": 1288486,
-   "Navezgane/join-fast_stock/itemmappings.nim": 60,
-   "Navezgane/join-fast_stock/main.ttw": 3839,
-   "Navezgane/join-fast_stock/main.ttw.bak": 264,
-   "Navezgane/join-fast_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-fast_stock/multiblocks.7dt": 1042
+   "Navezgane/probe-5s_stock/blockmappings.nim": 8,
+   "Navezgane/probe-5s_stock/itemmappings.nim": 8,
+   "Navezgane/probe-5s_stock/main.ttw": 470,
+   "Navezgane/probe-5s_stock/main.ttw.bak": 264,
+   "Navezgane/probe-5s_stock/main.ttw.ext.bak": 264
   },
-  "totalBytes": 3154318
+  "totalBytes": 1014
  },
  "sut": "stock",
  "telnet": {
   "banner": {
    "Difficulty": "1",
    "Game mode": "GameModeSurvival",
-   "Game name": "join-fast_stock",
+   "Game name": "probe-5s_stock",
    "Max players": "64",
    "Server IP": "118.189.191.239",
    "Server port": "26900",
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.35,
+  "clockRateGameMinPerRealSec": 0.0,
   "day": [
    "1",
    "07",
    "00"
   ],
   "entities": {
-   "alive": 7,
-   "count": 7,
+   "alive": 6,
+   "count": 6,
    "dead": 0,
    "types": {
-    "EntityPlayer": 1,
     "EntityZombie": 6
    }
   },
@@ -181,7 +173,7 @@
    "DeathPenalty": "1",
    "DropOnDeath": "1",
    "DropOnQuit": "0",
-   "EnemyCount": "5",
+   "EnemyCount": "6",
    "EnemyDifficulty": "1",
    "EnemySpawnMode": "True",
    "FragLimitActive": "False",
@@ -231,13 +223,8 @@
    "ZombieHordeMeter": "True"
   },
   "players": {
-   "count": 1,
-   "rows": [
-    {
-     "id": 177,
-     "name": "EntityPlayer"
-    }
-   ]
+   "count": 0,
+   "rows": []
   },
   "reportedTotal": null,
   "unknownCommands": []

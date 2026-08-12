@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T08:39:40.1958409Z] [join#1] PASS joined entity=112 walks=245 jumps=32 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T08:39:40.1958409Z] [join#1] PASS joined entity=112 walks=245 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T09:33:22.8763662Z] [join#1] PASS joined entity=112 walks=241 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T09:33:22.8763662Z] [join#1] PASS joined entity=112 walks=241 jumps=32 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -26,15 +26,15 @@
    "timeoutMs": "15000"
   },
   "loadgen": {
-   "dirtyFiles": "2",
-   "git": "b4cc319"
+   "dirtyFiles": "31",
+   "git": "8b8703c"
   },
   "scenario": "probe-15s",
-  "startedAt": "2026-08-12T08:39:48Z",
+  "startedAt": "2026-08-12T09:33:31Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "19",
-   "git": "6d25107"
+   "dirtyFiles": "16",
+   "git": "edd9e16"
   }
  },
  "saves": {

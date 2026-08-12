@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T05:22:31.1283119Z] [join#2] PASS joined entity=172 walks=1608 jumps=180 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T05:22:31.1283120Z] [join#1] PASS joined entity=171 walks=1583 jumps=197 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T09:27:44.2270867Z] [join#2] PASS joined entity=177 walks=1609 jumps=181 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T09:27:44.3144069Z] [join#1] PASS joined entity=178 walks=1585 jumps=198 deaths=0 respawns=0 lastDied=False l",
   "pass": 2
  },
  "log": {
@@ -10,7 +10,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), wander-2bot_stock, GameModeSurvival"
   },
-  "exec": 25,
+  "exec": 26,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,8 +88,8 @@
   },
   "severity": {
    "EXC": 6,
-   "INF": 439,
-   "WRN": 22
+   "INF": 466,
+   "WRN": 21
   },
   "telnetCloseErrors": 10
  },
@@ -101,35 +101,35 @@
    "timeoutMs": "90000"
   },
   "loadgen": {
-   "dirtyFiles": "4",
-   "git": "8cdc5e2"
+   "dirtyFiles": "12",
+   "git": "8b8703c"
   },
   "scenario": "wander-2bot",
-  "startedAt": "2026-08-12T05:22:31Z",
+  "startedAt": "2026-08-12T09:27:44Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "0",
-   "git": "f8edf28"
+   "dirtyFiles": "16",
+   "git": "edd9e16"
   }
  },
  "saves": {
   "count": 13,
   "files": {
-   "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1974272,
-   "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 393216,
+   "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1196032,
+   "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 1028096,
    "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
    "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
    "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
    "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
-   "Navezgane/wander-2bot_stock/blockmappings.nim": 32146,
-   "Navezgane/wander-2bot_stock/decoration.7dt": 1286446,
-   "Navezgane/wander-2bot_stock/itemmappings.nim": 50,
-   "Navezgane/wander-2bot_stock/main.ttw": 35404,
-   "Navezgane/wander-2bot_stock/main.ttw.bak": 35404,
+   "Navezgane/wander-2bot_stock/blockmappings.nim": 31559,
+   "Navezgane/wander-2bot_stock/decoration.7dt": 1286429,
+   "Navezgane/wander-2bot_stock/itemmappings.nim": 28,
+   "Navezgane/wander-2bot_stock/main.ttw": 35020,
+   "Navezgane/wander-2bot_stock/main.ttw.bak": 35020,
    "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
-   "Navezgane/wander-2bot_stock/multiblocks.7dt": 3881
+   "Navezgane/wander-2bot_stock/multiblocks.7dt": 4085
   },
-  "totalBytes": 4486075
+  "totalBytes": 4341525
  },
  "sut": "stock",
  "telnet": {
@@ -143,30 +143,105 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.3684,
+  "clockRateGameMinPerRealSec": 0.3333,
   "day": [
    "1",
    "07",
    "00"
   ],
   "entities": {
-   "alive": 3,
-   "count": 3,
+   "alive": 8,
+   "count": 8,
    "dead": 0,
    "types": {
-    "EntityAnimalRabbit": 1,
-    "EntityPlayer": 2
+    "EntityPlayer": 2,
+    "EntityZombie": 6
    }
+  },
+  "gamestats": {
+   "AirDropFrequency": "3",
+   "AirDropMarker": "True",
+   "AllowedViewDistance": "6",
+   "AnimalCount": "0",
+   "AutoParty": "False",
+   "BedrollExpiryTime": "45",
+   "BiomeGSModifier": "100",
+   "BiomeLSModifier": "100",
+   "BiomeProgression": "True",
+   "BlockDamageAI": "100",
+   "BlockDamageAIBM": "100",
+   "BlockDamagePlayer": "100",
+   "BloodMoonDay": "7",
+   "BloodMoonEnemyCount": "8",
+   "BloodMoonWarning": "1",
+   "CameraRestrictionMode": "0",
+   "ChunkStabilityEnabled": "True",
+   "CurrentRoundIx": "0",
+   "DayLightLength": "18",
+   "DayLimitActive": "False",
+   "DayLimitThisRound": "0",
+   "DayNightLength": "60",
+   "DeathPenalty": "1",
+   "DropOnDeath": "1",
+   "DropOnQuit": "0",
+   "EnemyCount": "6",
+   "EnemyDifficulty": "1",
+   "EnemySpawnMode": "True",
+   "FragLimitActive": "False",
+   "FragLimitThisRound": "0",
+   "GameDifficulty": "1",
+   "GameModeId": "1",
+   "GameState": "1",
+   "GlobalGSModifier": "100",
+   "GlobalLSModifier": "100",
+   "IsCreativeMenuEnabled": "False",
+   "IsFlyingEnabled": "False",
+   "IsPlayerCollisionEnabled": "True",
+   "IsPlayerDamageEnabled": "True",
+   "IsResetMapOnRestart": "False",
+   "IsSaveSupplyCrates": "True",
+   "IsSpawnEnemies": "True",
+   "IsSpawnNearOtherPlayer": "False",
+   "IsTeleportEnabled": "False",
+   "IsVersionCheckDone": "False",
+   "JarRefund": "60",
+   "LandClaimCount": "5",
+   "LandClaimDeadZone": "30",
+   "LandClaimDecayMode": "0",
+   "LandClaimExpiryTime": "7",
+   "LandClaimOfflineDelay": "0",
+   "LandClaimOfflineDurabilityModifier": "4",
+   "LandClaimOnlineDurabilityModifier": "4",
+   "LandClaimSize": "41",
+   "LootAbundance": "100",
+   "LootRespawnDays": "7",
+   "OptionsPOICulling": "1",
+   "PartySharedKillRange": "100",
+   "PlayerKillingMode": "0",
+   "QuestProgressionDailyLimit": "4",
+   "ScoreDiedMultiplier": "-5",
+   "ScorePlayerKillMultiplier": "0",
+   "ScoreZombieKillMultiplier": "1",
+   "ShowAllPlayersOnMap": "False",
+   "ShowFriendPlayerOnMap": "True",
+   "ShowSpawnWindow": "False",
+   "StormFreq": "100",
+   "TimeLimitActive": "False",
+   "TimeLimitThisRound": "0",
+   "TimeOfDayIncPerSec": "6",
+   "TwitchBloodMoonAllowed": "True",
+   "XPMultiplier": "100",
+   "ZombieHordeMeter": "True"
   },
   "players": {
    "count": 2,
    "rows": [
     {
-     "id": 171,
+     "id": 177,
      "name": "EntityPlayer"
     },
     {
-     "id": 172,
+     "id": 178,
      "name": "EntityPlayer"
     }
    ]
