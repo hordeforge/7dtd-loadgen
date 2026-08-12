@@ -1,0 +1,86 @@
+*** Connected with 7DTD server.
+*** Server version: V 3.1.0 Compatibility Version: V3.1.0 b14
+
+Server IP:   127.0.0.1
+Server port: 27120
+Max players: 64
+Game mode:   GameModeSurvival
+World:       Pregen08k02
+Game name:   stock
+Difficulty:  1
+
+Press 'help' to get a list of all commands. Press 
+
+# ts=2026-08-12T12:50:47Z cmd=gettime
+Day 1, 07:03
+# ts=2026-08-12T12:50:49Z cmd=getgamestat
+GameStat.GameState = 1
+GameStat.GameDifficulty = 1
+GameStat.BloodMoonEnemyCount = 8
+GameStat.EnemyDifficulty = 1
+GameStat.DayLightLength = 18
+GameStat.DayNightLength = 60
+GameStat.BloodMoonDay = 7
+GameStat.BloodMoonWarning = 1
+GameStat.BlockDamagePlayer = 100
+GameStat.BlockDamageAI = 100
+GameStat.BlockDamageAIBM = 100
+GameStat.XPMultiplier = 100
+GameStat.PlayerKillingMode = 0
+GameStat.DropOnDeath = 1
+GameStat.LandClaimSize = 41
+GameStat.LandClaimOnlineDurabilityModifier = 4
+GameStat.LandClaimOfflineDurabilityModifier = 4
+GameStat.AirDropFrequency = 3
+GameStat.PartySharedKillRange = 100
+GameStat.ShowFriendPlayerOnMap = True
+GameStat.IsSpawnEnemies = True
+GameStat.EnemySpawnMode = True
+GameStat.TimeOfDayIncPerSec = 6
+GameStat.DeathPenalty = 1
+GameStat.QuestProgressionDailyLimit = 4
+GameStat.StormFreq = 100
+GameStat.LootAbundance = 100
+GameStat.LootRespawnDays = 7
+GameStat.BedrollExpiryTime = 45
+GameStat.LandClaimCount = 5
+GameStat.LandClaimDeadZone = 30
+GameStat.LandClaimExpiryTime = 7
+GameStat.LandClaimDecayMode = 0
+GameStat.LandClaimOfflineDelay = 0
+GameStat.JarRefund = 60
+GameStat.SandboxPreset = 
+GameStat.SandboxCode = 
+# ts=2026-08-12T12:50:51Z cmd=listents
+0. id=100, trader, pos=(-1783.0, 55.0, 2471.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+1. id=101, trader, pos=(-1963.0, 55.0, 1025.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+2. id=102, trader, pos=(-2863.0, 55.0, 1475.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+3. id=103, trader, pos=(2635.0, 63.0, 332.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+4. id=104, trader, pos=(1639.0, 63.0, 834.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+5. id=105, trader, pos=(2550.0, 39.0, -2337.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+6. id=106, trader, pos=(1107.0, 55.0, 2987.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+7. id=107, trader, pos=(2673.0, 63.0, 2576.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+8. id=108, trader, pos=(594.0, 39.0, -1913.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+9. id=109, trader, pos=(-2309.0, 41.0, -437.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+10. id=110, trader, pos=(-2159.0, 41.0, 613.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+11. id=111, trader, pos=(-3483.0, 44.0, -1755.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+12. id=112, trader, pos=(-1410.0, 41.0, -1320.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+13. id=113, trader, pos=(-1137.0, 39.0, -2812.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+14. id=114, trader, pos=(1675.0, 63.0, -365.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+15. id=115, trader, pos=(-460.0, 39.0, 1211.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+16. id=116, trader, pos=(-910.0, 39.0, 11.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+17. id=117, trader, pos=(440.0, 39.0, -626.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+18. id=118, trader, pos=(967.0, 39.0, 514.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+19. id=119, trader, pos=(-863.0, 50.0, -1737.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+20. id=127, player, pos=(-954.9, 39.0, 792.6), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+21. id=122, zombie, pos=(-941.0, 39.0, 759.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
+22. id=123, animal, pos=(-996.1, 39.0, 769.8), rot=(0.0, -99.5, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+23. id=124, trader, pos=(-959.0, 39.0, 807.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+24. id=125, vehicle, pos=(-965.0, 39.0, 795.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
+25. id=126, turret, pos=(-919.0, 39.0, 851.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=150
+Total of 26 in the game
+# ts=2026-08-12T12:50:53Z cmd=listplayers
+0. id=127, REFake1, pos=(-954.7, 39.0, 782.8), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+Total of 1 in the game
+# ts=2026-08-12T12:51:07Z cmd=gettime
+Day 1, 07:11

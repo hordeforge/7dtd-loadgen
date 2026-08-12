@@ -1,0 +1,9 @@
+{
+  "scenario": "join-fast-pregen08k02",
+  "sut": "zdtd",
+  "startedAt": "2026-08-12T12:51:46Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1",
+             "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
+  "loadgen": {"git": "636a4ce", "dirtyFiles": "10"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "12"}
+}

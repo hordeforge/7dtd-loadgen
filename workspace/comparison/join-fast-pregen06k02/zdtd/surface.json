@@ -1,0 +1,222 @@
+{
+ "apm": {
+  "chunk_flush_written": 0,
+  "join_fail": 0,
+  "join_ok": 1,
+  "net_packets_in": 1231,
+  "net_packets_out": 4159,
+  "phase_rejects": 0,
+  "tickMaxNs": 690806498,
+  "tickMeanNs": 2259816,
+  "tickP99Ns": 50331648,
+  "tick_overruns": 8,
+  "ticks": 1200
+ },
+ "join": {
+  "fail": 0,
+  "firstPass": "[2026-08-12T12:50:29.8318216Z] [join#1] PASS joined entity=124 walks=1045 jumps=133 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T12:50:29.8318216Z] [join#1] PASS joined entity=124 walks=1045 jumps=133 deaths=0 respawns=0 lastDied=False l",
+  "pass": 1
+ },
+ "log": {
+  "boot": {
+   "config port=": "zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8082 webui_port=0 password=open authority=correct wire_chunks=on",
+   "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k02 dtm=6144x6144 spawn=(113,44,-508",
+   "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k02 dtm=6144x6144 spawn=(113,44,-508",
+   "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
+   "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-fast-pregen06k02/zdtd/world"
+  },
+  "severity": {
+   "INF": 67,
+   "WRN": 2
+  }
+ },
+ "meta": {
+  "client": {
+   "actions": "0",
+   "count": "1",
+   "host": "127.0.0.1",
+   "spawnEntity": "",
+   "spawnEveryMs": "",
+   "spawnPerPlayer": "",
+   "timeoutMs": "60000"
+  },
+  "loadgen": {
+   "dirtyFiles": "9",
+   "git": "636a4ce"
+  },
+  "scenario": "join-fast-pregen06k02",
+  "startedAt": "2026-08-12T12:50:30Z",
+  "sut": "zdtd",
+  "zdtd": {
+   "dirtyFiles": "12",
+   "git": "edd9e16"
+  }
+ },
+ "saves": {
+  "count": 81,
+  "files": {
+   "allies.zal": 6,
+   "blockmeta.zbm": 20,
+   "c_-1_-37.zch": 860432,
+   "c_-1_-38.zch": 860432,
+   "c_0_-36.zch": 860432,
+   "c_0_-37.zch": 860432,
+   "c_0_-38.zch": 860432,
+   "c_0_-39.zch": 860432,
+   "c_0_-40.zch": 860432,
+   "c_10_-25.zch": 860432,
+   "c_10_-26.zch": 860432,
+   "c_10_-27.zch": 860432,
+   "c_10_-34.zch": 336144,
+   "c_10_-35.zch": 860432,
+   "c_10_-36.zch": 860432,
+   "c_10_-37.zch": 336144,
+   "c_10_-38.zch": 860432,
+   "c_10_-39.zch": 860432,
+   "c_10_-40.zch": 336144,
+   "c_11_-34.zch": 336144,
+   "c_11_-35.zch": 860432,
+   "c_11_-36.zch": 860432,
+   "c_11_-37.zch": 336144,
+   "c_11_-38.zch": 336144,
+   "c_11_-39.zch": 336144,
+   "c_11_-40.zch": 336144,
+   "c_12_-34.zch": 336144,
+   "c_12_-35.zch": 860432,
+   "c_12_-36.zch": 860432,
+   "c_12_-37.zch": 336144,
+   "c_12_-38.zch": 336144,
+   "c_12_-39.zch": 336144,
+   "c_12_-40.zch": 336144,
+   "c_1_-37.zch": 860432,
+   "c_1_-38.zch": 860432,
+   "c_1_-39.zch": 860432,
+   "c_1_-40.zch": 860432,
+   "c_2_-38.zch": 860432,
+   "c_2_-39.zch": 860432,
+   "c_2_-40.zch": 336144,
+   "c_6_-34.zch": 336144,
+   "c_6_-35.zch": 336144,
+   "c_6_-36.zch": 336144,
+   "c_6_-37.zch": 336144,
+   "c_6_-38.zch": 336144,
+   "c_6_-39.zch": 336144,
+   "c_6_-40.zch": 336144,
+   "c_7_-32.zch": 262416,
+   "c_7_-34.zch": 336144,
+   "c_7_-35.zch": 336144,
+   "c_7_-36.zch": 336144,
+   "c_7_-37.zch": 336144,
+   "c_7_-38.zch": 336144,
+   "c_7_-39.zch": 336144,
+   "c_7_-40.zch": 336144,
+   "c_8_-32.zch": 262416,
+   "c_8_-33.zch": 262416,
+   "c_8_-34.zch": 336144,
+   "c_8_-35.zch": 860432,
+   "c_8_-36.zch": 860432,
+   "c_8_-37.zch": 860432,
+   "c_8_-38.zch": 860432,
+   "c_8_-39.zch": 860432,
+   "c_8_-40.zch": 336144,
+   "c_9_-25.zch": 860432,
+   "c_9_-26.zch": 860432,
+   "c_9_-27.zch": 860432,
+   "c_9_-34.zch": 336144,
+   "c_9_-35.zch": 860432,
+   "c_9_-36.zch": 860432,
+   "c_9_-37.zch": 860432,
+   "c_9_-38.zch": 860432,
+   "c_9_-39.zch": 860432,
+   "c_9_-40.zch": 860432,
+   "claims.zlc": 6,
+   "clock.zcl": 12,
+   "containers.zct": 20404,
+   "entities.zen": 56,
+   "vending.zvn": 6,
+   "weather.zwt": 264
+  },
+  "totalBytes": 43924908
+ },
+ "sut": "zdtd",
+ "telnet": {
+  "banner": {
+   "Difficulty": "1",
+   "Game mode": "GameModeSurvival",
+   "Game name": "stock",
+   "Max players": "64",
+   "Server IP": "127.0.0.1",
+   "Server port": "27120",
+   "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
+   "World": "Pregen06k02"
+  },
+  "clockRateGameMinPerRealSec": 0.4,
+  "day": [
+   "1",
+   "07",
+   "04"
+  ],
+  "entities": {
+   "alive": 23,
+   "count": 23,
+   "dead": 0,
+   "types": {
+    "animal": 1,
+    "player": 1,
+    "trader": 18,
+    "turret": 1,
+    "vehicle": 1,
+    "zombie": 1
+   }
+  },
+  "gamestats": {
+   "AirDropFrequency": "3",
+   "BedrollExpiryTime": "45",
+   "BlockDamageAI": "100",
+   "BlockDamageAIBM": "100",
+   "BlockDamagePlayer": "100",
+   "BloodMoonDay": "7",
+   "BloodMoonEnemyCount": "8",
+   "BloodMoonWarning": "1",
+   "DayLightLength": "18",
+   "DayNightLength": "60",
+   "DeathPenalty": "1",
+   "DropOnDeath": "1",
+   "EnemyDifficulty": "1",
+   "EnemySpawnMode": "True",
+   "GameDifficulty": "1",
+   "GameState": "1",
+   "IsSpawnEnemies": "True",
+   "JarRefund": "60",
+   "LandClaimCount": "5",
+   "LandClaimDeadZone": "30",
+   "LandClaimDecayMode": "0",
+   "LandClaimExpiryTime": "7",
+   "LandClaimOfflineDelay": "0",
+   "LandClaimOfflineDurabilityModifier": "4",
+   "LandClaimOnlineDurabilityModifier": "4",
+   "LandClaimSize": "41",
+   "LootAbundance": "100",
+   "LootRespawnDays": "7",
+   "PartySharedKillRange": "100",
+   "PlayerKillingMode": "0",
+   "QuestProgressionDailyLimit": "4",
+   "ShowFriendPlayerOnMap": "True",
+   "StormFreq": "100",
+   "TimeOfDayIncPerSec": "6",
+   "XPMultiplier": "100"
+  },
+  "players": {
+   "count": 1,
+   "rows": [
+    {
+     "id": 124,
+     "name": "REFake1"
+    }
+   ]
+  },
+  "reportedTotal": null,
+  "unknownCommands": []
+ }
+}
