@@ -147,7 +147,10 @@ record, and documentation of any protocol-version restriction.
 - [x] Observable surface axes: join outcome, server log categories (stock
   [ScriptOrder] noise + harness telnet-close errors excluded), telnet
   gettime/listents/listplayers, gamestats on shared names, save inventory.
-- [x] Run metadata (loadgen/zdtd git hashes, env, timestamps) in every report.
+- [x] Run metadata (loadgen/zdtd git hashes, env, timestamps, hostLoad) in
+  every report. hostLoad (1-min loadavg) lets a reader judge whether cost
+  numbers (wall, APM) were taken under host contention - added 2026-08-12
+  after the full compare-all refresh ran under a parallel 500% CPU session.
 - [x] JOINED join-moment contract in the client (orchestrators wait on it).
 - [x] Post-ready health check (process + UDP listener + console) so a dead
   side fails loudly instead of reporting a phantom "ran with 0 joins".
