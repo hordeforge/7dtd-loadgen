@@ -49,7 +49,8 @@ while [[ $# -gt 0 ]]; do
       exit 0 ;;
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
-      echo "       $0 --list"\n      echo "       $0 --world <name> (default Navezgane)"
+      echo "       $0 --list"
+      echo "       $0 --world <name> (default Navezgane)"
       exit 0 ;;
     *) echo "ERROR: unknown arg $1" >&2; exit 2 ;;
   esac
