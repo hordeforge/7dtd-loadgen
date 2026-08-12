@@ -124,8 +124,9 @@ compare-all:
 	done
 
 # Same scenario (join-fast) on every supported world: the world matrix.
-# Worlds that cannot run on a server are recorded, not faked.
+# Each world keeps its own evidence dir (join-fast-<world>). Worlds that
+# cannot run on a server are recorded, not faked.
 compare-worlds:
-	bash scripts/compare_sut.sh --scenario join-fast --sut all || true
-	COMPARE_WORLD=Pregen06k01 bash scripts/compare_sut.sh --scenario join-fast --sut all || true
-	COMPARE_WORLD=Pregen08k01 bash scripts/compare_sut.sh --scenario join-fast --sut all || true
+	bash scripts/compare_sut.sh --scenario join-fast-navezgane --sut all || true
+	COMPARE_WORLD=Pregen06k01 bash scripts/compare_sut.sh --scenario join-fast-pregen06k01 --sut all || true
+	COMPARE_WORLD=Pregen08k01 bash scripts/compare_sut.sh --scenario join-fast-pregen08k01 --sut all || true
