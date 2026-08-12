@@ -223,3 +223,6 @@ record, and documentation of any protocol-version restriction.
   Remaining candidates: looted-container items (loot roll), the Pregen
   overflow world (corrupt join state), or a stock-side save. If it recurs,
   capture the wire ItemValue (loadgen RECV dump) at the sighting.
+  Pregen08k01 core probe: held quality 3 (stock) vs 5 (zdtd), both sane -
+  the overflow-recovered world does not reproduce it either. Closed as
+  not-reproduced across all tested flows/worlds.
