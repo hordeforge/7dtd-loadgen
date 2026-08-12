@@ -107,10 +107,10 @@ Details: [`docs/REALEARTH.md`](docs/REALEARTH.md).
 
 Boots the same client scenario against the stock dedicated server and zdtd,
 captures the observable surface per run (server log categories, join outcome,
-telnet listents/listplayers/gettime snapshot, save-file presence), and diffs
-the two runs into a machine-readable report. A difference is a finding to
-triage (zdtd bug vs harness artifact vs known divergence), never a pass to
-fake; known divergences are recorded in `../zdtd/docs/PROVENANCE.md`
+telnet listents/listplayers/gettime/getgamestat snapshot, save-file presence),
+and diffs the two runs into a machine-readable report. A difference is a
+finding to triage (zdtd bug vs harness artifact vs known divergence), never a
+pass to fake; known divergences are recorded in `../zdtd/docs/PROVENANCE.md`
 (divergence register).
 
 ```bash
