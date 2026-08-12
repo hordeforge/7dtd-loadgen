@@ -180,7 +180,14 @@ EOF
     echo "  ERROR: $sut server process died after ready; see server.log" >&2
     exit 1
   fi
-  if ! ss -uln 2>/dev/null | grep -q ":$BOT_PORT "; then
+  # The UDP listener can bind a beat after the ready log line; retry before
+  # declaring a dead side.
+  udp_ok=0
+  for _ in $(seq 1 15); do
+    if ss -uln 2>/dev/null | grep -q ":$BOT_PORT "; then udp_ok=1; break; fi
+    sleep 1
+  done
+  if [[ "$udp_ok" != 1 ]]; then
     echo "  ERROR: $sut not listening on UDP $BOT_PORT after ready" >&2
     exit 1
   fi
