@@ -1,8 +1,8 @@
 {
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T10:08:06.9136965Z] [join#1] PASS joined entity=112 walks=1051 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T10:08:06.9136965Z] [join#1] PASS joined entity=112 walks=1051 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T11:15:36.1963481Z] [join#1] PASS joined entity=112 walks=1034 jumps=133 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T11:15:36.1963481Z] [join#1] PASS joined entity=112 walks=1034 jumps=133 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -23,17 +23,20 @@
    "actions": "0",
    "count": "1",
    "host": "127.0.0.1",
+   "spawnEntity": "zombieBoe",
+   "spawnEveryMs": "15000",
+   "spawnPerPlayer": "4",
    "timeoutMs": "60000"
   },
   "loadgen": {
-   "dirtyFiles": "1",
-   "git": "cf01239"
+   "dirtyFiles": "6",
+   "git": "7dc2c39"
   },
   "scenario": "horde-lite",
-  "startedAt": "2026-08-12T10:08:07Z",
+  "startedAt": "2026-08-12T11:15:44Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "16",
+   "dirtyFiles": "4",
    "git": "edd9e16"
   }
  },
@@ -135,11 +138,11 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.35,
+  "clockRateGameMinPerRealSec": 0.4211,
   "day": [
    "1",
    "07",
-   "04"
+   "22"
   ],
   "entities": {
    "alive": 11,

@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: horde-lite
 
-- stock: ran 2026-08-12T10:06:51Z | loadgen cf01239 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
-- zdtd: ran 2026-08-12T10:08:07Z | loadgen cf01239 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
+- stock: ran 2026-08-12T11:13:56Z | loadgen 7dc2c39 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
+- zdtd: ran 2026-08-12T11:15:44Z | loadgen 7dc2c39 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
 
 ## Join outcome
 
@@ -9,17 +9,17 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T10:06:49.8737564Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T10:08:06.9136965Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T11:13:48.0232407Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T11:15:36.1963481Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
 | EXC lines | 3 | 0 |
-| INF lines | 374 | 56 |
+| INF lines | 380 | 56 |
 | WRN lines | 12 | 2 |
 | telnet commands | 16 | n/a |
-- stock: 8 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
+- stock: 10 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
 - stock ERR/EXC lines: ERR=0 EXC=3
 
 Boot evidence per side:
@@ -33,16 +33,16 @@ Boot evidence per side:
 
 ## Telnet snapshot (gettime / listents / listplayers)
 
-- stock day/time: Day 1, 07:00
-- zdtd day/time: Day 1, 07:04
-- clock rate (game-min per real-sec): stock=0.35 zdtd=0.35 (60-min day = 0.4)
+- stock day/time: Day 1, 07:16
+- zdtd day/time: Day 1, 07:22
+- clock rate (game-min per real-sec): stock=0.25 zdtd=0.4211 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
-| entities total | 7 | 11 |
-| entities alive | 7 | 11 |
+| entities total | 11 | 11 |
+| entities alive | 11 | 11 |
 | players | 1 | 1 |
-- stock entity types: EntityPlayer=1, EntityZombie=6
+- stock entity types: EntityAnimalRabbit=1, EntityPlayer=1, EntityZombie=9
 - zdtd entity types: animal=1, player=1, trader=6, turret=1, vehicle=1, zombie=1
 
 ## Server banner (telnet greeting)
@@ -101,7 +101,7 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 10 file(s), 3507 KiB
+- stock: 10 file(s), 3493 KiB
 - zdtd: 120 file(s), 34059 KiB
 - stock keys: Navezgane/horde-lite_stock/Region/r.-1.0.7rg, Navezgane/horde-lite_stock/Region/r.-1.1.7rg, Navezgane/horde-lite_stock/Region/r.0.0.7rg, Navezgane/horde-lite_stock/blockmappings.nim, Navezgane/horde-lite_stock/decoration.7dt, Navezgane/horde-lite_stock/itemmappings.nim, Navezgane/horde-lite_stock/main.ttw, Navezgane/horde-lite_stock/main.ttw.bak
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch
@@ -109,6 +109,6 @@ Boot evidence per side:
 ## Findings
 
 - log: EXC (exception) line count differs (stock=3 zdtd=0)
-- telnet: entity count differs (stock=7 zdtd=11)
+- telnet: game-clock rate differs (stock=0.25 zdtd=0.4211; 60-min day = 0.4)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

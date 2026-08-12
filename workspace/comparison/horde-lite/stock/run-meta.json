@@ -1,8 +1,9 @@
 {
   "scenario": "horde-lite",
   "sut": "stock",
-  "startedAt": "2026-08-12T10:06:51Z",
-  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
-  "loadgen": {"git": "cf01239", "dirtyFiles": "1"},
-  "zdtd": {"git": "edd9e16", "dirtyFiles": "16"}
+  "startedAt": "2026-08-12T11:13:56Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1",
+             "spawnEntity": "zombieBoe", "spawnPerPlayer": "4", "spawnEveryMs": "15000"},
+  "loadgen": {"git": "7dc2c39", "dirtyFiles": "3"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "4"}
 }
