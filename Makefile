@@ -136,3 +136,12 @@ compare-worlds:
 # view cannot drift from the runs because it is computed, not hand-maintained.
 compare-consolidated:
 	python3 tools/consolidated_report.py
+
+# The triage loop's re-run phase in one command: refresh every canonical
+# scenario (both servers), regenerate the consolidated overview, print the
+# verdict. Run this after a zdtd fix lands; a delta that disappears here is
+# fixed, one that stays is still a finding.
+compare-verify: compare-all compare-consolidated
+	@echo "=== consolidated verdict ==="
+	@awk -F'|' 'NR>3 {t=$$2; id=$$3; v=$$4; gsub(/^ +| +$$/, "", t); gsub(/^ +| +$$/, "", id); gsub(/^ +| +$$/, "", v); if (v=="DELTAS"||v=="CLEAN"||v=="ONE-SIDE") print v, "->", t"/"id}' \
+		workspace/comparison/CONSOLIDATED.md

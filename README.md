@@ -119,6 +119,7 @@ make compare-sut                           # join-probe on both servers
 make compare-all                           # every catalog scenario
 make compare-worlds                        # join-fast across the world matrix
 make compare-consolidated                  # one overview over ALL evidence (no servers)
+make compare-verify                        # triage re-run: compare-all + consolidated + verdict
 SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
 COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut
 COMPARE_WORLD=Pregen06k01 make compare-sut      # compare on another world
