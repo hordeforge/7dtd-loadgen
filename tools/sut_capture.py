@@ -226,6 +226,35 @@ def save_inventory(run_dir, sut):
             "files": {k: files[k] for k in keys[:80]}}
 
 
+def zdtd_apm_summary(path):
+    """zdtd logs periodic APM JSON lines; summarize the last snapshot so the
+    comparison also carries cost evidence (tick latency, join/net counters)."""
+    if not os.path.exists(path):
+        return None
+    last = None
+    with open(path, encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            if line.startswith('{"type":"zdtd_apm"'):
+                try:
+                    last = json.loads(line)
+                except ValueError:
+                    continue
+    if not last:
+        return None
+    out = {}
+    for k in ("ticks", "net_packets_in", "net_packets_out", "join_ok", "join_fail",
+              "tick_overruns", "phase_rejects", "chunk_flush_written"):
+        if k in last.get("counters", {}):
+            out[k] = last["counters"][k]
+    tt = last.get("sections", {}).get("tick_total", {})
+    if tt:
+        out["tickMeanNs"] = tt.get("mean_ns")
+        out["tickP99Ns"] = tt.get("p99_ns")
+        out["tickMaxNs"] = tt.get("max_ns")
+    return out
+
+
 def run_meta(run_dir):
     """Auditability metadata written by compare_sut.sh (git hashes, env, time)."""
     p = os.path.join(run_dir, "run-meta.json")
@@ -249,6 +278,7 @@ def main():
         "join": join_outcome(os.path.join(run_dir, "loadgen.log")),
         "telnet": telnet_snapshot(run_dir),
         "saves": save_inventory(run_dir, sut),
+        "apm": zdtd_apm_summary(os.path.join(run_dir, "server.log")) if sut == "zdtd" else None,
     }
     print(json.dumps(surface, indent=1, sort_keys=True))
     return 0
