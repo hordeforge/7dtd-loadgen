@@ -210,3 +210,7 @@ record, and documentation of any protocol-version restriction.
   unsupported (missing capability); Pregen04k01 absent. The C2S payload
   Overflow fires on EVERY pregen (1/join); only Pregen06k01 breaks the
   join - a precise zdtd defect signature for the fix.
+- [ ] Consider: optional 7dtd-apm capture attach during the harness's stock phase
+  so the cost axis covers BOTH servers (zdtd APM is in the report; stock cost
+  needs the apm tool's session capture). Workspace boundary: loadgen creates
+  demand, apm measures - a documented integration point, not a loadgen change.
