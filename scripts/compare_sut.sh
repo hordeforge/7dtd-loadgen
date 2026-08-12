@@ -104,8 +104,8 @@ for sut in $SUTS; do
         kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
         exit 1
       fi
-      # Small grace so the connection manager is accepting logins.
-      sleep 3
+      # (The join-ready gate used to sleep 3s here; it is replaced by a
+      # login-ready probe below, which is the real signal.)
       echo "  stock ready (StartGame done in server log)"
       BOT_PORT=$((STOCK_SERVER_PORT + 2))
       PIDFILE="$USERDATA/dedicated.pid"
@@ -159,6 +159,58 @@ EOF
       TELNET_PORT=8082
       ;;
   esac
+
+  # Post-ready health check: the ready line can precede full usability, or the
+  # server process can die from host pressure (swap/oom). Verify process, UDP
+  # listener and console before spending a client window on a dead side, so a
+  # failed phase fails loudly instead of reporting a phantom "ran with 0 joins".
+  if ! kill -0 "$(cat "$PIDFILE" 2>/dev/null || echo 0)" 2>/dev/null; then
+    echo "  ERROR: $sut server process died after ready; see server.log" >&2
+    exit 1
+  fi
+  if ! ss -uln 2>/dev/null | grep -q ":$BOT_PORT "; then
+    echo "  ERROR: $sut not listening on UDP $BOT_PORT after ready" >&2
+    exit 1
+  fi
+  PROBE_ARGS=(--commands gettime --out /dev/null)
+  if [[ "$sut" == "stock" ]]; then
+    PROBE_ARGS+=(--password "$TELNET_PASSWORD")
+  fi
+  if ! python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${PROBE_ARGS[@]}"; then
+    echo "  ERROR: $sut admin console not answering after ready" >&2
+    exit 1
+  fi
+  echo "  $sut healthy (process, UDP $BOT_PORT, console)"
+
+  # Login-ready gate: the ready line means the world is up, but stock's
+  # ConnectionManager can still deny logins briefly after StartGame done
+  # (live-observed 5 denials on one run). Probe with one real join; proceed
+  # only once a bot actually enters the world.
+  probe_ok=0
+  for _ in $(seq 1 4); do
+    rm -f "$run_dir/probe.log"
+    LOADGEN_MODE=join LOADGEN_COUNT=1 LOADGEN_ACTIONS=0 \
+      LOADGEN_TIMEOUT=30000 LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
+      bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/probe.log" 2>&1 &
+    PROBE_PID=$!
+    for _ in $(seq 1 35); do
+      if ! kill -0 "$PROBE_PID" 2>/dev/null; then break; fi
+      if grep -q "JOINED entity=" "$run_dir/probe.log" 2>/dev/null; then probe_ok=1; break; fi
+      sleep 1
+    done
+    kill "$PROBE_PID" 2>/dev/null || true
+    sleep 2
+    kill -9 "$PROBE_PID" 2>/dev/null || true
+    wait "$PROBE_PID" 2>/dev/null || true
+    if [[ "$probe_ok" == 1 ]]; then break; fi
+    echo "  login probe did not join; retrying" >&2
+    sleep 3
+  done
+  if [[ "$probe_ok" != 1 ]]; then
+    echo "  ERROR: $sut never accepted a login after ready; see probe.log" >&2
+    exit 1
+  fi
+  echo "  $sut login-ready (probe joined)"
 
   # Run the client - the SAME scenario on both servers. Run it in the
   # background so the telnet snapshot happens while the bot is connected
