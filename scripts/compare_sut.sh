@@ -91,6 +91,26 @@ TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 
 echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIONS) ==="
 
+# Evidence must never silently clobber: a non-default world writes to a
+# world-tagged dir (join-fast + Pregen08k01 -> join-fast-pregen08k01), unless
+# the scenario id already carries that tag (compare-worlds convention).
+# This is what keeps the canonical dir (default world) and the per-world
+# matrix dirs distinct without manual renaming.
+WORLD_TAG="${WORLD_NAME,,}"
+if [[ -n "$WORLD_TAG" && "$WORLD_TAG" != "navezgane" ]]; then
+  if [[ "$SCENARIO_ID" != *"-${WORLD_TAG}" ]]; then
+    echo "note: world '$WORLD_NAME' is not the default - evidence goes to ${SCENARIO_ID}-${WORLD_TAG}"
+    OUT_ROOT="$OUT_ROOT/${SCENARIO_ID}-${WORLD_TAG}"
+  fi
+fi
+
+# Sanity: a scenario id that already encodes a world must agree with it.
+for known in navezgane pregen06k01 pregen06k02 pregen08k01 pregen08k02; do
+  if [[ "$SCENARIO_ID" == *"-${known}" && "$known" != "$WORLD_TAG" ]]; then
+    echo "WARN: scenario id '$SCENARIO_ID' implies world '$known' but --world/COMPARE_WORLD='$WORLD_NAME' - run-meta will tell the truth, the id won't"
+  fi
+done
+
 for sut in $SUTS; do
   run_dir="$OUT_ROOT/$SCENARIO_ID/$sut"
   rm -rf "$run_dir"

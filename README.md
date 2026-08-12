@@ -123,6 +123,13 @@ COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut
 COMPARE_WORLD=Pregen06k01 make compare-sut      # compare on another world
 ```
 
+A non-default world never clobbers the canonical evidence: `--world
+Pregen08k01` (or `COMPARE_WORLD=Pregen08k01`) writes to
+`workspace/comparison/join-fast-pregen08k01/` unless the scenario id already
+carries the `-pregen08k01` suffix (the `compare-worlds` convention). A
+scenario id that encodes a world while `COMPARE_WORLD` disagrees is warned,
+never silently accepted.
+
 Catalog: join-probe, wander-2bot, join-fast, probe-15s, horde-lite (spawn
 pressure), soak-4bot (sustained multi-bot). The zdtd side carries an APM cost
 snapshot in each report.
