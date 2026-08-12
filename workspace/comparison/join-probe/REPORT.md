@@ -56,6 +56,17 @@ Boot evidence per side:
 | Game name | join-probe_stock | stock |
 | Difficulty | 1 | 1 |
 
+## zdtd APM (last snapshot; no stock equivalent)
+
+- ticks: 1200
+- join_ok: 1
+- join_fail: 0
+- net_packets_in: 1243
+- net_packets_out: 3789
+- tick_overruns: 5
+- phase_rejects: 0
+- tick mean/p99/max ns: 2042626 / 50331648 / 745108185
+
 ## Gamestats (compared on shared names)
 
 | stat | stock | zdtd |

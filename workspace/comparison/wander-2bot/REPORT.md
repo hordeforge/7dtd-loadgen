@@ -56,6 +56,17 @@ Boot evidence per side:
 | Game name | wander-2bot_stock | stock |
 | Difficulty | 1 | 1 |
 
+## zdtd APM (last snapshot; no stock equivalent)
+
+- ticks: 1200
+- join_ok: 2
+- join_fail: 0
+- net_packets_in: 2494
+- net_packets_out: 12341
+- tick_overruns: 11
+- phase_rejects: 0
+- tick mean/p99/max ns: 3518011 / 50331648 / 1518549411
+
 ## Gamestats (compared on shared names)
 
 | stat | stock | zdtd |
