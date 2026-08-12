@@ -163,6 +163,11 @@ record, and documentation of any protocol-version restriction.
   scenarios live - done, 2026-08-12 (6/6 catalog scenarios PASS both sides).
 - [ ] Stock ready gate: reduce residual denial flakiness (5 FAILs observed on
   one run despite StartGame-done gate; check ConnectionManager accept window).
+  Current state: a fixed 5s settle after ready + an honest zero-PASS finding
+  surface. A login probe gate was tried and REMOVED - its loopback IP reuse
+  wedges stock's per-IP throttle at LiteNet level (8 recv=0 fails observed),
+  worse than the residual window it would measure. Deep fix needs the
+  ConnectionManager accept-window RE (research lane).
 
 ## Playtest-compare live run (2026-08-12, 2nd attempt)
 

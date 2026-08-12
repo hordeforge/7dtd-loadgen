@@ -112,7 +112,9 @@ silently accepted.
   telnet snapshot (aligned with the connected window), session finalized under
   `stock/apm/session_*/`, summarized into the surface (`apmStock` key) - layer
   scores, IPC, GC alloc rate, lag verdict. `COMPARE_APM=0` disables;
-  `COMPARE_APM_SECONDS` sizes the window (default 30).
+  `COMPARE_APM_SECONDS` sizes the window (default 30). Runs before
+  2026-08-12 14:25 UTC (the world matrix + earlier sweeps) predate the axis
+  and carry no `apmStock` - historical evidence, not a defect.
 
 Both are reported side by side in REPORT.md and carried in diff.json, never
 diffed against each other (zdtd's is tick/counter based, stock's is
