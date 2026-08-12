@@ -75,7 +75,8 @@ world; the session-end `PASS joined` summary is too late).
 | stock EXC lines (NRE on NetPackageMinEventFire) vs zdtd 0 | stock engine wart; zdtd clean |
 | clock rate 0.33-0.37 (stock) vs 0.39-0.44 (zdtd) game-min/s | known divergence, PROVENANCE 3.9 |
 | entities 1-3 (stock, lazy spawns) vs 11-12 (zdtd, ambient seeds) | known divergence, PROVENANCE 3.9 |
-| gamestats shared-name differences | triage per stat (AirDropFrequency preset override, TimeOfDayIncPerSec, land-claim defaults, ...) |
+| gamestats shared-name differences | fixed where unambiguous: zdtd wire fixes (AirDropFrequency days, TimeOfDayIncPerSec from clock, BloodMoonWarning 1, LandClaimExpiryTime from config) + harness config alignment (GameDifficulty 1, PlayerKillingMode 0, LandClaimExpiryDays 7). All 35 shared stats match on the verification run |
+| stock residual post-ready login window | honest data: partial FAILs before PASS are flagged per run; a login probe gate was tried and removed (its loopback IP reuse wedged stock's per-IP throttle). See TODO.md |
 
 ## Tests
 
