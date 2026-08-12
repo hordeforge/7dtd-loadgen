@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+# Stock-vs-zdtd comparison runner (SUT harness).
+#
+# Runs the same client scenario against the stock dedicated server and/or
+# zdtd, captures the observable surface per run (server log, loadgen outcome,
+# telnet snapshot, save-file inventory), and in --sut all mode diffs the two
+# runs into a machine-readable report via tools/sut_report.py.
+#
+#   ./scripts/compare_sut.sh --scenario join-probe --sut all
+#   ./scripts/compare_sut.sh --scenario join-probe --sut zdtd
+#
+# Scenario config is the same for both servers: this script's client knobs
+# (count/actions/timeout) come from env so a single config drives both sides.
+# A difference between the two runs is a FINDING to triage (zdtd bug vs harness
+# artifact vs known divergence), never a pass to fake.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT_ROOT="${COMPARE_OUT:-$ROOT/workspace/comparison}"
+SCENARIO_ID=""
+SUTS=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --scenario) SCENARIO_ID="$2"; shift 2 ;;
+    --sut)
+      case "$2" in
+        stock) SUTS="stock" ;;
+        zdtd) SUTS="zdtd" ;;
+        all) SUTS="stock zdtd" ;;
+        *) echo "ERROR: --sut must be stock|zdtd|all" >&2; exit 2 ;;
+      esac
+      shift 2 ;;
+    -h|--help)
+      echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
+      exit 0 ;;
+    *) echo "ERROR: unknown arg $1" >&2; exit 2 ;;
+  esac
+done
+
+if [[ -z "$SCENARIO_ID" || -z "$SUTS" ]]; then
+  echo "ERROR: --scenario and --sut required" >&2
+  exit 2
+fi
+
+# Client knobs (identical for both servers - the "same scenario config").
+COUNT="${COMPARE_COUNT:-1}"
+ACTIONS="${COMPARE_ACTIONS:-0}"
+TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-60000}"
+HOST="${COMPARE_HOST:-127.0.0.1}"
+# Stock telnet auth (test-only lab password, never a secret).
+TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
+
+echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIONS) ==="
+
+for sut in $SUTS; do
+  run_dir="$OUT_ROOT/$SCENARIO_ID/$sut"
+  rm -rf "$run_dir"
+  mkdir -p "$run_dir"
+  echo "--- SUT: $sut -> $run_dir"
+
+  case "$sut" in
+    stock)
+      # Bots speak LiteNetLib directly, so they hit the LiteNet data port =
+      # ServerPort + 2 (26902 for the stock 26900 server). 26900 itself is the
+      # game client's "Connect to IP" port; a bot connect there fails.
+      STOCK_SERVER_PORT="$(grep -oP 'name="ServerPort" value="\K[0-9]+' \
+        "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
+      STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
+      USERDATA="$run_dir/userdata"
+      RE_WORLD_NAME=Navezgane RE_GAME_NAME="${SCENARIO_ID}_stock" \
+        RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
+        bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
+      ready=0
+      for _ in $(seq 1 150); do
+        # The join-ready signal is the server log's "StartGame done", not telnet
+        # up: telnet accepts connections while the world is still loading and
+        # every login is then denied with EKickReason ServerStateAuthorization
+        # (live-observed 2026-08-12: 5 denials before StartGame done).
+        stock_log="$(cat "$USERDATA/dedicated.logpath" 2>/dev/null || true)"
+        if [[ -n "$stock_log" && -f "$stock_log" ]] && \
+           grep -q "StartGame done" "$stock_log" 2>/dev/null; then
+          ready=1; break
+        fi
+        sleep 1
+      done
+      if [[ "$ready" != 1 ]]; then
+        echo "  stock: not ready in 150s; see boot.log" >&2
+        kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
+        exit 1
+      fi
+      # Small grace so the connection manager is accepting logins.
+      sleep 3
+      echo "  stock ready (StartGame done in server log)"
+      BOT_PORT=$((STOCK_SERVER_PORT + 2))
+      PIDFILE="$USERDATA/dedicated.pid"
+      # gettime first and last so the capture can derive the game-clock rate.
+      TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
+      TELNET_PORT=8081
+      ;;
+    zdtd)
+      # Same game options stock runs with (live values from the stock run's
+      # getgamestat/getgamepref: day 60/18, max zombies 16, difficulty 1, move
+      # 2/3). Written per scenario so both servers get one config each.
+      ZDTD_CFG="$run_dir/serverconfig.xml"
+      cat >"$ZDTD_CFG" <<EOF
+<ServerSettings>
+  <property name="GameWorld" value="Navezgane"/>
+  <property name="GameName" value="${SCENARIO_ID}_zdtd"/>
+  <property name="ServerMaxPlayerCount" value="64"/>
+  <property name="MaxSpawnedZombies" value="16"/>
+  <property name="EnemyDifficulty" value="1"/>
+  <property name="EnemySpawnMode" value="true"/>
+  <property name="DayNightLength" value="60"/>
+  <property name="DayLightLength" value="18"/>
+  <property name="ZombieMove" value="2"/>
+  <property name="ZombieMoveNight" value="3"/>
+  <property name="EACEnabled" value="false"/>
+</ServerSettings>
+EOF
+      RE_SUT_PORT=27120 RE_SUT_ADMIN_PORT=8082 RE_SUT_WORLD="$run_dir/world" \
+        RE_SUT_WORLD_NAME=Navezgane RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
+        RE_SUT_LOGFILE="$run_dir/server.log" \
+        bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
+      ready=0
+      for _ in $(seq 1 180); do
+        # "config port=" prints mid-init; the network-ready marker is the last
+        # init line (challenge + negotiated package mappings), printed with a
+        # two-space indent (not the "zdtd: " prefix).
+        if grep -q 'challenge=0x.*mappings=' "$run_dir/server.log" 2>/dev/null; then ready=1; break; fi
+        sleep 1
+      done
+      if [[ "$ready" != 1 ]]; then
+        echo "  zdtd: not ready in 180s; see boot.log" >&2
+        exit 1
+      fi
+      echo "  zdtd ready (challenge line in server.log)"
+      BOT_PORT=$((27120 + 2))  # zdtd binds LiteNetLib on --port + 2
+      PIDFILE="$run_dir/world/dedicated.pid"
+      TELNET_CMD="gettime,listents,listplayers,gettime"
+      TELNET_PORT=8082
+      ;;
+  esac
+
+  # Run the client - the SAME scenario on both servers. Run it in the
+  # background so the telnet snapshot happens while the bot is connected
+  # (stock and zdtd both kick players when the client times out; a snapshot
+  # after the client exits always reads 0 players).
+  LOADGEN_MODE=join LOADGEN_COUNT="$COUNT" LOADGEN_ACTIONS="$ACTIONS" \
+    LOADGEN_TIMEOUT="$TIMEOUT_MS" LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
+    bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/loadgen.log" 2>&1 &
+  CLIENT_PID=$!
+  joined=0
+  for _ in $(seq 1 40); do
+    if ! kill -0 "$CLIENT_PID" 2>/dev/null; then break; fi
+    # PlayerIdReceived is the join moment; "PASS joined" is only the
+    # session-end summary (logged at disconnect), too late for a snapshot.
+    if grep -q "STAGE PlayerIdReceived" "$run_dir/loadgen.log" 2>/dev/null; then joined=1; break; fi
+    sleep 1
+  done
+  if [[ "$joined" == 1 ]]; then
+    echo "  client joined; snapshot while connected"
+  else
+    echo "  WARN: client never joined before snapshot" >&2
+  fi
+
+  # Telnet-style snapshot (both servers expose a stock-shaped console; zdtd
+  # via --admin-port). Entity/player counts come from listents/listplayers;
+  # gettime twice so the capture can derive the game-clock rate.
+  TELNET_ARGS=(--out "$run_dir/telnet.txt" --commands "$TELNET_CMD" --tail-sleep 12)
+  if [[ "$sut" == "stock" ]]; then
+    TELNET_ARGS+=(--password "$TELNET_PASSWORD")
+  fi
+  python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${TELNET_ARGS[@]}" \
+    || echo "  (telnet snapshot failed)"
+
+  # Wait for the client to finish, then summarize the join outcome.
+  wait "$CLIENT_PID" || true
+  joins=$(grep -c "PASS joined" "$run_dir/loadgen.log" || true)
+  echo "  client done: $joins join PASS(es)"
+
+  # Capture the stock server log (it is written to a timestamped file under
+  # userdata; the start script records the path). zdtd already logs to
+  # $run_dir/server.log. Snapshot AFTER the client + telnet session so the log
+  # covers the whole run (stock getgamestat dumps its 81 GameStats into it).
+  if [[ "$sut" == "stock" ]]; then
+    stock_log="$(cat "$USERDATA/dedicated.logpath" 2>/dev/null || true)"
+    if [[ -n "$stock_log" && -f "$stock_log" ]]; then
+      cp "$stock_log" "$run_dir/server.log"
+    else
+      echo "  WARN: stock server log not found at $stock_log" >&2
+    fi
+  fi
+
+  # Surface capture (per run, machine-readable). A capture failure is a harness
+  # bug, not a scenario result - fail loudly.
+  python3 "$ROOT/tools/sut_capture.py" "$run_dir" "$sut" >"$run_dir/surface.json"
+
+  # Teardown.
+  if [[ -f "$PIDFILE" ]]; then
+    kill -9 "$(cat "$PIDFILE")" 2>/dev/null || true
+  fi
+  sleep 2
+  echo "  torn down"
+done
+
+if [[ "$SUTS" == "stock zdtd" ]]; then
+  echo "=== diff report ==="
+  python3 "$ROOT/tools/sut_report.py" "$OUT_ROOT/$SCENARIO_ID"
+  echo "report: $OUT_ROOT/$SCENARIO_ID/REPORT.md"
+fi

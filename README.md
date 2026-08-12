@@ -103,6 +103,30 @@ LOADGEN_LIVE_REALEARTH=1 make test
 
 Details: [`docs/REALEARTH.md`](docs/REALEARTH.md).
 
+## Stock-vs-zdtd comparison (SUT harness)
+
+Boots the same client scenario against the stock dedicated server and zdtd,
+captures the observable surface per run (server log categories, join outcome,
+telnet listents/listplayers/gettime snapshot, save-file presence), and diffs
+the two runs into a machine-readable report. A difference is a finding to
+triage (zdtd bug vs harness artifact vs known divergence), never a pass to
+fake; known divergences are recorded in `../zdtd/docs/PROVENANCE.md`
+(divergence register).
+
+```bash
+make compare-sut                           # join-probe on both servers
+SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
+COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut
+```
+
+Output per scenario (`workspace/comparison/<scenario>/`): `stock/` and `zdtd/`
+run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus
+`REPORT.md` + `diff.json` (the normalized diff). Both servers get the same
+client knobs (`COMPARE_*`) and the same game options (zdtd boots with a
+serverconfig matching the stock run's live values). If a scenario cannot run on
+one server the report says NOT COMPARED; it is never reported as compared on
+one side's data alone.
+
 ## Layout
 
 ```text

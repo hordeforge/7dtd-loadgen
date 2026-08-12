@@ -1,0 +1,33 @@
+*** Connected with 7DTD server.
+*** Server version: V 3.1.0 Compatibility Version: V3.1.0 b14
+
+Server IP:   127.0.0.1
+Server port: 27120
+Max players: 64
+Game mode:   GameModeSurvival
+World:       Navezgane
+Game name:   stock
+Difficulty:  2
+
+Press 'help' to get a list of all commands. Press 
+
+# ts=2026-08-12T04:50:18Z cmd=gettime
+Day 1, 07:00
+# ts=2026-08-12T04:50:19Z cmd=listents
+0. id=100, trader, pos=(976.0, 67.0, -1529.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+1. id=101, trader, pos=(-931.0, 76.0, 1762.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+2. id=102, trader, pos=(204.0, 77.0, -136.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+3. id=103, trader, pos=(-1568.0, 71.0, -1184.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+4. id=104, trader, pos=(459.0, 62.0, 655.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+5. id=112, player, pos=(-260.1, 60.0, 451.7), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+6. id=107, zombie, pos=(-243.0, 61.0, 409.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
+7. id=108, animal, pos=(-291.7, 61.0, 425.1), rot=(0.0, 20.7, 0.0), lifetime=float.Max, remote=False, dead=False, health=100
+8. id=109, trader, pos=(-261.0, 61.0, 457.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=9999
+9. id=110, vehicle, pos=(-267.0, 61.0, 445.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=200
+10. id=111, turret, pos=(-221.0, 61.0, 501.0), rot=(0.0, 0.0, 0.0), lifetime=float.Max, remote=False, dead=False, health=150
+Total of 11 in the game
+# ts=2026-08-12T04:50:21Z cmd=listplayers
+0. id=112, REFake1, pos=(-256.9, 60.0, 443.6), rot=(0.0, 0.0, 0.0), remote=True, health=100, deaths=0, zombies=0, players=0, score=0, level=1, pltfmid=<unknown>, crossid=<unknown>, ip=<unknown>, ping=0
+Total of 1 in the game
+# ts=2026-08-12T04:50:35Z cmd=gettime
+Day 1, 07:07

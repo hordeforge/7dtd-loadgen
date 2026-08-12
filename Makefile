@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check
+.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut
 
 help:
 	@echo "7dtd-loadgen"
@@ -32,6 +32,9 @@ help:
 	@echo "  make scenarios           List RealEarth loadgen scenario ids"
 	@echo "  make research-save-check Verify every probe save against the research codecs"
 	@echo "                          (7dtd-research make save-roundtrip-all; needs the sibling repo)"
+	@echo "  make compare-sut         Stock-vs-zdtd comparison: run the same client scenario"
+	@echo "                          against both servers and diff the observable surface"
+	@echo "                          (SCENARIO=join-probe SUT=all|stock|zdtd)"
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
@@ -98,3 +101,12 @@ clean:
 # at ../7dtd-research. Exits non-zero on the first broken save.
 research-save-check:
 	@cd "$(ROOT)/../7dtd-research" && make save-roundtrip-all
+
+# Stock-vs-zdtd comparison harness: run the same client scenario against the
+# stock dedicated server and zdtd, capture the observable surface (log
+# categories, join outcome, telnet snapshot, save inventory) and diff into a
+# report. Needs the sibling zdtd repo (ZDTD_ROOT) + a stock install.
+#   make compare-sut            # join-probe on both servers (default)
+#   SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
+compare-sut:
+	bash scripts/compare_sut.sh --scenario "${SCENARIO:-join-probe}" --sut "${SUT:-all}"

@@ -14,3 +14,14 @@ __pycache__/
 
 # Local harness runtime state (reconnect logs etc.)
 server/
+
+# SUT comparison runs: keep the small reports (REPORT.md / diff.json /
+# surface.json / telnet.txt), ignore the bulky server state + logs (*.log is
+# already ignored globally, which covers loadgen.log). Run dirs are
+# comparison/<scenario>/<stock|zdtd>/...
+workspace/comparison/*/*/userdata/
+workspace/comparison/*/*/world/
+workspace/comparison/*/*/boot.log
+workspace/comparison/*/*/server.log
+workspace/comparison/*/*/serverconfig.xml
+workspace/comparison/run.log
