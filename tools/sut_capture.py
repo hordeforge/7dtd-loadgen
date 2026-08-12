@@ -219,6 +219,17 @@ def save_inventory(run_dir, sut):
             "files": {k: files[k] for k in keys[:80]}}
 
 
+def run_meta(run_dir):
+    """Auditability metadata written by compare_sut.sh (git hashes, env, time)."""
+    p = os.path.join(run_dir, "run-meta.json")
+    if not os.path.exists(p):
+        return None
+    try:
+        return json.load(open(p))
+    except (ValueError, OSError):
+        return None
+
+
 def main():
     if len(sys.argv) != 3:
         print(__doc__, file=sys.stderr)
@@ -226,6 +237,7 @@ def main():
     run_dir, sut = sys.argv[1], sys.argv[2]
     surface = {
         "sut": sut,
+        "meta": run_meta(run_dir),
         "log": log_categories(os.path.join(run_dir, "server.log"), sut),
         "join": join_outcome(os.path.join(run_dir, "loadgen.log")),
         "telnet": telnet_snapshot(run_dir),

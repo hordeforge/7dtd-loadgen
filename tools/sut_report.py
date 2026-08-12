@@ -57,6 +57,20 @@ def main():
     findings = []
     axes = {}
 
+    # Auditability: what was under test and when.
+    for side, s in (("stock", stock), ("zdtd", zdtd)):
+        if s and s.get("meta"):
+            m = s["meta"]
+            lines.append(f"- {side}: ran {m.get('startedAt')} | "
+                         f"loadgen {m.get('loadgen', {}).get('git', '?')}"
+                         f"{' (dirty)' if int(m.get('loadgen', {}).get('dirtyFiles', 0) or 0) else ''} | "
+                         f"zdtd {m.get('zdtd', {}).get('git', '?')}"
+                         f"{' (dirty)' if int(m.get('zdtd', {}).get('dirtyFiles', 0) or 0) else ''} | "
+                         f"client count={m.get('client', {}).get('count', '?')} "
+                         f"actions={m.get('client', {}).get('actions', '?')} "
+                         f"timeout={m.get('client', {}).get('timeoutMs', '?')}ms")
+    lines.append("")
+
     if stock is None or zdtd is None:
         ran = "stock" if stock else "zdtd"
         lines.append(f"## Status: NOT COMPARED\n")

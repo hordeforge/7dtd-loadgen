@@ -31,6 +31,13 @@ def _py(args: list[str]) -> subprocess.CompletedProcess[str]:
 
 def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run-meta.json").write_text(
+        json.dumps({"scenario": "scenario", "sut": sut, "startedAt": "2026-08-12T00:00:00Z",
+                    "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
+                    "loadgen": {"git": "abc1234", "dirtyFiles": "0"},
+                    "zdtd": {"git": "def5678", "dirtyFiles": "1"}}),
+        encoding="utf-8",
+    )
     (run_dir / "loadgen.log").write_text(
         "2026-08-12T00:00:00Z [join#1] STAGE PlayerIdReceived: entityId=171 bodyLen=336\n"
         "2026-08-12T00:00:00Z [join#1] STAGE Disconnected: DisconnectPeerCalled\n"
@@ -129,6 +136,8 @@ def test_full_comparison_pipeline(tmp_path):
     r = _py([str(TOOLS / "sut_report.py"), str(tmp_path / "scenario")])
     assert r.returncode == 0, r.stderr
     report = r.stdout
+    assert "loadgen abc1234" in report
+    assert "zdtd def5678 (dirty)" in report
     assert "compared" in report.lower() or "findings" in report.lower()
     diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
     assert diff["compared"] is True

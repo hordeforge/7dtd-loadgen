@@ -191,6 +191,24 @@ EOF
     fi
   fi
 
+  # Run metadata (auditability: what was under test, when, with which knobs).
+  # The capture embeds this into surface.json, so a REPORT.md/diff.json always
+  # names the exact loadgen + zdtd revisions it compared.
+  LOADGEN_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  LOADGEN_DIRTY="$(git -C "$ROOT" status --porcelain 2>/dev/null | wc -l)"
+  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" status --porcelain 2>/dev/null | wc -l)"
+  cat >"$run_dir/run-meta.json" <<EOF
+{
+  "scenario": "$SCENARIO_ID",
+  "sut": "$sut",
+  "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST"},
+  "loadgen": {"git": "$LOADGEN_GIT", "dirtyFiles": "$LOADGEN_DIRTY"},
+  "zdtd": {"git": "$ZDTD_GIT", "dirtyFiles": "$ZDTD_DIRTY"}
+}
+EOF
+
   # Surface capture (per run, machine-readable). A capture failure is a harness
   # bug, not a scenario result - fail loudly.
   python3 "$ROOT/tools/sut_capture.py" "$run_dir" "$sut" >"$run_dir/surface.json"
