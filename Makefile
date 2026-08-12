@@ -110,8 +110,10 @@ research-save-check:
 #   SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
 #   make compare-list           # scenario ids from scripts/scenarios/sut.json
 #   make compare-all            # every catalog scenario on both servers
+SCENARIO ?= join-probe
+SUT ?= all
 compare-sut:
-	bash scripts/compare_sut.sh --scenario "${SCENARIO:-join-probe}" --sut "${SUT:-all}"
+	bash scripts/compare_sut.sh --scenario "$(SCENARIO)" --sut "$(SUT)"
 
 compare-list:
 	bash scripts/compare_sut.sh --list
