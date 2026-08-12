@@ -1,4 +1,17 @@
 {
+ "apm": {
+  "chunk_flush_written": 0,
+  "join_fail": 0,
+  "join_ok": 1,
+  "net_packets_in": 1223,
+  "net_packets_out": 3727,
+  "phase_rejects": 0,
+  "tickMaxNs": 1121474416,
+  "tickMeanNs": 3070987,
+  "tickP99Ns": 50331648,
+  "tick_overruns": 15,
+  "ticks": 1200
+ },
  "join": {
   "fail": 0,
   "firstPass": "[2026-08-12T11:15:36.1963481Z] [join#1] PASS joined entity=112 walks=1034 jumps=133 deaths=0 respawns=0 lastDied=False l",
