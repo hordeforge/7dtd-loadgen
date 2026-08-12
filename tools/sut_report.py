@@ -181,6 +181,20 @@ def main():
     if se.get("count") != ze.get("count"):
         findings.append(f"telnet: entity count differs (stock={se.get('count')} "
                         f"zdtd={ze.get('count')})")
+
+    # ---- Server banner (identity/config the telnet console announces) ----
+    sb = (st or {}).get("banner") or {}
+    zb = (zt or {}).get("banner") or {}
+    if sb or zb:
+        lines.append("\n## Server banner (telnet greeting)\n")
+        lines.append("| field | stock | zdtd |")
+        lines.append("|---|---|---|")
+        for k in ("Server port", "Max players", "Game mode", "World", "Game name", "Difficulty"):
+            lines.append(f"| {k} | {sb.get(k, 'n/a')} | {zb.get(k, 'n/a')} |")
+        for k, label in (("Max players", "max players"),
+                         ("Difficulty", "difficulty"), ("World", "world")):
+            if k in sb and k in zb and sb[k] != zb[k]:
+                findings.append(f"banner: {label} differs ({sb[k]} vs {zb[k]})")
     if sp.get("count") != zp.get("count"):
         findings.append(f"telnet: player count differs (stock={sp.get('count')} "
                         f"zdtd={zp.get('count')})")

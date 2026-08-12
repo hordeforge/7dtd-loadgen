@@ -60,11 +60,16 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
         listents = zombie_row + "Total of 1 in the game\n"
         gs = ("GameStat.DayNightLength = 60\nGameStat.TimeOfDayIncPerSec = 6\n"
               "GameStat.AirDropFrequency = 3\n")
+        banner = ("Server port: 26900\nMax players: 64\nWorld: Navezgane\n"
+                  "Difficulty: 1\nGame name: join-probe_stock\n")
     else:
         listents = zombie_row + animal_row + "Total of 2 in the game\n"
         gs = ("GameStat.DayNightLength = 60\nGameStat.TimeOfDayIncPerSec = 20\n"
               "GameStat.AirDropFrequency = 0\n")
+        banner = ("Server port: 27120\nMax players: 64\nWorld: Navezgane\n"
+                  "Difficulty: 2\nGame name: join-probe_zdtd\n")
     (run_dir / "telnet.txt").write_text(
+        banner +
         "# ts=2026-08-12T00:00:00Z cmd=gettime\n"
         "Day 1, 07:00\n"
         "# ts=2026-08-12T00:00:02Z cmd=listents\n"
@@ -151,6 +156,8 @@ def test_full_comparison_pipeline(tmp_path):
     assert any(f.startswith("telnet: entity count differs") for f in diff["findings"])
     assert any(f.startswith("log: EXC (exception) line count differs") for f in diff["findings"])
     assert any(f.startswith("gamestats: 2 shared stat(s) differ") for f in diff["findings"])
+    assert any(f.startswith("banner: difficulty differs") for f in diff["findings"])
+    assert "| Max players | 64 | 64 |" in report
 
 
 def test_not_compared_when_one_side_missing(tmp_path):
