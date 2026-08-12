@@ -157,6 +157,12 @@ playtest-compare (via CLIENT_PLATFORM=local; reports in ../7dtd-playtest/workspa
 - full suite: stock 80/5, zdtd 81/4; same known findings plus
   vehicle/vehicle_drive (stock 0.38m vs zdtd 0.51m, threshold 0.4 - razor-thin,
   likely a test-timing flake).
+- combat: 9/1 each - the shared melee_damage_out fail was re-run and confirmed
+  a flake (PASS/PASS); vehicle_drive classified flake on the same precedent.
+- bench: 82/82 PASS both servers, both laps (2-lap repeat); per-case action
+  timings within 0.6% (client-driven); server-side wall time stock 157.1s vs
+  zdtd 128.0s - zdtd ~18.5% faster, 2-of-2 evidence (matches the single-run
+  129 vs 84.6s direction). Zero flakes in the repeat.
 
 ## World matrix (2026-08-12, make compare-worlds)
 
