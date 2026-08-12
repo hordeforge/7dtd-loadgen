@@ -204,3 +204,7 @@ record, and documentation of any protocol-version restriction.
   The C2S decode overflow is pregen-world-specific with world-dependent
   severity - a zdtd decode gap (which field/buffer is the RE work).
   zdtd bug to fix.
+- [ ] World matrix (COMPARE_WORLD): Navezgane join OK (0 C2S overflows);
+  Pregen06k01 join FAILS (payload Overflow); Pregen08k01 join OK but logs the
+  same Overflow; RWG unsupported by zdtd (world not found - missing
+  capability, recorded not faked); Pregen04k01 not in the install.
