@@ -185,24 +185,19 @@ EOF
   # Login-ready gate: the ready line means the world is up, but stock's
   # ConnectionManager can still deny logins briefly after StartGame done
   # (live-observed 5 denials on one run). Probe with one real join; proceed
-  # only once a bot actually enters the world.
+  # only once a bot actually enters the world. The probe runs its full short
+  # lifecycle (join -> wander -> timeout disconnect): killing the wrapper
+  # would orphan the dotnet client, which then keeps its session alive and
+  # pollutes the player/join axes (live-observed players=2 on zdtd).
   probe_ok=0
   for _ in $(seq 1 4); do
     rm -f "$run_dir/probe.log"
     LOADGEN_MODE=join LOADGEN_COUNT=1 LOADGEN_ACTIONS=0 \
-      LOADGEN_TIMEOUT=30000 LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
+      LOADGEN_TIMEOUT=8000 LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
       bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/probe.log" 2>&1 &
     PROBE_PID=$!
-    for _ in $(seq 1 35); do
-      if ! kill -0 "$PROBE_PID" 2>/dev/null; then break; fi
-      if grep -q "JOINED entity=" "$run_dir/probe.log" 2>/dev/null; then probe_ok=1; break; fi
-      sleep 1
-    done
-    kill "$PROBE_PID" 2>/dev/null || true
-    sleep 2
-    kill -9 "$PROBE_PID" 2>/dev/null || true
-    wait "$PROBE_PID" 2>/dev/null || true
-    if [[ "$probe_ok" == 1 ]]; then break; fi
+    wait "$PROBE_PID" || true
+    if grep -q "JOINED entity=" "$run_dir/probe.log" 2>/dev/null; then probe_ok=1; break; fi
     echo "  login probe did not join; retrying" >&2
     sleep 3
   done
