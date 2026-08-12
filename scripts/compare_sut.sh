@@ -126,6 +126,9 @@ for sut in $SUTS; do
   <property name="MaxSpawnedZombies" value="16"/>
   <property name="EnemyDifficulty" value="1"/>
   <property name="EnemySpawnMode" value="true"/>
+  <property name="GameDifficulty" value="1"/>
+  <property name="PlayerKillingMode" value="0"/>
+  <property name="LandClaimExpiryDays" value="7"/>
   <property name="DayNightLength" value="60"/>
   <property name="DayLightLength" value="18"/>
   <property name="ZombieMove" value="2"/>
