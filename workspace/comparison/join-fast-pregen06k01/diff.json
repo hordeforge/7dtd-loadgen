@@ -1,0 +1,280 @@
+{
+ "axes": {
+  "join": {
+   "stock": {
+    "fail": 0,
+    "firstPass": "[2026-08-12T12:43:37.0174531Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T12:43:37.0174531Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "pass": 1
+   },
+   "zdtd": {
+    "fail": 2,
+    "firstPass": null,
+    "lastPass": null,
+    "pass": 0
+   }
+  },
+  "log": {
+   "stock": {
+    "boot": {
+     "StartGame done": "StartGame done",
+     "createWorld": "createWorld: Pregen06k01, Pregen06k01 (src: GameData, DeviceLocal), join-fast-pregen06k01_stock, GameModeSurvival"
+    },
+    "exec": 15,
+    "gamestats": {
+     "AirDropFrequency": "0",
+     "AirDropMarker": "True",
+     "AllowedViewDistance": "12",
+     "AnimalCount": "0",
+     "AutoParty": "False",
+     "BedrollExpiryTime": "45",
+     "BiomeGSModifier": "100",
+     "BiomeLSModifier": "100",
+     "BiomeProgression": "True",
+     "BlockDamageAI": "100",
+     "BlockDamageAIBM": "100",
+     "BlockDamagePlayer": "100",
+     "BloodMoonDay": "0",
+     "BloodMoonEnemyCount": "8",
+     "BloodMoonWarning": "8",
+     "CameraRestrictionMode": "0",
+     "ChunkStabilityEnabled": "True",
+     "CurrentRoundIx": "0",
+     "DayLightLength": "18",
+     "DayLimitActive": "False",
+     "DayLimitThisRound": "0",
+     "DayNightLength": "60",
+     "DeathPenalty": "XPOnly",
+     "DropOnDeath": "1",
+     "DropOnQuit": "0",
+     "EnemyCount": "0",
+     "EnemyDifficulty": "Normal",
+     "EnemySpawnMode": "True",
+     "FragLimitActive": "False",
+     "FragLimitThisRound": "0",
+     "GameDifficulty": "2",
+     "GameModeId": "0",
+     "GameState": "0",
+     "GlobalGSModifier": "100",
+     "GlobalLSModifier": "100",
+     "IsCreativeMenuEnabled": "False",
+     "IsFlyingEnabled": "False",
+     "IsPlayerCollisionEnabled": "True",
+     "IsPlayerDamageEnabled": "True",
+     "IsResetMapOnRestart": "False",
+     "IsSaveSupplyCrates": "True",
+     "IsSpawnEnemies": "True",
+     "IsSpawnNearOtherPlayer": "False",
+     "IsTeleportEnabled": "False",
+     "IsVersionCheckDone": "False",
+     "JarRefund": "60",
+     "LandClaimCount": "5",
+     "LandClaimDeadZone": "30",
+     "LandClaimDecayMode": "0",
+     "LandClaimExpiryTime": "3",
+     "LandClaimOfflineDelay": "0",
+     "LandClaimOfflineDurabilityModifier": "32",
+     "LandClaimOnlineDurabilityModifier": "32",
+     "LandClaimSize": "41",
+     "LootAbundance": "100",
+     "LootRespawnDays": "7",
+     "OptionsPOICulling": "0",
+     "PartySharedKillRange": "100",
+     "PlayerKillingMode": "KillStrangersOnly",
+     "QuestProgressionDailyLimit": "4",
+     "ScoreDiedMultiplier": "-5",
+     "ScorePlayerKillMultiplier": "1",
+     "ScoreZombieKillMultiplier": "1",
+     "ShowAllPlayersOnMap": "False",
+     "ShowFriendPlayerOnMap": "True",
+     "ShowSpawnWindow": "False",
+     "StormFreq": "0",
+     "TimeLimitActive": "False",
+     "TimeLimitThisRound": "0",
+     "TimeOfDayIncPerSec": "20",
+     "TwitchBloodMoonAllowed": "True",
+     "XPMultiplier": "100",
+     "ZombieHordeMeter": "False"
+    },
+    "severity": {
+     "EXC": 3,
+     "INF": 375,
+     "WRN": 12
+    },
+    "telnetCloseErrors": 6
+   },
+   "zdtd": {
+    "boot": {
+     "config port=": "zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8082 webui_port=0 password=open authority=correct wire_chunks=on",
+     "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k01 dtm=6144x6144 spawn=(-191,42,362",
+     "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k01 dtm=6144x6144 spawn=(-191,42,362",
+     "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
+     "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-fast-pregen06k01/zdtd/world"
+    },
+    "severity": {
+     "INF": 90,
+     "WRN": 2
+    }
+   }
+  },
+  "saves": {
+   "stock": {
+    "count": 9,
+    "files": {
+     "Pregen06k01/join-fast-pregen06k01_stock/Region/r.0.0.7rg": 1159168,
+     "Pregen06k01/join-fast-pregen06k01_stock/Region/r.1.1.7rg": 626688,
+     "Pregen06k01/join-fast-pregen06k01_stock/blockmappings.nim": 14717,
+     "Pregen06k01/join-fast-pregen06k01_stock/decoration.7dt": 1460016,
+     "Pregen06k01/join-fast-pregen06k01_stock/itemmappings.nim": 86,
+     "Pregen06k01/join-fast-pregen06k01_stock/main.ttw": 4837,
+     "Pregen06k01/join-fast-pregen06k01_stock/main.ttw.bak": 2880,
+     "Pregen06k01/join-fast-pregen06k01_stock/main.ttw.ext.bak": 264,
+     "Pregen06k01/join-fast-pregen06k01_stock/multiblocks.7dt": 991
+    },
+    "totalBytes": 3269647
+   },
+   "zdtd": {
+    "count": 10,
+    "files": {
+     "allies.zal": 6,
+     "blockmeta.zbm": 8,
+     "c_-12_22.zch": 262416,
+     "claims.zlc": 6,
+     "clock.zcl": 12,
+     "containers.zct": 86,
+     "entities.zen": 56,
+     "vending.zvn": 6,
+     "weather.zwt": 264,
+     "workstations.zws": 6
+    },
+    "totalBytes": 262866
+   }
+  },
+  "telnet": {
+   "stock": {
+    "banner": {
+     "Difficulty": "1",
+     "Game mode": "GameModeSurvival",
+     "Game name": "join-fast-pregen06k01_stock",
+     "Max players": "64",
+     "Server IP": "118.189.191.239",
+     "Server port": "26900",
+     "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
+     "World": "Pregen06k01"
+    },
+    "clockRateGameMinPerRealSec": 0.35,
+    "day": [
+     "1",
+     "07",
+     "00"
+    ],
+    "entities": {
+     "alive": 7,
+     "count": 7,
+     "dead": 0,
+     "types": {
+      "EntityPlayer": 1,
+      "EntityZombie": 6
+     }
+    },
+    "gamestats": {
+     "AirDropFrequency": "3",
+     "AirDropMarker": "True",
+     "AllowedViewDistance": "6",
+     "AnimalCount": "0",
+     "AutoParty": "False",
+     "BedrollExpiryTime": "45",
+     "BiomeGSModifier": "100",
+     "BiomeLSModifier": "100",
+     "BiomeProgression": "True",
+     "BlockDamageAI": "100",
+     "BlockDamageAIBM": "100",
+     "BlockDamagePlayer": "100",
+     "BloodMoonDay": "7",
+     "BloodMoonEnemyCount": "8",
+     "BloodMoonWarning": "1",
+     "CameraRestrictionMode": "0",
+     "ChunkStabilityEnabled": "True",
+     "CurrentRoundIx": "0",
+     "DayLightLength": "18",
+     "DayLimitActive": "False",
+     "DayLimitThisRound": "0",
+     "DayNightLength": "60",
+     "DeathPenalty": "1",
+     "DropOnDeath": "1",
+     "DropOnQuit": "0",
+     "EnemyCount": "4",
+     "EnemyDifficulty": "1",
+     "EnemySpawnMode": "True",
+     "FragLimitActive": "False",
+     "FragLimitThisRound": "0",
+     "GameDifficulty": "1",
+     "GameModeId": "1",
+     "GameState": "1",
+     "GlobalGSModifier": "100",
+     "GlobalLSModifier": "100",
+     "IsCreativeMenuEnabled": "False",
+     "IsFlyingEnabled": "False",
+     "IsPlayerCollisionEnabled": "True",
+     "IsPlayerDamageEnabled": "True",
+     "IsResetMapOnRestart": "False",
+     "IsSaveSupplyCrates": "True",
+     "IsSpawnEnemies": "True",
+     "IsSpawnNearOtherPlayer": "False",
+     "IsTeleportEnabled": "False",
+     "IsVersionCheckDone": "False",
+     "JarRefund": "60",
+     "LandClaimCount": "5",
+     "LandClaimDeadZone": "30",
+     "LandClaimDecayMode": "0",
+     "LandClaimExpiryTime": "7",
+     "LandClaimOfflineDelay": "0",
+     "LandClaimOfflineDurabilityModifier": "4",
+     "LandClaimOnlineDurabilityModifier": "4",
+     "LandClaimSize": "41",
+     "LootAbundance": "100",
+     "LootRespawnDays": "7",
+     "OptionsPOICulling": "1",
+     "PartySharedKillRange": "100",
+     "PlayerKillingMode": "0",
+     "QuestProgressionDailyLimit": "4",
+     "ScoreDiedMultiplier": "-5",
+     "ScorePlayerKillMultiplier": "0",
+     "ScoreZombieKillMultiplier": "1",
+     "ShowAllPlayersOnMap": "False",
+     "ShowFriendPlayerOnMap": "True",
+     "ShowSpawnWindow": "False",
+     "StormFreq": "100",
+     "TimeLimitActive": "False",
+     "TimeLimitThisRound": "0",
+     "TimeOfDayIncPerSec": "6",
+     "TwitchBloodMoonAllowed": "True",
+     "XPMultiplier": "100",
+     "ZombieHordeMeter": "True"
+    },
+    "players": {
+     "count": 1,
+     "rows": [
+      {
+       "id": 177,
+       "name": "EntityPlayer"
+      }
+     ]
+    },
+    "reportedTotal": null,
+    "unknownCommands": []
+   },
+   "zdtd": null
+  }
+ },
+ "compared": true,
+ "findings": [
+  "join: PASS count differs (stock=1 zdtd=0)",
+  "join: FAIL count differs (stock=0 zdtd=2)",
+  "join: zdtd had zero PASS joins",
+  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+  "telnet: entity count differs (stock=7 zdtd=None)",
+  "telnet: player count differs (stock=1 zdtd=None)"
+ ],
+ "scenario": "join-fast-pregen06k01"
+}

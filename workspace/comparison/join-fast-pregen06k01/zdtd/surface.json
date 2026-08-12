@@ -1,0 +1,62 @@
+{
+ "apm": null,
+ "join": {
+  "fail": 2,
+  "firstPass": null,
+  "lastPass": null,
+  "pass": 0
+ },
+ "log": {
+  "boot": {
+   "config port=": "zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8082 webui_port=0 password=open authority=correct wire_chunks=on",
+   "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k01 dtm=6144x6144 spawn=(-191,42,362",
+   "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen06k01 dtm=6144x6144 spawn=(-191,42,362",
+   "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
+   "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-fast-pregen06k01/zdtd/world"
+  },
+  "severity": {
+   "INF": 90,
+   "WRN": 2
+  }
+ },
+ "meta": {
+  "client": {
+   "actions": "0",
+   "count": "1",
+   "host": "127.0.0.1",
+   "spawnEntity": "",
+   "spawnEveryMs": "",
+   "spawnPerPlayer": "",
+   "timeoutMs": "60000"
+  },
+  "loadgen": {
+   "dirtyFiles": "10",
+   "git": "7f44170"
+  },
+  "scenario": "join-fast-pregen06k01",
+  "startedAt": "2026-08-12T12:44:53Z",
+  "sut": "zdtd",
+  "zdtd": {
+   "dirtyFiles": "12",
+   "git": "edd9e16"
+  }
+ },
+ "saves": {
+  "count": 10,
+  "files": {
+   "allies.zal": 6,
+   "blockmeta.zbm": 8,
+   "c_-12_22.zch": 262416,
+   "claims.zlc": 6,
+   "clock.zcl": 12,
+   "containers.zct": 86,
+   "entities.zen": 56,
+   "vending.zvn": 6,
+   "weather.zwt": 264,
+   "workstations.zws": 6
+  },
+  "totalBytes": 262866
+ },
+ "sut": "zdtd",
+ "telnet": null
+}

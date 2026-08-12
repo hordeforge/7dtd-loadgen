@@ -1,0 +1,9 @@
+{
+  "scenario": "join-fast-navezgane",
+  "sut": "stock",
+  "startedAt": "2026-08-12T12:40:28Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1",
+             "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
+  "loadgen": {"git": "7f44170", "dirtyFiles": "9"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "12"}
+}
