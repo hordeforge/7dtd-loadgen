@@ -283,7 +283,8 @@ EOF
   "scenario": "$SCENARIO_ID",
   "sut": "$sut",
   "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST"},
+  "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST",
+             "spawnEntity": "$SPAWN_ENTITY", "spawnPerPlayer": "$SPAWN_PER_PLAYER", "spawnEveryMs": "$SPAWN_EVERY_MS"},
   "loadgen": {"git": "$LOADGEN_GIT", "dirtyFiles": "$LOADGEN_DIRTY"},
   "zdtd": {"git": "$ZDTD_GIT", "dirtyFiles": "$ZDTD_DIRTY"}
 }
