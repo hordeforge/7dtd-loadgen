@@ -195,5 +195,7 @@ record, and documentation of any protocol-version restriction.
   not listents-visible on zdtd (spawn mechanism or zdtd spawn handling).
 - [ ] HIGH: zdtd join fails on Pregen06k01 (C2S payload Overflow right after the
   challenge: "payload failed local_id=1 error=Overflow n=1"; stock joins fine).
-  Found via COMPARE_WORLD=Pregen06k01 join-fast. Likely a login-payload buffer
-  limit zdtd hits on this world - zdtd bug to fix.
+  Found via COMPARE_WORLD=Pregen06k01 join-fast; REPRODUCED consistently (2/2
+  runs). The client sends LoginSent, zdtd logs payload failed error=Overflow,
+  then answers with a 356-byte LoginAnswer - the NetPackagePlayerLogin decode
+  overflows on this world. zdtd bug to fix.
