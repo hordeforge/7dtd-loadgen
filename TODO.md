@@ -154,18 +154,19 @@ record, and documentation of any protocol-version restriction.
 - [x] Findings loop: stock EXC NREs (stock wart), clock rate + ambient-seed
   divergences recorded in zdtd PROVENANCE 3.9, gamestats mismatches fixed
   (zdtd wire units + harness config alignment).
-- [ ] playtest-compare (7dtd-playtest `make playtest-compare`) live run.
-  (Attempted 2026-08-12; a parallel FPS-bot session's runs pkill the shared
-  dedicated/client mid-run (Error 143). Tool is unit-tested; run when the
-  machine is quiet.)
-- [ ] Scenario breadth: horde-lite (spawn pressure) and join-fast catalog
-  scenarios live.
+- [x] playtest-compare (7dtd-playtest `make playtest-compare`) live run - done,
+  2026-08-12: all 9 suites compared (smoke/core/mp clean; demo/persist/soak/full/
+  combat findings recorded in the zdtd provenance register + loadgen findings
+  ledger). Required CLIENT_PLATFORM=local for the client (Steam-auth + BotMod
+  stalls in the loading screen).
+- [x] Scenario breadth: horde-lite (spawn pressure) and join-fast catalog
+  scenarios live - done, 2026-08-12 (6/6 catalog scenarios PASS both sides).
 - [ ] Stock ready gate: reduce residual denial flakiness (5 FAILs observed on
   one run despite StartGame-done gate; check ConnectionManager accept window).
 
 ## Playtest-compare live run (2026-08-12, 2nd attempt)
 
-- [ ] playtest-compare smoke live: client stuck in the loading screen ~14 min
+- [x] playtest-compare smoke live: client stuck in the loading screen ~14 min
   (repeated `wt openW saveIndicator`, never entered the world; zero
   `[7dtd-playtest]` case results despite `armed suites=smoke ... queue cases=5`).
   The suite's runner is a Harmony Postfix on GameManager.gmUpdate; no
@@ -210,10 +211,12 @@ record, and documentation of any protocol-version restriction.
   unsupported (missing capability); Pregen04k01 absent. The C2S payload
   Overflow fires on EVERY pregen (1/join); only Pregen06k01 breaks the
   join - a precise zdtd defect signature for the fix.
-- [ ] Consider: optional 7dtd-apm capture attach during the harness's stock phase
-  so the cost axis covers BOTH servers (zdtd APM is in the report; stock cost
-  needs the apm tool's session capture). Workspace boundary: loadgen creates
-  demand, apm measures - a documented integration point, not a loadgen change.
+- [x] Consider: optional 7dtd-apm capture attach during the harness's stock phase
+  so the cost axis covers BOTH servers - done, 2026-08-12: COMPARE_APM=1 runs
+  a 30s (COMPARE_APM_SECONDS) no-app capture over the connected window,
+  finalized under stock/apm/, summarized as apmStock in the surface/report
+  (layer scores, IPC, GC alloc, lag verdict). Reported, never diffed against
+  zdtd's tick-based APM JSON. COMPARE_APM=0 disables.
 - [x] Triage full-suite vehicle/vehicle_drive: stock 0.38m vs zdtd 0.51m over
   15s (threshold 0.4m) - razor-thin. Classified as a test-timing flake: the
   combat re-run confirmed the analogous melee_damage_out shared fail was a
