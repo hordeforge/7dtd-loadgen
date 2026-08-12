@@ -61,15 +61,16 @@ fi
 
 # Scenario knobs: env (if explicitly set) wins, then the catalog, then
 # defaults. The catalog is scripts/scenarios/sut.json.
-read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY < <(
+read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY < <(
   python3 -c "
 import json, sys
 try:
     s = json.load(open('$ROOT/scripts/scenarios/sut.json'))['$SCENARIO_ID']
     print(s.get('count', ''), s.get('actions', ''), s.get('timeoutMs', ''),
-          s.get('spawnEntity', ''), s.get('spawnPerPlayer', ''), s.get('spawnEveryMs', ''))
+          s.get('spawnEntity', ''), s.get('spawnPerPlayer', ''), s.get('spawnEveryMs', ''),
+          s.get('snapshotDelayMs', ''))
 except (KeyError, OSError, ValueError):
-    print('', '', '', '', '', '')
+    print('', '', '', '', '', '', '')
 " 2>/dev/null || echo "       "
 )
 COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
@@ -80,6 +81,7 @@ TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-${CAT_TIMEOUT:-60000}}"
 SPAWN_ENTITY="${COMPARE_SPAWN_ENTITY:-${CAT_SPAWN_ENT:-}}"
 SPAWN_PER_PLAYER="${COMPARE_SPAWN_PER_PLAYER:-${CAT_SPAWN_PER:-}}"
 SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
+SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
@@ -246,6 +248,11 @@ EOF
   # Telnet-style snapshot (both servers expose a stock-shaped console; zdtd
   # via --admin-port). Entity/player counts come from listents/listplayers;
   # gettime twice so the capture can derive the game-clock rate.
+  # Pressure scenarios snapshot late so the accumulated entities are visible.
+  if (( SNAPSHOT_DELAY_MS > 0 )); then
+    echo "  snapshot delay ${SNAPSHOT_DELAY_MS}ms (pressure accumulation)"
+    sleep $((SNAPSHOT_DELAY_MS / 1000))
+  fi
   TELNET_ARGS=(--out "$run_dir/telnet.txt" --commands "$TELNET_CMD" --tail-sleep 12)
   if [[ "$sut" == "stock" ]]; then
     TELNET_ARGS+=(--password "$TELNET_PASSWORD")

@@ -30,6 +30,7 @@
   "spawnEntity": "zombieBoe",
   "spawnPerPlayer": 4,
   "spawnEveryMs": 15000,
-  "note": "spawn pressure: 4 zombies/player every 15s via the loadgen spawner"
+  "snapshotDelayMs": 45000,
+  "note": "spawn pressure: 4 zombies/player every 15s; snapshot late to capture the pile-up"
  }
 }
