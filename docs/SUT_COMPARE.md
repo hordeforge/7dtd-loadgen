@@ -93,3 +93,20 @@ world; the session-end `PASS joined` summary is too late).
 `tests/test_sut_compare.py` covers the pipeline offline (synthetic run dirs):
 normalization, clock-rate derivation, bracket-format listents rows, NOT
 COMPARED path, gamestats comparison.
+
+## Consolidated findings (2026-08-12, both comparison tools)
+
+Loadgen SUT harness (all scenarios compared; join PASS both sides every run):
+- stock MinEventFire NREs (EXC 2-6 vs zdtd 0) - stock engine wart.
+- clock rate 0.24-0.44 (stock) vs 0.39-0.44 (zdtd) game-min/s - known divergence, PROVENANCE 3.9.
+- entities 7-11 (stock lazy spawns) vs 11-12 (zdtd ambient seeds) - known divergence, PROVENANCE 3.9.
+- horde-lite: stock accumulates spawned zombies (7->11 late snapshot); zdtd listents stays at ambient 11 (spawn path triage queued in TODO).
+
+playtest-compare (via CLIENT_PLATFORM=local; reports in ../7dtd-playtest/workspace/comparison-playtest/):
+- smoke 5/5, core 18/18, mp 6/6: clean on both servers.
+- demo 79/4: zdtd-only fails zombie_death_loot, item_drop_entity, loot_bag_pickup
+  (zdtd gaps); stock-only combat fails = stock spawn flakiness; melee_damage_out
+  fails on both (matched, test timing, not a divergence).
+- persist: zdtd-only fails persist_setup_blockmeta, persist_setup_te (persistence gaps).
+- soak_long: zdtd player dies ~12s (seeded zombies near spawn kill the fresh
+  player); stock survived 900s.
