@@ -42,13 +42,14 @@ while [[ $# -gt 0 ]]; do
         *) echo "ERROR: --sut must be stock|zdtd|all" >&2; exit 2 ;;
       esac
       shift 2 ;;
+    --world) WORLD_NAME="$2"; shift 2 ;;
     --list)
       python3 -c "import json,sys; print('\n'.join(json.load(open(sys.argv[1]))))" \
         "$ROOT/scripts/scenarios/sut.json"
       exit 0 ;;
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
-      echo "       $0 --list"
+      echo "       $0 --list"\n      echo "       $0 --world <name> (default Navezgane)"
       exit 0 ;;
     *) echo "ERROR: unknown arg $1" >&2; exit 2 ;;
   esac
@@ -82,7 +83,7 @@ SPAWN_ENTITY="${COMPARE_SPAWN_ENTITY:-${CAT_SPAWN_ENT:-}}"
 SPAWN_PER_PLAYER="${COMPARE_SPAWN_PER_PLAYER:-${CAT_SPAWN_PER:-}}"
 SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
-WORLD_NAME="${COMPARE_WORLD:-Navezgane}"
+WORLD_NAME="${WORLD_NAME:-${COMPARE_WORLD:-Navezgane}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
