@@ -139,7 +139,9 @@ the zdtd run embeds an APM tick snapshot, the stock run gets a 7dtd-apm
 capture over the connected window (`COMPARE_APM=0` to skip, the sibling
 `7dtd-apm` repo must have its bridge installed in the stock dedicated
 server). Both cost snapshots are reported, not diffed - their formats differ
-by design.
+by design. Cost numbers (wall time, APM counters) are host-relative: compare
+runs under like conditions, and a busy host skews them (the behavioral axes
+are unaffected).
 
 Output per scenario (`workspace/comparison/<scenario>/`): `stock/` and `zdtd/`
 run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus

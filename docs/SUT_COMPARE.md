@@ -118,6 +118,13 @@ Both are reported side by side in REPORT.md and carried in diff.json, never
 diffed against each other (zdtd's is tick/counter based, stock's is
 CPU/layer based - a direct diff would be meaningless).
 
+Cost numbers are host-relative: a busy host (parallel sessions, other games)
+skews wall time and APM counters without touching the behavioral axes. Keep
+cost comparisons to like-condition runs, or treat them as directional.
+
+The run-meta.json of each run records the loadgen/zdtd git revisions + knobs
+so an evidence dir always names exactly what was compared.
+
 ## Consolidated findings (2026-08-12, both comparison tools)
 
 `make compare-consolidated` regenerates the overview from committed evidence
