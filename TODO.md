@@ -184,3 +184,5 @@ record, and documentation of any protocol-version restriction.
 - [ ] Stock-only fails (sleeper_wake, zombie_or_npc_nearby,
   zombie_target_has_health) correlate with the stock zombie-spawn flakiness;
   re-run to confirm flake vs real.
+- [ ] Triage zdtd persist fails from playtest-compare persist: persist_setup_blockmeta,
+  persist_setup_te (block-metadata / tile-entity persistence round-trip).
