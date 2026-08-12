@@ -199,6 +199,8 @@ record, and documentation of any protocol-version restriction.
   runs). The client sends LoginSent, zdtd logs payload failed error=Overflow,
   then answers with a 356-byte LoginAnswer - the NetPackagePlayerLogin decode
   overflows on this world. The loadgen login body is world-independent, so
-  the likely mechanism is a fragmented/partial C2S frame decoded as complete
-  (world-load timing shifts the packet coalescing) - a C2S reassembly gap in
-  zdtd. zdtd bug to fix.
+  Refined signature (3 worlds tested): Navezgane 0 overflows; Pregen06k01
+  overflow + join FAILS; Pregen08k01 overflow + join SUCCEEDS (recovered).
+  The C2S decode overflow is pregen-world-specific with world-dependent
+  severity - a zdtd decode gap (which field/buffer is the RE work).
+  zdtd bug to fix.
