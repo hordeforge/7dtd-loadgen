@@ -162,7 +162,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "CLEAN"
+  "verdict": "CLEAN",
+  "wall": {
+   "stock": 157.1,
+   "zdtd": 128.0
+  }
  },
  {
   "compared": true,
@@ -200,7 +204,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "DELTAS"
+  "verdict": "DELTAS",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -222,7 +230,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "CLEAN"
+  "verdict": "CLEAN",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -281,7 +293,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "DELTAS"
+  "verdict": "DELTAS",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -354,7 +370,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "DELTAS"
+  "verdict": "DELTAS",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -376,7 +396,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "CLEAN"
+  "verdict": "CLEAN",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -414,7 +438,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "DELTAS"
+  "verdict": "DELTAS",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -436,7 +464,11 @@
    }
   },
   "tool": "playtest",
-  "verdict": "CLEAN"
+  "verdict": "CLEAN",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  },
  {
   "compared": true,
@@ -467,6 +499,10 @@
    }
   },
   "tool": "playtest",
-  "verdict": "DELTAS"
+  "verdict": "DELTAS",
+  "wall": {
+   "stock": null,
+   "zdtd": null
+  }
  }
 ]

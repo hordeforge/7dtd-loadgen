@@ -5,27 +5,27 @@ Compared entries: 4/19 CLEAN, 15 DELTAS, 0 ONE-SIDE.
 
 Regenerated from committed per-run evidence (loadgen diff.json, playtest playtest-compare.json). CLEAN = both sides ran with no differences; DELTAS = differences recorded as findings (triage, never faked); ONE-SIDE = only one server ran (never counted as compared).
 
-| tool | id | verdict | stock | zdtd | findings |
-|---|---|---|---|---|---|
-| loadgen | horde-lite | DELTAS | ran | ran | 3 |
-| loadgen | join-fast | DELTAS | ran | ran | 3 |
-| loadgen | join-fast-navezgane | DELTAS | ran | ran | 3 |
-| loadgen | join-fast-pregen06k01 | DELTAS | ran | ran | 6 |
-| loadgen | join-fast-pregen08k01 | DELTAS | ran | ran | 3 |
-| loadgen | join-probe | DELTAS | ran | ran | 3 |
-| loadgen | probe-15s | DELTAS | ran | ran | 3 |
-| loadgen | probe-5s | DELTAS | ran | ran | 4 |
-| loadgen | soak-4bot | DELTAS | ran | ran | 2 |
-| loadgen | wander-2bot | DELTAS | ran | ran | 3 |
-| playtest | bench | CLEAN | 82/0/0 | 82/0/0 | 0 |
-| playtest | combat | DELTAS | 9/1/0 | 9/1/0 | 2 |
-| playtest | core | CLEAN | 18/0/0 | 18/0/0 | 0 |
-| playtest | demo | DELTAS | 80/3/0 | 79/4/0 | 5 |
-| playtest | full | DELTAS | 80/5/0 | 81/4/0 | 7 |
-| playtest | mp | CLEAN | 6/0/0 | 6/0/0 | 0 |
-| playtest | persist | DELTAS | 6/1/0 | 4/2/0 | 2 |
-| playtest | smoke | CLEAN | 5/0/0 | 5/0/0 | 0 |
-| playtest | soak_long | DELTAS | 1/0/0 | 0/1/0 | 1 |
+| tool | id | verdict | stock | zdtd | wall s | findings |
+|---|---|---|---|---|---|---|
+| loadgen | horde-lite | DELTAS | ran | ran | n/a | 3 |
+| loadgen | join-fast | DELTAS | ran | ran | n/a | 3 |
+| loadgen | join-fast-navezgane | DELTAS | ran | ran | n/a | 3 |
+| loadgen | join-fast-pregen06k01 | DELTAS | ran | ran | n/a | 6 |
+| loadgen | join-fast-pregen08k01 | DELTAS | ran | ran | n/a | 3 |
+| loadgen | join-probe | DELTAS | ran | ran | n/a | 3 |
+| loadgen | probe-15s | DELTAS | ran | ran | n/a | 3 |
+| loadgen | probe-5s | DELTAS | ran | ran | n/a | 4 |
+| loadgen | soak-4bot | DELTAS | ran | ran | n/a | 2 |
+| loadgen | wander-2bot | DELTAS | ran | ran | n/a | 3 |
+| playtest | bench | CLEAN | 82/0/0 | 82/0/0 | 157.1 / 128.0 | 0 |
+| playtest | combat | DELTAS | 9/1/0 | 9/1/0 | n/a / n/a | 2 |
+| playtest | core | CLEAN | 18/0/0 | 18/0/0 | n/a / n/a | 0 |
+| playtest | demo | DELTAS | 80/3/0 | 79/4/0 | n/a / n/a | 5 |
+| playtest | full | DELTAS | 80/5/0 | 81/4/0 | n/a / n/a | 7 |
+| playtest | mp | CLEAN | 6/0/0 | 6/0/0 | n/a / n/a | 0 |
+| playtest | persist | DELTAS | 6/1/0 | 4/2/0 | n/a / n/a | 2 |
+| playtest | smoke | CLEAN | 5/0/0 | 5/0/0 | n/a / n/a | 0 |
+| playtest | soak_long | DELTAS | 1/0/0 | 0/1/0 | n/a / n/a | 1 |
 
 ## loadgen/horde-lite - DELTAS
 

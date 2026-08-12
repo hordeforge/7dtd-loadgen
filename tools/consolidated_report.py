@@ -73,6 +73,8 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
             continue
         stock = d.get("stock", {}).get("summary") or {}
         zdtd = d.get("zdtd", {}).get("summary") or {}
+        wall = {"stock": (d.get("stock") or {}).get("wall"),
+                "zdtd": (d.get("zdtd") or {}).get("wall")}
         deltas = []
         for case in d.get("cases", []):
             s = (case.get("stock") or {}).get("status")
@@ -101,6 +103,7 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
             "findings": d.get("findings") or [],
             "deltas": deltas,
             "summary": {"stock": stock, "zdtd": zdtd},
+            "wall": wall,
         })
     return rows
 
@@ -112,23 +115,23 @@ def render(rows: list[dict]) -> str:
              "differences; DELTAS = differences recorded as findings (triage, "
              "never faked); ONE-SIDE = only one server ran (never counted as "
              "compared).\n"]
-    lines.append("| tool | id | verdict | stock | zdtd | findings |")
-    lines.append("|---|---|---|---|---|---|")
+    lines.append("| tool | id | verdict | stock | zdtd | wall s | findings |")
+    lines.append("|---|---|---|---|---|---|---|")
     for r in rows:
         if r["tool"] == "playtest":
             s = r["summary"]["stock"]
             z = r["summary"]["zdtd"]
             stock_cell = f"{s.get('pass', 0)}/{s.get('fail', 0)}/{s.get('skip', 0)}"
             zdtd_cell = f"{z.get('pass', 0)}/{z.get('fail', 0)}/{z.get('skip', 0)}"
+            wall = r.get("wall") or {}
+            wf = lambda v: f"{v:.1f}" if v is not None else "n/a"
+            wall_cell = f"{wf(wall.get('stock'))} / {wf(wall.get('zdtd'))}"
         else:
-            if r["compared"]:
-                stock_cell = "ran"
-                zdtd_cell = "ran"
-            else:
-                stock_cell = "ran" if r["ran"] == "stock" else "n/a"
-                zdtd_cell = "ran" if r["ran"] == "zdtd" else "n/a"
+            stock_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "stock" else "n/a")
+            zdtd_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "zdtd" else "n/a")
+            wall_cell = "n/a"
         lines.append(f"| {r['tool']} | {r['id']} | {r['verdict']} | {stock_cell} "
-                     f"| {zdtd_cell} | {len(r['findings'])} |")
+                     f"| {zdtd_cell} | {wall_cell} | {len(r['findings'])} |")
     lines.append("")
     for r in rows:
         if r["verdict"] == "CLEAN":
