@@ -152,7 +152,7 @@ EOF
       echo "  zdtd ready (challenge line in server.log)"
       BOT_PORT=$((27120 + 2))  # zdtd binds LiteNetLib on --port + 2
       PIDFILE="$run_dir/world/dedicated.pid"
-      TELNET_CMD="gettime,listents,listplayers,gettime"
+      TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       TELNET_PORT=8082
       ;;
   esac
@@ -168,9 +168,10 @@ EOF
   joined=0
   for _ in $(seq 1 40); do
     if ! kill -0 "$CLIENT_PID" 2>/dev/null; then break; fi
-    # PlayerIdReceived is the join moment; "PASS joined" is only the
-    # session-end summary (logged at disconnect), too late for a snapshot.
-    if grep -q "STAGE PlayerIdReceived" "$run_dir/loadgen.log" 2>/dev/null; then joined=1; break; fi
+    # The JOINED line is written the moment the bot enters the game world;
+    # "PASS joined" is only the session-end summary (logged at disconnect),
+    # too late for a snapshot.
+    if grep -q "JOINED entity=" "$run_dir/loadgen.log" 2>/dev/null; then joined=1; break; fi
     sleep 1
   done
   if [[ "$joined" == 1 ]]; then

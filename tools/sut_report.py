@@ -189,13 +189,36 @@ def main():
     if zt and zt.get("unknownCommands"):
         lines.append(f"- zdtd unknown commands: {zt['unknownCommands']}")
 
-    # ---- Stock gamestats (reported, not compared) ----
-    gs = sl.get("gamestats")
-    if gs:
-        lines.append(f"\n## Stock gamestats (no zdtd equivalent yet; reported not compared)\n")
-        lines.append(f"- {len(gs)} stats; sample: {dict(list(gs.items())[:8])}")
+    # ---- Gamestats (compared on shared names) ----
+    sg = (st or {}).get("gamestats") or {}
+    zg = (zt or {}).get("gamestats") or {}
+    if sg or zg:
+        lines.append("\n## Gamestats (compared on shared names)\n")
+        shared = sorted(set(sg) & set(zg))
+        if shared:
+            lines.append("| stat | stock | zdtd |")
+            lines.append("|---|---|---|")
+            for k in shared:
+                lines.append(f"| {k} | {sg[k]} | {zg[k]} |")
+            diffs = [k for k in shared if sg[k] != zg[k]]
+            if diffs:
+                sample = ", ".join(f"{k}: {sg[k]} vs {zg[k]}" for k in diffs[:6])
+                more = f" (+{len(diffs) - 6} more)" if len(diffs) > 6 else ""
+                findings.append(f"gamestats: {len(diffs)} shared stat(s) differ "
+                                f"({sample}{more})")
+            else:
+                lines.append("- all shared gamestats match")
+        stock_only = sorted(set(sg) - set(zg))
+        zdtd_only = sorted(set(zg) - set(sg))
+        if stock_only:
+            lines.append(f"- stock-only ({len(stock_only)}, no zdtd equivalent): "
+                         f"{', '.join(stock_only[:12])}")
+            if len(stock_only) > 12:
+                lines.append(f"  ... and {len(stock_only) - 12} more")
+        if zdtd_only:
+            lines.append(f"- zdtd-only: {', '.join(zdtd_only)}")
     else:
-        lines.append("\n## Stock gamestats\n- none captured (getgamestat dump not in server log)")
+        lines.append("\n## Gamestats\n- none captured on either side")
 
     # ---- Save inventory ----
     ss, zs = stock["saves"], zdtd["saves"]

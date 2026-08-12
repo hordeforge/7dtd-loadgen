@@ -127,6 +127,9 @@ serverconfig matching the stock run's live values). If a scenario cannot run on
 one server the report says NOT COMPARED; it is never reported as compared on
 one side's data alone.
 
+Details, axis definitions, status semantics and current findings:
+[`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md).
+
 ## Layout
 
 ```text

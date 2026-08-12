@@ -701,6 +701,10 @@ public sealed class GameJoinClient
                 int entityId = BitConverter.ToInt32(body, 0);
                 State.Advance(JoinStage.PlayerIdReceived, $"entityId={entityId} bodyLen={body.Length}");
                 log($"STAGE PlayerIdReceived: entityId={entityId} bodyLen={body.Length}");
+                // Join-moment contract for orchestrators (compare_sut.sh waits on
+                // this): unlike the session-end "PASS joined" summary, this line
+                // is written the instant the bot is in the game world.
+                log($"JOINED entity={entityId}");
                 if (entityId > 0 && (State.AwaitingRespawn || (State.SpawnRequested && !State.IsJoined)))
                 {
                     float x = State.PosX, y = State.PosY, z = State.PosZ;

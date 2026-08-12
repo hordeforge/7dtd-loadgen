@@ -134,6 +134,12 @@ def telnet_snapshot(run_dir):
     types = {}
     for e in entities:
         types[e["name"]] = types.get(e["name"], 0) + 1
+    # GameStat.X = value lines: stock prints its full 81-stat dump in the
+    # getgamestat section; zdtd replies with the tracked subset. The shared
+    # names are the comparable gamestats axis.
+    gamestats = {}
+    for m in GAMESTAT_LOG.finditer(text):
+        gamestats.setdefault(m.group(1), m.group(2))
     # Clock rate: two gettime readings (start/end of the session) give the
     # game-clock speed, the comparable day/time axis across servers with
     # different boot-to-snapshot offsets.
@@ -163,6 +169,7 @@ def telnet_snapshot(run_dir):
                      "dead": sum(1 for e in entities if e["dead"]),
                      "types": types},
         "players": {"count": len(players), "rows": players},
+        "gamestats": gamestats,
         "clockRateGameMinPerRealSec": rate,
         "reportedTotal": total,
         "unknownCommands": re.findall(r"\*\*\* ERROR: unknown command '([^']+)'", text),

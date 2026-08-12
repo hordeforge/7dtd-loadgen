@@ -58,8 +58,12 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
                   "lifetime=float.Max, remote=False, dead=False, health=100\n")
     if stock:
         listents = zombie_row + "Total of 1 in the game\n"
+        gs = ("GameStat.DayNightLength = 60\nGameStat.TimeOfDayIncPerSec = 6\n"
+              "GameStat.AirDropFrequency = 3\n")
     else:
         listents = zombie_row + animal_row + "Total of 2 in the game\n"
+        gs = ("GameStat.DayNightLength = 60\nGameStat.TimeOfDayIncPerSec = 20\n"
+              "GameStat.AirDropFrequency = 0\n")
     (run_dir / "telnet.txt").write_text(
         "# ts=2026-08-12T00:00:00Z cmd=gettime\n"
         "Day 1, 07:00\n"
@@ -70,6 +74,7 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
         "health=100, deaths=0, zombies=0, players=0, score=0, level=1, "
         "pltfmid=Local_X, crossid=Local_X, ip=127.0.0.1, ping=0\n"
         "Total of 1 in the game\n"
+        + gs +
         "# ts=2026-08-12T00:00:20Z cmd=gettime\n"
         "Day 1, 07:08\n",
         encoding="utf-8",
@@ -115,6 +120,8 @@ def test_full_comparison_pipeline(tmp_path):
 
     s = json.loads((stock_dir / "surface.json").read_text(encoding="utf-8"))
     assert s["join"]["pass"] == 1
+    assert s["telnet"]["gamestats"]["TimeOfDayIncPerSec"] == "6"
+    assert s["telnet"]["gamestats"]["AirDropFrequency"] == "3"
     # ScriptOrder noise + telnet-close IOException are excluded from severity.
     assert s["log"]["severity"]["INF"] == 4  # createWorld, StartGame, Executing, GameStat
     assert s["log"]["severity"]["EXC"] == 1
@@ -143,6 +150,7 @@ def test_full_comparison_pipeline(tmp_path):
     assert diff["compared"] is True
     assert any(f.startswith("telnet: entity count differs") for f in diff["findings"])
     assert any(f.startswith("log: EXC (exception) line count differs") for f in diff["findings"])
+    assert any(f.startswith("gamestats: 2 shared stat(s) differ") for f in diff["findings"])
 
 
 def test_not_compared_when_one_side_missing(tmp_path):
