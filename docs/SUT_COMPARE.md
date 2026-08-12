@@ -94,6 +94,16 @@ world; the session-end `PASS joined` summary is too late).
 normalization, clock-rate derivation, bracket-format listents rows, NOT
 COMPARED path, gamestats comparison.
 
+## Evidence dirs and world tagging
+
+Output per scenario lives in `workspace/comparison/<scenario>/` (stock/ + zdtd/
+run dirs + REPORT.md + diff.json). A non-default world never clobbers the
+canonical evidence: `--world Pregen08k01` (or `COMPARE_WORLD=Pregen08k01`)
+writes to `workspace/comparison/<scenario>-pregen08k01/` unless the scenario id
+already carries the `-<world>` suffix (`compare-worlds` convention). A scenario
+id that encodes a world while `COMPARE_WORLD` disagrees is warned, never
+silently accepted.
+
 ## Consolidated findings (2026-08-12, both comparison tools)
 
 Loadgen SUT harness (all scenarios compared; join PASS both sides every run):
