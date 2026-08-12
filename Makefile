@@ -130,3 +130,9 @@ compare-worlds:
 	bash scripts/compare_sut.sh --scenario join-fast-navezgane --sut all || true
 	COMPARE_WORLD=Pregen06k01 bash scripts/compare_sut.sh --scenario join-fast-pregen06k01 --sut all || true
 	COMPARE_WORLD=Pregen08k01 bash scripts/compare_sut.sh --scenario join-fast-pregen08k01 --sut all || true
+
+# Regenerate the consolidated stock-vs-zdtd overview from committed evidence
+# (all loadgen scenarios + all playtest suites). No servers are needed; the
+# view cannot drift from the runs because it is computed, not hand-maintained.
+compare-consolidated:
+	python3 tools/consolidated_report.py

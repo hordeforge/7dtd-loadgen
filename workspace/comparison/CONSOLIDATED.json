@@ -1,0 +1,472 @@
+[
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=4 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=12 zdtd=11)"
+  ],
+  "id": "horde-lite",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=4 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=7 zdtd=11)"
+  ],
+  "id": "join-fast",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=7 zdtd=11)"
+  ],
+  "id": "join-fast-navezgane",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "join: PASS count differs (stock=1 zdtd=0)",
+   "join: FAIL count differs (stock=0 zdtd=2)",
+   "join: zdtd had zero PASS joins",
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+   "telnet: entity count differs (stock=7 zdtd=None)",
+   "telnet: player count differs (stock=1 zdtd=None)"
+  ],
+  "id": "join-fast-pregen06k01",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=7 zdtd=26)"
+  ],
+  "id": "join-fast-pregen08k01",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=7 zdtd=11)"
+  ],
+  "id": "join-probe",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.2381 zdtd=0.4211; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=7 zdtd=11)"
+  ],
+  "id": "probe-15s",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "join: stock had zero PASS joins",
+   "join: zdtd had zero PASS joins",
+   "telnet: game-clock rate differs (stock=0.0 zdtd=0.4211; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=6 zdtd=10)"
+  ],
+  "id": "probe-5s",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=12 zdtd=0)",
+   "telnet: entity count differs (stock=10 zdtd=14)"
+  ],
+  "id": "soak-4bot",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "findings": [
+   "log: EXC (exception) line count differs (stock=5 zdtd=0)",
+   "telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)",
+   "telnet: entity count differs (stock=8 zdtd=12)"
+  ],
+  "id": "wander-2bot",
+  "missing": null,
+  "ran": null,
+  "summary": null,
+  "tool": "loadgen",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "deltas": [],
+  "findings": [],
+  "id": "bench",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 0,
+    "pass": 82,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 0,
+    "pass": 82,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "CLEAN"
+ },
+ {
+  "compared": true,
+  "deltas": [
+   {
+    "case": "combat/sleeper_wake",
+    "detail": "sleeper pose/wake sequence failed after 22.0s | no AI t=22.0 | phase=2 sleptObs=True alive=True sleeping=False id=114",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "combat/zombie_death_loot",
+    "detail": "items0=0 items=0 sample= dead=True | fixture not dead after kill barrier after 18.0s | items0=0 items=1 sample=EntityLootContainer#116 dead=False t=18.0",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   }
+  ],
+  "findings": [
+   "combat/sleeper_wake: status differs (FAIL vs PASS)",
+   "combat/zombie_death_loot: status differs (PASS vs FAIL)"
+  ],
+  "id": "combat",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 1,
+    "pass": 9,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 1,
+    "pass": 9,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "deltas": [],
+  "findings": [],
+  "id": "core",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 0,
+    "pass": 18,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 0,
+    "pass": 18,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "CLEAN"
+ },
+ {
+  "compared": true,
+  "deltas": [
+   {
+    "case": "combat/sleeper_wake",
+    "detail": "sleeper pose/wake sequence failed after 22.0s | no AI t=22.0 | phase=2 sleptObs=True alive=True sleeping=False id=113",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "combat/zombie_death_loot",
+    "detail": "items0=0 items=0 sample= dead=True | player dead/missing mid-case t=0.4",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "combat/zombie_target_has_health",
+    "detail": "wait spawn t=8.0 | entityId=113 hp=100000/100000 class=npcTraderJen",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "economy/item_drop_entity",
+    "detail": "beforeItems=0 now=1 sample=EntityItem#188 | no EntityItem after ItemDropServer after 12.0s | beforeItems=1 now=1 sample=EntityLootContainer#119",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "economy/loot_bag_pickup",
+    "detail": "items0=1 items=1 bag0=3 bag=3 eid=188 gone=True | player dead/missing mid-case t=0.8",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   }
+  ],
+  "findings": [
+   "combat/sleeper_wake: status differs (FAIL vs PASS)",
+   "combat/zombie_death_loot: status differs (PASS vs FAIL)",
+   "combat/zombie_target_has_health: status differs (FAIL vs PASS)",
+   "economy/item_drop_entity: status differs (PASS vs FAIL)",
+   "economy/loot_bag_pickup: status differs (PASS vs FAIL)"
+  ],
+  "id": "demo",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 3,
+    "pass": 80,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 4,
+    "pass": 79,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "deltas": [
+   {
+    "case": "combat/sleeper_wake",
+    "detail": "sleeper pose/wake sequence failed after 22.0s | no AI t=22.0 | phase=2 sleptObs=True alive=True sleeping=False id=112",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "combat/zombie_death_loot",
+    "detail": "items0=0 items=0 sample= dead=True | player dead/missing mid-case t=0.2",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "combat/zombie_or_npc_nearby",
+    "detail": "no NPC/zombie in range (telnet spawn?) after 25.0s | alive_other=0 total=1 players=1 | alive_other=2 total=4 players=1",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "combat/zombie_target_has_health",
+    "detail": "wait spawn t=8.0 | entityId=112 hp=100000/100000 class=npcTraderJen",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   },
+   {
+    "case": "economy/item_drop_entity",
+    "detail": "beforeItems=0 now=1 sample=EntityItem#187 | no EntityItem after ItemDropServer after 12.0s | beforeItems=1 now=1 sample=EntityLootContainer#118",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "economy/loot_bag_pickup",
+    "detail": "items0=1 items=1 bag0=3 bag=3 eid=187 gone=True | player dead/missing mid-case t=0.8",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "vehicle/vehicle_drive",
+    "detail": "vehicle did not move >=0.4m from drive input after 15.0s | vehDist=0.38 hasDriver=True seated=True t=15.0 | vehDist=0.51",
+    "stock": "FAIL",
+    "zdtd": "PASS"
+   }
+  ],
+  "findings": [
+   "combat/sleeper_wake: status differs (FAIL vs PASS)",
+   "combat/zombie_death_loot: status differs (PASS vs FAIL)",
+   "combat/zombie_or_npc_nearby: status differs (FAIL vs PASS)",
+   "combat/zombie_target_has_health: status differs (FAIL vs PASS)",
+   "economy/item_drop_entity: status differs (PASS vs FAIL)",
+   "economy/loot_bag_pickup: status differs (PASS vs FAIL)",
+   "vehicle/vehicle_drive: status differs (FAIL vs PASS)"
+  ],
+  "id": "full",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 5,
+    "pass": 80,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 4,
+    "pass": 81,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "deltas": [],
+  "findings": [],
+  "id": "mp",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 0,
+    "pass": 6,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 0,
+    "pass": 6,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "CLEAN"
+ },
+ {
+  "compared": true,
+  "deltas": [
+   {
+    "case": "persist_setup/persist_setup_blockmeta",
+    "detail": "type=20304 dmg=12 | setup damaged block missing or undamaged after 8.0s | type=0 dmg=0",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   },
+   {
+    "case": "persist_setup/persist_setup_te",
+    "detail": "type=18683 | setup chest missing after 8.0s | type=0 te=False",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   }
+  ],
+  "findings": [
+   "persist_setup/persist_setup_blockmeta: status differs (PASS vs FAIL)",
+   "persist_setup/persist_setup_te: status differs (PASS vs FAIL)"
+  ],
+  "id": "persist",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 1,
+    "pass": 6,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 2,
+    "pass": 4,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "DELTAS"
+ },
+ {
+  "compared": true,
+  "deltas": [],
+  "findings": [],
+  "id": "smoke",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 0,
+    "pass": 5,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 0,
+    "pass": 5,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "CLEAN"
+ },
+ {
+  "compared": true,
+  "deltas": [
+   {
+    "case": "soak_long/soak_15min_host",
+    "detail": "t=900.0 digs=30 alive=True hp=100 | player dead/missing mid-case t=12.0",
+    "stock": "PASS",
+    "zdtd": "FAIL"
+   }
+  ],
+  "findings": [
+   "soak_long/soak_15min_host: status differs (PASS vs FAIL)"
+  ],
+  "id": "soak_long",
+  "missing": null,
+  "ran": null,
+  "summary": {
+   "stock": {
+    "fail": 0,
+    "pass": 1,
+    "skip": 0
+   },
+   "zdtd": {
+    "fail": 1,
+    "pass": 0,
+    "skip": 0
+   }
+  },
+  "tool": "playtest",
+  "verdict": "DELTAS"
+ }
+]

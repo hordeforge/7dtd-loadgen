@@ -120,6 +120,14 @@ CPU/layer based - a direct diff would be meaningless).
 
 ## Consolidated findings (2026-08-12, both comparison tools)
 
+`make compare-consolidated` regenerates the overview from committed evidence
+(`workspace/comparison/CONSOLIDATED.md` + `.json`): every loadgen scenario
+(per-scenario `diff.json`) and every playtest suite
+(`../7dtd-playtest/workspace/comparison-playtest/*/playtest-compare.json`),
+classified CLEAN / DELTAS / ONE-SIDE. It is computed, never hand-maintained,
+so the view cannot drift from the runs. The hand-written summary below is the
+triage record behind those rows.
+
 Loadgen SUT harness (all scenarios compared; join PASS both sides every run):
 - stock MinEventFire NREs (EXC 2-6 vs zdtd 0) - stock engine wart.
 - clock rate 0.24-0.44 (stock) vs 0.39-0.44 (zdtd) game-min/s - known divergence, PROVENANCE 3.9.
