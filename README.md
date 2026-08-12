@@ -116,9 +116,16 @@ pass to fake; known divergences are recorded in `../zdtd/docs/PROVENANCE.md`
 
 ```bash
 make compare-sut                           # join-probe on both servers
+make compare-all                           # every catalog scenario
+make compare-worlds                        # join-fast across the world matrix
 SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
 COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut
+COMPARE_WORLD=Pregen06k01 make compare-sut      # compare on another world
 ```
+
+Catalog: join-probe, wander-2bot, join-fast, probe-15s, horde-lite (spawn
+pressure), soak-4bot (sustained multi-bot). The zdtd side carries an APM cost
+snapshot in each report.
 
 Output per scenario (`workspace/comparison/<scenario>/`): `stock/` and `zdtd/`
 run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus
