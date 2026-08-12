@@ -1,0 +1,8 @@
+{
+  "scenario": "join-fast",
+  "sut": "stock",
+  "startedAt": "2026-08-12T08:37:10Z",
+  "client": {"count": "1", "actions": "0", "timeoutMs": "20000", "host": "127.0.0.1"},
+  "loadgen": {"git": "f2feef0", "dirtyFiles": "2"},
+  "zdtd": {"git": "6d25107", "dirtyFiles": "19"}
+}
