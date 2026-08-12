@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T13:47:56.6327563Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T13:47:56.6327563Z] [join#1] PASS joined entity=177 walks=1046 jumps=134 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T14:35:26.3342832Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T14:35:26.3342832Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T13:49:12.1497528Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T13:49:12.1497528Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T14:36:41.9646967Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T14:36:41.9646967Z] [join#1] PASS joined entity=112 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    }
   },
@@ -20,7 +20,7 @@
      "StartGame done": "StartGame done",
      "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-probe_stock, GameModeSurvival"
     },
-    "exec": 19,
+    "exec": 15,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -97,9 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 2,
-     "INF": 363,
-     "WRN": 13
+     "EXC": 3,
+     "INF": 370,
+     "WRN": 12
     },
     "telnetCloseErrors": 6
    },
@@ -112,25 +112,26 @@
      "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-probe/zdtd/world"
     },
     "severity": {
-     "INF": 55,
+     "INF": 56,
      "WRN": 2
     }
    }
   },
   "saves": {
    "stock": {
-    "count": 8,
+    "count": 9,
     "files": {
-     "Navezgane/join-probe_stock/Region/r.1.1.7rg": 716800,
-     "Navezgane/join-probe_stock/blockmappings.nim": 8945,
-     "Navezgane/join-probe_stock/decoration.7dt": 1282842,
-     "Navezgane/join-probe_stock/itemmappings.nim": 8,
-     "Navezgane/join-probe_stock/main.ttw": 8136,
-     "Navezgane/join-probe_stock/main.ttw.bak": 8136,
+     "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1458176,
+     "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
+     "Navezgane/join-probe_stock/blockmappings.nim": 23082,
+     "Navezgane/join-probe_stock/decoration.7dt": 1282876,
+     "Navezgane/join-probe_stock/itemmappings.nim": 30,
+     "Navezgane/join-probe_stock/main.ttw": 11002,
+     "Navezgane/join-probe_stock/main.ttw.bak": 10390,
      "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-     "Navezgane/join-probe_stock/multiblocks.7dt": 6584
+     "Navezgane/join-probe_stock/multiblocks.7dt": 3932
     },
-    "totalBytes": 2031715
+    "totalBytes": 3510648
    },
    "zdtd": {
     "count": 120,
@@ -231,16 +232,16 @@
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.3,
+    "clockRateGameMinPerRealSec": 0.3333,
     "day": [
      "1",
      "07",
      "00"
     ],
     "entities": {
-     "alive": 6,
+     "alive": 7,
      "count": 7,
-     "dead": 1,
+     "dead": 0,
      "types": {
       "EntityPlayer": 1,
       "EntityZombie": 6
@@ -416,8 +417,8 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=2 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.3 zdtd=0.4; 60-min day = 0.4)",
+  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
+  "telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)",
   "telnet: entity count differs (stock=7 zdtd=11)"
  ],
  "scenario": "join-probe"

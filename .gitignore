@@ -24,4 +24,7 @@ workspace/comparison/*/*/world/
 workspace/comparison/*/*/boot.log
 workspace/comparison/*/*/server.log
 workspace/comparison/*/*/serverconfig.xml
+# Raw 7dtd-apm sessions are ~10MB/30s of regenerable flame/perf artifacts; the
+# compact cost snapshot travels in surface.json (apmStock) + REPORT.md.
+workspace/comparison/*/*/apm/
 workspace/comparison/run.log
