@@ -203,6 +203,18 @@ def main():
     if zt and zt.get("unknownCommands"):
         lines.append(f"- zdtd unknown commands: {zt['unknownCommands']}")
 
+    # ---- zdtd APM (reported, not compared: stock has no equivalent) ----
+    za = (zt or {}).get("apm") if zt else None
+    if za:
+        lines.append("\n## zdtd APM (last snapshot; no stock equivalent)\n")
+        for k in ("ticks", "join_ok", "join_fail", "net_packets_in", "net_packets_out",
+                  "tick_overruns", "phase_rejects"):
+            if k in za:
+                lines.append(f"- {k}: {za[k]}")
+        if za.get("tickMeanNs") is not None:
+            lines.append(f"- tick mean/p99/max ns: {za['tickMeanNs']} / "
+                         f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
+
     # ---- Gamestats (compared on shared names) ----
     sg = (st or {}).get("gamestats") or {}
     zg = (zt or {}).get("gamestats") or {}
