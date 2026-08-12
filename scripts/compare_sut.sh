@@ -19,6 +19,18 @@ OUT_ROOT="${COMPARE_OUT:-$ROOT/workspace/comparison}"
 SCENARIO_ID=""
 SUTS=""
 
+# A harness that is killed mid-run (SIGTERM/SIGINT) must not leave the booted
+# server behind: the next run's pkill would otherwise kill an unrelated
+# server, and an orphan holds the ports. Track the current server PID file
+# and clean it on exit.
+CURRENT_PIDFILE=""
+cleanup() {
+  if [[ -n "$CURRENT_PIDFILE" && -f "$CURRENT_PIDFILE" ]]; then
+    kill -9 "$(cat "$CURRENT_PIDFILE")" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT INT TERM
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --scenario) SCENARIO_ID="$2"; shift 2 ;;
@@ -104,11 +116,10 @@ for sut in $SUTS; do
         kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
         exit 1
       fi
-      # (The join-ready gate used to sleep 3s here; it is replaced by a
-      # login-ready probe below, which is the real signal.)
-      echo "  stock ready (StartGame done in server log)"
+      echo "  $sut ready (StartGame done in server log)"
       BOT_PORT=$((STOCK_SERVER_PORT + 2))
       PIDFILE="$USERDATA/dedicated.pid"
+      CURRENT_PIDFILE="$PIDFILE"
       # gettime first and last so the capture can derive the game-clock rate.
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       TELNET_PORT=8081
@@ -155,6 +166,7 @@ EOF
       echo "  zdtd ready (challenge line in server.log)"
       BOT_PORT=$((27120 + 2))  # zdtd binds LiteNetLib on --port + 2
       PIDFILE="$run_dir/world/dedicated.pid"
+      CURRENT_PIDFILE="$PIDFILE"
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       TELNET_PORT=8082
       ;;
