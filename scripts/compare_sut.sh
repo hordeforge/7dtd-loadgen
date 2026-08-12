@@ -181,10 +181,13 @@ EOF
     exit 1
   fi
   # The UDP listener can bind a beat after the ready log line; retry before
-  # declaring a dead side.
+  # declaring a dead side. grep reads ss output via substitution (not a pipe)
+  # so the check keys on grep's verdict: under set -o pipefail, a transient
+  # ss non-zero exit would otherwise override a matching grep and false-fail
+  # a healthy server (live-observed).
   udp_ok=0
   for _ in $(seq 1 15); do
-    if ss -uln 2>/dev/null | grep -q ":$BOT_PORT "; then udp_ok=1; break; fi
+    if grep -q ":$BOT_PORT " <<<"$(ss -uln 2>/dev/null || true)"; then udp_ok=1; break; fi
     sleep 1
   done
   if [[ "$udp_ok" != 1 ]]; then
