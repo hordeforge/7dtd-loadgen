@@ -79,3 +79,24 @@ crossplatform=None` and join the stock dedicated (watch the `[Auth]` lines for
 `Local_<name>`). If the client refuses Local mode, Option B (the bypass mod) is
 the fallback. The loadgen bots already ride the Local path, so the harness
 itself never needs either option.
+
+## Join-path errors seen on the harness (observed, not IL-verified)
+
+Two server-side disconnect messages surfaced during the FPS-bot session while
+its Steam-auth + BotMod client was connecting; both are join-path rejections,
+not engine warts:
+
+- `[NET] Kicked from server: Platform auth failed: InvalidTicket` - Steam
+  ticket invalid/offline (the Option A/B problem above; documented in this
+  file). Recovered once the synthetic-auth bypass was active.
+- `server disconnect player name can not be empty` - a join presenting an
+  empty player name is rejected at login. The exact validation IL is not yet
+  pinned (searched ConnectionManager/AuthorizationManager dumps; the string
+  lives elsewhere, likely the client-side login or a dedicated validation not
+  in the current dumps). Harness contract: every bot must carry a non-empty
+  name - loadgen does (`Local_REFake1` etc.), the playtest Local client joins
+  as `Local_maci`.
+
+If a harness client ever produces this message, the cause is an empty-name
+login, not a server or auth problem; fix the client's identity, not the
+server.
