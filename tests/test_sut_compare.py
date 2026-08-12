@@ -163,3 +163,20 @@ def test_not_compared_when_one_side_missing(tmp_path):
     assert diff["ran"] == "stock"
     assert diff["missing"] == "zdtd"
     assert "NOT COMPARED" in (tmp_path / "scenario" / "REPORT.md").read_text(encoding="utf-8")
+
+
+def test_missing_telnet_on_one_side_does_not_crash(tmp_path):
+    """A side with no telnet.txt (snapshot failed) still yields a report."""
+    stock_dir = tmp_path / "scenario" / "stock"
+    zdtd_dir = tmp_path / "scenario" / "zdtd"
+    _make_run(stock_dir, "stock", stock=True)
+    _make_run(zdtd_dir, "zdtd", stock=False)
+    (zdtd_dir / "telnet.txt").unlink()
+    r = _py([str(TOOLS / "sut_capture.py"), str(zdtd_dir), "zdtd"])
+    assert r.returncode == 0, r.stderr
+    (zdtd_dir / "surface.json").write_text(r.stdout, encoding="utf-8")
+    r = _py([str(TOOLS / "sut_report.py"), str(tmp_path / "scenario")])
+    assert r.returncode == 0, r.stderr
+    diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
+    assert diff["compared"] is True
+    assert any(f.startswith("telnet: entity count differs") for f in diff["findings"])
