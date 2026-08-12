@@ -2,14 +2,14 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T11:50:29.8165481Z] [join#1] PASS joined entity=177 walks=327 jumps=44 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T11:50:29.8165481Z] [join#1] PASS joined entity=177 walks=327 jumps=44 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T12:10:26.0967861Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T12:10:26.0967861Z] [join#1] PASS joined entity=177 walks=334 jumps=46 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
   "boot": {
    "StartGame done": "StartGame done",
-   "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-fast_stock, GameModeSurvival"
+   "createWorld": "createWorld: Pregen06k01, Pregen06k01 (src: GameData, DeviceLocal), join-fast_stock, GameModeSurvival"
   },
   "exec": 9,
   "gamestats": {
@@ -89,7 +89,7 @@
   },
   "severity": {
    "EXC": 3,
-   "INF": 342,
+   "INF": 343,
    "WRN": 12
   },
   "telnetCloseErrors": 4
@@ -105,32 +105,31 @@
    "timeoutMs": "20000"
   },
   "loadgen": {
-   "dirtyFiles": "19",
-   "git": "e36a954"
+   "dirtyFiles": "3",
+   "git": "06fee9c"
   },
   "scenario": "join-fast",
-  "startedAt": "2026-08-12T11:50:32Z",
+  "startedAt": "2026-08-12T12:10:28Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "10",
+   "dirtyFiles": "12",
    "git": "edd9e16"
   }
  },
  "saves": {
-  "count": 10,
+  "count": 9,
   "files": {
-   "Navezgane/join-fast_stock/Region/r.-1.0.7rg": 593920,
-   "Navezgane/join-fast_stock/Region/r.-1.1.7rg": 163840,
-   "Navezgane/join-fast_stock/Region/r.0.0.7rg": 995328,
-   "Navezgane/join-fast_stock/blockmappings.nim": 8971,
-   "Navezgane/join-fast_stock/decoration.7dt": 1288486,
-   "Navezgane/join-fast_stock/itemmappings.nim": 30,
-   "Navezgane/join-fast_stock/main.ttw": 3839,
-   "Navezgane/join-fast_stock/main.ttw.bak": 264,
-   "Navezgane/join-fast_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-fast_stock/multiblocks.7dt": 1042
+   "Pregen06k01/join-fast_stock/Region/r.0.0.7rg": 794624,
+   "Pregen06k01/join-fast_stock/Region/r.1.1.7rg": 626688,
+   "Pregen06k01/join-fast_stock/blockmappings.nim": 12477,
+   "Pregen06k01/join-fast_stock/decoration.7dt": 1457194,
+   "Pregen06k01/join-fast_stock/itemmappings.nim": 8,
+   "Pregen06k01/join-fast_stock/main.ttw": 2880,
+   "Pregen06k01/join-fast_stock/main.ttw.bak": 264,
+   "Pregen06k01/join-fast_stock/main.ttw.ext.bak": 264,
+   "Pregen06k01/join-fast_stock/multiblocks.7dt": 753
   },
-  "totalBytes": 3055984
+  "totalBytes": 2895152
  },
  "sut": "stock",
  "telnet": {
@@ -142,7 +141,7 @@
    "Server IP": "118.189.191.239",
    "Server port": "26900",
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
-   "World": "Navezgane"
+   "World": "Pregen06k01"
   },
   "clockRateGameMinPerRealSec": 0.35,
   "day": [

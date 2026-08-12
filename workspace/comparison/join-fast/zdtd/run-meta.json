@@ -1,9 +1,9 @@
 {
   "scenario": "join-fast",
   "sut": "zdtd",
-  "startedAt": "2026-08-12T11:51:11Z",
+  "startedAt": "2026-08-12T12:11:05Z",
   "client": {"count": "1", "actions": "0", "timeoutMs": "20000", "host": "127.0.0.1",
              "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
-  "loadgen": {"git": "e36a954", "dirtyFiles": "22"},
-  "zdtd": {"git": "edd9e16", "dirtyFiles": "10"}
+  "loadgen": {"git": "06fee9c", "dirtyFiles": "6"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "12"}
 }

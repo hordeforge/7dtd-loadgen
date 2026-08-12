@@ -193,3 +193,7 @@ record, and documentation of any protocol-version restriction.
 - [ ] Triage horde-lite: stock accumulates spawned zombies (7->11 at late
   snapshot); zdtd listents stays at ambient 11 - the loadgen spawn pressure is
   not listents-visible on zdtd (spawn mechanism or zdtd spawn handling).
+- [ ] HIGH: zdtd join fails on Pregen06k01 (C2S payload Overflow right after the
+  challenge: "payload failed local_id=1 error=Overflow n=1"; stock joins fine).
+  Found via COMPARE_WORLD=Pregen06k01 join-fast. Likely a login-payload buffer
+  limit zdtd hits on this world - zdtd bug to fix.
