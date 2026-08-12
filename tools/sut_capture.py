@@ -255,6 +255,52 @@ def zdtd_apm_summary(path):
     return out
 
 
+def stock_apm_summary(run_dir):
+    """Compact stock cost snapshot from the 7dtd-apm session the harness ran
+    (run_dir/apm/session_*/summary.json). Reported, not compared: the zdtd APM
+    JSON is tick/counter based, the stock capture is CPU/layer based, so a
+    direct diff would be meaningless."""
+    apm_root = os.path.join(run_dir, "apm")
+    if not os.path.isdir(apm_root):
+        return None
+    sessions = sorted(
+        d for d in os.listdir(apm_root)
+        if os.path.isdir(os.path.join(apm_root, d)) and d.startswith("session_")
+    )
+    if not sessions:
+        return None
+    p = os.path.join(apm_root, sessions[-1], "summary.json")
+    if not os.path.exists(p):
+        return None
+    try:
+        s = json.load(open(p))
+    except (ValueError, OSError):
+        return None
+    out = {"session": sessions[-1]}
+    meta = s.get("metadata") or {}
+    lag = meta.get("lag_diagnosis") or {}
+    if lag.get("verdict"):
+        out["lagVerdict"] = lag["verdict"]
+    gc = meta.get("gc") or {}
+    if gc.get("grossAllocMBPerSecond") is not None:
+        out["gcAllocMBPerSec"] = gc["grossAllocMBPerSecond"]
+    if gc.get("fullCollections") is not None:
+        out["gcFullCollections"] = gc["fullCollections"]
+    layers = {}
+    signals = {}
+    for l in s.get("layers") or []:
+        if l.get("score") is not None:
+            layers[l["layer"]] = l["score"]
+        sig = {k: v for k, v in (l.get("signals") or {}).items() if v is not None}
+        if sig:
+            signals[l["layer"]] = sig
+    if layers:
+        out["layers"] = layers
+    if signals:
+        out["signals"] = signals
+    return out
+
+
 def run_meta(run_dir):
     """Auditability metadata written by compare_sut.sh (git hashes, env, time)."""
     p = os.path.join(run_dir, "run-meta.json")
@@ -279,6 +325,7 @@ def main():
         "telnet": telnet_snapshot(run_dir),
         "saves": save_inventory(run_dir, sut),
         "apm": zdtd_apm_summary(os.path.join(run_dir, "server.log")) if sut == "zdtd" else None,
+        "apmStock": stock_apm_summary(run_dir) if sut == "stock" else None,
     }
     print(json.dumps(surface, indent=1, sort_keys=True))
     return 0

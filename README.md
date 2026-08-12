@@ -121,6 +121,8 @@ make compare-worlds                        # join-fast across the world matrix
 SCENARIO=join-probe SUT=zdtd make compare-sut   # one side only
 COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut
 COMPARE_WORLD=Pregen06k01 make compare-sut      # compare on another world
+COMPARE_APM=0 make compare-sut                  # skip the stock cost capture
+COMPARE_APM_SECONDS=15 make compare-sut         # smaller stock cost window
 ```
 
 A non-default world never clobbers the canonical evidence: `--world
@@ -131,8 +133,12 @@ scenario id that encodes a world while `COMPARE_WORLD` disagrees is warned,
 never silently accepted.
 
 Catalog: join-probe, wander-2bot, join-fast, probe-15s, horde-lite (spawn
-pressure), soak-4bot (sustained multi-bot). The zdtd side carries an APM cost
-snapshot in each report.
+pressure), soak-4bot (sustained multi-bot). Each side carries a cost axis:
+the zdtd run embeds an APM tick snapshot, the stock run gets a 7dtd-apm
+capture over the connected window (`COMPARE_APM=0` to skip, the sibling
+`7dtd-apm` repo must have its bridge installed in the stock dedicated
+server). Both cost snapshots are reported, not diffed - their formats differ
+by design.
 
 Output per scenario (`workspace/comparison/<scenario>/`): `stock/` and `zdtd/`
 run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus

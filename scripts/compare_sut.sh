@@ -86,6 +86,14 @@ SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
 WORLD_NAME="${WORLD_NAME:-${COMPARE_WORLD:-Navezgane}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
+# Stock-side cost axis via the sibling 7dtd-apm tool (bridge must be installed
+# in the stock dedicated server; see ../7dtd-apm). COMPARE_APM=0 disables;
+# COMPARE_APM_SECONDS sizes the window (default 30s, aligned with the telnet
+# snapshot while the bot is connected). A capture failure is logged and never
+# fails the scenario.
+COMPARE_APM="${COMPARE_APM:-1}"
+APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
+APM_PROJECT="$ROOT/../7dtd-apm"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 
@@ -276,6 +284,21 @@ EOF
     echo "  snapshot delay ${SNAPSHOT_DELAY_MS}ms (pressure accumulation)"
     sleep $((SNAPSHOT_DELAY_MS / 1000))
   fi
+
+  # Stock cost axis: 7dtd-apm capture over the connected window, aligned with
+  # the telnet snapshot below. Runs detached; we wait for it after the client.
+  APM_PID=""
+  if [[ "$sut" == "stock" && "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] \
+     && command -v uv >/dev/null; then
+    APM_DIR="$run_dir/apm"
+    mkdir -p "$APM_DIR"
+    SEVENDTD_APM_DIR="$APM_DIR" SEVENDTD_TELNET_PASSWORD="$TELNET_PASSWORD" \
+      uv run --project "$APM_PROJECT" 7dtd-apm capture --seconds "$APM_SECONDS" --no-app \
+      --telnet-port "$TELNET_PORT" >"$run_dir/apm.log" 2>&1 &
+    APM_PID=$!
+    echo "  apm capture started (${APM_SECONDS}s, no-app; window aligns with snapshot)"
+  fi
+
   TELNET_ARGS=(--out "$run_dir/telnet.txt" --commands "$TELNET_CMD" --tail-sleep 12)
   if [[ "$sut" == "stock" ]]; then
     TELNET_ARGS+=(--password "$TELNET_PASSWORD")
@@ -287,6 +310,16 @@ EOF
   wait "$CLIENT_PID" || true
   joins=$(grep -c "PASS joined" "$run_dir/loadgen.log" || true)
   echo "  client done: $joins join PASS(es)"
+
+  # The apm capture ends on its own after APM_SECONDS; bounded wait so the
+  # server stays up until the session finalizes. Failure is not a scenario
+  # result - log it and move on.
+  if [[ -n "$APM_PID" ]] && kill -0 "$APM_PID" 2>/dev/null; then
+    echo "  waiting for apm capture to finalize"
+    if ! wait "$APM_PID"; then
+      echo "  WARN: apm capture failed (see $run_dir/apm.log)" >&2
+    fi
+  fi
 
   # Capture the stock server log (it is written to a timestamped file under
   # userdata; the start script records the path). zdtd already logs to

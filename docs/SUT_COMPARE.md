@@ -104,6 +104,20 @@ already carries the `-<world>` suffix (`compare-worlds` convention). A scenario
 id that encodes a world while `COMPARE_WORLD` disagrees is warned, never
 silently accepted.
 
+## Cost axes (both servers, 2026-08-12)
+
+- zdtd: periodic `{"type":"zdtd_apm"` JSON in server.log, summarized into the
+  surface (`apm` key) - tick mean/p99/max ns, join/net counters.
+- stock: `7dtd-apm capture --seconds N --no-app` started right before the
+  telnet snapshot (aligned with the connected window), session finalized under
+  `stock/apm/session_*/`, summarized into the surface (`apmStock` key) - layer
+  scores, IPC, GC alloc rate, lag verdict. `COMPARE_APM=0` disables;
+  `COMPARE_APM_SECONDS` sizes the window (default 30).
+
+Both are reported side by side in REPORT.md and carried in diff.json, never
+diffed against each other (zdtd's is tick/counter based, stock's is
+CPU/layer based - a direct diff would be meaningless).
+
 ## Consolidated findings (2026-08-12, both comparison tools)
 
 Loadgen SUT harness (all scenarios compared; join PASS both sides every run):

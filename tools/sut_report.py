@@ -215,6 +215,25 @@ def main():
             lines.append(f"- tick mean/p99/max ns: {za['tickMeanNs']} / "
                          f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
 
+    # ---- stock APM (7dtd-apm capture; reported, not compared: format differs) ----
+    sa = (stock or {}).get("apmStock") if stock else None
+    if sa:
+        lines.append("\n## stock APM (7dtd-apm capture window; no zdtd equivalent format)\n")
+        if sa.get("session"):
+            lines.append(f"- session: {sa['session']}")
+        if sa.get("lagVerdict"):
+            lines.append(f"- lag verdict: {sa['lagVerdict']}")
+        if sa.get("gcAllocMBPerSec") is not None:
+            lines.append(f"- gc alloc: {sa['gcAllocMBPerSec']} MB/s "
+                         f"(full collections: {sa.get('gcFullCollections', 'n/a')})")
+        if sa.get("layers"):
+            lines.append("- layer scores: "
+                         + ", ".join(f"{k}={v}" for k, v in sorted(sa["layers"].items())))
+        for layer, vals in sorted((sa.get("signals") or {}).items()):
+            if vals:
+                lines.append(f"- {layer}: "
+                             + ", ".join(f"{k}={v}" for k, v in sorted(vals.items())))
+
     # ---- Gamestats (compared on shared names) ----
     sg = (st or {}).get("gamestats") or {}
     zg = (zt or {}).get("gamestats") or {}

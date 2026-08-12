@@ -85,6 +85,18 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
         encoding="utf-8",
     )
     if stock:
+        apm = run_dir / "apm" / "session_synth_pid9"
+        apm.mkdir(parents=True)
+        (apm / "summary.json").write_text(
+            json.dumps({
+                "layers": [{"layer": "cpu", "score": 20,
+                            "signals": {"ipc": 0.8, "cycles": 1e9, "instructions": 8e8}},
+                           {"layer": "sync", "score": 10, "signals": {"futex_count": 5}}],
+                "metadata": {"lag_diagnosis": {"verdict": "ok"},
+                             "gc": {"grossAllocMBPerSecond": 1.2, "fullCollections": 1}},
+            }),
+            encoding="utf-8",
+        )
         (run_dir / "server.log").write_text(
             "2026-08-12T00:00:00 1.0 INF createWorld: Navezgane\n"
             "2026-08-12T00:00:01 1.1 INF StartGame done\n"
@@ -125,6 +137,8 @@ def test_full_comparison_pipeline(tmp_path):
 
     s = json.loads((stock_dir / "surface.json").read_text(encoding="utf-8"))
     assert s["join"]["pass"] == 1
+    assert s["apmStock"]["layers"] == {"cpu": 20, "sync": 10}
+    assert s["apmStock"]["signals"]["cpu"]["ipc"] == 0.8
     assert s["telnet"]["gamestats"]["TimeOfDayIncPerSec"] == "6"
     assert s["telnet"]["gamestats"]["AirDropFrequency"] == "3"
     # ScriptOrder noise + telnet-close IOException are excluded from severity.
@@ -158,6 +172,10 @@ def test_full_comparison_pipeline(tmp_path):
     assert any(f.startswith("gamestats: 2 shared stat(s) differ") for f in diff["findings"])
     assert any(f.startswith("banner: difficulty differs") for f in diff["findings"])
     assert "| Max players | 64 | 64 |" in report
+    assert "## stock APM" in report
+    assert "ipc=0.8" in report
+    assert "gc alloc: 1.2 MB/s" in report
+    assert "layer scores: cpu=20, sync=10" in report
 
 
 def test_not_compared_when_one_side_missing(tmp_path):
