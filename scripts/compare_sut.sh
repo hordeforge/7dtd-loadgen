@@ -61,19 +61,25 @@ fi
 
 # Scenario knobs: env (if explicitly set) wins, then the catalog, then
 # defaults. The catalog is scripts/scenarios/sut.json.
-read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT < <(
+read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY < <(
   python3 -c "
 import json, sys
 try:
     s = json.load(open('$ROOT/scripts/scenarios/sut.json'))['$SCENARIO_ID']
-    print(s['count'], s['actions'], s['timeoutMs'])
+    print(s.get('count', ''), s.get('actions', ''), s.get('timeoutMs', ''),
+          s.get('spawnEntity', ''), s.get('spawnPerPlayer', ''), s.get('spawnEveryMs', ''))
 except (KeyError, OSError, ValueError):
-    print('', '', '')
-" 2>/dev/null || echo "  "
+    print('', '', '', '', '', '')
+" 2>/dev/null || echo "       "
 )
 COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
 ACTIONS="${COMPARE_ACTIONS:-${CAT_ACTIONS:-0}}"
 TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-${CAT_TIMEOUT:-60000}}"
+# Optional spawn-pressure knobs from the catalog; LOADGEN_* envs pass through
+# to run_loadgen.sh when unset, so a user override still wins.
+SPAWN_ENTITY="${COMPARE_SPAWN_ENTITY:-${CAT_SPAWN_ENT:-}}"
+SPAWN_PER_PLAYER="${COMPARE_SPAWN_PER_PLAYER:-${CAT_SPAWN_PER:-}}"
+SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
@@ -218,6 +224,8 @@ EOF
   # after the client exits always reads 0 players).
   LOADGEN_MODE=join LOADGEN_COUNT="$COUNT" LOADGEN_ACTIONS="$ACTIONS" \
     LOADGEN_TIMEOUT="$TIMEOUT_MS" LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
+    LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" \
+    LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
     bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/loadgen.log" 2>&1 &
   CLIENT_PID=$!
   joined=0

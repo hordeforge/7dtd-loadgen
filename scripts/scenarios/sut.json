@@ -22,5 +22,14 @@
   "actions": 0,
   "timeoutMs": 15000,
   "note": "15s join smoke (join handshake alone takes ~8s); fastest side check"
+ },
+ "horde-lite": {
+  "count": 1,
+  "actions": 0,
+  "timeoutMs": 60000,
+  "spawnEntity": "zombieBoe",
+  "spawnPerPlayer": 4,
+  "spawnEveryMs": 15000,
+  "note": "spawn pressure: 4 zombies/player every 15s via the loadgen spawner"
  }
 }
