@@ -162,3 +162,13 @@ record, and documentation of any protocol-version restriction.
   scenarios live.
 - [ ] Stock ready gate: reduce residual denial flakiness (5 FAILs observed on
   one run despite StartGame-done gate; check ConnectionManager accept window).
+
+## Playtest-compare live run (2026-08-12, 2nd attempt)
+
+- [ ] playtest-compare smoke live: client stuck in the loading screen ~14 min
+  (repeated `wt openW saveIndicator`, never entered the world; zero
+  `[7dtd-playtest]` case results despite `armed suites=smoke ... queue cases=5`).
+  The suite's runner is a Harmony Postfix on GameManager.gmUpdate; no
+  wait_ready/ready lines appeared, so Tick did not reach the ready gate. Triage:
+  client world-load stuck (fresh Navezgane save) vs gmUpdate hook not firing on
+  this build. Re-try with an existing (non-fresh) save and watch the connect log.
