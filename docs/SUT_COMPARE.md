@@ -33,6 +33,11 @@ make compare-all                      # every catalog scenario
 COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut   # env overrides
 ```
 
+Catalog: `join-probe`, `wander-2bot`, `join-fast`, `probe-15s`, `horde-lite`
+(the last carries spawn-pressure knobs `spawnEntity`/`spawnPerPlayer`/
+`spawnEveryMs`, resolved from the catalog or `COMPARE_SPAWN_*` envs; the
+loadgen `LOADGEN_*` spawn envs pass through when unset).
+
 Scenario knobs come from `scripts/scenarios/sut.json` (count / actions /
 timeoutMs); explicitly-set env vars (`COMPARE_COUNT`, `COMPARE_ACTIONS`,
 `COMPARE_TIMEOUT_MS`) win over the catalog. Both servers get the same client
