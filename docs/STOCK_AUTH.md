@@ -62,7 +62,7 @@ fully-local-network model.
 
 A Harmony patch on the server's Steam auth
 (`AuthenticationServer.AuthenticateUser`) that auto-passes loopback/synthetic
-SteamIds (`7dtd-bot` ships this: `Patch_SteamAuthServer_SyntheticBypass`; the
+SteamIds (`7dtd-clanker` ships this: `Patch_SteamAuthServer_SyntheticBypass`; the
 parallel FPS-bot session runs it, log line `[BotMod] synthetic auth bypass for
 SteamId=...`).
 
