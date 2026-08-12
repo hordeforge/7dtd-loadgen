@@ -1,8 +1,9 @@
 {
+ "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T09:23:48.2871577Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T09:23:48.2871577Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-12T11:43:25.1990482Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-12T11:43:25.1990482Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -10,7 +11,7 @@
    "StartGame done": "StartGame done",
    "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), join-probe_stock, GameModeSurvival"
   },
-  "exec": 15,
+  "exec": 24,
   "gamestats": {
    "AirDropFrequency": "0",
    "AirDropMarker": "True",
@@ -88,7 +89,7 @@
   },
   "severity": {
    "EXC": 3,
-   "INF": 372,
+   "INF": 366,
    "WRN": 13
   },
   "telnetCloseErrors": 8
@@ -98,34 +99,36 @@
    "actions": "0",
    "count": "1",
    "host": "127.0.0.1",
+   "spawnEntity": "",
+   "spawnEveryMs": "",
+   "spawnPerPlayer": "",
    "timeoutMs": "60000"
   },
   "loadgen": {
-   "dirtyFiles": "4",
-   "git": "8b8703c"
+   "dirtyFiles": "3",
+   "git": "e36a954"
   },
   "scenario": "join-probe",
-  "startedAt": "2026-08-12T09:23:48Z",
+  "startedAt": "2026-08-12T11:43:25Z",
   "sut": "stock",
   "zdtd": {
-   "dirtyFiles": "14",
+   "dirtyFiles": "18",
    "git": "edd9e16"
   }
  },
  "saves": {
-  "count": 9,
+  "count": 8,
   "files": {
-   "Navezgane/join-probe_stock/Region/r.0.0.7rg": 1568768,
-   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 720896,
-   "Navezgane/join-probe_stock/blockmappings.nim": 23222,
-   "Navezgane/join-probe_stock/decoration.7dt": 1282876,
-   "Navezgane/join-probe_stock/itemmappings.nim": 30,
-   "Navezgane/join-probe_stock/main.ttw": 11002,
-   "Navezgane/join-probe_stock/main.ttw.bak": 10390,
+   "Navezgane/join-probe_stock/Region/r.1.1.7rg": 716800,
+   "Navezgane/join-probe_stock/blockmappings.nim": 8703,
+   "Navezgane/join-probe_stock/decoration.7dt": 1282842,
+   "Navezgane/join-probe_stock/itemmappings.nim": 8,
+   "Navezgane/join-probe_stock/main.ttw": 8136,
+   "Navezgane/join-probe_stock/main.ttw.bak": 8136,
    "Navezgane/join-probe_stock/main.ttw.ext.bak": 264,
-   "Navezgane/join-probe_stock/multiblocks.7dt": 3932
+   "Navezgane/join-probe_stock/multiblocks.7dt": 6601
   },
-  "totalBytes": 3621380
+  "totalBytes": 2031490
  },
  "sut": "stock",
  "telnet": {
@@ -139,7 +142,7 @@
    "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.3684,
+  "clockRateGameMinPerRealSec": 0.35,
   "day": [
    "1",
    "07",
@@ -147,9 +150,10 @@
   ],
   "entities": {
    "alive": 7,
-   "count": 7,
-   "dead": 0,
+   "count": 8,
+   "dead": 1,
    "types": {
+    "EntityAnimalRabbit": 1,
     "EntityPlayer": 1,
     "EntityZombie": 6
    }

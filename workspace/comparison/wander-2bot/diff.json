@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T09:27:44.2270867Z] [join#2] PASS joined entity=177 walks=1609 jumps=181 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T09:27:44.3144069Z] [join#1] PASS joined entity=178 walks=1585 jumps=198 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T11:47:25.2569898Z] [join#2] PASS joined entity=178 walks=1598 jumps=178 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T11:47:25.2600885Z] [join#1] PASS joined entity=177 walks=1572 jumps=195 deaths=0 respawns=0 lastDied=False l",
     "pass": 2
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T09:29:42.8408178Z] [join#1] PASS joined entity=112 walks=1560 jumps=193 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T09:29:42.8509252Z] [join#2] PASS joined entity=113 walks=1594 jumps=178 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-12T11:49:10.8727191Z] [join#1] PASS joined entity=113 walks=1552 jumps=192 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-12T11:49:10.8843720Z] [join#2] PASS joined entity=112 walks=1568 jumps=174 deaths=0 respawns=0 lastDied=False l",
     "pass": 2
    }
   },
@@ -97,9 +97,9 @@
      "ZombieHordeMeter": "False"
     },
     "severity": {
-     "EXC": 6,
-     "INF": 466,
-     "WRN": 21
+     "EXC": 5,
+     "INF": 471,
+     "WRN": 17
     },
     "telnetCloseErrors": 10
    },
@@ -121,21 +121,21 @@
    "stock": {
     "count": 13,
     "files": {
-     "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1196032,
-     "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 1028096,
-     "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 118784,
-     "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 139264,
-     "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 217088,
-     "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 249856,
-     "Navezgane/wander-2bot_stock/blockmappings.nim": 31559,
-     "Navezgane/wander-2bot_stock/decoration.7dt": 1286429,
-     "Navezgane/wander-2bot_stock/itemmappings.nim": 28,
-     "Navezgane/wander-2bot_stock/main.ttw": 35020,
-     "Navezgane/wander-2bot_stock/main.ttw.bak": 35020,
+     "Navezgane/wander-2bot_stock/Region/r.0.0.7rg": 1552384,
+     "Navezgane/wander-2bot_stock/Region/r.0.1.7rg": 749568,
+     "Navezgane/wander-2bot_stock/Region/r.1.0.7rg": 172032,
+     "Navezgane/wander-2bot_stock/Region/r.1.1.7rg": 184320,
+     "Navezgane/wander-2bot_stock/Region/r.2.0.7rg": 290816,
+     "Navezgane/wander-2bot_stock/Region/r.2.1.7rg": 335872,
+     "Navezgane/wander-2bot_stock/blockmappings.nim": 40137,
+     "Navezgane/wander-2bot_stock/decoration.7dt": 1286565,
+     "Navezgane/wander-2bot_stock/itemmappings.nim": 110,
+     "Navezgane/wander-2bot_stock/main.ttw": 41005,
+     "Navezgane/wander-2bot_stock/main.ttw.bak": 41005,
      "Navezgane/wander-2bot_stock/main.ttw.ext.bak": 264,
-     "Navezgane/wander-2bot_stock/multiblocks.7dt": 4085
+     "Navezgane/wander-2bot_stock/multiblocks.7dt": 9627
     },
-    "totalBytes": 4341525
+    "totalBytes": 4703705
    },
    "zdtd": {
     "count": 120,
@@ -236,7 +236,7 @@
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.3333,
+    "clockRateGameMinPerRealSec": 0.3636,
     "day": [
      "1",
      "07",
@@ -277,7 +277,7 @@
      "DeathPenalty": "1",
      "DropOnDeath": "1",
      "DropOnQuit": "0",
-     "EnemyCount": "6",
+     "EnemyCount": "3",
      "EnemyDifficulty": "1",
      "EnemySpawnMode": "True",
      "FragLimitActive": "False",
@@ -353,7 +353,7 @@
      "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
      "World": "Navezgane"
     },
-    "clockRateGameMinPerRealSec": 0.35,
+    "clockRateGameMinPerRealSec": 0.4,
     "day": [
      "1",
      "07",
@@ -414,11 +414,11 @@
      "rows": [
       {
        "id": 112,
-       "name": "REFake1"
+       "name": "REFake2"
       },
       {
        "id": 113,
-       "name": "REFake2"
+       "name": "REFake1"
       }
      ]
     },
@@ -429,7 +429,7 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=6 zdtd=0)",
+  "log: EXC (exception) line count differs (stock=5 zdtd=0)",
   "telnet: entity count differs (stock=8 zdtd=12)"
  ],
  "scenario": "wander-2bot"

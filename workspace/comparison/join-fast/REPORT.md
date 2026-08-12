@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: join-fast
 
-- stock: ran 2026-08-12T09:30:58Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
-- zdtd: ran 2026-08-12T09:31:37Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
+- stock: ran 2026-08-12T11:50:32Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
+- zdtd: ran 2026-08-12T11:51:11Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=20000ms
 
 ## Join outcome
 
@@ -9,15 +9,15 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T09:30:56.0412537Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T09:31:34.0807669Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T11:50:29.8165481Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T11:51:08.0835069Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
 | EXC lines | 3 | 0 |
-| INF lines | 343 | 56 |
-| WRN lines | 13 | 2 |
+| INF lines | 342 | 56 |
+| WRN lines | 12 | 2 |
 | telnet commands | 9 | n/a |
 - stock: 4 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
 - stock ERR/EXC lines: ERR=0 EXC=3
@@ -101,7 +101,7 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 10 file(s), 3080 KiB
+- stock: 10 file(s), 2984 KiB
 - zdtd: 117 file(s), 32562 KiB
 - stock keys: Navezgane/join-fast_stock/Region/r.-1.0.7rg, Navezgane/join-fast_stock/Region/r.-1.1.7rg, Navezgane/join-fast_stock/Region/r.0.0.7rg, Navezgane/join-fast_stock/blockmappings.nim, Navezgane/join-fast_stock/decoration.7dt, Navezgane/join-fast_stock/itemmappings.nim, Navezgane/join-fast_stock/main.ttw, Navezgane/join-fast_stock/main.ttw.bak
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch

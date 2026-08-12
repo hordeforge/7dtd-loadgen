@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: join-probe
 
-- stock: ran 2026-08-12T09:23:48Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
-- zdtd: ran 2026-08-12T09:25:17Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
+- stock: ran 2026-08-12T11:43:25Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
+- zdtd: ran 2026-08-12T11:44:41Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=60000ms
 
 ## Join outcome
 
@@ -9,16 +9,16 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T09:23:48.2871577Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T09:25:16.9353345Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T11:43:25.1990482Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T11:44:40.9260473Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
 | EXC lines | 3 | 0 |
-| INF lines | 372 | 56 |
+| INF lines | 366 | 56 |
 | WRN lines | 13 | 2 |
-| telnet commands | 15 | n/a |
+| telnet commands | 24 | n/a |
 - stock: 8 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
 - stock ERR/EXC lines: ERR=0 EXC=3
 
@@ -35,14 +35,14 @@ Boot evidence per side:
 
 - stock day/time: Day 1, 07:00
 - zdtd day/time: Day 1, 07:03
-- clock rate (game-min per real-sec): stock=0.3684 zdtd=0.4 (60-min day = 0.4)
+- clock rate (game-min per real-sec): stock=0.35 zdtd=0.4 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
-| entities total | 7 | 11 |
+| entities total | 8 | 11 |
 | entities alive | 7 | 11 |
 | players | 1 | 1 |
-- stock entity types: EntityPlayer=1, EntityZombie=6
+- stock entity types: EntityAnimalRabbit=1, EntityPlayer=1, EntityZombie=6
 - zdtd entity types: animal=1, player=1, trader=6, turret=1, vehicle=1, zombie=1
 
 ## Server banner (telnet greeting)
@@ -61,11 +61,11 @@ Boot evidence per side:
 - ticks: 1200
 - join_ok: 1
 - join_fail: 0
-- net_packets_in: 1243
-- net_packets_out: 3789
-- tick_overruns: 5
+- net_packets_in: 1238
+- net_packets_out: 3822
+- tick_overruns: 3
 - phase_rejects: 0
-- tick mean/p99/max ns: 2042626 / 50331648 / 745108185
+- tick mean/p99/max ns: 2227288 / 50331648 / 800219490
 
 ## Gamestats (compared on shared names)
 
@@ -112,14 +112,15 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 9 file(s), 3537 KiB
+- stock: 8 file(s), 1984 KiB
 - zdtd: 120 file(s), 34059 KiB
-- stock keys: Navezgane/join-probe_stock/Region/r.0.0.7rg, Navezgane/join-probe_stock/Region/r.1.1.7rg, Navezgane/join-probe_stock/blockmappings.nim, Navezgane/join-probe_stock/decoration.7dt, Navezgane/join-probe_stock/itemmappings.nim, Navezgane/join-probe_stock/main.ttw, Navezgane/join-probe_stock/main.ttw.bak, Navezgane/join-probe_stock/main.ttw.ext.bak
+- stock keys: Navezgane/join-probe_stock/Region/r.1.1.7rg, Navezgane/join-probe_stock/blockmappings.nim, Navezgane/join-probe_stock/decoration.7dt, Navezgane/join-probe_stock/itemmappings.nim, Navezgane/join-probe_stock/main.ttw, Navezgane/join-probe_stock/main.ttw.bak, Navezgane/join-probe_stock/main.ttw.ext.bak, Navezgane/join-probe_stock/multiblocks.7dt
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch
 
 ## Findings
 
 - log: EXC (exception) line count differs (stock=3 zdtd=0)
-- telnet: entity count differs (stock=7 zdtd=11)
+- telnet: game-clock rate differs (stock=0.35 zdtd=0.4; 60-min day = 0.4)
+- telnet: entity count differs (stock=8 zdtd=11)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

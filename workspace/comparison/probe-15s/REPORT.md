@@ -1,7 +1,7 @@
 # Stock-vs-zdtd comparison: probe-15s
 
-- stock: ran 2026-08-12T09:32:52Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=15000ms
-- zdtd: ran 2026-08-12T09:33:31Z | loadgen 8b8703c (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=15000ms
+- stock: ran 2026-08-12T11:52:25Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=15000ms
+- zdtd: ran 2026-08-12T11:53:03Z | loadgen e36a954 (dirty) | zdtd edd9e16 (dirty) | client count=1 actions=0 timeout=15000ms
 
 ## Join outcome
 
@@ -9,18 +9,18 @@
 |---|---|---|
 | PASS joined | 1 | 1 |
 | FAIL | 0 | 0 |
-| first pass | `[2026-08-12T09:32:45.3792080Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T09:33:22.8763662Z] [join#1] PASS joined entity=112 w` |
+| first pass | `[2026-08-12T11:52:17.9994791Z] [join#1] PASS joined entity=177 w` | `[2026-08-12T11:52:55.5626002Z] [join#1] PASS joined entity=112 w` |
 
 ## Server log (normalized; stock skips [ScriptOrder] frame noise)
 
 | axis | stock | zdtd |
 |---|---|---|
-| EXC lines | 3 | 0 |
-| INF lines | 343 | 56 |
-| WRN lines | 12 | 2 |
+| EXC lines | 4 | 0 |
+| INF lines | 342 | 55 |
+| WRN lines | 17 | 2 |
 | telnet commands | 9 | n/a |
 - stock: 4 telnet-close IOExceptions (harness snapshot sessions; excluded from the ERR count)
-- stock ERR/EXC lines: ERR=0 EXC=3
+- stock ERR/EXC lines: ERR=0 EXC=4
 
 Boot evidence per side:
 - `stock.StartGame done` = `StartGame done`
@@ -35,7 +35,7 @@ Boot evidence per side:
 
 - stock day/time: Day 1, 07:00
 - zdtd day/time: Day 1, 07:03
-- clock rate (game-min per real-sec): stock=0.25 zdtd=0.4 (60-min day = 0.4)
+- clock rate (game-min per real-sec): stock=0.25 zdtd=0.4211 (60-min day = 0.4)
 
 | axis | stock | zdtd |
 |---|---|---|
@@ -101,15 +101,15 @@ Boot evidence per side:
 
 ## Save files (presence + sizes; formats differ by design)
 
-- stock: 9 file(s), 2966 KiB
+- stock: 8 file(s), 1697 KiB
 - zdtd: 117 file(s), 32562 KiB
-- stock keys: Navezgane/probe-15s_stock/Region/r.0.0.7rg, Navezgane/probe-15s_stock/Region/r.0.1.7rg, Navezgane/probe-15s_stock/blockmappings.nim, Navezgane/probe-15s_stock/decoration.7dt, Navezgane/probe-15s_stock/itemmappings.nim, Navezgane/probe-15s_stock/main.ttw, Navezgane/probe-15s_stock/main.ttw.bak, Navezgane/probe-15s_stock/main.ttw.ext.bak
+- stock keys: Navezgane/probe-15s_stock/Region/r.0.0.7rg, Navezgane/probe-15s_stock/Region/r.0.1.7rg, Navezgane/probe-15s_stock/blockmappings.nim, Navezgane/probe-15s_stock/itemmappings.nim, Navezgane/probe-15s_stock/main.ttw, Navezgane/probe-15s_stock/main.ttw.bak, Navezgane/probe-15s_stock/main.ttw.ext.bak, Navezgane/probe-15s_stock/multiblocks.7dt
 - zdtd keys: allies.zal, blockmeta.zbm, c_-12_28.zch, c_-12_30.zch, c_-12_31.zch, c_-12_33.zch, c_-13_23.zch, c_-13_26.zch
 
 ## Findings
 
-- log: EXC (exception) line count differs (stock=3 zdtd=0)
-- telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)
+- log: EXC (exception) line count differs (stock=4 zdtd=0)
+- telnet: game-clock rate differs (stock=0.25 zdtd=0.4211; 60-min day = 0.4)
 - telnet: entity count differs (stock=7 zdtd=11)
 
 *Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*

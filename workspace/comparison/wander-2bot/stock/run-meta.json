@@ -1,8 +1,9 @@
 {
   "scenario": "wander-2bot",
   "sut": "stock",
-  "startedAt": "2026-08-12T09:27:44Z",
-  "client": {"count": "2", "actions": "0", "timeoutMs": "90000", "host": "127.0.0.1"},
-  "loadgen": {"git": "8b8703c", "dirtyFiles": "12"},
-  "zdtd": {"git": "edd9e16", "dirtyFiles": "16"}
+  "startedAt": "2026-08-12T11:47:25Z",
+  "client": {"count": "2", "actions": "0", "timeoutMs": "90000", "host": "127.0.0.1",
+             "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
+  "loadgen": {"git": "e36a954", "dirtyFiles": "11"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "10"}
 }

@@ -2,8 +2,8 @@
  "apm": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T09:33:22.8763662Z] [join#1] PASS joined entity=112 walks=241 jumps=32 deaths=0 respawns=0 lastDied=False las",
-  "lastPass": "[2026-08-12T09:33:22.8763662Z] [join#1] PASS joined entity=112 walks=241 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "firstPass": "[2026-08-12T11:52:55.5626002Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
+  "lastPass": "[2026-08-12T11:52:55.5626002Z] [join#1] PASS joined entity=112 walks=244 jumps=32 deaths=0 respawns=0 lastDied=False las",
   "pass": 1
  },
  "log": {
@@ -15,7 +15,7 @@
    "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/probe-15s/zdtd/world"
   },
   "severity": {
-   "INF": 56,
+   "INF": 55,
    "WRN": 2
   }
  },
@@ -24,17 +24,20 @@
    "actions": "0",
    "count": "1",
    "host": "127.0.0.1",
+   "spawnEntity": "",
+   "spawnEveryMs": "",
+   "spawnPerPlayer": "",
    "timeoutMs": "15000"
   },
   "loadgen": {
-   "dirtyFiles": "31",
-   "git": "8b8703c"
+   "dirtyFiles": "30",
+   "git": "e36a954"
   },
   "scenario": "probe-15s",
-  "startedAt": "2026-08-12T09:33:31Z",
+  "startedAt": "2026-08-12T11:53:03Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "16",
+   "dirtyFiles": "10",
    "git": "edd9e16"
   }
  },
@@ -136,7 +139,7 @@
    "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
    "World": "Navezgane"
   },
-  "clockRateGameMinPerRealSec": 0.4,
+  "clockRateGameMinPerRealSec": 0.4211,
   "day": [
    "1",
    "07",

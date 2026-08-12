@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T09:30:56.0412537Z] [join#1] PASS joined entity=177 walks=333 jumps=45 deaths=0 respawns=0 lastDied=False las",
-    "lastPass": "[2026-08-12T09:30:56.0412537Z] [join#1] PASS joined entity=177 walks=333 jumps=45 deaths=0 respawns=0 lastDied=False las",
+    "firstPass": "[2026-08-12T11:50:29.8165481Z] [join#1] PASS joined entity=177 walks=327 jumps=44 deaths=0 respawns=0 lastDied=False las",
+    "lastPass": "[2026-08-12T11:50:29.8165481Z] [join#1] PASS joined entity=177 walks=327 jumps=44 deaths=0 respawns=0 lastDied=False las",
     "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T09:31:34.0807669Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
-    "lastPass": "[2026-08-12T09:31:34.0807669Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
+    "firstPass": "[2026-08-12T11:51:08.0835069Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
+    "lastPass": "[2026-08-12T11:51:08.0835069Z] [join#1] PASS joined entity=112 walks=332 jumps=45 deaths=0 respawns=0 lastDied=False las",
     "pass": 1
    }
   },
@@ -98,8 +98,8 @@
     },
     "severity": {
      "EXC": 3,
-     "INF": 343,
-     "WRN": 13
+     "INF": 342,
+     "WRN": 12
     },
     "telnetCloseErrors": 4
    },
@@ -123,16 +123,16 @@
     "files": {
      "Navezgane/join-fast_stock/Region/r.-1.0.7rg": 593920,
      "Navezgane/join-fast_stock/Region/r.-1.1.7rg": 163840,
-     "Navezgane/join-fast_stock/Region/r.0.0.7rg": 1093632,
+     "Navezgane/join-fast_stock/Region/r.0.0.7rg": 995328,
      "Navezgane/join-fast_stock/blockmappings.nim": 8971,
      "Navezgane/join-fast_stock/decoration.7dt": 1288486,
-     "Navezgane/join-fast_stock/itemmappings.nim": 60,
+     "Navezgane/join-fast_stock/itemmappings.nim": 30,
      "Navezgane/join-fast_stock/main.ttw": 3839,
      "Navezgane/join-fast_stock/main.ttw.bak": 264,
      "Navezgane/join-fast_stock/main.ttw.ext.bak": 264,
      "Navezgane/join-fast_stock/multiblocks.7dt": 1042
     },
-    "totalBytes": 3154318
+    "totalBytes": 3055984
    },
    "zdtd": {
     "count": 117,
@@ -274,7 +274,7 @@
      "DeathPenalty": "1",
      "DropOnDeath": "1",
      "DropOnQuit": "0",
-     "EnemyCount": "5",
+     "EnemyCount": "6",
      "EnemyDifficulty": "1",
      "EnemySpawnMode": "True",
      "FragLimitActive": "False",

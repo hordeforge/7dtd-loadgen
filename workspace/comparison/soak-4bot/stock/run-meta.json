@@ -1,9 +1,9 @@
 {
   "scenario": "soak-4bot",
   "sut": "stock",
-  "startedAt": "2026-08-12T11:25:18Z",
+  "startedAt": "2026-08-12T12:02:17Z",
   "client": {"count": "4", "actions": "0", "timeoutMs": "300000", "host": "127.0.0.1",
              "spawnEntity": "", "spawnPerPlayer": "", "spawnEveryMs": ""},
-  "loadgen": {"git": "dee8ab5", "dirtyFiles": "1"},
-  "zdtd": {"git": "edd9e16", "dirtyFiles": "10"}
+  "loadgen": {"git": "e36a954", "dirtyFiles": "43"},
+  "zdtd": {"git": "edd9e16", "dirtyFiles": "12"}
 }
