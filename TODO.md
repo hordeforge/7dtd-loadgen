@@ -154,7 +154,10 @@ record, and documentation of any protocol-version restriction.
 - [x] Findings loop: stock EXC NREs (stock wart), clock rate + ambient-seed
   divergences recorded in zdtd PROVENANCE 3.9, gamestats mismatches fixed
   (zdtd wire units + harness config alignment).
-- [ ] playtest-compare (7dtd-playtest `make playtest-compare`) first live run.
+- [ ] playtest-compare (7dtd-playtest `make playtest-compare`) live run.
+  (Attempted 2026-08-12; a parallel FPS-bot session's runs pkill the shared
+  dedicated/client mid-run (Error 143). Tool is unit-tested; run when the
+  machine is quiet.)
 - [ ] Scenario breadth: horde-lite (spawn pressure) and join-fast catalog
   scenarios live.
 - [ ] Stock ready gate: reduce residual denial flakiness (5 FAILs observed on
