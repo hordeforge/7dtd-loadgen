@@ -1,10 +1,10 @@
 {
   "scenario": "horde-lite",
-  "sut": "zdtd",
-  "startedAt": "2026-08-18T05:30:57Z",
-  "hostLoad": "5.09",
+  "sut": "stock",
+  "startedAt": "2026-08-18T05:29:35Z",
+  "hostLoad": "7.09",
   "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1",
              "spawnEntity": "zombieBoe", "spawnPerPlayer": "4", "spawnEveryMs": "15000"},
-  "loadgen": {"git": "b2b5705", "dirtyFiles": "4"},
-  "zdtd": {"git": "74489dc", "dirtyFiles": "0"}
+  "loadgen": {"git": "b2b5705", "dirtyFiles": "1"},
+  "zdtd": {"git": "9614eac", "dirtyFiles": "8"}
 }

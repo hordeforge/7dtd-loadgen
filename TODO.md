@@ -208,14 +208,20 @@ record, and documentation of any protocol-version restriction.
 - [ ] Triage soak_long zdtd fail: seeded ambient zombies near spawn kill the
   player in ~12s (stock soak survived 900s). Ambient-seed divergence manifest.
   Fix likely in zdtd init_world seeding or the soak's spawn handling.
-- [x] Triage horde-lite: HARNESS ARTIFACT, root-caused 2026-08-18. The loadgen
-  client's spawn loop targeted a fixed `--telnet-port 8081` on BOTH sides, but
-  zdtd's admin port is 8082 - the zdtd side logged `TELNET connect fail:
-  Connection refused` and the spawn pressure never landed (zdtd listents stayed
-  at ambient). Not a zdtd spawn-handling gap. Fixed: run_loadgen.sh now forwards
-  LOADGEN_TELNET_HOST/PORT/PASSWORD and compare_sut.sh passes the per-side
-  TELNET_PORT, so the zdtd spawn loop targets 8082. Re-run horde-lite to
-  re-validate the entity axis.
+- [x] Triage horde-lite: TWO layered causes, both root-caused 2026-08-18 and
+  re-validated on free admin ports (COMPARE_TELNET_PORT_STOCK=8084 ZDTD=8085).
+  (1) HARNESS ARTIFACT (fixed): the loadgen spawn loop targeted a fixed
+  --telnet-port 8081 on BOTH sides, but zdtd's admin port is 8082 - the zdtd
+  side logged "TELNET connect fail: Connection refused" and the pressure
+  never reached the server. Fixed: run_loadgen.sh forwards
+  LOADGEN_TELNET_HOST/PORT/PASSWORD; compare_sut.sh passes the per-side
+  TELNET_PORT. (2) ZDTD CAPABILITY GAP (recorded for the zdtd lane): with the
+  port fixed, zdtd's admin console counts the commands (admin_commands=9 in
+  the zdtd APM) but does NOT implement spawnscouts/spawnentity - no audit
+  lines and zero spawned entities (zombie stays 1=ambient while stock shows
+  9 spawned zombieBoe from the same commands). Unknown admin commands are
+  silently ignored. Not a harness artifact and not a stock divergence.
+  Evidence: workspace/comparison/horde-lite REPORT 2026-08-18.
 - [ ] HIGH: zdtd join fails on Pregen06k01 (C2S payload Overflow right after the
   challenge: "payload failed local_id=1 error=Overflow n=1"; stock joins fine).
   Found via COMPARE_WORLD=Pregen06k01 join-fast; REPRODUCED consistently (2/2
