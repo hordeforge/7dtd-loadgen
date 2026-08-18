@@ -42,6 +42,14 @@ Catalog: `join-probe`, `wander-2bot`, `join-fast`, `probe-15s`, `horde-lite`
 `spawnEveryMs`, resolved from the catalog or `COMPARE_SPAWN_*` envs; the
 loadgen `LOADGEN_*` spawn envs pass through when unset).
 
+The loadgen client's telnet admin target (used by the spawn-pressure and
+wandering-horde loops) is pinned to the per-side admin port:
+`compare_sut.sh` passes `LOADGEN_TELNET_HOST/PORT/PASSWORD` from the side's
+`TELNET_PORT` (stock 8081, zdtd 8082). Without this, a spawn loop aimed at the
+wrong port logs `TELNET connect fail: Connection refused` and the pressure
+silently never lands (the horde-lite entity axis was misread as a zdtd gap
+until this was traced, 2026-08-18).
+
 Scenario knobs come from `scripts/scenarios/sut.json` (count / actions /
 timeoutMs); explicitly-set env vars (`COMPARE_COUNT`, `COMPARE_ACTIONS`,
 `COMPARE_TIMEOUT_MS`) win over the catalog. Both servers get the same client
