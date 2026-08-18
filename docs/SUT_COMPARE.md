@@ -50,6 +50,15 @@ wrong port logs `TELNET connect fail: Connection refused` and the pressure
 silently never lands (the horde-lite entity axis was misread as a zdtd gap
 until this was traced, 2026-08-18).
 
+Admin ports are overridable with `COMPARE_TELNET_PORT_STOCK` /
+`COMPARE_TELNET_PORT_ZDTD` (defaults 8081/8082). When an unrelated host
+service occupies those ports (docker-proxy containers on this machine),
+BOTH servers fail to bind their admin console and every telnet axis silently
+degrades: empty snapshots, dead spawn pressure, phantom 0/0 entity rows
+(observed 2026-08-18). `compare_sut.sh` now fails loudly before booting when
+the admin port is already listening, and the stock prefab launcher honors
+`RE_TELNET_PORT` (stock config template) / `RE_SUT_ADMIN_PORT` (zdtd).
+
 Scenario knobs come from `scripts/scenarios/sut.json` (count / actions /
 timeoutMs); explicitly-set env vars (`COMPARE_COUNT`, `COMPARE_ACTIONS`,
 `COMPARE_TIMEOUT_MS`) win over the catalog. Both servers get the same client

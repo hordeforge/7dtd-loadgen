@@ -191,9 +191,18 @@ record, and documentation of any protocol-version restriction.
 - [x] Triage shared fail combat/melee_damage_out: FAIL on BOTH servers is a
   MATCHED case (no comparison finding); likely a test-timing flake (player out
   of the zombie's 96m range when the case runs). Not a server divergence.
-- [ ] Stock-only fails (sleeper_wake, zombie_or_npc_nearby,
-  zombie_target_has_health) correlate with the stock zombie-spawn flakiness;
-  re-run to confirm flake vs real.
+- [x] Stock-only fails (sleeper_wake, zombie_or_npc_nearby,
+  zombie_target_has_health) re-run 2026-08-18 (CLIENT_PLATFORM=local,
+  ADMIN_PORT=8084, both sides fresh, ran-UTC recorded):
+  zombie_or_npc_nearby + zombie_target_has_health PASS/PASS - confirmed
+  FLAKES on stock (spawn-timing; the demo/full suite failures were fixture
+  availability, not server divergence). sleeper_wake FAIL again on stock
+  (4/4 runs) - NOT a flake: stable stock-side fail with detail "no AI t=22.0"
+  (no alive entity within 96m at case time), so the wake path is never
+  exercised on stock; zdtd PASSes with sleptObs=True sleeping=False. Triage:
+  stock fixture-zombie AI wander/timing artifact (the wake mechanics are only
+  verified on zdtd), recorded, not faked. zombie_death_loot stays PASS/FAIL -
+  the known zdtd-side finding.
 - [ ] Triage zdtd persist fails from playtest-compare persist: persist_setup_blockmeta,
   persist_setup_te (block-metadata / tile-entity persistence round-trip).
 - [ ] Triage soak_long zdtd fail: seeded ambient zombies near spawn kill the

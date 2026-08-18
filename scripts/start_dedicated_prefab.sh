@@ -35,6 +35,9 @@ MAX_PLAYERS="${RE_SERVER_MAX_PLAYERS:-64}"
 # hard (that is the point of the stress ladder).
 MAX_ZOMBIES="${RE_MAX_ZOMBIES:-64}"
 ENEMY_DIFFICULTY="${RE_ENEMY_DIFFICULTY:-1}"
+# Admin console port (telnet). RE_TELNET_PORT overrides the config default so
+# harness runs can dodge a host-occupied 8081 (docker containers, other tools).
+TELNET_PORT="${RE_TELNET_PORT:-8081}"
 # DynamicMesh off by default (keeps non-mesh measurement baselines unchanged);
 # RE_DYNAMIC_MESH=1 enables it for mesh-streaming A/Bs. Stock V3.1.0 ParseBool
 # accepts only True/False - normalize any truthy input (1/yes/on/true).
@@ -155,6 +158,7 @@ repls = {
     "ZombieMoveNight": "3",
     "MaxSpawnedZombies": "$MAX_ZOMBIES",
     "EnemyDifficulty": "$ENEMY_DIFFICULTY",
+    "TelnetPort": "$TELNET_PORT",
     "DayNightLength": "40",
     "DayLightLength": "12",
     "BuildCreate": "false",

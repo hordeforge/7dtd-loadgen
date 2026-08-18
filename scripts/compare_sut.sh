@@ -102,6 +102,14 @@ APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
 APM_PROJECT="$ROOT/../7dtd-apm"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
+# Per-side admin/telnet ports. Hosts may have 8081/8082 occupied by an
+# unrelated service (docker containers); when that happens BOTH servers fail
+# to bind their admin console and every telnet axis silently degrades (empty
+# snapshots, dead spawn pressure, phantom 0/0 entity rows) - observed
+# 2026-08-18 with docker-proxy on 8081/8082. Override with
+# COMPARE_TELNET_PORT_STOCK / COMPARE_TELNET_PORT_ZDTD (e.g. 8084/8085).
+TELNET_PORT_STOCK="${COMPARE_TELNET_PORT_STOCK:-8081}"
+TELNET_PORT_ZDTD="${COMPARE_TELNET_PORT_ZDTD:-8082}"
 
 echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIONS) ==="
 
@@ -139,9 +147,17 @@ for sut in $SUTS; do
       STOCK_SERVER_PORT="$(grep -oP 'name="ServerPort" value="\K[0-9]+' \
         "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
       STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
+      # Admin console must actually bind: without it every telnet axis is a
+      # silent phantom. Fail loudly when the port is already taken.
+      TELNET_PORT="$TELNET_PORT_STOCK"
+      if grep -q ":$TELNET_PORT " <<<"$(ss -tln 2>/dev/null || true)"; then
+        echo "  ERROR: admin telnet port $TELNET_PORT already in use (unrelated service?); pick free ports via COMPARE_TELNET_PORT_STOCK/COMPARE_TELNET_PORT_ZDTD" >&2
+        exit 1
+      fi
       USERDATA="$run_dir/userdata"
       RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="${SCENARIO_ID}_stock" \
         RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
+        RE_TELNET_PORT="$TELNET_PORT" \
         bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
       ready=0
       for _ in $(seq 1 150); do
@@ -167,7 +183,6 @@ for sut in $SUTS; do
       CURRENT_PIDFILE="$PIDFILE"
       # gettime first and last so the capture can derive the game-clock rate.
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
-      TELNET_PORT=8081
       ;;
     zdtd)
       # Same game options stock runs with (live values from the stock run's
@@ -192,7 +207,12 @@ for sut in $SUTS; do
   <property name="EACEnabled" value="false"/>
 </ServerSettings>
 EOF
-      RE_SUT_PORT=27120 RE_SUT_ADMIN_PORT=8082 RE_SUT_WORLD="$run_dir/world" \
+      TELNET_PORT="$TELNET_PORT_ZDTD"
+      if grep -q ":$TELNET_PORT " <<<"$(ss -tln 2>/dev/null || true)"; then
+        echo "  ERROR: admin telnet port $TELNET_PORT already in use (unrelated service?); pick free ports via COMPARE_TELNET_PORT_STOCK/COMPARE_TELNET_PORT_ZDTD" >&2
+        exit 1
+      fi
+      RE_SUT_PORT=27120 RE_SUT_ADMIN_PORT="$TELNET_PORT" RE_SUT_WORLD="$run_dir/world" \
         RE_SUT_WORLD_NAME="$WORLD_NAME" RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
         RE_SUT_LOGFILE="$run_dir/server.log" \
         bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
@@ -213,7 +233,6 @@ EOF
       PIDFILE="$run_dir/world/dedicated.pid"
       CURRENT_PIDFILE="$PIDFILE"
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
-      TELNET_PORT=8082
       ;;
   esac
 

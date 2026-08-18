@@ -3,14 +3,14 @@
   "join": {
    "stock": {
     "fail": 0,
-    "firstPass": "[2026-08-12T15:08:56.4245366Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T15:08:56.4245366Z] [join#1] PASS joined entity=177 walks=1048 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-18T05:23:00.7912834Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-18T05:23:00.7912834Z] [join#1] PASS joined entity=177 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    },
    "zdtd": {
     "fail": 0,
-    "firstPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
-    "lastPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "firstPass": "[2026-08-18T05:24:52.2890569Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+    "lastPass": "[2026-08-18T05:24:52.2890569Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
     "pass": 1
    }
   },
@@ -20,7 +20,7 @@
      "StartGame done": "StartGame done",
      "createWorld": "createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), horde-lite_stock, GameModeSurvival"
     },
-    "exec": 24,
+    "exec": 0,
     "gamestats": {
      "AirDropFrequency": "0",
      "AirDropMarker": "True",
@@ -98,10 +98,9 @@
     },
     "severity": {
      "EXC": 3,
-     "INF": 369,
-     "WRN": 16
-    },
-    "telnetCloseErrors": 8
+     "INF": 323,
+     "WRN": 12
+    }
    },
    "zdtd": {
     "boot": {
@@ -112,26 +111,27 @@
      "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/horde-lite/zdtd/world"
     },
     "severity": {
-     "INF": 56,
+     "INF": 50,
      "WRN": 2
     }
    }
   },
   "saves": {
    "stock": {
-    "count": 9,
+    "count": 10,
     "files": {
      "Navezgane/horde-lite_stock/Region/r.-1.0.7rg": 610304,
-     "Navezgane/horde-lite_stock/Region/r.-1.1.7rg": 159744,
-     "Navezgane/horde-lite_stock/blockmappings.nim": 4196,
-     "Navezgane/horde-lite_stock/decoration.7dt": 1287347,
-     "Navezgane/horde-lite_stock/itemmappings.nim": 8,
-     "Navezgane/horde-lite_stock/main.ttw": 1585,
-     "Navezgane/horde-lite_stock/main.ttw.bak": 1585,
+     "Navezgane/horde-lite_stock/Region/r.-1.1.7rg": 163840,
+     "Navezgane/horde-lite_stock/Region/r.0.0.7rg": 1396736,
+     "Navezgane/horde-lite_stock/blockmappings.nim": 13863,
+     "Navezgane/horde-lite_stock/decoration.7dt": 1287466,
+     "Navezgane/horde-lite_stock/itemmappings.nim": 46,
+     "Navezgane/horde-lite_stock/main.ttw": 4451,
+     "Navezgane/horde-lite_stock/main.ttw.bak": 4451,
      "Navezgane/horde-lite_stock/main.ttw.ext.bak": 264,
-     "Navezgane/horde-lite_stock/multiblocks.7dt": 940
+     "Navezgane/horde-lite_stock/multiblocks.7dt": 991
     },
-    "totalBytes": 2065973
+    "totalBytes": 3482412
    },
    "zdtd": {
     "count": 120,
@@ -222,193 +222,37 @@
   },
   "telnet": {
    "stock": {
-    "banner": {
-     "Difficulty": "1",
-     "Game mode": "GameModeSurvival",
-     "Game name": "horde-lite_stock",
-     "Max players": "64",
-     "Server IP": "118.189.191.239",
-     "Server port": "26900",
-     "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
-     "World": "Navezgane"
-    },
-    "clockRateGameMinPerRealSec": 0.25,
-    "day": [
-     "1",
-     "07",
-     "16"
-    ],
+    "banner": {},
+    "clockRateGameMinPerRealSec": null,
+    "day": null,
     "entities": {
-     "alive": 18,
-     "count": 19,
-     "dead": 1,
-     "types": {
-      "EntityPlayer": 1,
-      "EntityZombie": 18
-     }
+     "alive": 0,
+     "count": 0,
+     "dead": 0,
+     "types": {}
     },
-    "gamestats": {
-     "AirDropFrequency": "3",
-     "AirDropMarker": "True",
-     "AllowedViewDistance": "6",
-     "AnimalCount": "0",
-     "AutoParty": "False",
-     "BedrollExpiryTime": "45",
-     "BiomeGSModifier": "100",
-     "BiomeLSModifier": "100",
-     "BiomeProgression": "True",
-     "BlockDamageAI": "100",
-     "BlockDamageAIBM": "100",
-     "BlockDamagePlayer": "100",
-     "BloodMoonDay": "7",
-     "BloodMoonEnemyCount": "8",
-     "BloodMoonWarning": "1",
-     "CameraRestrictionMode": "0",
-     "ChunkStabilityEnabled": "True",
-     "CurrentRoundIx": "0",
-     "DayLightLength": "18",
-     "DayLimitActive": "False",
-     "DayLimitThisRound": "0",
-     "DayNightLength": "60",
-     "DeathPenalty": "1",
-     "DropOnDeath": "1",
-     "DropOnQuit": "0",
-     "EnemyCount": "14",
-     "EnemyDifficulty": "1",
-     "EnemySpawnMode": "True",
-     "FragLimitActive": "False",
-     "FragLimitThisRound": "0",
-     "GameDifficulty": "1",
-     "GameModeId": "1",
-     "GameState": "1",
-     "GlobalGSModifier": "100",
-     "GlobalLSModifier": "100",
-     "IsCreativeMenuEnabled": "False",
-     "IsFlyingEnabled": "False",
-     "IsPlayerCollisionEnabled": "True",
-     "IsPlayerDamageEnabled": "True",
-     "IsResetMapOnRestart": "False",
-     "IsSaveSupplyCrates": "True",
-     "IsSpawnEnemies": "True",
-     "IsSpawnNearOtherPlayer": "False",
-     "IsTeleportEnabled": "False",
-     "IsVersionCheckDone": "False",
-     "JarRefund": "60",
-     "LandClaimCount": "5",
-     "LandClaimDeadZone": "30",
-     "LandClaimDecayMode": "0",
-     "LandClaimExpiryTime": "7",
-     "LandClaimOfflineDelay": "0",
-     "LandClaimOfflineDurabilityModifier": "4",
-     "LandClaimOnlineDurabilityModifier": "4",
-     "LandClaimSize": "41",
-     "LootAbundance": "100",
-     "LootRespawnDays": "7",
-     "OptionsPOICulling": "1",
-     "PartySharedKillRange": "100",
-     "PlayerKillingMode": "0",
-     "QuestProgressionDailyLimit": "4",
-     "ScoreDiedMultiplier": "-5",
-     "ScorePlayerKillMultiplier": "0",
-     "ScoreZombieKillMultiplier": "1",
-     "ShowAllPlayersOnMap": "False",
-     "ShowFriendPlayerOnMap": "True",
-     "ShowSpawnWindow": "False",
-     "StormFreq": "100",
-     "TimeLimitActive": "False",
-     "TimeLimitThisRound": "0",
-     "TimeOfDayIncPerSec": "6",
-     "TwitchBloodMoonAllowed": "True",
-     "XPMultiplier": "100",
-     "ZombieHordeMeter": "True"
-    },
+    "gamestats": {},
     "players": {
-     "count": 1,
-     "rows": [
-      {
-       "id": 177,
-       "name": "EntityPlayer"
-      }
-     ]
+     "count": 0,
+     "rows": []
     },
     "reportedTotal": null,
     "unknownCommands": []
    },
    "zdtd": {
-    "banner": {
-     "Difficulty": "1",
-     "Game mode": "GameModeSurvival",
-     "Game name": "stock",
-     "Max players": "64",
-     "Server IP": "127.0.0.1",
-     "Server port": "27120",
-     "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
-     "World": "Navezgane"
-    },
-    "clockRateGameMinPerRealSec": 0.4,
-    "day": [
-     "1",
-     "07",
-     "21"
-    ],
+    "banner": {},
+    "clockRateGameMinPerRealSec": null,
+    "day": null,
     "entities": {
-     "alive": 11,
-     "count": 11,
+     "alive": 0,
+     "count": 0,
      "dead": 0,
-     "types": {
-      "animal": 1,
-      "player": 1,
-      "trader": 6,
-      "turret": 1,
-      "vehicle": 1,
-      "zombie": 1
-     }
+     "types": {}
     },
-    "gamestats": {
-     "AirDropFrequency": "3",
-     "BedrollExpiryTime": "45",
-     "BlockDamageAI": "100",
-     "BlockDamageAIBM": "100",
-     "BlockDamagePlayer": "100",
-     "BloodMoonDay": "7",
-     "BloodMoonEnemyCount": "8",
-     "BloodMoonWarning": "1",
-     "DayLightLength": "18",
-     "DayNightLength": "60",
-     "DeathPenalty": "1",
-     "DropOnDeath": "1",
-     "EnemyDifficulty": "1",
-     "EnemySpawnMode": "True",
-     "GameDifficulty": "1",
-     "GameState": "1",
-     "IsSpawnEnemies": "True",
-     "JarRefund": "60",
-     "LandClaimCount": "5",
-     "LandClaimDeadZone": "30",
-     "LandClaimDecayMode": "0",
-     "LandClaimExpiryTime": "7",
-     "LandClaimOfflineDelay": "0",
-     "LandClaimOfflineDurabilityModifier": "4",
-     "LandClaimOnlineDurabilityModifier": "4",
-     "LandClaimSize": "41",
-     "LootAbundance": "100",
-     "LootRespawnDays": "7",
-     "PartySharedKillRange": "100",
-     "PlayerKillingMode": "0",
-     "QuestProgressionDailyLimit": "4",
-     "ShowFriendPlayerOnMap": "True",
-     "StormFreq": "100",
-     "TimeOfDayIncPerSec": "6",
-     "XPMultiplier": "100"
-    },
+    "gamestats": {},
     "players": {
-     "count": 1,
-     "rows": [
-      {
-       "id": 112,
-       "name": "REFake1"
-      }
-     ]
+     "count": 0,
+     "rows": []
     },
     "reportedTotal": null,
     "unknownCommands": []
@@ -417,9 +261,7 @@
  },
  "compared": true,
  "findings": [
-  "log: EXC (exception) line count differs (stock=3 zdtd=0)",
-  "telnet: game-clock rate differs (stock=0.25 zdtd=0.4; 60-min day = 0.4)",
-  "telnet: entity count differs (stock=19 zdtd=11)"
+  "log: EXC (exception) line count differs (stock=3 zdtd=0)"
  ],
  "scenario": "horde-lite"
 }

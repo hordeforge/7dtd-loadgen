@@ -3,20 +3,20 @@
   "chunk_flush_written": 0,
   "join_fail": 0,
   "join_ok": 1,
-  "net_packets_in": 1258,
-  "net_packets_out": 3820,
+  "net_packets_in": 1209,
+  "net_packets_out": 3801,
   "phase_rejects": 0,
-  "tickMaxNs": 658771072,
-  "tickMeanNs": 1859327,
+  "tickMaxNs": 510561063,
+  "tickMeanNs": 1997776,
   "tickP99Ns": 25165824,
-  "tick_overruns": 3,
+  "tick_overruns": 4,
   "ticks": 1200
  },
  "apmStock": null,
  "join": {
   "fail": 0,
-  "firstPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
-  "lastPass": "[2026-08-12T15:10:29.0570478Z] [join#1] PASS joined entity=112 walks=1050 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "firstPass": "[2026-08-18T05:24:52.2890569Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
+  "lastPass": "[2026-08-18T05:24:52.2890569Z] [join#1] PASS joined entity=112 walks=1049 jumps=135 deaths=0 respawns=0 lastDied=False l",
   "pass": 1
  },
  "log": {
@@ -28,7 +28,7 @@
    "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/horde-lite/zdtd/world"
   },
   "severity": {
-   "INF": 56,
+   "INF": 50,
    "WRN": 2
   }
  },
@@ -42,16 +42,17 @@
    "spawnPerPlayer": "4",
    "timeoutMs": "60000"
   },
+  "hostLoad": "6.75",
   "loadgen": {
-   "dirtyFiles": "38",
-   "git": "911c7e9"
+   "dirtyFiles": "7",
+   "git": "65d8b1a"
   },
   "scenario": "horde-lite",
-  "startedAt": "2026-08-12T15:10:37Z",
+  "startedAt": "2026-08-18T05:24:59Z",
   "sut": "zdtd",
   "zdtd": {
-   "dirtyFiles": "12",
-   "git": "b362a79"
+   "dirtyFiles": "7",
+   "git": "9614eac"
   }
  },
  "saves": {
@@ -142,80 +143,19 @@
  },
  "sut": "zdtd",
  "telnet": {
-  "banner": {
-   "Difficulty": "1",
-   "Game mode": "GameModeSurvival",
-   "Game name": "stock",
-   "Max players": "64",
-   "Server IP": "127.0.0.1",
-   "Server port": "27120",
-   "Server version": "V 3.1.0 Compatibility Version: V3.1.0 b14",
-   "World": "Navezgane"
-  },
-  "clockRateGameMinPerRealSec": 0.4,
-  "day": [
-   "1",
-   "07",
-   "21"
-  ],
+  "banner": {},
+  "clockRateGameMinPerRealSec": null,
+  "day": null,
   "entities": {
-   "alive": 11,
-   "count": 11,
+   "alive": 0,
+   "count": 0,
    "dead": 0,
-   "types": {
-    "animal": 1,
-    "player": 1,
-    "trader": 6,
-    "turret": 1,
-    "vehicle": 1,
-    "zombie": 1
-   }
+   "types": {}
   },
-  "gamestats": {
-   "AirDropFrequency": "3",
-   "BedrollExpiryTime": "45",
-   "BlockDamageAI": "100",
-   "BlockDamageAIBM": "100",
-   "BlockDamagePlayer": "100",
-   "BloodMoonDay": "7",
-   "BloodMoonEnemyCount": "8",
-   "BloodMoonWarning": "1",
-   "DayLightLength": "18",
-   "DayNightLength": "60",
-   "DeathPenalty": "1",
-   "DropOnDeath": "1",
-   "EnemyDifficulty": "1",
-   "EnemySpawnMode": "True",
-   "GameDifficulty": "1",
-   "GameState": "1",
-   "IsSpawnEnemies": "True",
-   "JarRefund": "60",
-   "LandClaimCount": "5",
-   "LandClaimDeadZone": "30",
-   "LandClaimDecayMode": "0",
-   "LandClaimExpiryTime": "7",
-   "LandClaimOfflineDelay": "0",
-   "LandClaimOfflineDurabilityModifier": "4",
-   "LandClaimOnlineDurabilityModifier": "4",
-   "LandClaimSize": "41",
-   "LootAbundance": "100",
-   "LootRespawnDays": "7",
-   "PartySharedKillRange": "100",
-   "PlayerKillingMode": "0",
-   "QuestProgressionDailyLimit": "4",
-   "ShowFriendPlayerOnMap": "True",
-   "StormFreq": "100",
-   "TimeOfDayIncPerSec": "6",
-   "XPMultiplier": "100"
-  },
+  "gamestats": {},
   "players": {
-   "count": 1,
-   "rows": [
-    {
-     "id": 112,
-     "name": "REFake1"
-    }
-   ]
+   "count": 0,
+   "rows": []
   },
   "reportedTotal": null,
   "unknownCommands": []
