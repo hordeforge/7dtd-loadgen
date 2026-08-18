@@ -199,9 +199,14 @@ record, and documentation of any protocol-version restriction.
 - [ ] Triage soak_long zdtd fail: seeded ambient zombies near spawn kill the
   player in ~12s (stock soak survived 900s). Ambient-seed divergence manifest.
   Fix likely in zdtd init_world seeding or the soak's spawn handling.
-- [ ] Triage horde-lite: stock accumulates spawned zombies (7->11 at late
-  snapshot); zdtd listents stays at ambient 11 - the loadgen spawn pressure is
-  not listents-visible on zdtd (spawn mechanism or zdtd spawn handling).
+- [x] Triage horde-lite: HARNESS ARTIFACT, root-caused 2026-08-18. The loadgen
+  client's spawn loop targeted a fixed `--telnet-port 8081` on BOTH sides, but
+  zdtd's admin port is 8082 - the zdtd side logged `TELNET connect fail:
+  Connection refused` and the spawn pressure never landed (zdtd listents stayed
+  at ambient). Not a zdtd spawn-handling gap. Fixed: run_loadgen.sh now forwards
+  LOADGEN_TELNET_HOST/PORT/PASSWORD and compare_sut.sh passes the per-side
+  TELNET_PORT, so the zdtd spawn loop targets 8082. Re-run horde-lite to
+  re-validate the entity axis.
 - [ ] HIGH: zdtd join fails on Pregen06k01 (C2S payload Overflow right after the
   challenge: "payload failed local_id=1 error=Overflow n=1"; stock joins fine).
   Found via COMPARE_WORLD=Pregen06k01 join-fast; REPRODUCED consistently (2/2
