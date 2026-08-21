@@ -286,8 +286,10 @@ public sealed class GameJoinClient
             {
                 if (State.TryGetPackageId("NetPackagePlayerLogin", out ushort loginId))
                 {
-                    // VersionAuthorizer compares LongStringNoBuild (e.g. "V 3.1") to compVersion
-                    string ver = PackageCodec.VersionLongString(State.ServerVersion);
+                    // VersionAuthorizer compares LongStringNoBuild (raw Minor, "V 3.10")
+                    // to compVersion ordinal-ignore-case; the display form "V 3.1.0"
+                    // would be kicked with EKickReason.VersionMismatch.
+                    string ver = PackageCodec.LongStringNoBuild(State.ServerVersion);
                     var login = PackageCodec.BuildPlayerLogin(
                         loginId, opt.PlayerName + opt.ClientId, ver, ver);
                     peer.Send(login, DeliveryMethod.ReliableOrdered);

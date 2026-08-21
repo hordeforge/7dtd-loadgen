@@ -990,4 +990,22 @@ public static class PackageCodec
         }
         return $"{release} {v.Major}.{v.Minor}";
     }
+
+    /// `VersionInformation.LongStringNoBuild`: `"{0} {1}.{2}"` with the raw
+    /// Minor (VersionInformation IL_00BE). The stock client sends this as both
+    /// `version` and `compVersion` in NetPackagePlayerLogin (ConnectionManager
+    /// IL_0095-00A4) and VersionAuthorizer compares the client's
+    /// compatibilityVersion against it ordinal-ignore-case, so the loadgen
+    /// login must use this exact form (not the display "V 3.1.0").
+    /// </summary>
+    public static string LongStringNoBuild(VersionInfo v)
+    {
+        string release = v.ReleaseType switch
+        {
+            0 => "Alpha",
+            1 => "V",
+            _ => "V",
+        };
+        return $"{release} {v.Major}.{v.Minor}";
+    }
 }
