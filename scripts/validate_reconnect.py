@@ -38,8 +38,8 @@ TELNET_PORT = 8081
 
 
 def telnet_ready(timeout_s: float = 180.0) -> bool:
-    deadline = time.time() + timeout_s
-    while time.time() < deadline:
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
         try:
             with socket.create_connection(("127.0.0.1", TELNET_PORT), timeout=2):
                 return True
@@ -49,8 +49,9 @@ def telnet_ready(timeout_s: float = 180.0) -> bool:
 
 
 def wait_gone(timeout_s: float = 60.0) -> bool:
-    deadline = time.time() + timeout_s
-    while time.time() < deadline:
+    # Monotonic deadlines: an NTP step mid-wait must not truncate or extend it.
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
         try:
             with socket.create_connection(("127.0.0.1", GAME_PORT), timeout=2):
                 time.sleep(2)

@@ -1030,9 +1030,9 @@ public sealed class GameJoinClient
         });
         sm = client.State;
 
-        // drain
-        var until = DateTime.UtcNow.AddMilliseconds(300);
-        while (DateTime.UtcNow < until) { server.Poll(); Thread.Sleep(5); }
+        // drain (monotonic: immune to wall-clock steps during the window)
+        var drain = Stopwatch.StartNew();
+        while (drain.ElapsedMilliseconds < 300) { server.Poll(); Thread.Sleep(5); }
         cts.Cancel();
         try { poll.Wait(1000); } catch { /* ignore */ }
 

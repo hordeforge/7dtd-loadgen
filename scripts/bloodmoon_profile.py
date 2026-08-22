@@ -63,8 +63,9 @@ def telnet(cmds, settle=1.0):
             s.settimeout(3)
 
             def drain(sec):
-                end = time.time() + sec
-                while time.time() < end:
+                # Monotonic: a wall-clock step must not cut the settle window.
+                end = time.monotonic() + sec
+                while time.monotonic() < end:
                     try:
                         b = s.recv(65536)
                         if b:
@@ -128,9 +129,10 @@ def join_ramped(target):
         p = subprocess.Popen(["bash", str(ROOT / "scripts/run_loadgen.sh")], cwd=ROOT, env=env,
                              stdout=fh, stderr=fh)
     # wait for a STABLE cohort (tolerate ramp churn): count must hold >= 90% target twice.
-    deadline = time.time() + target * 1000 / 1000 + 180
+    # Monotonic deadline: the ramp gate measures elapsed time, not wall time.
+    deadline = time.monotonic() + target * 1000 / 1000 + 180
     hits = 0
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
         time.sleep(10)
         n = len(player_ids())
         log(f"  join ramp: {n}/{target} players")

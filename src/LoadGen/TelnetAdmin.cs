@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -227,9 +228,11 @@ public sealed class TelnetAdmin : IDisposable
     string ReadAvailable(int waitMs)
     {
         if (_stream == null) return "";
-        var end = DateTime.UtcNow.AddMilliseconds(waitMs);
+        // Monotonic window: a wall-clock step (NTP correction) mid-read must
+        // not cut the wait short or stretch it past waitMs.
+        var sw = Stopwatch.StartNew();
         var tmp = new byte[4096];
-        while (DateTime.UtcNow < end)
+        while (sw.ElapsedMilliseconds < waitMs)
         {
             try
             {
