@@ -43,6 +43,9 @@ make scenarios
 make clean
 ```
 
+Full lane catalog (unit tests, bench-stock, compare-*, research-save-check): `make help`.
+CI runs `make test`.
+
 ```bash
 # CLI
 ./src/LoadGen/bin/Release/net8.0/7dtd-loadgen --help
@@ -67,9 +70,11 @@ Lab telnet (from README helpers): `127.0.0.1:8081` (test-only credentials).
 ## Layout
 
 ```text
-src/LoadGen/     C# client (join, actions, death, respawn, telnet pressure)
-scripts/         dedicated start + client runners
-tests/           golden-wire + self-test gates
+src/LoadGen/       C# client (join, actions, death, respawn, telnet pressure)
+src/LoadGen.Tests/ C# unit tests (`make unittest`)
+scripts/           dedicated start + client/scenario/bench runners
+tests/             Python gates: golden-wire, self-test, scenario/compare/bench
+tools/             report + comparison tooling
 ```
 
 ## Workload controls
@@ -88,6 +93,7 @@ with server config and APM session IDs when comparing runs.
 |---|---|
 | `README.md` | Operator guide |
 | `TODO.md` | Protocol, workload, ops backlog |
+| `BLOODMOON.md` | Canonical worst-case load profile |
 | `../MODDING_BEST_PRACTICES.md` | Workspace boundaries and EAC notes |
 
 ## Sibling projects
