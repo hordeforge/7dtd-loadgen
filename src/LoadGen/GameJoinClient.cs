@@ -292,10 +292,10 @@ public sealed class GameJoinClient
             {
                 if (State.TryGetPackageId("NetPackagePlayerLogin", out ushort loginId))
                 {
-                    // VersionAuthorizer compares LongStringNoBuild (raw Minor, "V 3.10")
-                    // to compVersion ordinal-ignore-case; the display form "V 3.1.0"
-                    // would be kicked with EKickReason.VersionMismatch.
-                    string ver = PackageCodec.LongStringNoBuild(State.ServerVersion);
+                    // EMPIRICAL 2026-08-22: stock V3.1.0 (b14) accepts the display
+                    // form "V 3.1.0" and KICKS "V 3.10" (VersionMismatch=4); the
+                    // LongStringNoBuild theory (b5c3069) is wrong for stock.
+                    string ver = PackageCodec.VersionLongString(State.ServerVersion);
                     var login = PackageCodec.BuildPlayerLogin(
                         loginId, opt.PlayerName + opt.ClientId, ver, ver);
                     peer.Send(login, DeliveryMethod.ReliableOrdered);
