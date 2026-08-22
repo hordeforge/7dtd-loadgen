@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -260,7 +261,7 @@ public sealed class GameJoinClient
                 if (pkgs.Count == 0)
                 {
                     string hint = data.Length >= 9
-                        ? $" ch={data[0]} size={BitConverter.ToInt32(data, 1)} comp={data[5]} enc={data[6]} cnt={BitConverter.ToUInt16(data, 7)}"
+                        ? $" ch={data[0]} size={BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(1))} comp={data[5]} enc={data[6]} cnt={BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(7))}"
                         : "";
                     Log($"RECV unparsed len={data.Length}{hint}");
                     continue;
@@ -706,7 +707,7 @@ public sealed class GameJoinClient
             // (not NetPackagePlayerSpawnedInWorld). Body starts with entityId:i32.
             if (body.Length >= 4)
             {
-                int entityId = BitConverter.ToInt32(body, 0);
+                int entityId = BinaryPrimitives.ReadInt32LittleEndian(body.AsSpan(0));
                 State.Advance(JoinStage.PlayerIdReceived, $"entityId={entityId} bodyLen={body.Length}");
                 log($"STAGE PlayerIdReceived: entityId={entityId} bodyLen={body.Length}");
                 // Join-moment contract for orchestrators (compare_sut.sh waits on
@@ -864,9 +865,9 @@ public sealed class GameJoinClient
     {
         if (typeName == "NetPackageEntityStatChanged" && body.Length >= 21 && State.EntityId > 0)
         {
-            int eid = BitConverter.ToInt32(body, 0);
+            int eid = BinaryPrimitives.ReadInt32LittleEndian(body.AsSpan(0));
             byte estat = body[8];
-            float value = BitConverter.ToSingle(body, 9);
+            float value = BinaryPrimitives.ReadSingleLittleEndian(body.AsSpan(9));
             // EnumStat.Health = 0
             if (eid == State.EntityId && estat == 0 && value <= 0.01f)
             {
@@ -882,7 +883,7 @@ public sealed class GameJoinClient
         {
             if (body.Length >= 4)
             {
-                int eid = BitConverter.ToInt32(body, 0);
+                int eid = BinaryPrimitives.ReadInt32LittleEndian(body.AsSpan(0));
                 if (eid == State.EntityId && State.EntityId > 0)
                 {
                     State.Died = true;

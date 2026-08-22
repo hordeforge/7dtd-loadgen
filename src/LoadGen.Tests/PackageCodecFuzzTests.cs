@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using SevenDTD.LoadGen;
 using Xunit;
 
@@ -13,12 +14,14 @@ public sealed class PackageCodecFuzzTests
     // Outer frame: [channel:1][payloadSize:int32][compressed:1][encrypted:1][count:uint16][payload...]
     static byte[] Frame(byte[] payload, int? payloadSizeOverride, byte compressed, byte encrypted, ushort count)
     {
-        var buf = new List<byte>();
-        buf.Add(0); // channel
-        buf.AddRange(BitConverter.GetBytes(payloadSizeOverride ?? payload.Length));
+        var buf = new List<byte> { 0 }; // channel
+        Span<byte> word = stackalloc byte[4];
+        BinaryPrimitives.WriteInt32LittleEndian(word, payloadSizeOverride ?? payload.Length);
+        buf.AddRange(word.ToArray());
         buf.Add(compressed);
         buf.Add(encrypted);
-        buf.AddRange(BitConverter.GetBytes(count));
+        BinaryPrimitives.WriteUInt16LittleEndian(word, count);
+        buf.AddRange(word.Slice(0, 2).ToArray());
         buf.AddRange(payload);
         return buf.ToArray();
     }
@@ -27,8 +30,11 @@ public sealed class PackageCodecFuzzTests
     static byte[] InnerPackage(int contentLen, ushort pkgId, byte[] body)
     {
         var buf = new List<byte>();
-        buf.AddRange(BitConverter.GetBytes(contentLen));
-        buf.AddRange(BitConverter.GetBytes(pkgId));
+        Span<byte> word = stackalloc byte[4];
+        BinaryPrimitives.WriteInt32LittleEndian(word, contentLen);
+        buf.AddRange(word.ToArray());
+        BinaryPrimitives.WriteUInt16LittleEndian(word, pkgId);
+        buf.AddRange(word.Slice(0, 2).ToArray());
         buf.AddRange(body);
         return buf.ToArray();
     }

@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
 
@@ -16,6 +17,10 @@ namespace SevenDTD.LoadGen;
 ///     repeated: [contentLen:i32][pkgId:u16][body...]
 ///     where contentLen = size of (pkgId+body), EXCLUDING the contentLen field itself
 ///     (see NetConnectionSimple.WriteToStream: length = end - start - 4).
+///
+/// All multi-byte integers are little-endian on the wire; reads/writes use
+/// BinaryPrimitives/BinaryReader-BinaryWriter so the codec is host-endian
+/// independent.
 /// </summary>
 public static class PackageCodec
 {
@@ -317,14 +322,14 @@ public static class PackageCodec
         var posBody = ExtractBody(posFrame);
         if (posBody.Length != GoldenBodySize.EntityPosAndRotNoQ)
             return $"PosAndRot body len={posBody.Length} want {GoldenBodySize.EntityPosAndRotNoQ}";
-        if (BitConverter.ToInt32(posBody, 0) != 42)
+        if (BinaryPrimitives.ReadInt32LittleEndian(posBody.AsSpan(0)) != 42)
             return "PosAndRot entityId mismatch";
-        if (Math.Abs(BitConverter.ToSingle(posBody, 4) - 1.5f) > 1e-5)
+        if (Math.Abs(BinaryPrimitives.ReadSingleLittleEndian(posBody.AsSpan(4)) - 1.5f) > 1e-5)
             return "PosAndRot pos.x mismatch";
         if (posBody[16] != 0) // bUseQRotation false
             return "PosAndRot bUseQRotation want false";
         // rot floats at offset 17
-        if (Math.Abs(BitConverter.ToSingle(posBody, 17) - 10f) > 1e-5)
+        if (Math.Abs(BinaryPrimitives.ReadSingleLittleEndian(posBody.AsSpan(17)) - 10f) > 1e-5)
             return "PosAndRot rot.x mismatch (want Single)";
 
         // PosAndRot bUseQ path: qrot 4xf32 replaces rot 3xf32 (body 34, no rot tail)
@@ -336,7 +341,7 @@ public static class PackageCodec
             return $"PosAndRot bUseQ body len={posQBody.Length} want {GoldenBodySize.EntityPosAndRotQ}";
         if (posQBody[16] != 1)
             return "PosAndRot bUseQ bUseQRotation want true";
-        if (Math.Abs(BitConverter.ToSingle(posQBody, 29) - 1f) > 1e-5)
+        if (Math.Abs(BinaryPrimitives.ReadSingleLittleEndian(posQBody.AsSpan(29)) - 1f) > 1e-5)
             return "PosAndRot qrot.w mismatch (want 1f at 29)";
         if (posQBody[33] != 1)
             return "PosAndRot qrot tail onGround mismatch (want 1 at 33)";
@@ -350,28 +355,28 @@ public static class PackageCodec
         if (relBody.Length != GoldenBodySize.EntityRelPosAndRotNoQ)
             return $"RelPos body len={relBody.Length} want {GoldenBodySize.EntityRelPosAndRotNoQ} (no qrot when !bUseQ)";
         // contentLen at offset 9 of full frame = 2+body
-        int relContentLen = BitConverter.ToInt32(relFrame, 9);
+        int relContentLen = BinaryPrimitives.ReadInt32LittleEndian(relFrame.AsSpan(9));
         if (relContentLen != GoldenBodySize.EntityRelPosAndRotNoQContentLen)
             return $"RelPos contentLen={relContentLen} want {GoldenBodySize.EntityRelPosAndRotNoQContentLen} (live server parse size)";
-        if (BitConverter.ToInt32(relBody, 0) != 7)
+        if (BinaryPrimitives.ReadInt32LittleEndian(relBody.AsSpan(0)) != 7)
             return "RelPos entityId mismatch";
         if (relBody[4] != 0)
             return "RelPos bUseQRotation want false";
         // offsets 5,7,9 = Int16 rot (not Single, no qrot after)
-        if (BitConverter.ToInt16(relBody, 5) != 100)
+        if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(5)) != 100)
             return "RelPos rot.x want Int16 100";
-        if (BitConverter.ToInt16(relBody, 7) != 200)
+        if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(7)) != 200)
             return "RelPos rot.y want Int16 200";
-        if (BitConverter.ToInt16(relBody, 9) != 50)
+        if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(9)) != 50)
             return "RelPos rot.z want Int16 50";
         // dPos immediately after rot (offset 11) — NOT after 16-byte qrot
-        if (BitConverter.ToInt16(relBody, 11) != 10
-            || BitConverter.ToInt16(relBody, 13) != 0
-            || BitConverter.ToInt16(relBody, 15) != -5)
+        if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(11)) != 10
+            || BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(13)) != 0
+            || BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(15)) != -5)
             return "RelPos dPos Int16 mismatch (must follow rot, no qrot)";
         if (relBody[17] != 1)
             return "RelPos onGround want true";
-        if (BitConverter.ToInt16(relBody, 18) != 2)
+        if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(18)) != 2)
             return "RelPos updateSteps want 2";
         // bUseQ path: body is larger (entityId+bool+4f + dPos+onground+steps = 4+1+16+6+1+2 = 30)
         var relQ = BuildEntityRelPosAndRot(
@@ -386,9 +391,9 @@ public static class PackageCodec
         var flagsBody = ExtractBody(flagsFrame);
         if (flagsBody.Length != GoldenBodySize.EntityAliveFlags)
             return $"AliveFlags body len={flagsBody.Length} want {GoldenBodySize.EntityAliveFlags}";
-        if (BitConverter.ToInt32(flagsBody, 0) != 9)
+        if (BinaryPrimitives.ReadInt32LittleEndian(flagsBody.AsSpan(0)) != 9)
             return "AliveFlags entityId mismatch";
-        if (BitConverter.ToUInt16(flagsBody, 4) != (FlagJumping | FlagSpawned))
+        if (BinaryPrimitives.ReadUInt16LittleEndian(flagsBody.AsSpan(4)) != (FlagJumping | FlagSpawned))
             return "AliveFlags flags mismatch";
 
         // Outer envelope: channel + size + flags + count + one inner package
@@ -398,13 +403,13 @@ public static class PackageCodec
             return "channel want 0";
         if (posFrame[5] != 0 || posFrame[6] != 0)
             return "compressed/encrypted want 0";
-        if (BitConverter.ToUInt16(posFrame, 7) != 1)
+        if (BinaryPrimitives.ReadUInt16LittleEndian(posFrame.AsSpan(7)) != 1)
             return "pkgCount want 1";
-        int payloadSize = BitConverter.ToInt32(posFrame, 1);
+        int payloadSize = BinaryPrimitives.ReadInt32LittleEndian(posFrame.AsSpan(1));
         if (1 + 8 + payloadSize != posFrame.Length)
             return $"payloadSize={payloadSize} + header != framed={posFrame.Length}";
         // contentLen excludes its own 4 bytes
-        int contentLen = BitConverter.ToInt32(posFrame, 9);
+        int contentLen = BinaryPrimitives.ReadInt32LittleEndian(posFrame.AsSpan(9));
         if (contentLen != 2 + GoldenBodySize.EntityPosAndRotNoQ)
             return $"contentLen={contentLen} want {2 + GoldenBodySize.EntityPosAndRotNoQ}";
 
@@ -450,7 +455,7 @@ public static class PackageCodec
         if (ReadStr() != "V 3.1.0") return "Login version mismatch";
         if (ReadStr() != "V 3.1.0") return "Login compVersion mismatch";
         if (off + 8 != loginBody.Length) return $"Login tail want 8-byte u64 at {off}, body {loginBody.Length}";
-        if (BitConverter.ToUInt64(loginBody, off) != 0xDEADBEEF) return "Login discordUserId mismatch";
+        if (BinaryPrimitives.ReadUInt64LittleEndian(loginBody.AsSpan(off)) != 0xDEADBEEF) return "Login discordUserId mismatch";
 
         // RequestToSpawnPlayer: chunkViewDim:i16, PlayerProfile.Write (v5),
         // nearEntityId:i32. Parse back and verify sequence.
@@ -458,9 +463,9 @@ public static class PackageCodec
         var rtsBody = ExtractBody(rts);
         int ro = 0;
         if (rtsBody.Length < 2) return "RTS body too short";
-        if (BitConverter.ToInt16(rtsBody, ro) != 8) return "RTS chunkViewDim want 8";
+        if (BinaryPrimitives.ReadInt16LittleEndian(rtsBody.AsSpan(ro)) != 8) return "RTS chunkViewDim want 8";
         ro += 2;
-        if (BitConverter.ToInt32(rtsBody, ro) != 5) return "RTS profile version want 5";
+        if (BinaryPrimitives.ReadInt32LittleEndian(rtsBody.AsSpan(ro)) != 5) return "RTS profile version want 5";
         ro += 4;
         string rtsStr()
         {
@@ -478,18 +483,18 @@ public static class PackageCodec
         foreach (var want in new[] { "", "", "", "", "", "Blue01" }) // hair, hairColor, mustache, chops, beard, eyeColor
             if (rtsStr() != want) return $"RTS profile field want '{want}'";
         if (ro + 4 != rtsBody.Length) return $"RTS tail want nearEntityId i32 at {ro}, body {rtsBody.Length}";
-        if (BitConverter.ToInt32(rtsBody, ro) != 77) return "RTS nearEntityId want 77";
+        if (BinaryPrimitives.ReadInt32LittleEndian(rtsBody.AsSpan(ro)) != 77) return "RTS nearEntityId want 77";
 
         // PlayerSpawnedInWorld: respawnReason:i32, position:Vector3i (3xi32 via
         // StreamUtils.Write), entityId:i32 (write IL=16). Parse back.
         var spawn = BuildPlayerSpawnedInWorld(1, respawnReason: 3, posX: 10, posY: 20, posZ: 30, entityId: 99);
         var spawnBody = ExtractBody(spawn);
         if (spawnBody.Length != 4 + 12 + 4) return $"SpawnedInWorld body len={spawnBody.Length} want 20";
-        if (BitConverter.ToInt32(spawnBody, 0) != 3) return "SpawnedInWorld respawnReason want 3";
-        if (BitConverter.ToInt32(spawnBody, 4) != 10 || BitConverter.ToInt32(spawnBody, 8) != 20
-            || BitConverter.ToInt32(spawnBody, 12) != 30)
+        if (BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(0)) != 3) return "SpawnedInWorld respawnReason want 3";
+        if (BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(4)) != 10 || BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(8)) != 20
+            || BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(12)) != 30)
             return "SpawnedInWorld position mismatch";
-        if (BitConverter.ToInt32(spawnBody, 16) != 99) return "SpawnedInWorld entityId want 99";
+        if (BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(16)) != 99) return "SpawnedInWorld entityId want 99";
 
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
@@ -502,20 +507,20 @@ public static class PackageCodec
         static string? CheckLivePackageIdsHead(byte[] liveHead, int minor, int build, string label)
         {
             if (liveHead[0] != 0) return label + " hex channel";
-            int livePayload = BitConverter.ToInt32(liveHead, 1);
+            int livePayload = BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(1));
             if (livePayload != 0x12BC) return label + $" payloadSize want 4796 got {livePayload}";
             if (liveHead[5] != 0 || liveHead[6] != 0) return label + " comp/enc";
-            if (BitConverter.ToUInt16(liveHead, 7) != 1) return label + " count";
-            int liveContent = BitConverter.ToInt32(liveHead, 9);
+            if (BinaryPrimitives.ReadUInt16LittleEndian(liveHead.AsSpan(7)) != 1) return label + " count";
+            int liveContent = BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(9));
             if (liveContent != 0x12B8) return label + $" contentLen want 4792 got {liveContent}";
-            if (BitConverter.ToUInt16(liveHead, 13) != 0) return label + " pkgId want 0";
+            if (BinaryPrimitives.ReadUInt16LittleEndian(liveHead.AsSpan(13)) != 0) return label + " pkgId want 0";
             // version @15: release:u8 major:i32 minor:i32 build:i32
             if (liveHead[15] != 1
-                || BitConverter.ToInt32(liveHead, 16) != 3
-                || BitConverter.ToInt32(liveHead, 20) != minor
-                || BitConverter.ToInt32(liveHead, 24) != build)
+                || BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(16)) != 3
+                || BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(20)) != minor
+                || BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(24)) != build)
                 return label + " version fields";
-            if (BitConverter.ToInt32(liveHead, 28) != 0xBD)
+            if (BinaryPrimitives.ReadInt32LittleEndian(liveHead.AsSpan(28)) != 0xBD)
                 return label + " map count want 189";
             return null;
         }
@@ -725,11 +730,11 @@ public static class PackageCodec
 
         int o = 0;
         o += ReservedHeaderBytes; // skip channel
-        int payloadSize = BitConverter.ToInt32(data.Slice(o, 4));
+        int payloadSize = BinaryPrimitives.ReadInt32LittleEndian(data.Slice(o, 4));
         o += 4;
         byte compressed = data[o++];
         byte encrypted = data[o++];
-        ushort count = BitConverter.ToUInt16(data.Slice(o, 2));
+        ushort count = BinaryPrimitives.ReadUInt16LittleEndian(data.Slice(o, 2));
         o += 2;
 
         if (payloadSize < 0 || o + payloadSize > data.Length)
@@ -756,10 +761,10 @@ public static class PackageCodec
             // subtraction (the loop guarantees po+4 <= length) so a crafted huge
             // contentLen cannot overflow po+4+contentLen into a negative that
             // slips past the bound check and drives an out-of-bounds BlockCopy.
-            int contentLen = BitConverter.ToInt32(payloadBytes, po);
+            int contentLen = BinaryPrimitives.ReadInt32LittleEndian(payloadBytes.AsSpan(po));
             if (contentLen < 2 || contentLen > payloadBytes.Length - po - 4)
                 break;
-            ushort id = BitConverter.ToUInt16(payloadBytes, po + 4);
+            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(payloadBytes.AsSpan(po + 4));
             int bodyLen = contentLen - 2;
             var body = new byte[bodyLen];
             Buffer.BlockCopy(payloadBytes, po + 6, body, 0, bodyLen);

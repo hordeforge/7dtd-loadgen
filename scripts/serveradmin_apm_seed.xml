@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 	This file holds the settings for who is banned, whitelisted, admins and server command permissions. The
 	admin and whitelist sections can contain both individual Steam users as well as Steam groups.
