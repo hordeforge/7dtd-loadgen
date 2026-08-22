@@ -602,6 +602,50 @@ public static class Program
             try { hordeTask?.Wait(2000); } catch { /* ignore */ }
             if (!string.IsNullOrEmpty(logPath))
                 File.WriteAllLines(logPath, lines);
+            // Single-bot runs still write stats-json so the bench lane evidence
+            // is uniform (probe-15s/join-fast/join-probe/horde-lite are count=1).
+            if (!string.IsNullOrEmpty(statsJsonPath))
+            {
+                int pass1 = rc == 0 ? 1 : 0;
+                var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+                var payload = new Dictionary<string, object?>
+                {
+                    ["schema"] = "7dtd.loadgen.stats.v1",
+                    ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
+                    ["host"] = opt.Host,
+                    ["port"] = opt.Port,
+                    ["utc"] = DateTime.UtcNow.ToString("o"),
+                    ["total"] = 1,
+                    ["pass"] = pass1,
+                    ["fail"] = 1 - pass1,
+                    ["passRate"] = pass1,
+                    ["mode"] = opt.Mode.ToString(),
+                    ["death"] = opt.Death.ToString(),
+                    ["walks"] = sm.WalkActions,
+                    ["jumps"] = sm.JumpActions,
+                    ["crouches"] = sm.CrouchActions,
+                    ["aims"] = sm.AimActions,
+                    ["turns"] = sm.TurnActions,
+                    ["strafes"] = sm.StrafeActions,
+                    ["looks"] = sm.LookActions,
+                    ["chats"] = sm.ChatActions,
+                    ["breaks"] = sm.BreakBlockActions,
+                    ["attacks"] = sm.AttackActions,
+                    ["drowns"] = sm.DrownActions,
+                    ["suicides"] = sm.SuicideActions,
+                    ["killed"] = sm.KilledActions,
+                    ["diedClients"] = sm.Died ? 1 : 0,
+                    ["totalDeaths"] = sm.DeathCount,
+                    ["totalRespawns"] = sm.RespawnCount,
+                    ["totalRejoins"] = sm.RejoinCount,
+                    ["minPassRate"] = minPassRate,
+                    ["gatePass"] = pass1 >= minPassRate - 1e-9,
+                };
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
+                File.WriteAllText(statsJsonPath,
+                    System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
+                Console.WriteLine($"stats: {statsJsonPath}");
+            }
             _ = sm;
             return rc;
         }
@@ -820,8 +864,7 @@ public static class Program
             }
             var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
             if (!string.IsNullOrEmpty(statsJsonPath))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
+            {                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
                 File.WriteAllText(statsJsonPath, System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
                 Console.WriteLine($"stats: {statsJsonPath}");
             }

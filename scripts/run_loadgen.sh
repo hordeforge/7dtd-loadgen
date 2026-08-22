@@ -127,7 +127,10 @@ run_cli() {
 }
 
 set +e
-run_cli "${args[@]}"
+# Forward any caller-supplied args LAST so they override the env-derived
+# defaults (CLI-overrides-profile): bench_stock.sh passes --profile/--count/
+# --timeout/--spawn-* per scenario through its own "$@".
+run_cli "${args[@]}" "$@"
 rc=$?
 set -e
 

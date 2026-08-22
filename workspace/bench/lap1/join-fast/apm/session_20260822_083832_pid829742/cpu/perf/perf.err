@@ -1,1 +1,0 @@
-WARNING: /tmp/perf-829742.map missing; managed Mono frames will be [jit]. Run 'apm jitmap' via the bridge (capture --reset-bridge does this automatically).
