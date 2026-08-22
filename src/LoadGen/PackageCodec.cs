@@ -21,7 +21,6 @@ public static class PackageCodec
 {
     public const byte ChallengeChannelMarker = 202;
     public const int ChallengeSize = 17;
-    public const byte DeliveryReliableOrdered = 2;
     /// <summary>LiteNetLib reserved header size (channel byte at Items[0]).</summary>
     public const int ReservedHeaderBytes = 1;
     /// <summary>Outer envelope after channel: size(4)+comp(1)+enc(1)+count(2).</summary>
@@ -110,9 +109,8 @@ public static class PackageCodec
     /// Build one game package for LiteNetLib.Send matching live NetConnectionSimple + LiteNet.
     /// Always includes channel reserved byte + outer envelope (uncompressed, unencrypted).
     /// </summary>
-    public static byte[] FrameChannelPackage(byte channel, ushort packageId, Action<BinaryWriter> writeBody, bool embedChannel = true)
+    public static byte[] FrameChannelPackage(byte channel, ushort packageId, Action<BinaryWriter> writeBody)
     {
-        _ = embedChannel; // always emit full live wire (channel + envelope)
         using var bodyMs = new MemoryStream();
         using (var bodyW = new BinaryWriter(bodyMs, Encoding.UTF8, leaveOpen: true))
             writeBody(bodyW);
@@ -129,22 +127,6 @@ public static class PackageCodec
         bw.Write((byte)0); // not compressed
         bw.Write((byte)0); // not encrypted
         bw.Write((ushort)1); // package count
-        bw.Write(contentLen);
-        bw.Write(packageId);
-        bw.Write(body);
-        return ms.ToArray();
-    }
-
-    /// <summary>Inner payload only: [contentLen][pkgId][body] (no outer envelope). Tests/helpers.</summary>
-    public static byte[] FramePackageOnly(ushort packageId, Action<BinaryWriter> writeBody)
-    {
-        using var bodyMs = new MemoryStream();
-        using (var bodyW = new BinaryWriter(bodyMs, Encoding.UTF8, leaveOpen: true))
-            writeBody(bodyW);
-        byte[] body = bodyMs.ToArray();
-        int contentLen = 2 + body.Length;
-        using var ms = new MemoryStream();
-        using var bw = new BinaryWriter(ms, Encoding.UTF8, leaveOpen: true);
         bw.Write(contentLen);
         bw.Write(packageId);
         bw.Write(body);
@@ -316,9 +298,8 @@ public static class PackageCodec
     }
 
     /// <summary>Extract first package body from a live-framed LiteNet game message.</summary>
-    public static byte[] ExtractBody(byte[] framed, bool hasChannelPrefix = true)
+    public static byte[] ExtractBody(byte[] framed)
     {
-        _ = hasChannelPrefix;
         var pkgs = ParseChannelPayload(framed);
         if (pkgs.Count == 0)
             throw new ArgumentException($"no packages in frame len={framed.Length}");
@@ -577,24 +558,6 @@ public static class PackageCodec
     }
 
     /// <summary>
-    /// NetPackageEntityLookAt: entityId + lookAt as 3×Int32 (write casts float→int).
-    /// </summary>
-    public static byte[] BuildEntityLookAt(
-        ushort packageId,
-        int entityId,
-        float lookX, float lookY, float lookZ,
-        byte channel = 0)
-    {
-        return FrameChannelPackage(channel, packageId, w =>
-        {
-            w.Write(entityId);
-            w.Write((int)lookX);
-            w.Write((int)lookY);
-            w.Write((int)lookZ);
-        });
-    }
-
-    /// <summary>
     /// NetPackageDamageEntity write order from Assembly-CSharp IL.
     /// Used for suicide (Internal+Suicide+fatal), drown (Internal+Suffocation),
     /// and external "killed" hits (External+Bashing+fatal).
@@ -753,9 +716,8 @@ public static class PackageCodec
     /// Parse a LiteNet game message: channel + outer envelope + inner packages.
     /// Decompresses Noemax/raw DEFLATE payloads (DeflateStream). Encrypted not supported.
     /// </summary>
-    public static List<(ushort id, byte[] body)> ParseChannelPayload(ReadOnlySpan<byte> data, bool hasChannelPrefix = true)
+    public static List<(ushort id, byte[] body)> ParseChannelPayload(ReadOnlySpan<byte> data)
     {
-        _ = hasChannelPrefix;
         var list = new List<(ushort, byte[])>();
         // Need: channel(1) + size(4) + comp(1) + enc(1) + count(2) = 9
         if (data.Length < ReservedHeaderBytes + OuterEnvelopeAfterChannel)
@@ -849,24 +811,6 @@ public static class PackageCodec
             }
         }
         return false;
-    }
-
-    /// <summary>
-    /// Parse captured live PackageIds hex (optional unit probe). Returns map count or -1 on failure.
-    /// </summary>
-    public static int TryParseLivePackageIdsMapCount(ReadOnlySpan<byte> data)
-    {
-        var pkgs = ParseChannelPayload(data);
-        if (pkgs.Count == 0) return -1;
-        try
-        {
-            var (_, maps, _) = ParsePackageIdsBody(pkgs[0].body);
-            return maps.Length;
-        }
-        catch
-        {
-            return -1;
-        }
     }
 
     public static (VersionInfo version, string[] mappings, bool useEac) ParsePackageIdsBody(byte[] body)
@@ -988,24 +932,6 @@ public static class PackageCodec
             int patch = v.Minor % 10;
             return $"{release} {v.Major}.{mid}.{patch}";
         }
-        return $"{release} {v.Major}.{v.Minor}";
-    }
-
-    /// `VersionInformation.LongStringNoBuild`: `"{0} {1}.{2}"` with the raw
-    /// Minor (VersionInformation IL_00BE). The stock client sends this as both
-    /// `version` and `compVersion` in NetPackagePlayerLogin (ConnectionManager
-    /// IL_0095-00A4) and VersionAuthorizer compares the client's
-    /// compatibilityVersion against it ordinal-ignore-case, so the loadgen
-    /// login must use this exact form (not the display "V 3.1.0").
-    /// </summary>
-    public static string LongStringNoBuild(VersionInfo v)
-    {
-        string release = v.ReleaseType switch
-        {
-            0 => "Alpha",
-            1 => "V",
-            _ => "V",
-        };
         return $"{release} {v.Major}.{v.Minor}";
     }
 }

@@ -646,7 +646,6 @@ public static class Program
                     System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
                 Console.WriteLine($"stats: {statsJsonPath}");
             }
-            _ = sm;
             return rc;
         }
 
@@ -666,12 +665,13 @@ public static class Program
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
             $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} killFallback={killFallback} " +
             $"bind=127.x multi-ip");
-        if (spawnZombies || killFallback)
+        // killFallback only takes effect inside the telnet spawn loop, so the
+        // pressure warning fires on spawnZombies alone.
+        if (spawnZombies)
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] WARNING: server-side pressure active - " +
-                (spawnZombies ? "telnet zombie spawning" : "") +
-                (spawnZombies && killFallback ? " and " : "") +
-                (killFallback ? "admin kill fallback" : "") +
+                "telnet zombie spawning" +
+                (killFallback ? " and admin kill fallback" : "") +
                 ". These modify the world and raise server load; use --no-spawn-zombies " +
                 "and/or --no-kill-fallback for a pure join/action measurement.");
         var results = new System.Collections.Concurrent.ConcurrentBag<(
@@ -683,13 +683,15 @@ public static class Program
         // Bench clock: window-sliced counts + per-second active-cohort curve.
         var running = new System.Collections.Concurrent.ConcurrentDictionary<int, byte>();
         var benchCts = new CancellationTokenSource();
-        var benchSampler = Task.Run(async () =>
+        Task? benchSampler = null;
+        if (bench != null)
+            benchSampler = Task.Run(async () =>
         {
             try
             {
                 while (!benchCts.IsCancellationRequested)
                 {
-                    bench?.SampleActive(running.Count);
+                    bench.SampleActive(running.Count);
                     await Task.Delay(1000, benchCts.Token).ConfigureAwait(false);
                 }
             }
@@ -725,7 +727,7 @@ public static class Program
         })).ToArray();
         Task.WaitAll(tasks);
         benchCts.Cancel();
-        try { benchSampler.Wait(2000); } catch { /* ignore */ }
+        try { benchSampler?.Wait(2000); } catch { /* ignore */ }
         bench?.SampleActive(0); // final sample so the curve shows the ramp-down
         spawnCts.Cancel();
         try { spawnTask?.Wait(2000); } catch { /* ignore */ }

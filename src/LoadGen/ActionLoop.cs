@@ -97,7 +97,6 @@ public static class ActionLoop
         public int PackagesSent { get; set; }
         public bool Died { get; set; }
         public DeathCause Cause { get; set; } = DeathCause.None;
-        public BotMode Mode { get; set; }
         public long ElapsedMs { get; set; }
     }
 
@@ -112,13 +111,8 @@ public static class ActionLoop
         public string? ChatPrefix { get; set; }
         /// <summary>Total bots in this run; used to throttle chat at scale.</summary>
         public int CohortSize { get; set; } = 1;
-        /// <summary>Hard cap on chat messages per bot (-1 = mode default).</summary>
-        public int MaxChats { get; set; } = -1;
         /// <summary>Wall-clock cap for the action loop (0 = no extra cap beyond ShouldStop).</summary>
         public int MaxLifetimeMs { get; set; } = 0;
-        /// <summary>Allow bounded, random real dynamite explosions.</summary>
-        public bool AllowDynamite { get; set; } = true;
-
         /// <summary>Dynamite cap per life (Demolition mode raises this).</summary>
         public int MaxDynamitePerLife { get; set; } = 3;
 
@@ -136,27 +130,9 @@ public static class ActionLoop
     public static Stats Run(
         JoinStateMachine sm,
         Func<byte[], bool> send,
-        int actionCount,
-        int seed,
-        Action<string>? log = null,
-        bool wanderUntilDeath = true)
-    {
-        return Run(sm, send, new Options
-        {
-            ActionCount = actionCount,
-            Seed = seed,
-            Log = log,
-            Mode = wanderUntilDeath ? BotMode.Wander : BotMode.Mixed,
-            Death = DeathMethod.None,
-        });
-    }
-
-    public static Stats Run(
-        JoinStateMachine sm,
-        Func<byte[], bool> send,
         Options opt)
     {
-        var stats = new Stats { Mode = opt.Mode };
+        var stats = new Stats();
         var log = opt.Log;
         if (!sm.IsJoined && sm.Stage != JoinStage.SpawnedInWorld && sm.Stage != JoinStage.Joined)
         {
@@ -165,8 +141,7 @@ public static class ActionLoop
         }
 
         ResolveIds(sm, out ushort posId, out ushort relId, out ushort flagsId,
-            out ushort dmgId, out ushort chatId, out ushort lookId, out ushort explosionId);
-        _ = lookId;
+            out ushort dmgId, out ushort chatId, out ushort explosionId);
 
         var rng = new Random(opt.Seed);
         // Reseed the (thread-static) pace-jitter RNG deterministically per bot so
@@ -224,7 +199,7 @@ public static class ActionLoop
             _ => 45,
         };
 
-        int maxChats = opt.MaxChats >= 0 ? opt.MaxChats : DefaultMaxChats(opt.Mode, opt.CohortSize);
+        int maxChats = DefaultMaxChats(opt.Mode, opt.CohortSize);
         string chatPrefix = opt.ChatPrefix ?? $"bot{entityId}";
         var sw = System.Diagnostics.Stopwatch.StartNew();
 
@@ -320,7 +295,7 @@ public static class ActionLoop
             bool wantDynamite = demolition
                 ? i >= 4 && i % 6 == 0
                 : i >= 8 && (i == 12 || rng.NextDouble() < 0.025);
-            if (opt.AllowDynamite && explosionId != 0 && stats.Dynamite < opt.MaxDynamitePerLife
+            if (explosionId != 0 && stats.Dynamite < opt.MaxDynamitePerLife
                 && wantDynamite)
                 kind = ActionKind.Dynamite;
 
@@ -611,7 +586,7 @@ public static class ActionLoop
     static void ResolveIds(
         JoinStateMachine sm,
         out ushort posId, out ushort relId, out ushort flagsId,
-        out ushort dmgId, out ushort chatId, out ushort lookId, out ushort explosionId)
+        out ushort dmgId, out ushort chatId, out ushort explosionId)
     {
         if (!sm.TryGetPackageId("NetPackageEntityPosAndRot", out posId)) posId = 0;
         if (!sm.TryGetPackageId("NetPackageEntityRelPosAndRot", out relId)) relId = posId;
@@ -620,7 +595,6 @@ public static class ActionLoop
         if (!sm.TryGetPackageId("NetPackageSimpleChat", out chatId)
             && !sm.TryGetPackageId("NetPackageChat", out chatId))
             chatId = 0;
-        if (!sm.TryGetPackageId("NetPackageEntityLookAt", out lookId)) lookId = 0;
         if (!sm.TryGetPackageId("NetPackageExplosionInitiate", out explosionId)) explosionId = 0;
     }
 

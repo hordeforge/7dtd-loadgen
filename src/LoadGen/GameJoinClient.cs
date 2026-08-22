@@ -206,7 +206,6 @@ public sealed class GameJoinClient
         bool loginSent = false;
         bool actionsDone = false;
         bool respawnTimedOut = false;
-        ActionLoop.Stats? actionStats = null;
 
         try
         {
@@ -274,7 +273,7 @@ public sealed class GameJoinClient
                         verboseRecvLeft--;
                         Log($"RECV pkg id={id} bodyLen={body.Length}");
                     }
-                    HandlePackage(id, body, ref loginSent, opt, Log, pkt =>
+                    HandlePackage(id, body, opt, Log, pkt =>
                     {
                         lock (gate)
                         {
@@ -317,9 +316,7 @@ public sealed class GameJoinClient
             if (State.Stage == JoinStage.Joined && !actionsDone && !opt.SkipActions)
             {
                 var mode = opt.Mode;
-                if (opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
-                    mode = ActionLoop.BotMode.Wander;
-                else if (!opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
+                if (!opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
                     mode = ActionLoop.BotMode.Mixed;
                 State.BotModeName = mode.ToString();
 
@@ -339,7 +336,7 @@ public sealed class GameJoinClient
                             continue;
                         var pkgs = PackageCodec.ParseChannelPayload(data);
                         foreach (var (id, body) in pkgs)
-                            HandlePackage(id, body, ref loginSent, opt, Log, pkt =>
+                            HandlePackage(id, body, opt, Log, pkt =>
                             {
                                 lock (gate) sendQueue.Enqueue(pkt);
                             });
@@ -382,7 +379,7 @@ public sealed class GameJoinClient
                         State.DeathCause = "none";
                     opt.OnLifeStarted?.Invoke(State.EntityId);
 
-                    actionStats = ActionLoop.Run(
+                    ActionLoop.Run(
                         State,
                         SendPkt,
                         new ActionLoop.Options
@@ -563,7 +560,6 @@ public sealed class GameJoinClient
     void HandlePackage(
         ushort id,
         byte[] body,
-        ref bool loginSent,
         Options opt,
         Action<string> log,
         Action<byte[]> enqueue)
@@ -805,9 +801,6 @@ public sealed class GameJoinClient
         // After join: best-effort world-death signals (stat health, chat GMSG, entity remove).
         if (State.EverJoined && !State.Died)
             TryDetectWorldDeath(typeName, body, opt, log);
-
-        _ = loginSent;
-        _ = enqueue;
     }
 
     void ApplySpawn(int entityId, float x, float y, float z, Action<string> log, string via)

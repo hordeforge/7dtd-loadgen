@@ -15,7 +15,6 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -29,24 +28,6 @@ def iso_delta(a: str, b: str) -> float | None:
         return max(0.0, (tb - ta).total_seconds())
     except (ValueError, TypeError):
         return None
-
-
-def bench_summary_from_log(path: Path) -> dict:
-    """Parse the BENCH_SUMMARY console line (best effort)."""
-    try:
-        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-            if not line.startswith("BENCH_SUMMARY"):
-                continue
-            out = {}
-            for m in re.finditer(r"(\w+)=([\d.]+)", line):
-                try:
-                    out[m.group(1)] = float(m.group(2))
-                except ValueError:
-                    pass
-            return out
-    except OSError:
-        pass
-    return {}
 
 
 def apm_summary(run_dir: Path) -> dict:

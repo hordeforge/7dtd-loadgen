@@ -135,7 +135,4 @@ public sealed class BenchClock
         lock (_activeCurve)
             return new List<(int, int)>(_activeCurve);
     }
-
-    /// <summary>Sampler id for the first sample (t=0) so the curve starts at 0.</summary>
-    public void SeedZero() => SampleActive(0);
 }

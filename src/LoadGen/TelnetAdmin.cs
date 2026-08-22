@@ -45,8 +45,7 @@ public sealed class TelnetAdmin : IDisposable
             _stream.ReadTimeout = 2000;
             _stream.WriteTimeout = 2000;
             string banner = ReadAvailable(800);
-            if (banner.Contains("password", StringComparison.OrdinalIgnoreCase)
-                || banner.Contains("Password", StringComparison.Ordinal))
+            if (banner.Contains("password", StringComparison.OrdinalIgnoreCase))
             {
                 WriteLine(_password);
                 _ = ReadAvailable(600);

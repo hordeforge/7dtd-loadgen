@@ -54,9 +54,10 @@ public sealed class VersionLongStringTests
         // (EKickReason.VersionMismatch=4). b5c3069 switched the login to
         // LongStringNoBuild ("V 3.10", the raw-Minor form) and every stock join
         // then failed until reverted. Keep the login on VersionLongString and
-        // pin the two forms apart so the regression cannot silently return.
+        // pin it apart from that rejected raw-Minor form so the regression
+        // cannot silently return.
         var v310 = new PackageCodec.VersionInfo(ReleaseType: 1, Major: 3, Minor: 10, Build: 14);
         Assert.Equal("V 3.1.0", PackageCodec.VersionLongString(v310));
-        Assert.NotEqual(PackageCodec.VersionLongString(v310), PackageCodec.LongStringNoBuild(v310));
+        Assert.NotEqual("V 3.10", PackageCodec.VersionLongString(v310));
     }
 }
