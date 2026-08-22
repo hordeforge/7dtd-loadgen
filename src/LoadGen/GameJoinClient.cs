@@ -42,8 +42,10 @@ public sealed class GameJoinClient
     public sealed class Options
     {
         public string Host { get; set; } = "127.0.0.1";
-        // LiteNetLib listen port is ServerPort (26900); Steam may use +2 — try 26900 first.
-        // Observed working LiteNet handshake on 26902 in this install.
+        // Bots speak LiteNetLib, so they must hit the LiteNet data port =
+        // ServerPort + 2 (26902 for the stock 26900 server). ServerPort itself
+        // (26900) is the game client's "Connect to IP" port; a bot there fails
+        // with ConnectionFailed.
         public int Port { get; set; } = 26902;
         public string Password { get; set; } = "";
         public string PlayerName { get; set; } = "REFake";
@@ -56,7 +58,7 @@ public sealed class GameJoinClient
         public bool SkipActions { get; set; }
         /// <summary>Walk until world death (default true). Overridden by Mode.</summary>
         public bool WanderUntilDeath { get; set; } = true;
-        /// <summary>Bot behaviour mode (wander/mixed/chatty/combat/patrol/chaos).</summary>
+        /// <summary>Bot behaviour mode (see <see cref="ActionLoop.BotMode"/>).</summary>
         public ActionLoop.BotMode Mode { get; set; } = ActionLoop.BotMode.Wander;
         /// <summary>Client self-kill method. Default None = wait for zombies/rad/water/server.</summary>
         public ActionLoop.DeathMethod Death { get; set; } = ActionLoop.DeathMethod.None;

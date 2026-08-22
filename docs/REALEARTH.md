@@ -61,11 +61,16 @@ LOADGEN_LIVE_REALEARTH=1 make test
 | `re-p0-p1-offline-gate` | CI: sibling expand/fail-closed config + IMPLEMENTATION_PLAN |
 | `re-phase-offline-gate` | CI: P0-P8 shipped module inventory + product-path policy |
 | `re-p1-inject-selftest-manifest` | CI: self-test + `7dtd.loadgen.run.v1` run manifest |
+| `re-session-save-offline-gate` | CI: sibling session dual-write/restore hooks (world-save persist) |
+| `re-origin-remap-offline-gate` | CI: sibling OriginSlideRemap player/vehicle/claim remap wiring |
+| `re-tall-solid-runtime-poi-gate` | CI: sibling full solid fill + runtime POI inject path |
 | `re-h500-probe` | Connectivity to RE dedicated |
 | `re-h500-join-wander` | Join + walk on H500 tall columns |
 | `re-h500-join-demolition` | Dynamite / block damage under expand |
 | `re-h500-mp-sharedfixed` | Multi-bot SharedFixed origin shape |
+| `re-h500-tall-solid-join` | Live join/walk on full-solid H500 columns (optional) |
 | `re-everest-join-soak` | Longer Everest/DEM pack soak (optional) |
+| `re-session-reload-live` | Live session save/reload across a dedicated restart (optional) |
 
 List: `./scripts/run_scenario.sh --list`
 

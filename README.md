@@ -191,8 +191,9 @@ recorded, never hidden. Evidence layout:
 
 ```text
 src/LoadGen/          C# client (join, actions, death, respawn, telnet pressure)
-scripts/               dedicated start + client runners
+scripts/               dedicated start + client runners + scenario runners
 tests/                 golden-wire + self-test gates
+tools/                 SUT-comparison capture/report + bench consolidation
 ```
 
 ## Workload controls
@@ -204,7 +205,7 @@ or deterministic action workloads possible. Use `--min-pass-rate` to require a
 minimum successful-client fraction.
 
 Bot modes: `wander`, `mixed`, `chatty`, `combat`, `patrol`, `chaos`,
-`demolition`, `bait`, and `kite`. Demolition bots roam and repeatedly detonate
+`demolition`, `bait`, `kite`, and `traverse`. Demolition bots roam and repeatedly detonate
 real dynamite against terrain (falling-block, block-ticker, and chunk-resend
 pressure); `--max-dynamite` bounds charges per life (demolition default 200,
 others 3). Bait bots stand nearly still (tiny shuffle) so spawned zombies
@@ -363,7 +364,7 @@ the sibling `7dtd-apm` project to decide whether a change improved performance.
 
 ```bash
 make selftest  # in-process mock join and respawn; no game server required
-make test      # build + self-test-join + 24 C# unit tests + pytest gates
+make test      # build + self-test-join + C# unit tests + pytest gates
 make clean     # remove C# bin/ and obj/
 ```
 

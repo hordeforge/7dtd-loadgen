@@ -3,7 +3,7 @@ namespace SevenDTD.LoadGen;
 /// <summary>
 /// Bot behaviour loops over real NetPackages after join.
 /// Default: walk endlessly until world/server death or lifetime expires (no client self-kill).
-/// Modes: wander, mixed, chatty, combat, patrol, chaos.
+/// Modes: wander, mixed, chatty, combat, patrol, chaos, demolition, bait, kite, traverse.
 /// </summary>
 public static class ActionLoop
 {
@@ -286,8 +286,9 @@ public static class ActionLoop
             // Bots self-report Y from their spawn height; wandering far onto
             // different terrain embeds them and breaks server-side spawn-point
             // search near the player. Stay within a sane leash of the spawn.
-            // Traverse roams freely to stream fresh chunks; GroundAdopted keeps its
-            // Y on the server terrain (line ~270) so it does not embed.
+            // Traverse roams freely to stream fresh chunks; GroundAdopted keeps
+            // its Y on the server terrain (GameJoinClient receive path) so it
+            // does not embed.
             float leashDx = x - originX, leashDz = z - originZ;
             if (opt.Mode != BotMode.Traverse && leashDx * leashDx + leashDz * leashDz > 45f * 45f)
             {

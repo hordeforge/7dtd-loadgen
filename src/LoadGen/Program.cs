@@ -190,9 +190,9 @@ public static class Program
         // so the profile is repeatable.
         var botMix = new List<(ActionLoop.BotMode mode, int weight)>();
 
-        // Named workload profiles (TODO "Add named workload profiles"): preset
-        // cohort defaults applied before the arg loop so an explicit flag on the
-        // same command line always overrides the profile.
+        // Named workload profiles: preset cohort defaults applied before the arg
+        // loop so an explicit flag on the same command line always overrides the
+        // profile.
         string profile = "";
         for (int i = 0; i < args.Length; i++)
             if (args[i] == "--profile" && i + 1 < args.Length) profile = args[++i];
@@ -1004,7 +1004,7 @@ public static class Program
             "  --bench-warmup-ms N   bench warm-up before the window (default 30000)\n" +
             "  --bench-window-ms N   bench measurement window; >0 enables the bench\n" +
             "      summary (stats-json bench block + BENCH_SUMMARY line)\n" +
-            "  --mode wander|mixed|chatty|combat|patrol|chaos\n" +
+            "  --mode wander|mixed|chatty|combat|patrol|chaos|demolition|bait|kite|traverse\n" +
             "      default: wander (walk until world death)\n" +
             "  --death none|...   default none: never self-kill; wait for world death\n" +
             "  --actions N         live steps (0 or omit = endless until death/timeout)\n" +
