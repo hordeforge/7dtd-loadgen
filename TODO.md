@@ -258,3 +258,27 @@ record, and documentation of any protocol-version restriction.
   Pregen08k01 core probe: held quality 3 (stock) vs 5 (zdtd), both sane -
   the overflow-recovered world does not reproduce it either. Closed as
   not-reproduced across all tested flows/worlds.
+
+## Bench mode + bench-stock lane (2026-08-22)
+
+- [x] Client bench mode: --profile bench (16 bots, 15s ramp, 30s warm-up, 60s
+  window, no telnet pressure) + --bench-warmup-ms/--bench-window-ms. BenchClock
+  counts action iterations/deaths/respawns inside the window and samples the
+  active-cohort curve per second; stats-json gets a bench block and the console
+  a BENCH_SUMMARY line. 5 unit tests.
+- [x] bench-stock lane: one stock dedicated (fixed world, fresh save per lap)
+  runs the matrix (probe-15s, join-fast, join-probe, wander-2bot, soak-4bot,
+  bench, horde-lite) with a 7dtd-apm capture per scenario (aligned to the bench
+  window) + per-scenario run-meta (git hashes, hostLoad, timestamps). make
+  bench-stock LAP=N -> workspace/bench/lapN/; make bench-report consolidates
+  with a +-20% per-scenario wall repeatability section (over-tolerance rows
+  flagged with hostLoad). 3 offline gates.
+- [x] REGRESSION FIX: b5c3069 (2026-08-21) switched the login
+  version/compVersion to LongStringNoBuild "V 3.10" and broke EVERY stock join
+  (NetPackagePlayerDenied reason=4 VersionMismatch). The stock V3.1.0
+  VersionAuthorizer empirically accepts the display form "V 3.1.0" and kicks
+  "V 3.10". Reverted to VersionLongString (16/16 PASS live) + pin test
+  (LoginVersion_IsTheDisplayForm_Empirically) so it cannot silently return;
+  research docs/network.md corrected with the empirical evidence.
+- [ ] 2-lap repeatability evidence (goal): two bench-stock laps on the same
+  world/seed, both committed, +-20% verdict from make bench-report.

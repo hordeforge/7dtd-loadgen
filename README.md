@@ -156,6 +156,37 @@ Details, axis definitions, status semantics and current findings:
 [`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md). Running the real stock client
 against a test server without Steam: [`docs/STOCK_AUTH.md`](docs/STOCK_AUTH.md).
 
+## Stock benchmark lane (bench-stock)
+
+A stock-only benchmark: one stock dedicated server (fixed world, fresh save
+per lap) runs the scenario matrix — including the **bench profile** (ramped
+16-bot cohort with warm-up + measurement window) — with a 7dtd-apm capture
+per scenario and per-scenario `stats-json` (the bench block carries
+window-sliced action/death/respawn counts and the active-cohort curve).
+
+```bash
+make bench-stock LAP=1        # full matrix -> workspace/bench/lap1/
+make bench-stock LAP=2        # second lap (repeatability)
+make bench-report             # consolidate all laps -> bench-stock.md/.json
+BENCH_LAPS_ONLY=1 make bench-stock   # fast smoke: bench profile only
+BENCH_ADMIN_PORT=8084 make bench-stock   # admin telnet (docker owns 8081/8082)
+COMPARE_APM=0 make bench-stock       # skip the cost capture
+```
+
+The bench client mode: `--profile bench` presets the cohort (16 bots,
+15s ramp, 30s warm-up, 60s window, no telnet world pressure) and
+`--bench-warmup-ms` / `--bench-window-ms` override the timing. Inside the
+window the client counts action iterations, deaths and respawns; the
+active-cohort curve is sampled once per second. The `BENCH_SUMMARY` line and
+the stats-json `bench` block expose: actionsInWindow, actionsPerSec,
+deaths/respawns in window, joinRatePerSec (joins over the warm-up), and
+active min/max/at-window-start/at-window-end.
+
+`bench-report` compares per-scenario wall across laps against a +-20% bound;
+over-tolerance rows are flagged with their hostLoad so host contention is
+recorded, never hidden. Evidence layout:
+`workspace/bench/lap<N>/<scenario>/{client.log,stats.json,run-meta.json,apm/}`.
+
 ## Layout
 
 ```text
