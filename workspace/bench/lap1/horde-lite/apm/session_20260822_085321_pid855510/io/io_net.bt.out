@@ -1,0 +1,48 @@
+16:53:28 @tcp_recv: 3
+@pagefaults: 273
+16:53:33 @tcp_recv: 5
+@pagefaults: 1566
+@opens: 1
+16:53:38 @tcp_recv: 7
+@pagefaults: 1944
+@opens: 1
+16:53:43 @tcp_recv: 9
+@pagefaults: 2033
+@opens: 1
+16:53:48 @tcp_recv: 11
+@pagefaults: 2844
+@opens: 34
+
+=== totals ===
+@tcp_recv: 11
+@tcp_recv_bytes: 11264
+@udp_send: 8419
+@udp_recv: 459
+@udp_send_bytes: 8362566
+@udp_recv_bytes: 657288
+@pagefaults: 3044
+@opens: 34
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/sidepart_short.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/boe.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/sidepart_mid.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/midpart_shoulder.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 29
+
+
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/sidepart_short.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/boe.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/sidepart_mid.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/midpart_shoulder.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 29
+@opens: 34
+@pagefaults: 3044
+@tcp_recv: 11
+@tcp_recv_bytes: 11264
+@udp_recv: 459
+@udp_recv_bytes: 657288
+@udp_send: 8419
+@udp_send_bytes: 8362566

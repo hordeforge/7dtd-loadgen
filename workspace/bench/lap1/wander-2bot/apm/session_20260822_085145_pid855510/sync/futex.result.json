@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "futex",
+  "layer": "sync_locks",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 30.65513039904181,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 1379,
+  "artifacts": [
+    "sync/futex.bt.out"
+  ],
+  "message": "expected timeout"
+}

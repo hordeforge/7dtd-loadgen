@@ -1,0 +1,84 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:17:12-42: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:37:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:64:12-38: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:17:12-42: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:37:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:64:12-38: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:17:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:17:20-34: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:37:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:37:20-37: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:64:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:64:20-30: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @stw_start) / 1000;
+                   ~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:18:5-28: WARNING: Return value discarded.
+    delete(@gc_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/bt/mono_gc.bt:38:5-31: WARNING: Return value discarded.
+    delete(@boehm_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+STW_PAUSE 10905 us
+16:49:57 @little_n: 14954
+STW_PAUSE 12805 us
+16:50:02 @little_n: 15048
+STW_PAUSE 15497 us
+16:50:07 @little_n: 15448
+STW_PAUSE 3264 us
+STW_PAUSE 10793 us
+16:50:12 @little_n: 15541
+STW_PAUSE 27202 us
+16:50:17 @little_n: 18343
+STW_PAUSE 25557 us
+
+=== mono_gc_collect latency us ===
+
+=== GC_gcollect latency us ===
+
+=== stop-the-world pause us (main-thread freeze) ===
+@stw_us:
+[512, 1K)              1 |@@@@@@@@@@                                          |
+[1K, 2K)               5 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[2K, 4K)               2 |@@@@@@@@@@@@@@@@@@@@                                |
+[4K, 8K)               0 |                                                    |
+[8K, 16K)              4 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@           |
+[16K, 32K)             2 |@@@@@@@@@@@@@@@@@@@@                                |
+
+@stw_sum: 117301
+@stw_n: 14
+
+
+@little_n: 19872
+@stw_n: 14
+@stw_start: 0
+@stw_sum: 117301
+@stw_us:
+[512, 1K)              1 |@@@@@@@@@@                                          |
+[1K, 2K)               5 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[2K, 4K)               2 |@@@@@@@@@@@@@@@@@@@@                                |
+[4K, 8K)               0 |                                                    |
+[8K, 16K)              4 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@           |
+[16K, 32K)             2 |@@@@@@@@@@@@@@@@@@@@                                |
+

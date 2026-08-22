@@ -1,0 +1,13 @@
+{
+  "scenario": "join-probe",
+  "lap": 1,
+  "world": "Navezgane",
+  "startUtc": "2026-08-22T08:48:18Z",
+  "endUtc": "2026-08-22T08:49:21Z",
+  "hostLoadStart": "5.47",
+  "hostLoadEnd": "5.00",
+  "loadgen": {"git": "84dd024", "dirtyFiles": 1},
+  "server": {"adminPort": 8084, "litePort": 26902},
+  "matrixArgs": "--profile probe --timeout 70000 --count 1",
+  "summary": {"pass": "1", "fail": "0"}
+}

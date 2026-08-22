@@ -1,0 +1,184 @@
+sampling pid=855510 for 30.0s every 1.0s
+       t    cpu%    rssMB thr  fd    rMB/s   wMB/s vctx  nvctx
+     0.0     0.0   2286.7 141   70    0.00    0.00     0     0
+    tid=855510  7DaysToDieServe  ticks=50592
+    tid=855516  AssetGarbageCol  ticks=50592
+    tid=855517  AssetGarbageCol  ticks=50592
+    tid=855518  AssetGarbageCol  ticks=50592
+    tid=855519  AssetGarbageCol  ticks=50592
+     1.0   249.9   2317.0 141   75   40.93    0.21   594   325
+    tid=855510  7DaysToDieServe  ticks=50842
+    tid=855516  AssetGarbageCol  ticks=50842
+    tid=855517  AssetGarbageCol  ticks=50842
+    tid=855518  AssetGarbageCol  ticks=50842
+    tid=855519  AssetGarbageCol  ticks=50842
+     2.0   190.0   2330.2 141   75   15.55    0.00   524   187
+    tid=855529  AssetGarbageCol  ticks=51033
+    tid=855530  AssetGarbageCol  ticks=51033
+    tid=855531  AssetGarbageCol  ticks=51033
+    tid=855532  AssetGarbageCol  ticks=51033
+    tid=855533  AssetGarbageCol  ticks=51033
+     3.0   177.0   2327.7 141   85   46.93    1.09   378    79
+    tid=855589  Job.Worker 27    ticks=51210
+    tid=855590  Job.Worker 28    ticks=51210
+    tid=855591  Job.Worker 29    ticks=51210
+    tid=855592  Job.Worker 30    ticks=51210
+    tid=855593  Background Job.  ticks=51210
+     4.0   131.0   2336.0 125   75   12.34    0.37   373    92
+    tid=855510  7DaysToDieServe  ticks=51340
+    tid=855516  AssetGarbageCol  ticks=51340
+    tid=855517  AssetGarbageCol  ticks=51340
+    tid=855518  AssetGarbageCol  ticks=51340
+    tid=855519  AssetGarbageCol  ticks=51340
+     5.0    46.0   2341.0 125   75    4.13    1.59   221    39
+    tid=855510  7DaysToDieServe  ticks=51386
+    tid=855516  AssetGarbageCol  ticks=51386
+    tid=855517  AssetGarbageCol  ticks=51386
+    tid=855518  AssetGarbageCol  ticks=51386
+    tid=855519  AssetGarbageCol  ticks=51386
+     6.0    36.0   2344.7 125   75    2.18    0.00   188    20
+    tid=855510  7DaysToDieServe  ticks=51422
+    tid=855516  AssetGarbageCol  ticks=51422
+    tid=855517  AssetGarbageCol  ticks=51422
+    tid=855518  AssetGarbageCol  ticks=51422
+    tid=855519  AssetGarbageCol  ticks=51422
+     7.0    42.0   2398.0 137   75   10.09    0.01   203    49
+    tid=855516  AssetGarbageCol  ticks=51465
+    tid=855517  AssetGarbageCol  ticks=51465
+    tid=855518  AssetGarbageCol  ticks=51465
+    tid=855519  AssetGarbageCol  ticks=51465
+    tid=855520  AssetGarbageCol  ticks=51465
+     8.0   174.0   2454.2 141   71   14.26    0.02   318   100
+    tid=855562  Job.Worker 0     ticks=51639
+    tid=855563  Job.Worker 1     ticks=51639
+    tid=855564  Job.Worker 2     ticks=51639
+    tid=855565  Job.Worker 3     ticks=51639
+    tid=855566  Job.Worker 4     ticks=51639
+     9.0   157.0   2460.2 141   72    3.55    0.02   304    39
+    tid=855510  7DaysToDieServe  ticks=51795
+    tid=855516  AssetGarbageCol  ticks=51795
+    tid=855517  AssetGarbageCol  ticks=51795
+    tid=855518  AssetGarbageCol  ticks=51795
+    tid=855519  AssetGarbageCol  ticks=51795
+    10.0   122.0   2462.2 141   82    1.72    0.44   278    41
+    tid=855530  AssetGarbageCol  ticks=51918
+    tid=855531  AssetGarbageCol  ticks=51918
+    tid=855532  AssetGarbageCol  ticks=51918
+    tid=855533  AssetGarbageCol  ticks=51918
+    tid=855534  AssetGarbageCol  ticks=51918
+    11.0   137.0   2468.2 137   82    5.83    0.01   308    49
+    tid=855510  7DaysToDieServe  ticks=52054
+    tid=855516  AssetGarbageCol  ticks=52054
+    tid=855517  AssetGarbageCol  ticks=52054
+    tid=855518  AssetGarbageCol  ticks=52054
+    tid=855519  AssetGarbageCol  ticks=52054
+    12.0    70.0   2469.9 125   72    1.70    0.98   308    26
+    tid=855510  7DaysToDieServe  ticks=52124
+    tid=855516  AssetGarbageCol  ticks=52124
+    tid=855517  AssetGarbageCol  ticks=52124
+    tid=855518  AssetGarbageCol  ticks=52124
+    tid=855519  AssetGarbageCol  ticks=52124
+    13.0    40.0   2469.9 125   72    0.00    0.00   202    39
+    tid=855510  7DaysToDieServe  ticks=52164
+    tid=855516  AssetGarbageCol  ticks=52164
+    tid=855517  AssetGarbageCol  ticks=52164
+    tid=855518  AssetGarbageCol  ticks=52164
+    tid=855519  AssetGarbageCol  ticks=52164
+    14.0    40.0   2469.9 125   72    0.00    0.00   207    20
+    tid=855510  7DaysToDieServe  ticks=52204
+    tid=855516  AssetGarbageCol  ticks=52204
+    tid=855517  AssetGarbageCol  ticks=52204
+    tid=855518  AssetGarbageCol  ticks=52204
+    tid=855519  AssetGarbageCol  ticks=52204
+    15.0    54.0   2519.4 137   72   10.92    0.01   204    42
+    tid=855510  7DaysToDieServe  ticks=52258
+    tid=855516  AssetGarbageCol  ticks=52258
+    tid=855517  AssetGarbageCol  ticks=52258
+    tid=855518  AssetGarbageCol  ticks=52258
+    tid=855519  AssetGarbageCol  ticks=52258
+    16.0   204.9   2602.3 141   75   22.83    0.03   305    44
+    tid=855510  7DaysToDieServe  ticks=52463
+    tid=855516  AssetGarbageCol  ticks=52463
+    tid=855517  AssetGarbageCol  ticks=52463
+    tid=855518  AssetGarbageCol  ticks=52463
+    tid=855519  AssetGarbageCol  ticks=52463
+    17.0   168.0   2586.1 141   76    7.72    0.00   274    27
+    tid=855510  7DaysToDieServe  ticks=52631
+    tid=855516  AssetGarbageCol  ticks=52631
+    tid=855517  AssetGarbageCol  ticks=52631
+    tid=855518  AssetGarbageCol  ticks=52631
+    tid=855519  AssetGarbageCol  ticks=52631
+    18.0   171.0   2591.2 141   86    5.42    0.68   315    41
+    tid=855613  Loading.Preload  ticks=52803
+    tid=855616  Thread Pool Wor  ticks=52803
+    tid=855618  Timer-Scheduler  ticks=52803
+    tid=855619  Thread Pool I/O  ticks=52803
+    tid=855642  7DaysToDieServe  ticks=52803
+    19.0   102.0   2596.4 133   86    4.62    0.32   308    25
+    tid=855510  7DaysToDieServe  ticks=52904
+    tid=855516  AssetGarbageCol  ticks=52904
+    tid=855517  AssetGarbageCol  ticks=52904
+    tid=855518  AssetGarbageCol  ticks=52904
+    tid=855519  AssetGarbageCol  ticks=52904
+    20.0    82.0   2600.9 125   76    4.91    0.66   336    18
+    tid=855510  7DaysToDieServe  ticks=52986
+    tid=855516  AssetGarbageCol  ticks=52986
+    tid=855517  AssetGarbageCol  ticks=52986
+    tid=855518  AssetGarbageCol  ticks=52986
+    tid=855519  AssetGarbageCol  ticks=52986
+    21.0    47.0   2601.2 125   76    0.50    0.00   209    26
+    tid=855510  7DaysToDieServe  ticks=53033
+    tid=855516  AssetGarbageCol  ticks=53033
+    tid=855517  AssetGarbageCol  ticks=53033
+    tid=855518  AssetGarbageCol  ticks=53033
+    tid=855519  AssetGarbageCol  ticks=53033
+    22.0    40.0   2604.2 125   76    1.72    0.00   208    33
+    tid=855510  7DaysToDieServe  ticks=53073
+    tid=855516  AssetGarbageCol  ticks=53073
+    tid=855517  AssetGarbageCol  ticks=53073
+    tid=855518  AssetGarbageCol  ticks=53073
+    tid=855519  AssetGarbageCol  ticks=53073
+    23.0    44.0   2630.4 129   76    7.47    0.00   205    43
+    tid=855510  7DaysToDieServe  ticks=53117
+    tid=855516  AssetGarbageCol  ticks=53117
+    tid=855517  AssetGarbageCol  ticks=53117
+    tid=855518  AssetGarbageCol  ticks=53117
+    tid=855519  AssetGarbageCol  ticks=53117
+    24.0   127.0   2797.4 141   77  101.49    0.02   310    50
+    tid=864500  Thread Pool Wor  ticks=53245
+    tid=864902  7DaysToDieServe  ticks=53245
+    tid=865656  NCS_Reader_11_0  ticks=53245
+    tid=865657  NCS_Writer_11_0  ticks=53245
+    tid=865658  NCS_Reader_11_1  ticks=53245
+    25.0   243.0   2842.7 141   76   41.96    0.02   442   104
+    tid=855510  7DaysToDieServe  ticks=53487
+    tid=855516  AssetGarbageCol  ticks=53487
+    tid=855517  AssetGarbageCol  ticks=53487
+    tid=855518  AssetGarbageCol  ticks=53487
+    tid=855519  AssetGarbageCol  ticks=53487
+    26.0   147.0   2846.4 141   76    3.14    0.00   295    28
+    tid=855510  7DaysToDieServe  ticks=53634
+    tid=855516  AssetGarbageCol  ticks=53634
+    tid=855517  AssetGarbageCol  ticks=53634
+    tid=855518  AssetGarbageCol  ticks=53634
+    tid=855519  AssetGarbageCol  ticks=53634
+    27.0   182.0   2851.7 141   77    4.41    0.39   323    59
+    tid=855510  7DaysToDieServe  ticks=53816
+    tid=855516  AssetGarbageCol  ticks=53816
+    tid=855517  AssetGarbageCol  ticks=53816
+    tid=855518  AssetGarbageCol  ticks=53816
+    tid=855519  AssetGarbageCol  ticks=53816
+    28.0    97.0   2852.2 129   67    0.37    0.40   323    40
+    tid=855510  7DaysToDieServe  ticks=53913
+    tid=855516  AssetGarbageCol  ticks=53913
+    tid=855517  AssetGarbageCol  ticks=53913
+    tid=855518  AssetGarbageCol  ticks=53913
+    tid=855519  AssetGarbageCol  ticks=53913
+    29.0    54.0   2852.2 125   67    0.21    0.21   234    13
+    tid=855510  7DaysToDieServe  ticks=53967
+    tid=855516  AssetGarbageCol  ticks=53967
+    tid=855517  AssetGarbageCol  ticks=53967
+    tid=855518  AssetGarbageCol  ticks=53967
+    tid=855519  AssetGarbageCol  ticks=53967
+wrote /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/memory/proc.jsonl
+summary cpu% mean=116.4 max=249.9 rssMB last=2852.2 threads=125

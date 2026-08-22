@@ -1,0 +1,13 @@
+{
+  "scenario": "wander-2bot",
+  "lap": 1,
+  "world": "Navezgane",
+  "startUtc": "2026-08-22T08:51:37Z",
+  "endUtc": "2026-08-22T08:53:13Z",
+  "hostLoadStart": "6.95",
+  "hostLoadEnd": "4.73",
+  "loadgen": {"git": "84dd024", "dirtyFiles": 1},
+  "server": {"adminPort": 8084, "litePort": 26902},
+  "matrixArgs": "--profile steady-wander --timeout 100000 --count 2",
+  "summary": {"pass": "2", "fail": "0"}
+}

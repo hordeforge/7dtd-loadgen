@@ -1,0 +1,91 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:15:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:15:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:39:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:39:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:62:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:62:20-37: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:16:5-27: WARNING: Return value discarded.
+    delete(@r_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:40:5-27: WARNING: Return value discarded.
+    delete(@w_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/soak-4bot/apm/session_20260822_085425_pid855510/bt/vfs.bt:63:5-31: WARNING: Return value discarded.
+    delete(@fsync_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+16:54:32 @open_n: 11
+16:54:37 @open_n: 96
+16:54:42 @open_n: 198
+16:54:47 @open_n: 199
+16:54:52 @open_n: 199
+
+=== vfs_read latency us ===
+
+=== vfs_write latency us ===
+
+=== vfs_fsync latency us ===
+
+=== slow read stacks (>=1ms) ===
+
+=== slow write stacks (>=1ms) ===
+
+=== top openat paths ===
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/players.xml]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/gear/fitness.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/telemetry/apm_app_latest.json.8e693008.tmp]: 1
+@open_path[/proc/855510/status]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.0.7rg]: 5
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.0.7rg]: 7
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.1.7rg]: 15
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.2.7rg]: 23
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 27
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.2.7rg]: 36
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 37
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 49
+
+
+@open_n: 206
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/players.xml]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/gear/fitness.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/telemetry/apm_app_latest.json.8e693008.tmp]: 1
+@open_path[/proc/855510/status]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.0.7rg]: 5
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.0.7rg]: 7
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.1.7rg]: 15
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.2.7rg]: 23
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 27
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.2.7rg]: 36
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 37
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 49

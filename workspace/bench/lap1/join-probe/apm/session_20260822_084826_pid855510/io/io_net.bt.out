@@ -1,0 +1,105 @@
+16:48:33 @tcp_recv: 2
+@pagefaults: 15739
+@opens: 101
+16:48:38 @tcp_recv: 4
+@pagefaults: 21530
+@opens: 104
+16:48:43 @tcp_recv: 6
+@pagefaults: 22299
+@opens: 111
+16:48:48 @tcp_recv: 6
+@pagefaults: 22788
+@opens: 183
+16:48:53 @tcp_recv: 12
+@pagefaults: 26682
+@opens: 319
+
+=== totals ===
+@tcp_recv: 12
+@tcp_recv_bytes: 12288
+@udp_send: 8021
+@udp_recv: 438
+@udp_send_bytes: 7964737
+@udp_recv_bytes: 626808
+@pagefaults: 26690
+@opens: 319
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCanSalmon.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBulletproofRamp.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ironWroughtFence_02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/iBeamTCentered.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCanSoup.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/laundryPileLong.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ironWroughtFenceSpike_01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/hubCapsHanging.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/electrictimerrelay.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ladderMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/graveStone02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/lightIndustrialMountedWall.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/faucetBrass02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/keystoneBlock.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassIndustrialCTRPlate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorDoubleWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/logWallPillar.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassIndustrialPlate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/interiorDoorOldDoubleWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCornBread.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorDoubleOldWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBusinessTubePlateCorner.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBusinessSheet.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/houseSlidingDoorWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorOldWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/elevatorOutsideFloorPanel.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ladderWood.png]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 14
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 244
+
+
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/faucet02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/flagWallHungThick44Black.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/goreBlockAnimal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/gunBowT3CompoundCrossbow.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/flagWallHungThick44Purple.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/factoryConveyorWedgeRamp.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/gunBowT3CompoundBow.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/jailDoorWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCanSalmon.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBulletproofRamp.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ironWroughtFence_02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/iBeamTCentered.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCanSoup.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/laundryPileLong.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ironWroughtFenceSpike_01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/hubCapsHanging.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/electrictimerrelay.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ladderMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/graveStone02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/lightIndustrialMountedWall.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/faucetBrass02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/keystoneBlock.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassIndustrialCTRPlate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorDoubleWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/logWallPillar.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassIndustrialPlate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/interiorDoorOldDoubleWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/foodCornBread.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorDoubleOldWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBusinessTubePlateCorner.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/glassBusinessSheet.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/houseSlidingDoorWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/exteriorHouseDoorOldWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/elevatorOutsideFloorPanel.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/ladderWood.png]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 14
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 244
+@opens: 319
+@pagefaults: 26690
+@tcp_recv: 12
+@tcp_recv_bytes: 12288
+@udp_recv: 438
+@udp_recv_bytes: 626808
+@udp_send: 8021
+@udp_send_bytes: 7964737

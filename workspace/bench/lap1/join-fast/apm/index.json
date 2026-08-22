@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "dir": "session_20260822_084745_pid855510",
+      "path": "/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510",
+      "verdict": "server met its tick deadline this window",
+      "profile": "",
+      "gross_alloc_mb_s": null,
+      "stw_worst_ms": 32.0,
+      "entities": null,
+      "players": null,
+      "utc": "2026-08-22T08:47:45.467185Z",
+      "pid": 855510,
+      "seconds": 30,
+      "health": 68.53,
+      "grade": "C",
+      "layers": {
+        "scheduler": 50.0,
+        "memory_cache": 40.0,
+        "runtime_gc": 40.0,
+        "cpu": 55.0,
+        "io": 10.0,
+        "sync_locks": 0.0,
+        "app_sim": null
+      },
+      "sum_pressure": 195.0,
+      "has_flame": true,
+      "has_bridge": true,
+      "has_report": true,
+      "has_dashboard": true
+    }
+  ]
+}

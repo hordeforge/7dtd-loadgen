@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "threads",
+  "layer": "threads",
+  "status": "ok",
+  "exit_code": 0,
+  "duration_seconds": 30.324378421064466,
+  "tool": "python3",
+  "tool_version": "Python 3.13.14",
+  "sample_count": 30,
+  "artifacts": [
+    "threads/threads.jsonl"
+  ],
+  "message": ""
+}

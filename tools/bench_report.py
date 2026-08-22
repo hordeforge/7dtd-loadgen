@@ -55,7 +55,7 @@ def apm_verdict(run_dir: Path) -> str:
     if log.is_file():
         try:
             for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
-                if "lag verdict" in line or "lagVerdict" in line:
+                if "lag diagnosis" in line or "lagVerdict" in line:
                     return line.strip().split(":", 1)[-1].strip()[:80]
         except OSError:
             pass

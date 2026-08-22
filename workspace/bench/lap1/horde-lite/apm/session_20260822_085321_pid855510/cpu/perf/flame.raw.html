@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>7DTD APM pid=855510 (raw)</title>
+<style>
+  :root { --bg:#0f1115; --panel:#1a1d24; --fg:#e8eaed; --muted:#9aa0a6; --accent:#8ab4f8; --hi:#fdd663; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  header { padding:12px 16px; background:var(--panel); display:flex; flex-wrap:wrap; gap:12px; align-items:center; border-bottom:1px solid #333; }
+  header h1 { font-size:16px; margin:0; font-weight:600; }
+  header .muted { color:var(--muted); font-size:13px; }
+  #controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-left:auto; }
+  input[type=search] { background:#0f1115; border:1px solid #444; color:var(--fg); padding:6px 10px; border-radius:6px; min-width:200px; }
+  button { background:#2a2f3a; border:1px solid #444; color:var(--fg); padding:6px 12px; border-radius:6px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  #breadcrumb { padding:8px 16px; font-size:12px; color:var(--muted); word-break:break-all; min-height:1.5em; }
+  #breadcrumb a { color:var(--accent); cursor:pointer; text-decoration:none; margin-right:4px; }
+  #chart { width:100%; overflow:hidden; }
+  svg { display:block; width:100%; }
+  .frame rect { stroke:#0f1115; stroke-width:0.5; cursor:pointer; }
+  .frame text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:11px; fill:#111; pointer-events:none; }
+  .frame.dim rect { opacity:0.25; }
+  .frame.hit rect { stroke:var(--hi); stroke-width:1.5; }
+  #tip {
+    display:none; position:fixed; z-index:10; background:#202124; border:1px solid #555;
+    padding:8px 10px; border-radius:6px; font-size:12px; max-width:480px; pointer-events:none;
+    box-shadow:0 4px 16px rgba(0,0,0,.4);
+  }
+  #tip b { color:var(--hi); }
+  footer { padding:8px 16px; font-size:12px; color:var(--muted); }
+  footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>7DTD APM pid=855510 (raw)</h1>
+  <span class="muted" id="meta"></span>
+  <div id="controls">
+    <input type="search" id="q" placeholder="Search frames…" autocomplete="off"/>
+    <button type="button" id="reset">Reset zoom</button>
+    <button type="button" id="pct">Toggle % total / self</button>
+  </div>
+</header>
+<div id="breadcrumb"></div>
+<div id="chart"></div>
+<div id="tip"></div>
+<footer>
+  Click a frame to zoom. Esc resets. Search highlights matches.
+  Also open <code>profile.raw.speedscope.json</code> in
+  <a href="https://www.speedscope.app/" target="_blank" rel="noopener">speedscope.app</a>
+  or <code>npx speedscope profile.raw.speedscope.json</code>
+</footer>
+<script>
+const ROOT = {"name": "all", "value": 8534, "children": [{"name": "[UnityPlayer.so]", "value": 3210, "children": [{"name": "[jit]", "value": 60, "children": [{"name": "[jit]", "value": 4, "children": [{"name": "[jit]", "value": 2, "children": [{"name": "[jit]", "value": 1}]}]}]}, {"name": "0c96fb01b070c5126b22b8685cc3e444", "value": 1, "children": [{"name": "0c96fb01b070c5126b22b8685cc3e444_avx2", "value": 1}]}]}, {"name": "[jit]", "value": 2709, "children": [{"name": "[UnityPlayer.so]", "value": 1919, "children": [{"name": "[jit]", "value": 36, "children": [{"name": "[UnityPlayer.so]", "value": 27}, {"name": "[jit]", "value": 6, "children": [{"name": "[jit]", "value": 3, "children": [{"name": "[UnityPlayer.so]", "value": 2}, {"name": "[jit]", "value": 1}]}]}, {"name": "__pthread_self", "value": 1}]}, {"name": "[UnityPlayer.so]", "value": 3, "children": [{"name": "[UnityPlayer.so]", "value": 2, "children": [{"name": "[UnityPlayer.so]", "value": 2, "children": [{"name": "[jit]", "value": 2, "children": [{"name": "[jit]", "value": 2, "children": [{"name": "[UnityPlayer.so]", "value": 2}]}]}]}]}]}]}, {"name": "[jit]", "value": 284, "children": [{"name": "[jit]", "value": 262, "children": [{"name": "[jit]", "value": 237, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 220, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 219, "children": [{"name": "[jit]", "value": 218, "children": [{"name": "[jit]", "value": 211, "children": [{"name": "[jit]", "value": 202, "children": [{"name": "[jit]", "value": 191, "children": [{"name": "[jit]", "value": 190, "children": [{"name": "[jit]", "value": 188, "children": [{"name": "[libmonobdwgc-2.0.so]", "value": 78}, {"name": "___pthread_mutex_unlock", "value": 45, "children": [{"name": "__pthread_mutex_unlock_usercnt", "value": 45, "children": [{"name": "lll_mutex_unlock_optimized", "value": 45}]}]}, {"name": "___pthread_mutex_trylock", "value": 18}, {"name": "[perf-855510.map]", "value": 15}, {"name": "GC_dirty_inner", "value": 9}, {"name": "[UnityPlayer.so]", "value": 8}, {"name": "[libc.so.6]", "value": 6}, {"name": "mono_g_hash_table_lookup_extended", "value": 4}, {"name": "GC_reclaim_clear", "value": 1}, {"name": "GC_register_finalizer_inner", "value": 1}, {"name": "__tls_get_addr", "value": 1}, {"name": "mono_class_from_mono_type_internal", "value": 1}, {"name": "mono_string_new_len", "value": 1}]}, {"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1}]}, {"name": "[libc.so.6]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}, {"name": "[libc.so.6]", "value": 1, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}]}, {"name": "[perf-855510.map]", "value": 11, "children": [{"name": "[perf-855510.map]", "value": 11, "children": [{"name": "[perf-855510.map]", "value": 10, "children": [{"name": "[perf-855510.map]", "value": 10}]}, {"name": "__sched_yield", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}]}]}, {"name": "[perf-855510.map]", "value": 9, "children": [{"name": "[perf-855510.map]", "value": 9, "children": [{"name": "[perf-855510.map]", "value": 9, "children": [{"name": "[perf-855510.map]", "value": 9, "children": [{"name": "[perf-855510.map]", "value": 9}]}]}]}]}]}, {"name": "[perf-855510.map]", "value": 7, "children": [{"name": "[perf-855510.map]", "value": 7, "children": [{"name": "[perf-855510.map]", "value": 7, "children": [{"name": "[perf-855510.map]", "value": 7, "children": [{"name": "[perf-855510.map]", "value": 7, "children": [{"name": "[perf-855510.map]", "value": 7}]}]}]}]}]}]}, {"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 1}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 12}, {"name": "mono_class_from_mono_type_internal", "value": 2}, {"name": "___pthread_mutex_trylock", "value": 2}, {"name": "[UnityPlayer.so]", "value": 1}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 12}, {"name": "[UnityPlayer.so]", "value": 6}, {"name": "[libc.so.6]", "value": 4}, {"name": "___pthread_mutex_unlock", "value": 2, "children": [{"name": "__pthread_mutex_unlock_usercnt", "value": 2, "children": [{"name": "lll_mutex_unlock_optimized", "value": 1}]}]}, {"name": "__tls_get_addr", "value": 1}]}, {"name": "[UnityPlayer.so]", "value": 12}, {"name": "[libmonobdwgc-2.0.so]", "value": 3}, {"name": "GC_dirty_inner", "value": 2}, {"name": "[perf-855510.map]", "value": 2}, {"name": "___pthread_getspecific", "value": 1}, {"name": "[libc.so.6]", "value": 1}, {"name": "_fini", "value": 1, "children": [{"name": "__clock_gettime", "value": 1}]}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 248, "children": [{"name": "[libmonobdwgc-2.0.so]", "value": 175, "children": [{"name": "[perf-855510.map]", "value": 171, "children": [{"name": "[perf-855510.map]", "value": 162, "children": [{"name": "[perf-855510.map]", "value": 154, "children": [{"name": "[perf-855510.map]", "value": 112, "children": [{"name": "[perf-855510.map]", "value": 55, "children": [{"name": "[perf-855510.map]", "value": 35, "children": [{"name": "[perf-855510.map]", "value": 19, "children": [{"name": "[perf-855510.map]", "value": 11, "children": [{"name": "[perf-855510.map]", "value": 9, "children": [{"name": "[perf-855510.map]", "value": 2, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "GC_dirty_inner", "value": 1}]}]}]}, {"name": "[jit]", "value": 1}]}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 1}, {"name": "GC_dirty_inner", "value": 1}]}]}, {"name": "[libc.so.6]", "value": 1}, {"name": "GC_dirty_inner", "value": 1}, {"name": "[libmonobdwgc-2.0.so]", "value": 1}]}, {"name": "GC_dirty_inner", "value": 6}, {"name": "[libmonobdwgc-2.0.so]", "value": 5}, {"name": "___pthread_mutex_trylock", "value": 1}, {"name": "___pthread_mutex_lock", "value": 1, "children": [{"name": "lll_mutex_lock_optimized", "value": 1}]}, {"name": "[UnityPlayer.so]", "value": 1}, {"name": "___pthread_mutex_unlock", "value": 1, "children": [{"name": "__pthread_mutex_unlock_usercnt", "value": 1, "children": [{"name": "lll_mutex_unlock_optimized", "value": 1}]}]}]}, {"name": "GC_dirty_inner", "value": 27}, {"name": "[libmonobdwgc-2.0.so]", "value": 6}, {"name": "GC_gcj_malloc", "value": 1}]}, {"name": "GC_gcj_malloc", "value": 2}, {"name": "GC_dirty_inner", "value": 1}]}, {"name": "GC_dirty_inner", "value": 3}, {"name": "GC_gcj_malloc", "value": 1}, {"name": "pthread_getspecific@plt", "value": 1}]}, {"name": "[UnityPlayer.so]", "value": 1}, {"name": "GC_dirty_inner", "value": 1}]}, {"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[perf-855510.map]", "value": 1, "children": [{"name": "[libmonobdwgc-2.0.so]", "value": 1}]}]}]}, {"name": "___pthread_cond_wait", "value": 110, "children": [{"name": "__pthread_cond_wait_common", "value": 110, "children": [{"name": "__condvar_confirm_wakeup", "value": 46, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}, {"name": "__condvar_load_g1_start_relaxed", "value": 4, "children": [{"name": "__atomic_wide_counter_load_relaxed", "value": 4}]}, {"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}]}]}]}]}]}, {"name": "[libc.so.6]", "value": 75, "children": [{"name": "[jit]", "value": 5, "children": [{"name": "[jit]", "value": 4, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}]}, {"name": "[libc.so.6]", "value": 1}]}, {"name": "[steamclient.so]", "value": 18, "children": [{"name": "[jit]", "value": 4, "children": [{"name": "[steamclient.so]", "value": 4}]}]}, {"name": "__pthread_cleanup_pop", "value": 10}, {"name": "mono_thread_info_uninstall_interrupt", "value": 7}, {"name": "mono_thread_info_install_interrupt", "value": 5}, {"name": "[perf-855510.map]", "value": 4}, {"name": "___pthread_cond_timedwait64", "value": 4, "children": [{"name": "__pthread_cond_wait_common", "value": 1}]}, {"name": "___pthread_mutex_lock", "value": 4, "children": [{"name": "lll_mutex_lock_optimized", "value": 2}]}, {"name": "___pthread_getspecific", "value": 3}, {"name": "__libc_read", "value": 2}, {"name": "__pthread_setcancelstate", "value": 2}, {"name": "GC_dirty_inner", "value": 2}, {"name": "epoll_wait", "value": 2, "children": [{"name": "syscall_cancel", "value": 2, "children": [{"name": "internal_syscall_cancel", "value": 2, "children": [{"name": "calloc@plt", "value": 1}, {"name": "__clock_gettime", "value": 1, "children": [{"name": "__vdso_clock_gettime", "value": 1}]}]}]}]}, {"name": "__clock_gettime", "value": 2, "children": [{"name": "__vdso_clock_gettime", "value": 1}]}, {"name": "GC_continue_reclaim", "value": 1}, {"name": "___pthread_mutex_unlock", "value": 1}, {"name": "__libc_calloc", "value": 1}, {"name": "monoeg_g_hash_table_lookup_extended", "value": 1}, {"name": "mono_runtime_invoke_array", "value": 1, "children": [{"name": "GC_dirty_inner", "value": 1}]}, {"name": "pthread_mutex_lock@plt", "value": 1}, {"name": "GC_allocobj", "value": 1}, {"name": "monoeg_g_string_append_printf", "value": 1, "children": [{"name": "[libc.so.6]", "value": 1}]}]}, {"name": "[libc.so.6]", "value": 1142, "children": [{"name": "[jit]", "value": 125, "children": [{"name": "[jit]", "value": 107, "children": [{"name": "[jit]", "value": 95, "children": [{"name": "[jit]", "value": 80, "children": [{"name": "[jit]", "value": 62, "children": [{"name": "[jit]", "value": 1}]}]}]}]}]}, {"name": "[libc.so.6]", "value": 5}]}, {"name": "[libmonobdwgc-2.0.so]", "value": 318, "children": [{"name": "__tls_get_addr", "value": 2}, {"name": "GC_clear_stack", "value": 1, "children": [{"name": "GC_clear_stack_inner", "value": 1, "children": [{"name": "GC_clear_stack_inner", "value": 1, "children": [{"name": "GC_clear_stack_inner", "value": 1, "children": [{"name": "GC_clear_stack_inner", "value": 1, "children": [{"name": "[libc.so.6]", "value": 1}]}]}]}]}]}, {"name": "[jit]", "value": 1}]}, {"name": "___pthread_cond_timedwait64", "value": 223, "children": [{"name": "__pthread_cond_wait_common", "value": 222, "children": [{"name": "__condvar_confirm_wakeup", "value": 48}, {"name": "__condvar_load_g1_start_relaxed", "value": 8, "children": [{"name": "__atomic_wide_counter_load_relaxed", "value": 8}]}, {"name": "[jit]", "value": 5}]}]}, {"name": "[steamclient.so]", "value": 171, "children": [{"name": "[jit]", "value": 42, "children": [{"name": "epoll_wait", "value": 23, "children": [{"name": "syscall_cancel", "value": 23, "children": [{"name": "internal_syscall_cancel", "value": 23}]}]}, {"name": "[steamclient.so]", "value": 19}]}, {"name": "[steamclient.so]", "value": 6, "children": [{"name": "[steamclient.so]", "value": 1}]}]}, {"name": "[perf-855510.map]", "value": 101, "children": [{"name": "[perf-855510.map]", "value": 31, "children": [{"name": "[perf-855510.map]", "value": 1}]}, {"name": "[jit]", "value": 3}]}, {"name": "__pthread_cleanup_pop", "value": 81, "children": [{"name": "[jit]", "value": 1}]}, {"name": "___pthread_mutex_lock", "value": 81, "children": [{"name": "lll_mutex_lock_optimized", "value": 30}, {"name": "[jit]", "value": 1}]}, {"name": "___pthread_mutex_unlock", "value": 68, "children": [{"name": "__pthread_mutex_unlock_usercnt", "value": 64, "children": [{"name": "lll_mutex_unlock_optimized", "value": 61}]}]}, {"name": "mono_threads_exit_gc_safe_region_internal", "value": 55, "children": [{"name": "[jit]", "value": 1}]}, {"name": "mono_thread_info_uninstall_interrupt", "value": 52}, {"name": "usleep", "value": 47, "children": [{"name": "[jit]", "value": 1}]}, {"name": "__clock_nanosleep", "value": 45, "children": [{"name": "internal_syscall_cancel", "value": 45}]}, {"name": "GC_suspend_handler", "value": 29, "children": [{"name": "__new_sem_post", "value": 12, "children": [{"name": "[jit]", "value": 1}]}, {"name": "[libc.so.6]", "value": 6, "children": [{"name": "[jit]", "value": 5, "children": [{"name": "[jit]", "value": 5, "children": [{"name": "[jit]", "value": 2, "children": [{"name": "[jit]", "value": 1}]}]}]}]}, {"name": "GC_restart_handler", "value": 4, "children": [{"name": "[jit]", "value": 3}]}, {"name": "__pthread_setcancelstate", "value": 3}, {"name": "GC_suspend_handler_inner", "value": 3}, {"name": "__sigsuspend", "value": 1, "children": [{"name": "syscall_cancel", "value": 1}]}]}, {"name": "__nanosleep", "value": 26, "children": [{"name": "[jit]", "value": 1}]}, {"name": "epoll_wait", "value": 26, "children": [{"name": "syscall_cancel", "value": 26, "children": [{"name": "internal_syscall_cancel", "value": 26, "children": [{"name": "__clock_gettime", "value": 4, "children": [{"name": "__vdso_clock_gettime", "value": 1}]}, {"name": "[jit]", "value": 1}]}]}]}, {"name": "___pthread_getspecific", "value": 23}, {"name": "__poll", "value": 23, "children": [{"name": "syscall_cancel", "value": 23, "children": [{"name": "internal_syscall_cancel", "value": 23, "children": [{"name": "[jit]", "value": 1}]}]}]}, {"name": "GC_dirty_inner", "value": 22}, {"name": "syscall", "value": 15, "children": [{"name": "[jit]", "value": 15, "children": [{"name": "[jit]", "value": 3, "children": [{"name": "[jit]", "value": 2, "children": [{"name": "[jit]", "value": 1, "children": [{"name": "[jit]", "value": 1}]}]}]}]}]}, {"name": "__clock_gettime", "value": 14, "children": [{"name": "__vdso_clock_gettime", "value": 12}]}, {"name": "___pthread_mutex_trylock", "value": 13}, {"name": "__libc_free", "value": 8}, {"name": "mono_metadata_type_equal", "value": 6}, {"name": "GC_lock", "value": 4}, {"name": "_init", "value": 4}, {"name": "nanosleep@plt", "value": 3}, {"name": "GC_generic_malloc", "value": 2}, {"name": "__errno_location", "value": 2}, {"name": "GC_register_finalizer_inner", "value": 2}, {"name": "GC_generic_malloc_inner", "value": 1}, {"name": "GC_gcj_malloc", "value": 1}, {"name": "__tls_get_addr", "value": 1}, {"name": "monoeg_g_free", "value": 1}, {"name": "__vdso_gettimeofday", "value": 1}, {"name": "mono_class_get_checked", "value": 1}, {"name": "GC_malloc_kind_global", "value": 1}, {"name": "GC_push_marked4", "value": 1}, {"name": "__libc_read", "value": 1, "children": [{"name": "syscall_cancel", "value": 1, "children": [{"name": "internal_syscall_cancel", "value": 1}]}]}]};
+const H = 18;
+const PAD = 2;
+let showTotal = true;
+let focus = ROOT;
+let search = "";
+
+const chart = document.getElementById("chart");
+const tip = document.getElementById("tip");
+const crumb = document.getElementById("breadcrumb");
+const meta = document.getElementById("meta");
+meta.textContent = `samples=${ROOT.value}`;
+
+function color(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 33 + name.charCodeAt(i)) >>> 0;
+  const r = 180 + (h & 55);
+  const g = 80 + ((h >> 8) & 100);
+  const b = 40 + ((h >> 16) & 60);
+  return `rgb(${r},${g},${b})`;
+}
+
+function matches(node) {
+  if (!search) return false;
+  return node.name.toLowerCase().includes(search);
+}
+
+function anyMatch(node) {
+  if (matches(node)) return true;
+  return (node.children || []).some(anyMatch);
+}
+
+function render() {
+  const width = Math.max(chart.clientWidth || window.innerWidth, 640);
+  // depth
+  let maxD = 0;
+  (function walk(n, d) {
+    maxD = Math.max(maxD, d);
+    (n.children || []).forEach(c => walk(c, d + 1));
+  })(focus, 0);
+  const height = (maxD + 2) * H + 20;
+  const total = focus.value || 1;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+  const nodes = [];
+
+  function place(node, x0, x1, depth) {
+    const w = x1 - x0;
+    if (w < 0.5) return;
+    const y = depth * H;
+    const hit = search ? matches(node) : false;
+    const dim = search ? !anyMatch(node) : false;
+    const pct = (100 * node.value / total).toFixed(2);
+    const label = showTotal
+      ? `${node.name} (${pct}%)`
+      : `${node.name} (n=${node.value})`;
+    nodes.push({ node, x0, x1, y, w, hit, dim, label, pct });
+    const kids = node.children || [];
+    let x = x0;
+    for (const c of kids) {
+      const cw = w * (c.value / node.value);
+      place(c, x, x + cw, depth + 1);
+      x += cw;
+    }
+  }
+  place(focus, 0, width, 0);
+
+  for (const n of nodes) {
+    const cls = "frame" + (n.dim ? " dim" : "") + (n.hit ? " hit" : "");
+    const showText = n.w > 40;
+    const text = showText ? escapeXml(n.label.slice(0, Math.floor(n.w / 7))) : "";
+    svg += `<g class="${cls}" data-i="${nodes.indexOf(n)}">`;
+    svg += `<rect x="${n.x0.toFixed(2)}" y="${n.y}" width="${Math.max(n.w - 0.5, 0.5).toFixed(2)}" height="${H - PAD}" fill="${color(n.node.name)}"/>`;
+    if (text)
+      svg += `<text x="${(n.x0 + 3).toFixed(2)}" y="${n.y + 12}">${text}</text>`;
+    svg += `</g>`;
+  }
+  svg += `</svg>`;
+  chart.innerHTML = svg;
+
+  chart.querySelectorAll(".frame").forEach(g => {
+    const i = +g.getAttribute("data-i");
+    const n = nodes[i];
+    g.addEventListener("click", () => {
+      focus = n.node;
+      render();
+      updateCrumb();
+    });
+    g.addEventListener("mousemove", ev => {
+      tip.style.display = "block";
+      tip.style.left = Math.min(ev.clientX + 12, window.innerWidth - 300) + "px";
+      tip.style.top = (ev.clientY + 12) + "px";
+      const ofRoot = (100 * n.node.value / ROOT.value).toFixed(2);
+      tip.innerHTML = `<b>${escapeHtml(n.node.name)}</b><br/>samples: ${n.node.value}<br/>of zoom: ${n.pct}%<br/>of total: ${ofRoot}%`;
+    });
+    g.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  });
+  updateCrumb();
+}
+
+function updateCrumb() {
+  // simple path: only show current focus name chain is hard without parent links; show focus name
+  crumb.innerHTML = `<a data-root="1">all</a> / <span>${escapeHtml(focus.name)}</span> (${focus.value} samples)`;
+  crumb.querySelector("[data-root]").onclick = () => { focus = ROOT; render(); };
+}
+
+function escapeXml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function escapeHtml(s) {
+  return escapeXml(s);
+}
+
+document.getElementById("reset").onclick = () => { focus = ROOT; search = ""; document.getElementById("q").value = ""; render(); };
+document.getElementById("pct").onclick = () => { showTotal = !showTotal; render(); };
+document.getElementById("q").addEventListener("input", e => {
+  search = (e.target.value || "").trim().toLowerCase();
+  render();
+});
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") { focus = ROOT; search = ""; document.getElementById("q").value = ""; render(); }
+});
+window.addEventListener("resize", () => render());
+render();
+</script>
+</body>
+</html>

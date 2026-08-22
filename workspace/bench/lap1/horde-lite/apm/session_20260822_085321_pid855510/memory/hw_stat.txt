@@ -1,0 +1,19 @@
+# started on Sat Aug 22 16:53:21 2026
+
+
+ Performance counter stats for process id '855510':
+
+    92,080,150,953      cycles:u                                                                (60.50%)
+   126,959,711,977      instructions:u                                                          (60.95%)
+    21,093,954,023      branches:u                                                              (59.70%)
+       142,621,484      branch-misses:u                                                         (59.59%)
+     2,949,169,346      cache-references:u                                                      (59.33%)
+       420,118,925      cache-misses:u                                                          (58.40%)
+                 0      context-switches:u                                                    
+                 0      cpu-migrations:u                                                      
+             3,096      page-faults:u                                                         
+         20,959.87 msec task-clock:u                                                          
+         20,586.07 msec cpu-clock:u                                                           
+
+      30.002944365 seconds time elapsed
+

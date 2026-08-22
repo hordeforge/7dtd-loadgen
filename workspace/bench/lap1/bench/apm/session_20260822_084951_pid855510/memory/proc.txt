@@ -1,0 +1,184 @@
+sampling pid=855510 for 30.0s every 1.0s
+       t    cpu%    rssMB thr  fd    rMB/s   wMB/s vctx  nvctx
+     0.0     0.0   3920.7 157   76    0.00    0.00     0     0
+    tid=855510  7DaysToDieServe  ticks=17796
+    tid=855516  AssetGarbageCol  ticks=17796
+    tid=855517  AssetGarbageCol  ticks=17796
+    tid=855518  AssetGarbageCol  ticks=17796
+    tid=855519  AssetGarbageCol  ticks=17796
+     1.0   246.0   3974.6 157   78   12.11    0.60   562   122
+    tid=855610  Loading.AsyncRe  ticks=18043
+    tid=855611  7DaysToDieServe  ticks=18043
+    tid=855612  7DaysToDieServe  ticks=18043
+    tid=855613  Loading.Preload  ticks=18043
+    tid=855616  Thread Pool Wor  ticks=18043
+     2.0   246.0   3895.0 153   90   60.89    0.38   470   166
+    tid=859460  NCS_Writer_1_1   ticks=18290
+    tid=859463  NCS_Reader_21_0  ticks=18290
+    tid=859464  NCS_Writer_21_0  ticks=18290
+    tid=859465  NCS_Reader_21_1  ticks=18290
+    tid=859466  NCS_Writer_21_1  ticks=18290
+     3.0   271.0   3687.1 157   91   15.72    0.42   741   135
+    tid=855609  BatchDeleteObje  ticks=18560
+    tid=855610  Loading.AsyncRe  ticks=18560
+    tid=855611  7DaysToDieServe  ticks=18560
+    tid=855612  7DaysToDieServe  ticks=18560
+    tid=855613  Loading.Preload  ticks=18560
+     4.0   272.0   3446.9 157   94   11.27    0.62   728    67
+    tid=859501  NCS_Writer_3_0   ticks=18832
+    tid=859502  NCS_Reader_3_1   ticks=18832
+    tid=859503  NCS_Writer_3_1   ticks=18832
+    tid=859529  NCS_Reader_15_0  ticks=18832
+    tid=859530  NCS_Writer_15_0  ticks=18832
+     5.0   221.0   3382.0 165   75   25.88    0.41   467    43
+    tid=855542  AssetGarbageCol  ticks=19053
+    tid=855543  AssetGarbageCol  ticks=19053
+    tid=855544  AssetGarbageCol  ticks=19053
+    tid=855545  AssetGarbageCol  ticks=19053
+    tid=855546  AssetGarbageCol  ticks=19053
+     6.0   278.0   3287.2 161   78   22.92    0.99   558    67
+    tid=859575  NCS_Writer_4_1   ticks=19331
+    tid=859578  NCS_Reader_16_0  ticks=19331
+    tid=859579  NCS_Writer_16_0  ticks=19331
+    tid=859580  NCS_Reader_16_1  ticks=19331
+    tid=859581  NCS_Writer_16_1  ticks=19331
+     7.0   279.0   3342.7 157   80   21.61    0.50   477   134
+    tid=855510  7DaysToDieServe  ticks=19609
+    tid=855516  AssetGarbageCol  ticks=19609
+    tid=855517  AssetGarbageCol  ticks=19609
+    tid=855518  AssetGarbageCol  ticks=19609
+    tid=855519  AssetGarbageCol  ticks=19609
+     8.0   261.0   3337.9 161   80   41.64    0.78   492    77
+    tid=859620  NCS_Writer_6_0   ticks=19871
+    tid=859621  NCS_Reader_6_1   ticks=19871
+    tid=859622  NCS_Writer_6_1   ticks=19871
+    tid=859628  NCS_Reader_20_0  ticks=19871
+    tid=859629  NCS_Writer_20_0  ticks=19871
+     9.0   181.0   3343.1 153   82    2.37    0.41   374    53
+    tid=855581  Job.Worker 19    ticks=20052
+    tid=855582  Job.Worker 20    ticks=20052
+    tid=855583  Job.Worker 21    ticks=20052
+    tid=855584  Job.Worker 22    ticks=20052
+    tid=855585  Job.Worker 23    ticks=20052
+    10.0   154.0   3406.9 153   72   15.90    0.56   365    57
+    tid=855510  7DaysToDieServe  ticks=20205
+    tid=855516  AssetGarbageCol  ticks=20205
+    tid=855517  AssetGarbageCol  ticks=20205
+    tid=855518  AssetGarbageCol  ticks=20205
+    tid=855519  AssetGarbageCol  ticks=20205
+    11.0   255.0   3386.6 149   85   13.14    0.50   495    81
+    tid=855510  7DaysToDieServe  ticks=20460
+    tid=855516  AssetGarbageCol  ticks=20460
+    tid=855517  AssetGarbageCol  ticks=20460
+    tid=855518  AssetGarbageCol  ticks=20460
+    tid=855519  AssetGarbageCol  ticks=20460
+    12.0   301.0   3434.9 157   85   13.88    0.46   622    50
+    tid=859669  NCS_Reader_12_1  ticks=20763
+    tid=859670  NCS_Writer_12_1  ticks=20763
+    tid=859678  NCS_Reader_13_0  ticks=20763
+    tid=859679  NCS_Writer_13_0  ticks=20763
+    tid=859680  NCS_Reader_13_1  ticks=20763
+    13.0   253.0   3454.2 157   78    4.83    0.46   423    47
+    tid=859679  NCS_Writer_13_0  ticks=21016
+    tid=859680  NCS_Reader_13_1  ticks=21016
+    tid=859681  NCS_Writer_13_1  ticks=21016
+    tid=859684  NCS_Reader_1_0   ticks=21016
+    tid=859685  NCS_Writer_1_0   ticks=21016
+    14.0   192.0   3422.6 161   79    3.43    0.34   420    58
+    tid=855510  7DaysToDieServe  ticks=21206
+    tid=855516  AssetGarbageCol  ticks=21206
+    tid=855517  AssetGarbageCol  ticks=21206
+    tid=855518  AssetGarbageCol  ticks=21206
+    tid=855519  AssetGarbageCol  ticks=21206
+    15.0   225.0   3332.4 161   82    4.84    0.03   448    68
+    tid=855510  7DaysToDieServe  ticks=21431
+    tid=855516  AssetGarbageCol  ticks=21431
+    tid=855517  AssetGarbageCol  ticks=21431
+    tid=855518  AssetGarbageCol  ticks=21431
+    tid=855519  AssetGarbageCol  ticks=21431
+    16.0   236.0   3274.2 157   84   10.35    0.57   684    86
+    tid=859806  NCS_Reader_4_0   ticks=21669
+    tid=859807  NCS_Writer_4_0   ticks=21669
+    tid=859808  NCS_Reader_4_1   ticks=21669
+    tid=859809  NCS_Writer_4_1   ticks=21669
+    tid=855596  Background Job.  ticks=21668
+    17.0   209.0   3232.7 161   85    8.45    0.13   384    45
+    tid=855856  Pathfinding Thr  ticks=21877
+    tid=855857  Pathfinding Thr  ticks=21877
+    tid=855858  Pathfinding Thr  ticks=21877
+    tid=855859  Pathfinding Thr  ticks=21877
+    tid=855860  Pathfinding Thr  ticks=21877
+    18.0   205.0   3181.2 153   66    3.80    1.07   516    97
+    tid=855510  7DaysToDieServe  ticks=22081
+    tid=855516  AssetGarbageCol  ticks=22081
+    tid=855517  AssetGarbageCol  ticks=22081
+    tid=855518  AssetGarbageCol  ticks=22081
+    tid=855519  AssetGarbageCol  ticks=22081
+    19.0   158.0   3206.5 145   66   19.35    0.32   370    67
+    tid=855510  7DaysToDieServe  ticks=22240
+    tid=855516  AssetGarbageCol  ticks=22240
+    tid=855517  AssetGarbageCol  ticks=22240
+    tid=855518  AssetGarbageCol  ticks=22240
+    tid=855519  AssetGarbageCol  ticks=22240
+    20.0   240.0   3261.7 149   68   15.44    0.88   408    41
+    tid=859838  NCS_Reader_18_0  ticks=22481
+    tid=859839  NCS_Writer_18_0  ticks=22481
+    tid=859840  NCS_Reader_18_1  ticks=22481
+    tid=859841  NCS_Writer_18_1  ticks=22481
+    tid=859844  NCS_Reader_5_0   ticks=22481
+    21.0   217.0   3344.7 153   70   22.73    0.48   392    56
+    tid=855510  7DaysToDieServe  ticks=22696
+    tid=855516  AssetGarbageCol  ticks=22696
+    tid=855517  AssetGarbageCol  ticks=22696
+    tid=855518  AssetGarbageCol  ticks=22696
+    tid=855519  AssetGarbageCol  ticks=22696
+    22.0   257.0   3380.0 157   83   36.18    0.40   379    41
+    tid=855510  7DaysToDieServe  ticks=22953
+    tid=855516  AssetGarbageCol  ticks=22953
+    tid=855517  AssetGarbageCol  ticks=22953
+    tid=855518  AssetGarbageCol  ticks=22953
+    tid=855519  AssetGarbageCol  ticks=22953
+    23.0   244.0   3464.4 157   84   21.03    0.30   427    72
+    tid=855510  7DaysToDieServe  ticks=23197
+    tid=855516  AssetGarbageCol  ticks=23197
+    tid=855517  AssetGarbageCol  ticks=23197
+    tid=855518  AssetGarbageCol  ticks=23197
+    tid=855519  AssetGarbageCol  ticks=23197
+    24.0   249.0   3620.2 161   71   36.42    0.69   453    93
+    tid=855876  SteamEngineWatc  ticks=23447
+    tid=855877  CHTTPCacheFileT  ticks=23447
+    tid=855879  CHTTPClientThre  ticks=23447
+    tid=855880  CJobMgr::m_Work  ticks=23447
+    tid=855881  7DaysToDieServe  ticks=23447
+    25.0   252.0   3679.5 153   84   11.98    0.32   449    71
+    tid=855586  Job.Worker 24    ticks=23699
+    tid=855587  Job.Worker 25    ticks=23699
+    tid=855588  Job.Worker 26    ticks=23699
+    tid=855589  Job.Worker 27    ticks=23699
+    tid=855590  Job.Worker 28    ticks=23699
+    26.0   192.9   3682.5 157   85    5.54    0.35   366    86
+    tid=858894  Thread Pool Wor  ticks=23892
+    tid=859005  Thread Pool Wor  ticks=23892
+    tid=859015  Thread Pool Wor  ticks=23892
+    tid=859124  Thread Pool Wor  ticks=23892
+    tid=859886  NCS_Reader_10_0  ticks=23892
+    27.0   233.0   3676.7 153   77   11.20    0.50   371   105
+    tid=855598  Background Job.  ticks=24125
+    tid=855599  Background Job.  ticks=24125
+    tid=855600  Background Job.  ticks=24125
+    tid=855601  Background Job.  ticks=24125
+    tid=855602  Background Job.  ticks=24125
+    28.0   185.0   3663.0 147   72    8.69    0.41   477   467
+    tid=855540  AssetGarbageCol  ticks=24310
+    tid=855541  AssetGarbageCol  ticks=24310
+    tid=855542  AssetGarbageCol  ticks=24310
+    tid=855543  AssetGarbageCol  ticks=24310
+    tid=855544  AssetGarbageCol  ticks=24310
+    29.0   217.0   3683.5 149   84    4.34    0.42   450   313
+    tid=859124  Thread Pool Wor  ticks=24527
+    tid=859971  NCS_Reader_21_0  ticks=24527
+    tid=859972  NCS_Writer_21_0  ticks=24527
+    tid=859973  NCS_Reader_21_1  ticks=24527
+    tid=859974  NCS_Writer_21_1  ticks=24527
+wrote /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/bench/apm/session_20260822_084951_pid855510/memory/proc.jsonl
+summary cpu% mean=232.0 max=301.0 rssMB last=3683.5 threads=149

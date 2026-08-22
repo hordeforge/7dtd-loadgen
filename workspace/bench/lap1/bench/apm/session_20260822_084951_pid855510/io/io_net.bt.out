@@ -1,0 +1,118 @@
+16:49:58 @tcp_recv: 20
+@pagefaults: 100156
+@opens: 359
+16:50:03 @tcp_recv: 39
+@pagefaults: 199109
+@opens: 482
+16:50:08 @tcp_recv: 60
+@pagefaults: 274790
+@opens: 540
+16:50:13 @tcp_recv: 73
+@pagefaults: 334368
+@opens: 688
+16:50:18 @tcp_recv: 94
+@pagefaults: 433790
+@opens: 845
+
+=== totals ===
+@tcp_recv: 103
+@tcp_recv_bytes: 105472
+@udp_send: 149058
+@udp_recv: 8779
+@udp_send_bytes: 146858395
+@udp_recv_bytes: 12571120
+@pagefaults: 462110
+@opens: 851
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalkFiller02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCounterHollowFront.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRound04.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkWedgeMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyedFiller05.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfTrimCenterHalfOffset.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalkRails.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfDrainCentered.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube5mRoundRoofTop02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCounterFlipDoorOpen.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/boe.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyed07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/heads/white/01.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkTipRailLeftMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkTipMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfTrimQuarterDiagonalFillerOffset.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/small_fro.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/players.xml]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.2.7rg]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.2.7rg]: 4
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.0.7rg]: 6
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.1.7rg]: 7
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.0.7rg]: 9
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.1.7rg]: 12
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.0.7rg]: 14
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.2.7rg]: 19
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 91
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 236
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 408
+
+
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeFacadeCap.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalkFiller05.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfBookshelfSingle.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeBaseboardCorner2Sided.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalf7mRound02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyedFiller04.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfTrimDiagonalHalfFiller2Offset.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCommercialBlindCornerBottom.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube5mRoundRoofTop01.png]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/multiblocks.7dt]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCornerRound1m.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalk02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/ponytail.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfFacadeCap.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCounterWallMount.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeCornerArch.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube5mRound02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyed08.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfCorner.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfPoleSquareCorner3Way.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCone1m.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalkFiller02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCounterHollowFront.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRound04.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkWedgeMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyedFiller05.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfTrimCenterHalfOffset.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube7mRoundCatwalkRails.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfDrainCentered.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCube5mRoundRoofTop02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCounterFlipDoorOpen.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/boe.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeConcreteDestroyed07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/heads/white/01.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkTipRailLeftMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCatwalkTipMetal.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/shapeCubeHalfTrimQuarterDiagonalFillerOffset.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/small_fro.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/players.xml]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.2.7rg]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.2.7rg]: 4
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.0.7rg]: 6
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.-1.1.7rg]: 7
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.0.7rg]: 9
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.1.7rg]: 12
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.0.7rg]: 14
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.2.2.7rg]: 19
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.1.7rg]: 91
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.0.0.7rg]: 236
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region/r.1.1.7rg]: 408
+@opens: 851
+@pagefaults: 462110
+@tcp_recv: 103
+@tcp_recv_bytes: 105472
+@udp_recv: 8779
+@udp_recv_bytes: 12571120
+@udp_send: 149058
+@udp_send_bytes: 146858395

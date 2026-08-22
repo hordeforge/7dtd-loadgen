@@ -1,0 +1,13 @@
+{
+  "scenario": "soak-4bot",
+  "lap": 1,
+  "world": "Navezgane",
+  "startUtc": "2026-08-22T08:54:17Z",
+  "endUtc": "2026-08-22T08:59:29Z",
+  "hostLoadStart": "5.83",
+  "hostLoadEnd": "20.88",
+  "loadgen": {"git": "84dd024", "dirtyFiles": 1},
+  "server": {"adminPort": 8084, "litePort": 26902},
+  "matrixArgs": "--profile steady-wander --timeout 320000 --count 4",
+  "summary": {"pass": "4", "fail": "0"}
+}

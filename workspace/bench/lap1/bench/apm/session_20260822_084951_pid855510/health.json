@@ -1,0 +1,36 @@
+{
+  "schema": "7dtd.apm.health.v2",
+  "session": "session_20260822_084951_pid855510",
+  "health": 72.41,
+  "pressure": 27.59,
+  "grade": "B",
+  "coverage": 0.85,
+  "confidence": "medium",
+  "reason": "",
+  "detail": {
+    "scheduler": {
+      "pressure": 50.0,
+      "weight": 0.13
+    },
+    "memory_cache": {
+      "pressure": 40.0,
+      "weight": 0.12
+    },
+    "runtime_gc": {
+      "pressure": 40.0,
+      "weight": 0.15
+    },
+    "cpu": {
+      "pressure": 15.0,
+      "weight": 0.15
+    },
+    "sync_locks": {
+      "pressure": 15.0,
+      "weight": 0.18
+    },
+    "io": {
+      "pressure": 10.0,
+      "weight": 0.12
+    }
+  }
+}

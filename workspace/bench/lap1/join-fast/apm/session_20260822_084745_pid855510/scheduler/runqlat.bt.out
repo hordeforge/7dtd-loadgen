@@ -1,0 +1,48 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510/bt/runqlat.bt:20:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510/bt/runqlat.bt:20:20-40: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_084745_pid855510/bt/runqlat.bt:21:5-34: WARNING: Return value discarded.
+    delete(@wake[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== run-queue latency (us) for 7DaysToDieServe ===
+0-10us ideal; multi-ms = CPU contention or affinity issues
+@runqlat_us:
+[0]                 8516 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3169 |@@@@@@@@@@@@@@@@@@@                                 |
+[2, 4)               954 |@@@@@                                               |
+[4, 8)                70 |                                                    |
+[8, 16)               43 |                                                    |
+[16, 32)              19 |                                                    |
+[32, 64)               5 |                                                    |
+[64, 128)              8 |                                                    |
+[128, 256)            13 |                                                    |
+[256, 512)             4 |                                                    |
+[512, 1K)              2 |                                                    |
+[1K, 2K)               1 |                                                    |
+
+
+
+@runqlat_us:
+[0]                 8516 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3169 |@@@@@@@@@@@@@@@@@@@                                 |
+[2, 4)               954 |@@@@@                                               |
+[4, 8)                70 |                                                    |
+[8, 16)               43 |                                                    |
+[16, 32)              19 |                                                    |
+[32, 64)               5 |                                                    |
+[64, 128)              8 |                                                    |
+[128, 256)            13 |                                                    |
+[256, 512)             4 |                                                    |
+[512, 1K)              2 |                                                    |
+[1K, 2K)               1 |                                                    |
+
