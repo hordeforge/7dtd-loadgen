@@ -1,0 +1,1688 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:29:12-44: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wait_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:29:12-44: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wait_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:29:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wait_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:29:20-36: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wait_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:16:15-39: WARNING: Addrspace mismatch
+    @futex_op[args.op & FUTEX_CMD_MASK] = count();
+              ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:17:10-34: WARNING: Addrspace mismatch
+    if ((args.op & FUTEX_CMD_MASK) == FUTEX_WAIT ||
+         ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:18:10-34: WARNING: Addrspace mismatch
+        (args.op & FUTEX_CMD_MASK) == FUTEX_WAIT_BITSET) {
+         ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:21:10-34: WARNING: Addrspace mismatch
+    if ((args.op & FUTEX_CMD_MASK) == FUTEX_WAKE) {
+         ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/bench/apm/session_20260822_090523_pid887601/bt/futex.bt:30:5-30: WARNING: Return value discarded.
+    delete(@wait_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
+SLOW_FUTEX 6672 us tid=887601
+17:05:29 @wait_n: 202531
+@wake_n: 234150
+@wait_sum_us: 468289376
+17:05:34 @wait_n: 410418
+@wake_n: 463390
+@wait_sum_us: 963382784
+SLOW_FUTEX 218036 us tid=887601
+SLOW_FUTEX 14070 us tid=887601
+SLOW_FUTEX 16719 us tid=887601
+17:05:39 @wait_n: 559213
+@wake_n: 630930
+@wait_sum_us: 1438471426
+17:05:44 @wait_n: 742285
+@wake_n: 831680
+@wait_sum_us: 1908222867
+17:05:49 @wait_n: 924497
+@wake_n: 1024692
+@wait_sum_us: 2762852666
+17:05:54 @wait_n: 1067462
+@wake_n: 1178464
+@wait_sum_us: 3207483575
+
+=== futex wait latency (us) ===
+@wait_us:
+[0]               180543 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@            |
+[1]                27335 |@@@@@@                                              |
+[2, 4)             21987 |@@@@                                                |
+[4, 8)            114229 |@@@@@@@@@@@@@@@@@@@@@@@@@                           |
+[8, 16)            86246 |@@@@@@@@@@@@@@@@@@@                                 |
+[16, 32)           53877 |@@@@@@@@@@@@                                        |
+[32, 64)          231616 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[64, 128)          55993 |@@@@@@@@@@@@                                        |
+[128, 256)         35710 |@@@@@@@@                                            |
+[256, 512)          9794 |@@                                                  |
+[512, 1K)          11418 |@@                                                  |
+[1K, 2K)            6220 |@                                                   |
+[2K, 4K)          110726 |@@@@@@@@@@@@@@@@@@@@@@@@                            |
+[4K, 8K)           73380 |@@@@@@@@@@@@@@@@                                    |
+[8K, 16K)          18014 |@@@@                                                |
+[16K, 32K)         18182 |@@@@                                                |
+[32K, 64K)          9493 |@@                                                  |
+[64K, 128K)         1000 |                                                    |
+[128K, 256K)        1053 |                                                    |
+[256K, 512K)         371 |                                                    |
+[512K, 1M)           185 |                                                    |
+[1M, 2M)              39 |                                                    |
+[2M, 4M)              26 |                                                    |
+[4M, 8M)               8 |                                                    |
+[8M, 16M)              1 |                                                    |
+[16M, 32M)            16 |                                                    |
+
+
+=== futex op counts (cmd bits) ===
+@futex_op[7]: 552
+@futex_op[13]: 2225
+@futex_op[9]: 484463
+@futex_op[0]: 583028
+@futex_op[1]: 1178464
+
+=== main-thread total futex wait us ===
+@main_futex_wait_us: 468704
+
+=== waiter stacks by count (top) ===
+@wait_stack[
+        0x7fef9bab61f2
+        0x778
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0xa24
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6ae
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9b2
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9a0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8d4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x94c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x90a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9c4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8b0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9f4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x808
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x690
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0xa06
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x814
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8da
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x706
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x70c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8e0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x85c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x660
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6c6
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x994
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x970
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x79c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6f4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x958
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x666
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x820
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x7fc
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x86e
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x964
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8f8
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x940
+]: 6
+@wait_stack[
+        syscall+29
+        0x616552636e797341
+]: 7
+@wait_stack[
+        0x7fef9bab61f2
+        0x642
+]: 12
+@wait_stack[
+        0x7fef9bab61f2
+        0x9b8
+]: 18
+@wait_stack[
+        syscall+29
+        0x4d64616f6c657250
+]: 24
+@wait_stack[
+        syscall+29
+]: 135
+@wait_stack[
+        0x7fef9bab61f2
+]: 1262
+
+=== waiter stacks by total wait us (top) ===
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b2
+]: 1099824
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x876
+]: 1211084
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x736
+]: 1483543
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x642
+]: 1484032
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x988
+]: 1496688
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x820
+]: 1552372
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x796
+]: 1737459
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x952
+]: 1774397
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x910
+]: 2102256
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7ae
+]: 2116243
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b0
+]: 2137316
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b6
+]: 2199663
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x88c
+]: 2312813
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x92e
+]: 2382931
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8d4
+]: 2409680
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x87a
+]: 2422825
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x712
+]: 2479750
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x99a
+]: 2646715
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x94c
+]: 2677459
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9c4
+]: 2687214
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8da
+]: 2698927
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9ac
+]: 2727448
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x892
+]: 2736796
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x928
+]: 2740248
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x85c
+]: 2759950
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x724
+]: 2872611
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x964
+]: 2909430
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x874
+]: 3055386
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x994
+]: 3059611
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x96a
+]: 3581308
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x79c
+]: 3584130
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x916
+]: 3644874
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x700
+]: 3698698
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x784
+]: 3708561
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9b2
+]: 3888696
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9b8
+]: 5331850
+@wait_stack_time[
+        syscall+29
+        0x4d64616f6c657250
+]: 27157652
+@wait_stack_time[
+        syscall+29
+        0x616552636e797341
+]: 27454973
+@wait_stack_time[
+        syscall+29
+]: 368804598
+@wait_stack_time[
+        0x7fef9bab61f2
+]: 445042527
+
+
+@futex_op[7]: 552
+@futex_op[13]: 2225
+@futex_op[9]: 484463
+@futex_op[0]: 583028
+@futex_op[1]: 1178464
+@long_worker_waits: 1989
+@main_futex_wait_us: 468704
+@wait_enter[887685]: 545404507573054
+@wait_enter[887672]: 545404507585047
+@wait_enter[887682]: 545404507586650
+@wait_enter[887676]: 545404507590427
+@wait_enter[887678]: 545404507591308
+@wait_enter[887680]: 545404507595326
+@wait_enter[887673]: 545404507603111
+@wait_enter[887679]: 545404507605776
+@wait_enter[887681]: 545404507610164
+@wait_enter[887671]: 545404507615935
+@wait_enter[887677]: 545404507628879
+@wait_enter[887670]: 545404507636053
+@wait_enter[887683]: 545404507637375
+@wait_enter[887674]: 545404507637686
+@wait_enter[887684]: 545404507647143
+@wait_enter[887675]: 545404507649508
+@wait_enter[888122]: 545406797204218
+@wait_enter[887690]: 545407751104730
+@wait_enter[887695]: 545407751129457
+@wait_enter[887687]: 545407817751947
+@wait_enter[887638]: 545409032121885
+@wait_enter[896978]: 545409324585846
+@wait_enter[896239]: 545409329350579
+@wait_enter[895874]: 545409452380204
+@wait_enter[895983]: 545409452388910
+@wait_enter[888475]: 545409452394581
+@wait_enter[887693]: 545409452516400
+@wait_enter[888463]: 545409452516601
+@wait_enter[888125]: 545409603303479
+@wait_n: 1067462
+@wait_stack[
+        0x7fef9bab61f2
+        0x809
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x995
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x779
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xdf3
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x731
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x878
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xeb0
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x758
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x4bc
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x92d
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x476
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x3b3
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x4f3
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x8497
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x959
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x315
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x9aa5
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x66a
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x8ef
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xd59
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x9c5
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xef6
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x6d4
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x9d1
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x929
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x512
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x732
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x138
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x88d
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x861
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x794
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xa19
+]: 1
+@wait_stack[
+        0x7fef9baa97de
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x69b
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x7aa
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0xf2d
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x8ee
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x7ce
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x877
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x194
+]: 1
+@wait_stack[
+        0x7fef9bab61f2
+        0x9d3
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x94e
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x860
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x8f1
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x80b
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x193
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x8f2
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x66b
+]: 2
+@wait_stack[
+        0x7fef9bab61f2
+        0x6c0
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x66c
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x80e
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x9d6
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x862
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x6be
+]: 3
+@wait_stack[
+        0x7fef9bab61f2
+        0x87a
+]: 4
+@wait_stack[
+        0x7fef9bab61f2
+        0x736
+]: 4
+@wait_stack[
+        0x7fef9bab61f2
+        0x952
+]: 4
+@wait_stack[
+        0x7fef9bab61f2
+        0x92e
+]: 4
+@wait_stack[
+        0x7fef9bab61f2
+        0x75a
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x99a
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x7d2
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x95e
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x7ae
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0xa1e
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x796
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x69c
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x9ca
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x6d8
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x77e
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x892
+]: 5
+@wait_stack[
+        0x7fef9bab61f2
+        0x712
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x84a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x916
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x7f0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x784
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x880
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9ac
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8b6
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x754
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x73c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x7ba
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x88c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9fa
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x67e
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x68a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x96a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x93a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x988
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6cc
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x934
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x910
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x790
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x700
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x874
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x976
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x928
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x7d8
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x838
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6ba
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9be
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x868
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x696
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x724
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x778
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0xa24
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6ae
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9b2
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9a0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8d4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x94c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x90a
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9c4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8b0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x9f4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x808
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x690
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0xa06
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x814
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8da
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x706
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x70c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8e0
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x85c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x660
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6c6
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x994
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x970
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x79c
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x6f4
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x958
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x666
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x820
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x7fc
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x86e
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x964
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x8f8
+]: 6
+@wait_stack[
+        0x7fef9bab61f2
+        0x940
+]: 6
+@wait_stack[
+        syscall+29
+        0x616552636e797341
+]: 7
+@wait_stack[
+        0x7fef9bab61f2
+        0x642
+]: 12
+@wait_stack[
+        0x7fef9bab61f2
+        0x9b8
+]: 18
+@wait_stack[
+        syscall+29
+        0x4d64616f6c657250
+]: 24
+@wait_stack[
+        syscall+29
+]: 135
+@wait_stack[
+        0x7fef9bab61f2
+]: 1262
+@wait_stack_time[
+        0x7fef9baa97de
+]: 1000
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x138
+]: 6672
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x194
+]: 16719
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xd59
+]: 100932
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x77b
+]: 101019
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x77c
+]: 101021
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x779
+]: 101060
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9d1
+]: 103183
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xeb0
+]: 104580
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x315
+]: 108679
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7b6
+]: 110014
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7b7
+]: 110016
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x849
+]: 110644
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x4bc
+]: 111281
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8ee
+]: 112666
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8f2
+]: 112667
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8f0
+]: 112671
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8ed
+]: 112679
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xef6
+]: 114131
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x476
+]: 124457
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x86c
+]: 134083
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9c5
+]: 139057
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x908
+]: 141742
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x906
+]: 141751
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x80c
+]: 143383
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x809
+]: 143406
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x973
+]: 145641
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x974
+]: 145646
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x95b
+]: 146371
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x959
+]: 146382
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6d4
+]: 150132
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xa19
+]: 152799
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x669
+]: 199276
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9f6
+]: 206016
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9d3
+]: 206347
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6c0
+]: 211036
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8497
+]: 217808
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8f1
+]: 225322
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x193
+]: 232106
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9aa5
+]: 244087
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xf2d
+]: 256314
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xdf3
+]: 259118
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x3b3
+]: 260901
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x4f3
+]: 267739
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x80e
+]: 286754
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x80b
+]: 286773
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x758
+]: 300023
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x512
+]: 300166
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x77e
+]: 303085
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9d6
+]: 309510
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7ce
+]: 330005
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x791
+]: 347453
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x732
+]: 370904
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x731
+]: 370927
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x66a
+]: 398558
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9fa
+]: 412046
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6be
+]: 422076
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7a9
+]: 423251
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x69b
+]: 435184
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7ba
+]: 440046
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8d8
+]: 539774
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x860
+]: 548823
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x861
+]: 548824
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x84a
+]: 553201
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x90a
+]: 566973
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x976
+]: 582575
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x95e
+]: 585474
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x929
+]: 595481
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x92a
+]: 595729
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x66c
+]: 597835
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x75a
+]: 600058
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x68a
+]: 602379
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8e0
+]: 602916
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9f4
+]: 605743
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7fc
+]: 617085
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x958
+]: 617506
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x880
+]: 618290
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8f8
+]: 621889
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7d8
+]: 622130
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x868
+]: 622305
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x666
+]: 631767
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xa06
+]: 634698
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6ba
+]: 638083
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x67e
+]: 638984
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x70c
+]: 639315
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x754
+]: 644696
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x660
+]: 650474
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x73c
+]: 654640
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x790
+]: 659956
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7d2
+]: 660022
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x996
+]: 661687
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x995
+]: 661698
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x778
+]: 664879
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x86e
+]: 670379
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x940
+]: 680194
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x890
+]: 684200
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x88d
+]: 684212
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x706
+]: 691185
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9ca
+]: 695472
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x696
+]: 738792
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6d8
+]: 750658
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x970
+]: 756115
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xa1e
+]: 764026
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x814
+]: 831701
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9be
+]: 869839
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x69c
+]: 870386
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x94e
+]: 887027
+@wait_stack_time[
+        0x7fef9bab61f2
+        0xa24
+]: 889813
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x690
+]: 908038
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6cc
+]: 910657
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6ae
+]: 911190
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9a0
+]: 916778
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x838
+]: 927022
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7f0
+]: 930390
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6c6
+]: 934782
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x808
+]: 935874
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x6f4
+]: 936179
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x93a
+]: 982940
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x934
+]: 1082114
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x862
+]: 1097645
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x85f
+]: 1097652
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b2
+]: 1099824
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x876
+]: 1211084
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x736
+]: 1483543
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x642
+]: 1484032
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x988
+]: 1496688
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x820
+]: 1552372
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x796
+]: 1737459
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x952
+]: 1774397
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x910
+]: 2102256
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x7ae
+]: 2116243
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b0
+]: 2137316
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8b6
+]: 2199663
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x88c
+]: 2312813
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x92e
+]: 2382931
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8d4
+]: 2409680
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x87a
+]: 2422825
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x712
+]: 2479750
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x99a
+]: 2646715
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x94c
+]: 2677459
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9c4
+]: 2687214
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x8da
+]: 2698927
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9ac
+]: 2727448
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x892
+]: 2736796
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x928
+]: 2740248
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x85c
+]: 2759950
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x724
+]: 2872611
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x964
+]: 2909430
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x874
+]: 3055386
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x994
+]: 3059611
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x96a
+]: 3581308
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x79c
+]: 3584130
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x916
+]: 3644874
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x700
+]: 3698698
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x784
+]: 3708561
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9b2
+]: 3888696
+@wait_stack_time[
+        0x7fef9bab61f2
+        0x9b8
+]: 5331850
+@wait_stack_time[
+        syscall+29
+        0x4d64616f6c657250
+]: 27157652
+@wait_stack_time[
+        syscall+29
+        0x616552636e797341
+]: 27454973
+@wait_stack_time[
+        syscall+29
+]: 368804598
+@wait_stack_time[
+        0x7fef9bab61f2
+]: 445042527
+@wait_sum_us: 3207483575
+@wait_us:
+[0]               180543 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@            |
+[1]                27335 |@@@@@@                                              |
+[2, 4)             21987 |@@@@                                                |
+[4, 8)            114229 |@@@@@@@@@@@@@@@@@@@@@@@@@                           |
+[8, 16)            86246 |@@@@@@@@@@@@@@@@@@@                                 |
+[16, 32)           53877 |@@@@@@@@@@@@                                        |
+[32, 64)          231616 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[64, 128)          55993 |@@@@@@@@@@@@                                        |
+[128, 256)         35710 |@@@@@@@@                                            |
+[256, 512)          9794 |@@                                                  |
+[512, 1K)          11418 |@@                                                  |
+[1K, 2K)            6220 |@                                                   |
+[2K, 4K)          110726 |@@@@@@@@@@@@@@@@@@@@@@@@                            |
+[4K, 8K)           73380 |@@@@@@@@@@@@@@@@                                    |
+[8K, 16K)          18014 |@@@@                                                |
+[16K, 32K)         18182 |@@@@                                                |
+[32K, 64K)          9493 |@@                                                  |
+[64K, 128K)         1000 |                                                    |
+[128K, 256K)        1053 |                                                    |
+[256K, 512K)         371 |                                                    |
+[512K, 1M)           185 |                                                    |
+[1M, 2M)              39 |                                                    |
+[2M, 4M)              26 |                                                    |
+[4M, 8M)               8 |                                                    |
+[8M, 16M)              1 |                                                    |
+[16M, 32M)            16 |                                                    |
+
+@wake_n: 1178464

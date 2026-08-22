@@ -1,0 +1,13 @@
+{
+  "scenario": "bench",
+  "lap": 2,
+  "world": "Navezgane",
+  "startUtc": "2026-08-22T09:04:53Z",
+  "endUtc": "2026-08-22T09:07:09Z",
+  "hostLoadStart": "6.15",
+  "hostLoadEnd": "8.69",
+  "loadgen": {"git": "7b064a0", "dirtyFiles": 57},
+  "server": {"adminPort": 8084, "litePort": 26902},
+  "matrixArgs": "--profile bench --count 16 --timeout 130000",
+  "summary": {"pass": "16", "fail": "0"}
+}

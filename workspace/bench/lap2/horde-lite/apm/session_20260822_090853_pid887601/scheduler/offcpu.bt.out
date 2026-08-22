@@ -1,0 +1,705 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/offcpu.bt:27:20-25: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (uint64)(nsecs - @start[args.next_pid]) / 1000;
+                   ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/offcpu.bt:27:28-49: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (uint64)(nsecs - @start[args.next_pid]) / 1000;
+                           ~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/offcpu.bt:28:5-35: WARNING: Return value discarded.
+    delete(@start[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/offcpu.bt:40:5-41: WARNING: Return value discarded.
+    delete(@block_stack[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/offcpu.bt:41:5-40: WARNING: Return value discarded.
+    delete(@block_state[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+STALL_MAIN 20815 us state=1
+STALL_MAIN 30506 us state=1
+STALL_MAIN 22765 us state=1
+STALL_MAIN 27609 us state=1
+STALL_MAIN 31623 us state=1
+STALL_MAIN 30944 us state=1
+STALL_MAIN 30669 us state=1
+STALL_MAIN 31793 us state=1
+STALL_MAIN 32351 us state=1
+STALL_MAIN 30315 us state=1
+STALL_MAIN 31666 us state=1
+STALL_MAIN 28261 us state=1
+STALL_MAIN 31472 us state=1
+STALL_MAIN 31363 us state=1
+STALL_MAIN 28731 us state=1
+STALL_MAIN 32106 us state=1
+STALL_MAIN 32149 us state=1
+STALL_MAIN 30041 us state=1
+STALL_MAIN 31917 us state=1
+STALL_MAIN 27753 us state=1
+STALL_MAIN 30448 us state=1
+STALL_MAIN 29410 us state=1
+STALL_MAIN 30175 us state=1
+STALL_MAIN 29154 us state=1
+STALL_MAIN 30166 us state=1
+STALL_MAIN 29086 us state=1
+STALL_MAIN 25224 us state=1
+STALL_MAIN 29297 us state=1
+STALL_MAIN 30474 us state=1
+STALL_MAIN 28969 us state=1
+STALL_MAIN 28744 us state=1
+STALL_MAIN 29187 us state=1
+STALL_MAIN 31622 us state=1
+STALL_MAIN 33379 us state=1
+STALL_MAIN 33804 us state=1
+STALL_MAIN 31338 us state=1
+STALL_MAIN 33109 us state=1
+STALL_MAIN 31447 us state=1
+STALL_MAIN 33826 us state=1
+STALL_MAIN 29939 us state=1
+STALL_MAIN 31930 us state=1
+STALL_MAIN 25986 us state=1
+STALL_MAIN 28603 us state=1
+STALL_MAIN 26916 us state=1
+STALL_MAIN 28925 us state=1
+STALL_MAIN 29965 us state=1
+STALL_MAIN 31350 us state=1
+STALL_MAIN 29634 us state=1
+STALL_MAIN 32047 us state=1
+STALL_MAIN 33726 us state=1
+STALL_MAIN 32067 us state=1
+STALL_MAIN 32650 us state=1
+STALL_MAIN 33757 us state=1
+STALL_MAIN 33004 us state=1
+STALL_MAIN 33592 us state=1
+STALL_MAIN 32040 us state=1
+STALL_MAIN 32195 us state=1
+STALL_MAIN 33427 us state=1
+STALL_MAIN 29855 us state=1
+STALL_MAIN 19044 us state=1
+STALL_MAIN 31639 us state=1
+STALL_MAIN 29022 us state=1
+STALL_MAIN 35163 us state=1
+STALL_MAIN 34292 us state=1
+STALL_MAIN 33630 us state=1
+STALL_MAIN 33842 us state=1
+STALL_MAIN 34692 us state=1
+STALL_MAIN 35898 us state=1
+STALL_MAIN 35925 us state=1
+STALL_MAIN 37417 us state=1
+STALL_MAIN 37688 us state=1
+STALL_MAIN 35470 us state=1
+STALL_MAIN 35612 us state=1
+STALL_MAIN 36222 us state=1
+STALL_MAIN 34664 us state=1
+STALL_MAIN 33995 us state=1
+STALL_MAIN 35609 us state=1
+STALL_MAIN 35877 us state=1
+STALL_MAIN 36037 us state=1
+STALL_MAIN 35972 us state=1
+STALL_MAIN 35976 us state=1
+STALL_MAIN 36255 us state=1
+STALL_MAIN 33424 us state=1
+STALL_MAIN 25555 us state=1
+STALL_MAIN 35850 us state=1
+STALL_MAIN 36047 us state=1
+STALL_MAIN 35154 us state=1
+STALL_MAIN 33487 us state=1
+STALL_MAIN 35317 us state=1
+STALL_MAIN 35458 us state=1
+STALL_MAIN 34515 us state=1
+STALL_MAIN 33785 us state=1
+STALL_MAIN 35935 us state=1
+STALL_MAIN 36093 us state=1
+STALL_MAIN 34437 us state=1
+STALL_MAIN 35225 us state=1
+STALL_MAIN 35402 us state=1
+STALL_MAIN 35599 us state=1
+STALL_MAIN 29772 us state=1
+STALL_MAIN 36001 us state=1
+STALL_MAIN 35259 us state=1
+STALL_MAIN 35507 us state=1
+STALL_MAIN 35369 us state=1
+STALL_MAIN 34098 us state=1
+STALL_MAIN 34569 us state=1
+STALL_MAIN 33227 us state=1
+STALL_MAIN 33374 us state=1
+STALL_MAIN 33832 us state=1
+STALL_MAIN 34028 us state=1
+STALL_MAIN 33713 us state=1
+STALL_MAIN 32447 us state=1
+STALL_MAIN 33963 us state=1
+STALL_MAIN 33672 us state=1
+STALL_MAIN 35129 us state=1
+STALL_MAIN 34881 us state=1
+STALL_MAIN 34685 us state=1
+STALL_MAIN 35260 us state=1
+STALL_MAIN 36367 us state=1
+STALL_MAIN 35741 us state=1
+STALL_MAIN 32779 us state=1
+STALL_MAIN 34701 us state=1
+STALL_MAIN 35296 us state=1
+STALL_MAIN 35680 us state=1
+STALL_MAIN 35973 us state=1
+STALL_MAIN 35825 us state=1
+STALL_MAIN 26440 us state=1
+STALL_MAIN 35056 us state=1
+STALL_MAIN 35430 us state=1
+STALL_MAIN 35376 us state=1
+STALL_MAIN 34287 us state=1
+STALL_MAIN 34791 us state=1
+STALL_MAIN 34766 us state=1
+STALL_MAIN 24194 us state=1
+STALL_MAIN 35157 us state=1
+STALL_MAIN 35167 us state=1
+STALL_MAIN 34716 us state=1
+STALL_MAIN 34424 us state=1
+STALL_MAIN 35530 us state=1
+STALL_MAIN 36896 us state=1
+STALL_MAIN 23548 us state=1
+STALL_MAIN 33281 us state=1
+STALL_MAIN 22152 us state=1
+STALL_MAIN 31692 us state=1
+STALL_MAIN 31236 us state=1
+STALL_MAIN 32051 us state=1
+STALL_MAIN 17059 us state=1
+STALL_MAIN 32981 us state=1
+STALL_MAIN 32908 us state=1
+STALL_MAIN 23882 us state=1
+STALL_MAIN 30205 us state=1
+STALL_MAIN 32056 us state=1
+STALL_MAIN 28503 us state=1
+STALL_MAIN 30719 us state=1
+STALL_MAIN 28930 us state=1
+STALL_MAIN 24356 us state=1
+STALL_MAIN 31992 us state=1
+STALL_MAIN 29114 us state=1
+STALL_MAIN 28271 us state=1
+STALL_MAIN 33947 us state=1
+STALL_MAIN 33835 us state=1
+STALL_MAIN 32265 us state=1
+STALL_MAIN 34097 us state=1
+STALL_MAIN 33632 us state=1
+STALL_MAIN 34030 us state=1
+STALL_MAIN 33223 us state=1
+STALL_MAIN 33066 us state=1
+STALL_MAIN 33535 us state=1
+STALL_MAIN 32027 us state=1
+STALL_MAIN 33619 us state=1
+STALL_MAIN 28314 us state=1
+STALL_MAIN 31205 us state=1
+STALL_MAIN 34051 us state=1
+STALL_MAIN 32547 us state=1
+STALL_MAIN 32354 us state=1
+STALL_MAIN 33397 us state=1
+STALL_MAIN 32987 us state=1
+STALL_MAIN 32717 us state=1
+STALL_MAIN 33796 us state=1
+STALL_MAIN 33567 us state=1
+STALL_MAIN 32601 us state=1
+STALL_MAIN 33600 us state=1
+STALL_MAIN 33383 us state=1
+STALL_MAIN 31819 us state=1
+STALL_MAIN 30917 us state=1
+STALL_MAIN 32090 us state=1
+STALL_MAIN 32445 us state=1
+STALL_MAIN 33318 us state=1
+STALL_MAIN 30717 us state=1
+STALL_MAIN 30599 us state=1
+STALL_MAIN 31904 us state=1
+STALL_MAIN 32948 us state=1
+STALL_MAIN 33594 us state=1
+STALL_MAIN 33418 us state=1
+STALL_MAIN 33887 us state=1
+STALL_MAIN 32960 us state=1
+STALL_MAIN 27852 us state=1
+STALL_MAIN 31392 us state=1
+STALL_MAIN 30633 us state=1
+STALL_MAIN 34056 us state=1
+STALL_MAIN 31854 us state=1
+STALL_MAIN 34078 us state=1
+STALL_MAIN 32660 us state=1
+STALL_MAIN 32930 us state=1
+STALL_MAIN 33237 us state=1
+STALL_MAIN 32714 us state=1
+STALL_MAIN 24487 us state=1
+STALL_MAIN 30444 us state=1
+STALL_MAIN 34861 us state=1
+STALL_MAIN 34456 us state=1
+STALL_MAIN 34580 us state=1
+STALL_MAIN 34583 us state=1
+STALL_MAIN 35819 us state=1
+STALL_MAIN 34945 us state=1
+STALL_MAIN 30909 us state=1
+STALL_MAIN 33116 us state=1
+STALL_MAIN 34127 us state=1
+STALL_MAIN 34622 us state=1
+STALL_MAIN 32688 us state=1
+STALL_MAIN 33664 us state=1
+STALL_MAIN 32309 us state=1
+STALL_MAIN 34741 us state=1
+STALL_MAIN 34999 us state=1
+STALL_MAIN 35559 us state=1
+STALL_MAIN 33540 us state=1
+STALL_MAIN 35412 us state=1
+STALL_MAIN 33424 us state=1
+STALL_MAIN 34619 us state=1
+STALL_MAIN 34695 us state=1
+STALL_MAIN 36736 us state=1
+STALL_MAIN 33101 us state=1
+STALL_MAIN 34104 us state=1
+STALL_MAIN 37359 us state=1
+STALL_MAIN 34803 us state=1
+STALL_MAIN 35616 us state=1
+STALL_MAIN 35965 us state=1
+STALL_MAIN 35880 us state=1
+STALL_MAIN 35627 us state=1
+STALL_MAIN 35878 us state=1
+STALL_MAIN 35333 us state=1
+STALL_MAIN 36102 us state=1
+STALL_MAIN 36346 us state=1
+STALL_MAIN 34912 us state=1
+STALL_MAIN 36081 us state=1
+STALL_MAIN 35337 us state=1
+STALL_MAIN 35827 us state=1
+STALL_MAIN 36953 us state=1
+STALL_MAIN 35069 us state=1
+STALL_MAIN 36434 us state=1
+STALL_MAIN 36358 us state=1
+STALL_MAIN 34166 us state=1
+STALL_MAIN 34358 us state=1
+STALL_MAIN 34620 us state=1
+STALL_MAIN 34872 us state=1
+STALL_MAIN 34817 us state=1
+STALL_MAIN 33500 us state=1
+STALL_MAIN 35520 us state=1
+STALL_MAIN 36696 us state=1
+STALL_MAIN 35100 us state=1
+STALL_MAIN 34499 us state=1
+STALL_MAIN 34018 us state=1
+STALL_MAIN 34171 us state=1
+STALL_MAIN 34640 us state=1
+STALL_MAIN 34297 us state=1
+STALL_MAIN 35398 us state=1
+STALL_MAIN 35090 us state=1
+STALL_MAIN 34790 us state=1
+STALL_MAIN 34400 us state=1
+STALL_MAIN 35174 us state=1
+STALL_MAIN 35255 us state=1
+STALL_MAIN 35770 us state=1
+STALL_MAIN 36063 us state=1
+STALL_MAIN 33838 us state=1
+STALL_MAIN 35422 us state=1
+STALL_MAIN 33493 us state=1
+STALL_MAIN 35698 us state=1
+STALL_MAIN 34996 us state=1
+STALL_MAIN 34299 us state=1
+STALL_MAIN 35101 us state=1
+STALL_MAIN 36497 us state=1
+STALL_MAIN 36024 us state=1
+STALL_MAIN 25919 us state=1
+STALL_MAIN 35162 us state=1
+STALL_MAIN 34714 us state=1
+STALL_MAIN 35787 us state=1
+STALL_MAIN 36280 us state=1
+STALL_MAIN 35180 us state=1
+STALL_MAIN 35402 us state=1
+STALL_MAIN 36980 us state=1
+STALL_MAIN 22844 us state=1
+STALL_MAIN 35764 us state=1
+STALL_MAIN 36779 us state=1
+STALL_MAIN 34212 us state=1
+STALL_MAIN 34132 us state=1
+STALL_MAIN 36238 us state=1
+STALL_MAIN 35332 us state=1
+STALL_MAIN 23541 us state=1
+STALL_MAIN 35220 us state=1
+STALL_MAIN 33764 us state=1
+STALL_MAIN 28568 us state=1
+STALL_MAIN 34968 us state=1
+STALL_MAIN 33043 us state=1
+STALL_MAIN 36411 us state=1
+STALL_MAIN 34055 us state=1
+STALL_MAIN 35133 us state=1
+STALL_MAIN 32243 us state=1
+STALL_MAIN 26690 us state=1
+STALL_MAIN 33151 us state=1
+STALL_MAIN 33065 us state=1
+STALL_MAIN 31395 us state=1
+STALL_MAIN 33916 us state=1
+STALL_MAIN 27831 us state=1
+STALL_MAIN 32011 us state=1
+STALL_MAIN 33040 us state=1
+STALL_MAIN 29248 us state=1
+STALL_MAIN 33287 us state=1
+STALL_MAIN 31651 us state=1
+STALL_MAIN 33490 us state=1
+STALL_MAIN 32955 us state=1
+STALL_MAIN 31496 us state=1
+STALL_MAIN 32833 us state=1
+STALL_MAIN 33243 us state=1
+STALL_MAIN 32904 us state=1
+STALL_MAIN 32928 us state=1
+STALL_MAIN 31934 us state=1
+STALL_MAIN 32943 us state=1
+STALL_MAIN 34023 us state=1
+STALL_MAIN 32140 us state=1
+STALL_MAIN 33829 us state=1
+STALL_MAIN 35275 us state=1
+STALL_MAIN 25123 us state=1
+STALL_MAIN 33427 us state=1
+STALL_MAIN 34602 us state=1
+STALL_MAIN 34425 us state=1
+STALL_MAIN 35708 us state=1
+STALL_MAIN 35274 us state=1
+STALL_MAIN 34424 us state=1
+STALL_MAIN 33774 us state=1
+STALL_MAIN 34413 us state=1
+STALL_MAIN 34536 us state=1
+STALL_MAIN 33949 us state=1
+STALL_MAIN 35357 us state=1
+STALL_MAIN 34929 us state=1
+STALL_MAIN 34330 us state=1
+STALL_MAIN 34066 us state=1
+STALL_MAIN 35313 us state=1
+STALL_MAIN 32900 us state=1
+STALL_MAIN 33453 us state=1
+STALL_MAIN 33130 us state=1
+STALL_MAIN 32736 us state=1
+STALL_MAIN 28603 us state=1
+STALL_MAIN 29884 us state=1
+STALL_MAIN 29446 us state=1
+STALL_MAIN 30781 us state=1
+STALL_MAIN 33416 us state=1
+STALL_MAIN 32850 us state=1
+STALL_MAIN 33163 us state=1
+STALL_MAIN 32778 us state=1
+STALL_MAIN 32758 us state=1
+STALL_MAIN 31446 us state=1
+STALL_MAIN 31805 us state=1
+STALL_MAIN 33254 us state=1
+STALL_MAIN 30143 us state=1
+STALL_MAIN 35231 us state=1
+STALL_MAIN 33226 us state=1
+STALL_MAIN 35939 us state=1
+STALL_MAIN 36134 us state=1
+STALL_MAIN 35930 us state=1
+STALL_MAIN 38444 us state=1
+STALL_MAIN 34576 us state=1
+STALL_MAIN 34043 us state=1
+STALL_MAIN 33913 us state=1
+STALL_MAIN 33617 us state=1
+STALL_MAIN 33670 us state=1
+STALL_MAIN 33126 us state=1
+STALL_MAIN 33117 us state=1
+STALL_MAIN 35592 us state=1
+STALL_MAIN 34017 us state=1
+STALL_MAIN 34017 us state=1
+STALL_MAIN 35049 us state=1
+STALL_MAIN 33501 us state=1
+STALL_MAIN 34857 us state=1
+STALL_MAIN 34737 us state=1
+STALL_MAIN 35086 us state=1
+STALL_MAIN 24180 us state=1
+STALL_MAIN 35108 us state=1
+STALL_MAIN 34929 us state=1
+STALL_MAIN 35149 us state=1
+STALL_MAIN 35221 us state=1
+STALL_MAIN 34954 us state=1
+STALL_MAIN 35302 us state=1
+STALL_MAIN 31927 us state=1
+STALL_MAIN 34673 us state=1
+STALL_MAIN 33037 us state=1
+STALL_MAIN 35689 us state=1
+STALL_MAIN 35718 us state=1
+STALL_MAIN 35927 us state=1
+STALL_MAIN 33809 us state=1
+STALL_MAIN 33836 us state=1
+STALL_MAIN 30599 us state=1
+STALL_MAIN 34396 us state=1
+STALL_MAIN 34769 us state=1
+STALL_MAIN 33089 us state=1
+STALL_MAIN 34597 us state=1
+STALL_MAIN 34276 us state=1
+STALL_MAIN 33905 us state=1
+STALL_MAIN 34437 us state=1
+STALL_MAIN 34359 us state=1
+STALL_MAIN 34398 us state=1
+STALL_MAIN 34590 us state=1
+STALL_MAIN 33476 us state=1
+STALL_MAIN 35376 us state=1
+STALL_MAIN 35099 us state=1
+STALL_MAIN 34709 us state=1
+STALL_MAIN 35767 us state=1
+STALL_MAIN 34487 us state=1
+STALL_MAIN 34946 us state=1
+STALL_MAIN 35361 us state=1
+STALL_MAIN 35045 us state=1
+STALL_MAIN 34941 us state=1
+STALL_MAIN 35541 us state=1
+STALL_MAIN 35294 us state=1
+STALL_MAIN 36851 us state=1
+STALL_MAIN 34871 us state=1
+STALL_MAIN 33821 us state=1
+STALL_MAIN 35262 us state=1
+STALL_MAIN 35163 us state=1
+STALL_MAIN 35224 us state=1
+STALL_MAIN 35930 us state=1
+STALL_MAIN 34938 us state=1
+STALL_MAIN 33288 us state=1
+STALL_MAIN 34314 us state=1
+STALL_MAIN 34698 us state=1
+STALL_MAIN 35074 us state=1
+STALL_MAIN 35986 us state=1
+STALL_MAIN 31445 us state=1
+STALL_MAIN 35515 us state=1
+STALL_MAIN 36945 us state=1
+STALL_MAIN 36323 us state=1
+STALL_MAIN 34559 us state=1
+STALL_MAIN 34351 us state=1
+STALL_MAIN 34672 us state=1
+STALL_MAIN 33984 us state=1
+STALL_MAIN 33936 us state=1
+STALL_MAIN 29291 us state=1
+STALL_MAIN 34518 us state=1
+STALL_MAIN 35215 us state=1
+STALL_MAIN 35551 us state=1
+STALL_MAIN 35398 us state=1
+STALL_MAIN 35704 us state=1
+STALL_MAIN 35583 us state=1
+STALL_MAIN 24265 us state=1
+STALL_MAIN 34713 us state=1
+STALL_MAIN 33824 us state=1
+STALL_MAIN 34482 us state=1
+STALL_MAIN 32897 us state=1
+STALL_MAIN 34283 us state=1
+STALL_MAIN 35224 us state=1
+STALL_MAIN 20804 us state=1
+STALL_MAIN 24103 us state=1
+STALL_MAIN 30056 us state=1
+STALL_MAIN 33366 us state=1
+STALL_MAIN 33292 us state=1
+STALL_MAIN 31527 us state=1
+STALL_MAIN 31754 us state=1
+STALL_MAIN 31491 us state=1
+STALL_MAIN 30279 us state=1
+STALL_MAIN 29153 us state=1
+STALL_MAIN 33711 us state=1
+STALL_MAIN 32180 us state=1
+STALL_MAIN 32740 us state=1
+STALL_MAIN 33468 us state=1
+STALL_MAIN 31428 us state=1
+STALL_MAIN 32114 us state=1
+STALL_MAIN 31905 us state=1
+STALL_MAIN 33918 us state=1
+STALL_MAIN 31522 us state=1
+STALL_MAIN 26848 us state=1
+STALL_MAIN 34573 us state=1
+STALL_MAIN 32314 us state=1
+STALL_MAIN 28739 us state=1
+STALL_MAIN 33456 us state=1
+STALL_MAIN 31985 us state=1
+STALL_MAIN 29572 us state=1
+STALL_MAIN 33625 us state=1
+STALL_MAIN 36297 us state=1
+STALL_MAIN 31425 us state=1
+STALL_MAIN 28980 us state=1
+STALL_MAIN 34564 us state=1
+STALL_MAIN 35090 us state=1
+STALL_MAIN 35855 us state=1
+STALL_MAIN 34268 us state=1
+STALL_MAIN 34681 us state=1
+STALL_MAIN 33481 us state=1
+STALL_MAIN 33678 us state=1
+STALL_MAIN 33569 us state=1
+STALL_MAIN 34702 us state=1
+STALL_MAIN 33504 us state=1
+STALL_MAIN 35317 us state=1
+STALL_MAIN 37145 us state=1
+STALL_MAIN 34679 us state=1
+STALL_MAIN 33090 us state=1
+STALL_MAIN 28365 us state=1
+STALL_MAIN 26030 us state=1
+STALL_MAIN 30561 us state=1
+STALL_MAIN 32516 us state=1
+STALL_MAIN 32623 us state=1
+STALL_MAIN 31990 us state=1
+STALL_MAIN 33542 us state=1
+STALL_MAIN 31494 us state=1
+STALL_MAIN 24561 us state=1
+STALL_MAIN 31451 us state=1
+STALL_MAIN 30342 us state=1
+STALL_MAIN 32699 us state=1
+STALL_MAIN 32479 us state=1
+STALL_MAIN 31088 us state=1
+STALL_MAIN 32274 us state=1
+STALL_MAIN 31402 us state=1
+STALL_MAIN 31079 us state=1
+STALL_MAIN 31759 us state=1
+STALL_MAIN 29765 us state=1
+STALL_MAIN 28654 us state=1
+STALL_MAIN 25689 us state=1
+STALL_MAIN 33879 us state=1
+STALL_MAIN 33813 us state=1
+STALL_MAIN 32639 us state=1
+STALL_MAIN 34207 us state=1
+STALL_MAIN 35061 us state=1
+STALL_MAIN 34610 us state=1
+STALL_MAIN 33498 us state=1
+STALL_MAIN 31075 us state=1
+STALL_MAIN 33821 us state=1
+STALL_MAIN 33297 us state=1
+STALL_MAIN 35022 us state=1
+STALL_MAIN 36530 us state=1
+STALL_MAIN 35520 us state=1
+STALL_MAIN 35335 us state=1
+STALL_MAIN 33807 us state=1
+STALL_MAIN 35413 us state=1
+STALL_MAIN 34360 us state=1
+STALL_MAIN 35866 us state=1
+STALL_MAIN 35396 us state=1
+STALL_MAIN 36086 us state=1
+STALL_MAIN 33632 us state=1
+STALL_MAIN 34493 us state=1
+STALL_MAIN 35503 us state=1
+STALL_MAIN 32907 us state=1
+STALL_MAIN 36355 us state=1
+STALL_MAIN 35381 us state=1
+STALL_MAIN 35818 us state=1
+STALL_MAIN 35571 us state=1
+STALL_MAIN 34617 us state=1
+STALL_MAIN 34410 us state=1
+STALL_MAIN 34013 us state=1
+STALL_MAIN 34378 us state=1
+STALL_MAIN 35234 us state=1
+STALL_MAIN 35109 us state=1
+STALL_MAIN 34915 us state=1
+STALL_MAIN 36572 us state=1
+STALL_MAIN 33518 us state=1
+STALL_MAIN 34732 us state=1
+STALL_MAIN 34963 us state=1
+STALL_MAIN 33327 us state=1
+STALL_MAIN 34667 us state=1
+STALL_MAIN 35356 us state=1
+STALL_MAIN 34826 us state=1
+STALL_MAIN 35457 us state=1
+STALL_MAIN 35881 us state=1
+STALL_MAIN 35111 us state=1
+STALL_MAIN 34102 us state=1
+STALL_MAIN 34471 us state=1
+STALL_MAIN 36076 us state=1
+STALL_MAIN 35783 us state=1
+STALL_MAIN 35950 us state=1
+STALL_MAIN 36198 us state=1
+STALL_MAIN 35846 us state=1
+STALL_MAIN 35916 us state=1
+STALL_MAIN 35617 us state=1
+STALL_MAIN 36086 us state=1
+STALL_MAIN 35068 us state=1
+STALL_MAIN 33986 us state=1
+STALL_MAIN 33874 us state=1
+STALL_MAIN 33619 us state=1
+STALL_MAIN 34046 us state=1
+STALL_MAIN 36655 us state=1
+STALL_MAIN 34773 us state=1
+STALL_MAIN 35544 us state=1
+STALL_MAIN 35611 us state=1
+STALL_MAIN 36117 us state=1
+
+=== main-thread off-CPU duration hist (us) ===
+@offcpu_us:
+[1]                   46 |                                                    |
+[2, 4)              2310 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |
+[4, 8)              2447 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[8, 16)             1466 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                     |
+[16, 32)             335 |@@@@@@@                                             |
+[32, 64)             101 |@@                                                  |
+[64, 128)             40 |                                                    |
+[128, 256)            77 |@                                                   |
+[256, 512)            20 |                                                    |
+[512, 1K)             20 |                                                    |
+[1K, 2K)              14 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               0 |                                                    |
+[8K, 16K)              0 |                                                    |
+[16K, 32K)           173 |@@@                                                 |
+[32K, 64K)           415 |@@@@@@@@                                            |
+
+
+=== switch-out counts by prev_state (R=0 S=1 D=2 ...) ===
+@by_state[2]: 68
+@by_state[256]: 154
+@by_state[0]: 674
+@by_state[1]: 6568
+
+=== stall totals (>=1ms blocks) ===
+@stall_us_total: 19572540
+@stall_n: 604
+
+=== stall time by thread state (us) ===
+@stall_state_us[2]: 6229
+@stall_state_us[1]: 19566311
+
+=== stall time by blocking stack (us, top 20) ===
+@stall_stack_us[
+        0x7fef9d9f6c30
+        0
+]: 1649
+@stall_stack_us[
+        0x7fef9d2b4640
+        0xea00038ffbf2274
+        0x7fef9ca02410
+        0x8348078948011124
+]: 1809
+@stall_stack_us[
+        0x7fef9c71f190
+]: 2771
+@stall_stack_us[
+        syscall+29
+]: 11676
+@stall_stack_us[
+        0x7fef9bab61f2
+]: 19554635
+
+
+@by_state[2]: 68
+@by_state[256]: 154
+@by_state[0]: 674
+@by_state[1]: 6568
+@offcpu_us:
+[1]                   46 |                                                    |
+[2, 4)              2310 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |
+[4, 8)              2447 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[8, 16)             1466 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                     |
+[16, 32)             335 |@@@@@@@                                             |
+[32, 64)             101 |@@                                                  |
+[64, 128)             40 |                                                    |
+[128, 256)            77 |@                                                   |
+[256, 512)            20 |                                                    |
+[512, 1K)             20 |                                                    |
+[1K, 2K)              14 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               0 |                                                    |
+[8K, 16K)              0 |                                                    |
+[16K, 32K)           173 |@@@                                                 |
+[32K, 64K)           415 |@@@@@@@@                                            |
+
+@stall_n: 604
+@stall_stack_us[
+        0x7fef9d9f6c30
+        0
+]: 1649
+@stall_stack_us[
+        0x7fef9d2b4640
+        0xea00038ffbf2274
+        0x7fef9ca02410
+        0x8348078948011124
+]: 1809
+@stall_stack_us[
+        0x7fef9c71f190
+]: 2771
+@stall_stack_us[
+        syscall+29
+]: 11676
+@stall_stack_us[
+        0x7fef9bab61f2
+]: 19554635
+@stall_state_us[2]: 6229
+@stall_state_us[1]: 19566311
+@stall_us_total: 19572540

@@ -1,0 +1,72 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:17:12-42: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:37:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:64:12-38: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:17:12-42: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:37:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:64:12-38: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:17:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:17:20-34: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @gc_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:37:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:37:20-37: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @boehm_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:64:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @stw_start) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:64:20-30: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @stw_start) / 1000;
+                   ~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:18:5-28: WARNING: Return value discarded.
+    delete(@gc_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/mono_gc.bt:38:5-31: WARNING: Return value discarded.
+    delete(@boehm_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+17:03:23 @little_n: 93
+17:03:28 @little_n: 176
+17:03:33 @little_n: 276
+STW_PAUSE 7459 us
+17:03:38 @little_n: 49850
+17:03:43 @little_n: 49949
+
+=== mono_gc_collect latency us ===
+
+=== GC_gcollect latency us ===
+
+=== stop-the-world pause us (main-thread freeze) ===
+@stw_us:
+[1K, 2K)               1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+
+@stw_sum: 8904
+@stw_n: 2
+
+
+@little_n: 50050
+@stw_n: 2
+@stw_start: 0
+@stw_sum: 8904
+@stw_us:
+[1K, 2K)               1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+

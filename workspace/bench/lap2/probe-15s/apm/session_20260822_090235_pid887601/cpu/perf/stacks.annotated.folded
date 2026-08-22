@@ -1,0 +1,206 @@
+[UnityPlayer.so] 3263
+[jit];[UnityPlayer.so] 2003
+[libc.so.6] 635
+[libmonobdwgc-2.0.so] 251
+[LOCK] ___pthread_cond_timedwait64;[LOCK] __pthread_cond_wait_common 132
+[steamclient.so] 96
+[jit];[libmonobdwgc-2.0.so] 78
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[libmonobdwgc-2.0.so] 65
+__pthread_cleanup_pop 58
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map] 54
+mono_thread_info_uninstall_interrupt 48
+[UnityPlayer.so];[jit] 48
+usleep 47
+[perf-887601.map] 46
+[jit];[LOCK] ___pthread_cond_wait;[LOCK] __pthread_cond_wait_common 43
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 43
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[LOCK] ___pthread_mutex_unlock;[LOCK] __pthread_mutex_unlock_usercnt;lll_mutex_unlock_optimized 43
+mono_threads_exit_gc_safe_region_internal 41
+GC_suspend_handler;__new_sem_post 41
+[jit];[libc.so.6] 39
+[LOCK] ___pthread_mutex_unlock;[LOCK] __pthread_mutex_unlock_usercnt;lll_mutex_unlock_optimized 39
+__clock_nanosleep;internal_syscall_cancel 36
+[LOCK] ___pthread_cond_timedwait64;[LOCK] __pthread_cond_wait_common;__condvar_confirm_wakeup 30
+__nanosleep 27
+[jit];[LOCK] ___pthread_cond_wait;[LOCK] __pthread_cond_wait_common;__condvar_confirm_wakeup 25
+__errno_location 25
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[LOCK] ___pthread_mutex_trylock 24
+___pthread_getspecific 23
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[GC] GC_dirty_inner 23
+GC_suspend_handler;__pthread_setcancelstate 22
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 20
+[jit];[jit];[jit];[jit];[libmonobdwgc-2.0.so] 20
+[jit];[steamclient.so];[jit];[steamclient.so] 17
+[jit];[jit];[UnityPlayer.so] 17
+[LOCK] ___pthread_mutex_lock;lll_mutex_lock_optimized 17
+epoll_wait;syscall_cancel;internal_syscall_cancel 16
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map] 16
+[jit];[steamclient.so];[jit];epoll_wait;syscall_cancel;internal_syscall_cancel 15
+[jit];[jit];[jit];[libmonobdwgc-2.0.so] 15
+[libc.so.6];[jit] 14
+[jit];__pthread_cleanup_pop 13
+[perf-887601.map];[perf-887601.map] 13
+GC_suspend_handler;GC_suspend_handler_inner 13
+[LOCK] ___pthread_mutex_lock 11
+[jit];[UnityPlayer.so];[jit];[UnityPlayer.so] 11
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 10
+__clock_gettime;__vdso_clock_gettime 10
+[jit];[steamclient.so] 10
+GC_mark_from 10
+__poll;syscall_cancel;internal_syscall_cancel 9
+syscall;[jit] 9
+[GC] GC_dirty_inner 9
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 9
+[LOCK] ___pthread_cond_timedwait64;[LOCK] __pthread_cond_wait_common;__condvar_load_g1_start_relaxed;__atomic_wide_counter_load_relaxed 8
+[LOCK] ___pthread_mutex_trylock 8
+GC_suspend_handler;[libc.so.6];[jit];[jit] 8
+[libc.so.6];[jit];[jit];[jit];[jit];[jit] 6
+[jit];mono_thread_info_uninstall_interrupt 6
+nanosleep@plt 6
+GC_suspend_handler;GC_restart_handler;[jit] 6
+[jit];___pthread_getspecific 5
+epoll_wait;syscall_cancel;internal_syscall_cancel;__clock_gettime 5
+__libc_free 5
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[libc.so.6] 5
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[GC] GC_dirty_inner 4
+[jit];[LOCK] ___pthread_cond_timedwait64 4
+[libc.so.6];[jit];[jit];[jit];[jit] 4
+GC_suspend_handler;[libc.so.6];[jit];[jit];[jit] 4
+[jit];__clock_gettime;__vdso_clock_gettime 4
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[UnityPlayer.so] 4
+__vdso_gettimeofday 3
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libc.so.6];[jit] 3
+[jit];[LOCK] ___pthread_mutex_unlock 3
+syscall;[jit];[jit];[jit] 3
+[jit];[LOCK] ___pthread_cond_timedwait64;[LOCK] __pthread_cond_wait_common 3
+GC_malloc_kind_global 3
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[GC] GC_dirty_inner 3
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libmonobdwgc-2.0.so] 3
+[libc.so.6];[jit];[jit];[jit] 3
+[jit];epoll_wait;syscall_cancel;internal_syscall_cancel;calloc@plt 3
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];mono_metadata_type_hash 3
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];mono_g_hash_table_lookup_extended 3
+mono_metadata_type_equal 3
+[LOCK] ___pthread_cond_timedwait64;[LOCK] __pthread_cond_wait_common;[jit] 2
+__clock_nanosleep;internal_syscall_cancel;[jit] 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so] 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libc.so.6] 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libmonobdwgc-2.0.so] 2
+[UnityPlayer.so];[jit];[jit] 2
+[jit];[LOCK] ___pthread_cond_wait;[LOCK] __pthread_cond_wait_common;__condvar_load_g1_start_relaxed;__atomic_wide_counter_load_relaxed 2
+[libmonobdwgc-2.0.so];__libc_read;syscall_cancel;internal_syscall_cancel 2
+[libmonobdwgc-2.0.so];mono_threads_exit_gc_safe_region_internal 2
+[jit];[LOCK] ___pthread_mutex_unlock;[LOCK] __pthread_mutex_unlock_usercnt;lll_mutex_unlock_optimized 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 2
+[steamclient.so];[steamclient.so] 2
+[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so] 2
+[UnityPlayer.so];[UnityPlayer.so] 2
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 2
+[jit];__libc_read 2
+GC_suspend_handler;__pthread_self 2
+GC_suspend_handler;[libc.so.6];[jit];[jit];[jit];[jit] 2
+GC_suspend_handler;GC_restart_handler 2
+GC_suspend_handler;[libc.so.6] 2
+GC_suspend_handler 2
+[LOCK] ___pthread_mutex_unlock 2
+[jit];[jit];[jit];[jit];[UnityPlayer.so] 2
+[jit];[LOCK] pthread_mutex_unlock@plt 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[GC] GC_dirty_inner 2
+[UnityPlayer.so];__vdso_gettimeofday 2
+[jit];[libc.so.6];[jit] 2
+[LOCK] ___pthread_mutex_unlock;[LOCK] __pthread_mutex_unlock_usercnt 2
+[steamclient.so];__libc_malloc 2
+[jit];[LOCK] ___pthread_mutex_lock;lll_mutex_lock_optimized 2
+[jit];[jit];[libmonobdwgc-2.0.so] 2
+[jit];[jit];[libc.so.6] 2
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[GC] GC_dirty_inner 2
+GC_gcj_vector_mark_proc 2
+__pthread_setcancelstate 2
+[LOCK] ___pthread_cond_timedwait64 1
+[jit];[steamclient.so];[LOCK] ___pthread_mutex_unlock;[LOCK] __pthread_mutex_unlock_usercnt;lll_mutex_unlock_optimized 1
+syscall;[jit];[jit];[jit];[jit] 1
+[jit];[UnityPlayer.so];[jit];[jit];[jit];[jit] 1
+[jit];[LOCK] ___pthread_cond_wait;[LOCK] __pthread_cond_wait_common;[jit] 1
+[jit];[perf-887601.map] 1
+[jit];[jit];[jit];[UnityPlayer.so] 1
+[libc.so.6];[jit];[jit] 1
+[jit];[UnityPlayer.so];[jit];[UnityPlayer.so];[UnityPlayer.so] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[perf-887601.map] 1
+[libc.so.6];[jit];[jit];[jit];[jit];[jit];[jit] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[LOCK] ___pthread_mutex_lock 1
+[UnityPlayer.so];0c96fb01b070c5126b22b8685cc3e444;0c96fb01b070c5126b22b8685cc3e444_avx2;UnityEngine.Animations.Rigging.AnimationRuntimeUtils, Unity.Animation.Rigging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.SolveTwoBoneIK;UnityEngine.Animations.TransformStreamHandle, UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.GetRotation 1
+[jit];[LOCK] ___pthread_cond_wait;[LOCK] __pthread_cond_wait_common;__condvar_confirm_wakeup;[jit] 1
+[UnityPlayer.so];[jit];[jit];[jit] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 1
+__tls_get_addr 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];__tls_get_addr 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libmonobdwgc-2.0.so];[jit] 1
+[jit];[jit];[LOCK] ___pthread_mutex_trylock 1
+__errno_location;[jit] 1
+GC_suspend_handler;__pthread_setcancelstate;[jit] 1
+GC_suspend_handler;[libc.so.6];[jit] 1
+[jit];[libc.so.6];[jit];[jit] 1
+GC_suspend_handler;__sigsuspend;syscall_cancel 1
+[jit];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map] 1
+[UnityPlayer.so];[jit];[jit];[jit];[jit] 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[libmonobdwgc-2.0.so] 1
+epoll_wait;syscall_cancel;internal_syscall_cancel;__clock_gettime;__vdso_clock_gettime 1
+[jit];epoll_wait;syscall_cancel;internal_syscall_cancel;__clock_gettime 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[jit] 1
+[LOCK] ___pthread_cond_wait 1
+__clock_gettime 1
+[UnityPlayer.so];[jit];[jit];[jit];[jit];[jit];[jit] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[perf-887601.map];[perf-887601.map];__sched_yield;[jit] 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[perf-887601.map];__vdso_gettimeofday 1
+___pthread_setspecific 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];__clock_gettime;__vdso_clock_gettime 1
+[jit];[steamclient.so];[jit];[jit];calloc@plt 1
+[jit];epoll_wait;syscall_cancel;internal_syscall_cancel;__vdso_clock_gettime 1
+syscall;[jit];[jit];[jit];[jit];[jit] 1
+usleep;[jit] 1
+[jit];mono_runtime_invoke_array;[UnityPlayer.so] 1
+[jit];epoll_wait;syscall_cancel;internal_syscall_cancel;__clock_gettime;__vdso_clock_gettime 1
+__pthread_cleanup_pop;[jit] 1
+__nanosleep;[jit] 1
+__libc_calloc 1
+syscall 1
+freeaddrinfo@plt 1
+syscall;[jit];[jit] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[steamclient.so] 1
+[jit];GC_maybe_gc 1
+[jit];__pthread_cleanup_pop;[jit] 1
+[jit];pthread_self@plt 1
+[jit];__libc_read;syscall_cancel;internal_syscall_cancel 1
+__stack_chk_fail@plt 1
+[jit];[UnityPlayer.so];[jit];[LOCK] ___pthread_mutex_lock 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];[perf-887601.map];[perf-887601.map];[UnityPlayer.so] 1
+[libmonobdwgc-2.0.so];[jit];[jit];[jit];[jit] 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map] 1
+[libmonobdwgc-2.0.so];[jit];[jit] 1
+[jit];[jit];mono_thread_info_set_flags 1
+[steamclient.so];[jit] 1
+[jit];dup@plt 1
+[jit];[LOCK] ___pthread_cond_signal;[LOCK] futex_wake;[jit];[jit];[jit] 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[GC] GC_dirty_inner 1
+[jit];[libmonobdwgc-2.0.so];[libmonobdwgc-2.0.so];[perf-887601.map];___pthread_getspecific 1
+[jit];[UnityPlayer.so];[jit];[jit];[jit];[UnityPlayer.so] 1
+[jit];[UnityPlayer.so];[jit] 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[UnityPlayer.so];[jit];[jit];[jit];[jit];[jit];[jit] 1
+[jit];[jit];[jit];[jit];mono_g_hash_table_lookup 1
+[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[jit];[LOCK] ___pthread_mutex_unlock 1
+[jit];__clock_gettime 1
+[steamclient.so];[jit];[jit];[jit];[jit] 1
+[jit];[LOCK] ___pthread_cond_wait 1
+[jit];__vdso_clock_gettime 1
+mono_array_element_size 1
+GC_push_next_marked_uncollectable 1
+GC_collect_a_little_inner 1
+GC_collect_a_little;[jit] 1
+GC_header_cache_miss 1
+GC_base 1
+GC_mark_some 1
+[jit];[libc.so.6];[jit];[jit];[jit];[jit];[jit] 1
+epoll_wait;syscall_cancel;internal_syscall_cancel;calloc@plt 1
+[jit];mono_runtime_invoke_array;[GC] GC_dirty_inner 1
+[jit];[steamclient.so];[steamclient.so] 1

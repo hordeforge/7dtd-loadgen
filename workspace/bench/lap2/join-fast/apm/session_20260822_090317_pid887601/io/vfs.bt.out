@@ -1,0 +1,131 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:15:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:15:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:39:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:39:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:62:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:62:20-37: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:16:5-27: WARNING: Return value discarded.
+    delete(@r_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:40:5-27: WARNING: Return value discarded.
+    delete(@w_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/join-fast/apm/session_20260822_090317_pid887601/bt/vfs.bt:63:5-31: WARNING: Return value discarded.
+    delete(@fsync_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+17:03:24 @open_n: 130
+17:03:29 @open_n: 134
+17:03:34 @open_n: 136
+17:03:39 @open_n: 142
+17:03:44 @open_n: 147
+
+=== vfs_read latency us ===
+
+=== vfs_write latency us ===
+
+=== vfs_fsync latency us ===
+
+=== slow read stacks (>=1ms) ===
+
+=== slow write stacks (>=1ms) ===
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntPostMailbox.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntToilet01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShelvesWoodFullA.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntLockersShortClosed.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoveOldVer2Open.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctHalfRampCap.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctRampTop.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWoodBurningStove.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalMaster.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoreShelfSingleBottomFood01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoreShelfSingleBottomFood02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalNoUpgradeMaster.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallEmpty02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallArmor.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntMicrowaveOvenVer2Open.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cobweb.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShippingCrateShamway.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctHalfBroken.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallEmpty01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/controlPanelBase07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed03.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWoodWritableCrate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed06.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWaterCoolerBottle.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoveOldVer1Closed.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/curtainDrapesFullTopDirtyWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShippingCrateBookstore.png]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.0.7rg]: 12
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.0.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.0.7rg]: 29
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.1.7rg]: 32
+
+
+@open_n: 153
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntPostMailbox.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntToilet01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShelvesWoodFullA.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntLockersShortClosed.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoveOldVer2Open.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctHalfRampCap.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctRampTop.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWoodBurningStove.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalMaster.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoreShelfSingleBottomFood01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoreShelfSingleBottomFood02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalNoUpgradeMaster.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallEmpty02.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallArmor.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntMicrowaveOvenVer2Open.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cobweb.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShippingCrateShamway.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/corrugatedMetalAirDuctHalfBroken.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntGunRackSmallEmpty01.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/controlPanelBase07.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed03.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWoodWritableCrate.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/concreteDestroyed06.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntWaterCoolerBottle.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntStoveOldVer1Closed.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/curtainDrapesFullTopDirtyWhite.png]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/ItemIcons/cntShippingCrateBookstore.png]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.0.7rg]: 12
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.0.7rg]: 26
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.0.7rg]: 29
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.1.7rg]: 32

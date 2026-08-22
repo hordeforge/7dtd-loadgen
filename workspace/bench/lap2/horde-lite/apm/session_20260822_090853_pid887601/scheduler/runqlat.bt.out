@@ -1,0 +1,52 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/runqlat.bt:20:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/runqlat.bt:20:20-40: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/runqlat.bt:21:5-34: WARNING: Return value discarded.
+    delete(@wake[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== run-queue latency (us) for 7DaysToDieServe ===
+0-10us ideal; multi-ms = CPU contention or affinity issues
+@runqlat_us:
+[0]                 8062 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3428 |@@@@@@@@@@@@@@@@@@@@@@                              |
+[2, 4)              1018 |@@@@@@                                              |
+[4, 8)               121 |                                                    |
+[8, 16)               80 |                                                    |
+[16, 32)              35 |                                                    |
+[32, 64)              28 |                                                    |
+[64, 128)             28 |                                                    |
+[128, 256)            31 |                                                    |
+[256, 512)            16 |                                                    |
+[512, 1K)              6 |                                                    |
+[1K, 2K)               0 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               1 |                                                    |
+
+
+
+@runqlat_us:
+[0]                 8062 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3428 |@@@@@@@@@@@@@@@@@@@@@@                              |
+[2, 4)              1018 |@@@@@@                                              |
+[4, 8)               121 |                                                    |
+[8, 16)               80 |                                                    |
+[16, 32)              35 |                                                    |
+[32, 64)              28 |                                                    |
+[64, 128)             28 |                                                    |
+[128, 256)            31 |                                                    |
+[256, 512)            16 |                                                    |
+[512, 1K)              6 |                                                    |
+[1K, 2K)               0 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)               1 |                                                    |
+

@@ -28,3 +28,12 @@ workspace/comparison/*/*/serverconfig.xml
 # compact cost snapshot travels in surface.json (apmStock) + REPORT.md.
 workspace/comparison/*/*/apm/
 workspace/comparison/run.log
+
+# bench-stock lane: keep the small reports + per-scenario run evidence, ignore
+# the server runtime (userdata, logs, APM session internals are regenerable).
+workspace/bench/*/userdata/
+workspace/bench/*/boot.log
+workspace/bench/*/apm/
+workspace/bench/lap*/userdata/
+workspace/bench/lap*/boot.log
+workspace/bench/lap*/apm/

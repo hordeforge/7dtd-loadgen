@@ -1,0 +1,19 @@
+# started on Sat Aug 22 17:07:18 2026
+
+
+ Performance counter stats for process id '887601':
+
+   109,929,078,594      cycles:u                                                                (60.61%)
+   188,014,266,261      instructions:u                                                          (60.84%)
+    28,886,940,511      branches:u                                                              (59.62%)
+       203,827,541      branch-misses:u                                                         (59.24%)
+     3,311,269,921      cache-references:u                                                      (59.46%)
+       465,139,304      cache-misses:u                                                          (59.19%)
+                 0      context-switches:u                                                    
+                 0      cpu-migrations:u                                                      
+            95,055      page-faults:u                                                         
+         24,915.60 msec task-clock:u                                                          
+         24,571.80 msec cpu-clock:u                                                           
+
+      30.003161346 seconds time elapsed
+

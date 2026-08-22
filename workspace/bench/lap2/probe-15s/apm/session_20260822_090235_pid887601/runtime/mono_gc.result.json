@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "mono_gc",
+  "layer": "runtime_gc",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 31.528241641935892,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 66,
+  "artifacts": [
+    "runtime/mono_gc.bt.out"
+  ],
+  "message": "expected timeout"
+}

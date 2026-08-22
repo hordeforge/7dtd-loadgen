@@ -1,0 +1,1238 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 8K of event 'cpu/cycles/Pu'
+# Event count (approx.): 34956919109
+#
+# Children      Self       Samples  Command          Shared Object           Symbol                                       
+# ........  ........  ............  ...............  ......................  .............................................
+#
+    18.81%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--5.57%--0x7feefb9acc12
+               |          
+               |--4.41%--___pthread_mutex_unlock (inlined)
+               |          __pthread_mutex_unlock_usercnt (inlined)
+               |          lll_mutex_unlock_optimized (inlined)
+               |          
+               |--2.76%--0
+               |          |          
+               |           --1.19%--0x130000
+               |          
+               |--1.92%--0x7feefba0f6a9
+               |          
+               |--1.30%--0x1
+               |          |          
+               |           --1.04%--0x130000
+               |          
+                --1.20%--GC_continue_reclaim
+
+    14.67%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582be808500
+            |
+            ---0x5582be808500
+               0x7feefb9e578f
+               0x7feefb846428
+               |          
+               |--7.25%--0x411407a6
+               |          |          
+               |          |--4.79%--0x416ff934
+               |          |          |          
+               |          |           --4.64%--0x413e8368
+               |          |                     |          
+               |          |                      --4.18%--GC_dirty_inner
+               |          |          
+               |           --1.21%--0x7feed0081abb
+               |                     0x7fef9000395b
+               |          
+                --7.14%--0x416f6adf
+                          |          
+                           --6.99%--0x41b87864
+
+    14.67%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9e578f
+            |
+            ---0x7feefb9e578f
+               0x7feefb846428
+               |          
+               |--7.25%--0x411407a6
+               |          |          
+               |          |--4.79%--0x416ff934
+               |          |          |          
+               |          |           --4.64%--0x413e8368
+               |          |                     |          
+               |          |                      --4.18%--GC_dirty_inner
+               |          |          
+               |           --1.21%--0x7feed0081abb
+               |                     0x7fef9000395b
+               |          
+                --7.14%--0x416f6adf
+                          |          
+                           --6.99%--0x41b87864
+
+    14.67%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb846428
+            |
+            ---0x7feefb846428
+               |          
+               |--7.25%--0x411407a6
+               |          |          
+               |          |--4.79%--0x416ff934
+               |          |          |          
+               |          |           --4.64%--0x413e8368
+               |          |                     |          
+               |          |                      --4.18%--GC_dirty_inner
+               |          |          
+               |           --1.21%--0x7feed0081abb
+               |                     0x7fef9000395b
+               |          
+                --7.14%--0x416f6adf
+                          |          
+                           --6.99%--0x41b87864
+
+     8.17%     8.17%            52  7DaysToDieServe  libc.so.6               [.] pthread_mutex_unlock
+            |          
+            |--4.41%--0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x1c00000000000001
+            |          0
+            |          ___pthread_mutex_unlock (inlined)
+            |          __pthread_mutex_unlock_usercnt (inlined)
+            |          lll_mutex_unlock_optimized (inlined)
+            |          
+             --3.76%--___pthread_mutex_unlock (inlined)
+                       |          
+                        --3.76%--__pthread_mutex_unlock_usercnt (inlined)
+                                  lll_mutex_unlock_optimized (inlined)
+
+     8.17%     0.00%             0  7DaysToDieServe  libc.so.6               [.] ___pthread_mutex_unlock (inlined)
+            |
+            ---___pthread_mutex_unlock (inlined)
+               |          
+                --8.17%--__pthread_mutex_unlock_usercnt (inlined)
+                          lll_mutex_unlock_optimized (inlined)
+
+     8.17%     0.00%             0  7DaysToDieServe  libc.so.6               [.] __pthread_mutex_unlock_usercnt (inlined)
+            |
+            ---__pthread_mutex_unlock_usercnt (inlined)
+               lll_mutex_unlock_optimized (inlined)
+
+     8.17%     0.00%             0  7DaysToDieServe  libc.so.6               [.] lll_mutex_unlock_optimized (inlined)
+            |
+            ---lll_mutex_unlock_optimized (inlined)
+
+     7.25%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000411407a6
+            |
+            ---0x411407a6
+               |          
+               |--4.79%--0x416ff934
+               |          |          
+               |           --4.64%--0x413e8368
+               |                     |          
+               |                      --4.18%--GC_dirty_inner
+               |          
+                --1.21%--0x7feed0081abb
+                          0x7fef9000395b
+
+     7.14%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000416f6adf
+            |
+            ---0x416f6adf
+               |          
+                --6.99%--0x41b87864
+
+     6.99%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041b87864
+            |
+            ---0x41b87864
+
+     6.93%     6.93%            39  7DaysToDieServe  libmonobdwgc-2.0.so     [.] GC_dirty_inner
+            |          
+            |--5.73%--0x5582be808500
+            |          0x7feefb9e578f
+            |          0x7feefb846428
+            |          |          
+            |           --5.59%--0x411407a6
+            |                     |          
+            |                      --4.18%--0x416ff934
+            |                                0x413e8368
+            |                                GC_dirty_inner
+            |          
+             --1.20%--GC_dirty_inner
+
+     6.81%     0.00%             0  GenerateChunks   [unknown]               [.] 0x00005582be808500
+            |
+            ---0x5582be808500
+               0x7feefb9e578f
+               0x7feefb846428
+               0x4137da64
+               0x413821e6
+               |          
+                --5.01%--0x41c1c3f7
+                          0x41c24529
+                          |          
+                           --3.88%--0x41c252bc
+                                     |          
+                                      --1.45%--0x41c26e24
+                                                |          
+                                                 --1.14%--0x41c272d0
+
+     6.81%     0.00%             0  GenerateChunks   libmonobdwgc-2.0.so     [.] 0x00007feefb9e578f
+            |
+            ---0x7feefb9e578f
+               0x7feefb846428
+               0x4137da64
+               0x413821e6
+               |          
+                --5.01%--0x41c1c3f7
+                          0x41c24529
+                          |          
+                           --3.88%--0x41c252bc
+                                     |          
+                                      --1.45%--0x41c26e24
+                                                |          
+                                                 --1.14%--0x41c272d0
+
+     6.81%     0.00%             0  GenerateChunks   libmonobdwgc-2.0.so     [.] 0x00007feefb846428
+            |
+            ---0x7feefb846428
+               0x4137da64
+               0x413821e6
+               |          
+                --5.01%--0x41c1c3f7
+                          0x41c24529
+                          |          
+                           --3.88%--0x41c252bc
+                                     |          
+                                      --1.45%--0x41c26e24
+                                                |          
+                                                 --1.14%--0x41c272d0
+
+     6.81%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x000000004137da64
+            |
+            ---0x4137da64
+               0x413821e6
+               |          
+                --5.01%--0x41c1c3f7
+                          0x41c24529
+                          |          
+                           --3.88%--0x41c252bc
+                                     |          
+                                      --1.45%--0x41c26e24
+                                                |          
+                                                 --1.14%--0x41c272d0
+
+     6.81%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x00000000413821e6
+            |
+            ---0x413821e6
+               |          
+                --5.01%--0x41c1c3f7
+                          0x41c24529
+                          |          
+                           --3.88%--0x41c252bc
+                                     |          
+                                      --1.45%--0x41c26e24
+                                                |          
+                                                 --1.14%--0x41c272d0
+
+     6.47%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582be7cede8
+            |
+            ---0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               |          
+                --6.33%--0x5582be7cede8
+                          0x1c00000000000001
+                          0
+                          |          
+                          |--4.41%--___pthread_mutex_unlock (inlined)
+                          |          __pthread_mutex_unlock_usercnt (inlined)
+                          |          lll_mutex_unlock_optimized (inlined)
+                          |          
+                           --1.92%--0x7feefba0f6a9
+
+     6.47%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x1c00000000000001
+            |
+            ---0x1c00000000000001
+               0
+               |          
+               |--4.41%--___pthread_mutex_unlock (inlined)
+               |          __pthread_mutex_unlock_usercnt (inlined)
+               |          lll_mutex_unlock_optimized (inlined)
+               |          
+                --1.92%--0x7feefba0f6a9
+
+     6.46%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x0000000000120000
+            |
+            ---0x120000
+               |          
+               |--2.77%--___pthread_mutex_trylock (inlined)
+               |          
+                --1.01%--0x7feefb9dcfa3
+
+     5.57%     5.57%            25  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001acc12
+            |
+            ---0
+               0x7feefb9acc12
+
+     5.57%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9acc12
+            |
+            ---0x7feefb9acc12
+
+     5.03%     5.03%            25  7DaysToDieServe  libc.so.6               [.] pthread_mutex_trylock
+            |          
+            |--1.50%--___pthread_mutex_trylock (inlined)
+            |          
+             --1.41%--0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x5582c1d8dfc0
+                       0x120000
+                       ___pthread_mutex_trylock (inlined)
+
+     5.03%     0.00%             0  7DaysToDieServe  libc.so.6               [.] ___pthread_mutex_trylock (inlined)
+            |
+            ---___pthread_mutex_trylock (inlined)
+
+     5.01%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c1c3f7
+            |
+            ---0x41c1c3f7
+               0x41c24529
+               |          
+                --3.88%--0x41c252bc
+                          |          
+                           --1.45%--0x41c26e24
+                                     |          
+                                      --1.14%--0x41c272d0
+
+     5.01%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c24529
+            |
+            ---0x41c24529
+               |          
+                --3.88%--0x41c252bc
+                          |          
+                           --1.45%--0x41c26e24
+                                     |          
+                                      --1.14%--0x41c272d0
+
+     4.79%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000416ff934
+            |
+            ---0x416ff934
+               |          
+                --4.64%--0x413e8368
+                          |          
+                           --4.18%--GC_dirty_inner
+
+     4.64%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000413e8368
+            |
+            ---0x413e8368
+               |          
+                --4.18%--GC_dirty_inner
+
+     4.56%     4.56%            28  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c35a
+            |
+            ---0x7feefba0c35a
+
+     4.56%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefba0c35a
+            |
+            ---0x7feefba0c35a
+
+     3.88%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c252bc
+            |
+            ---0x41c252bc
+               |          
+                --1.45%--0x41c26e24
+                          |          
+                           --1.14%--0x41c272d0
+
+     3.58%     3.58%            22  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001cb62c
+            |
+            ---0x7feefb9cb62c
+
+     3.58%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9cb62c
+            |
+            ---0x7feefb9cb62c
+
+     3.35%     3.35%            10  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001ac960
+            |
+            ---0x7feefb9ac960
+
+     3.35%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9ac960
+            |
+            ---0x7feefb9ac960
+
+     3.25%     3.25%            22  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c355
+            |          
+             --2.80%--0x7feefba0c355
+
+     3.25%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefba0c355
+            |
+            ---0x7feefba0c355
+
+     2.96%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c59184
+            |
+            ---0x41c59184
+               |          
+               |--1.75%--0x41c28747
+               |          
+                --1.21%--0x41c272d0
+
+     2.64%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x0000000000130000
+            |
+            ---0x130000
+
+     2.53%     2.53%            10  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c28747
+            |          
+             --1.75%--0x41c59184
+                       0x41c28747
+
+     2.35%     2.35%            15  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c272d0
+            |          
+            |--1.21%--0x41c59184
+            |          0x41c272d0
+            |          
+             --1.14%--0x5582be808500
+                       0x7feefb9e578f
+                       0x7feefb846428
+                       0x4137da64
+                       0x413821e6
+                       0x41c1c3f7
+                       0x41c24529
+                       0x41c252bc
+                       0x41c26e24
+                       0x41c272d0
+
+     2.14%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x0000000000110000
+            |
+            ---0x110000
+               |          
+                --1.08%--0x7feefb9dcfa3
+
+     2.09%     2.09%            15  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001dcfa3
+     2.09%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9dcfa3
+            |
+            ---0x7feefb9dcfa3
+
+     1.92%     1.92%            11  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020f6a9
+            |
+            ---0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x1c00000000000001
+               0
+               0x7feefba0f6a9
+
+     1.92%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefba0f6a9
+            |
+            ---0x7feefba0f6a9
+
+     1.68%     0.00%             0  7DaysToDieServe  libc.so.6               [.] __clock_gettime (inlined)
+            |
+            ---__clock_gettime (inlined)
+               |          
+                --1.68%--__vdso_clock_gettime
+
+     1.68%     1.68%            10  7DaysToDieServe  [vdso]                  [.] __vdso_clock_gettime
+            |          
+             --1.68%--__clock_gettime (inlined)
+                       __vdso_clock_gettime
+
+     1.45%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c26e24
+            |
+            ---0x41c26e24
+               |          
+                --1.14%--0x41c272d0
+
+     1.41%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582c1d8dfc0
+            |
+            ---0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x5582c1d8dfc0
+               0x120000
+               ___pthread_mutex_trylock (inlined)
+
+     1.38%     1.38%            11  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c5927a
+            |
+            ---0x41c5927a
+
+     1.30%     1.30%            14  7DaysToDieServe  libmonobdwgc-2.0.so     [.] GC_mark_from
+            |          
+             --1.15%--GC_mark_from
+
+     1.30%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x0000000000000001
+            |
+            ---0x1
+               |          
+                --1.04%--0x130000
+
+     1.25%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582be7c8e78
+            |
+            ---0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               0x5582be7c8e78
+               |          
+                --1.10%--0x110000
+
+     1.21%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed0081abb
+            |
+            ---0x7feed0081abb
+               0x7fef9000395b
+
+     1.21%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef9000395b
+            |
+            ---0x7fef9000395b
+
+     1.20%     1.20%             1  7DaysToDieServe  libmonobdwgc-2.0.so     [.] GC_continue_reclaim
+            |
+            ---0
+               GC_continue_reclaim
+
+     1.16%     1.16%             8  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001ce4d8
+     1.16%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9ce4d8
+            |
+            ---0x7feefb9ce4d8
+
+     1.11%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x00000000413b4937
+            |
+            ---0x413b4937
+
+     1.02%     1.02%             7  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001b2517
+            |
+            ---0x7feefb9b2517
+
+     1.02%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9b2517
+            |
+            ---0x7feefb9b2517
+
+
+
+#
+# (Tip: To analyze cache line scalability issues use perf c2c record ... ; perf c2c report)
+#

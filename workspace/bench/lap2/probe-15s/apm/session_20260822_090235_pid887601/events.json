@@ -1,0 +1,647 @@
+{
+  "schema": "7dtd.apm.events.v2",
+  "session": "session_20260822_090235_pid887601",
+  "count": 79,
+  "retained": 79,
+  "dropped": 0,
+  "by_kind": {
+    "futex": 15,
+    "counter": 2,
+    "gc": 2,
+    "wchan": 60
+  },
+  "events": [
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×109",
+      "t": 1787389355.4313567,
+      "source": "threads.jsonl",
+      "value": 109
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389355.4313567,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389356.4314826,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389356.4314826,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×117",
+      "t": 1787389357.4316106,
+      "source": "threads.jsonl",
+      "value": 117
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389357.4316106,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×117",
+      "t": 1787389358.4317327,
+      "source": "threads.jsonl",
+      "value": 117
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389358.4317327,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×117",
+      "t": 1787389359.4318564,
+      "source": "threads.jsonl",
+      "value": 117
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389359.4318564,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389360.4319766,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389360.4319766,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×111",
+      "t": 1787389361.4321113,
+      "source": "threads.jsonl",
+      "value": 111
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389361.4321113,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×107",
+      "t": 1787389362.4322329,
+      "source": "threads.jsonl",
+      "value": 107
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389362.4322329,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389363.4323587,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389363.4323587,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389364.4324875,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389364.4324875,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×110",
+      "t": 1787389365.4326086,
+      "source": "threads.jsonl",
+      "value": 110
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389365.4326086,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389366.4327395,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389366.4327395,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389367.432887,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389367.432887,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389368.4330082,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389368.4330082,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389369.4331286,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389369.4331286,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389370.433251,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389370.433251,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389371.4333746,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389371.4333746,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389372.4334729,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389372.4334729,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389373.4335968,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389373.4335968,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389374.4337323,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389374.4337323,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×109",
+      "t": 1787389375.4338586,
+      "source": "threads.jsonl",
+      "value": 109
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389375.4338586,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389376.4339833,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389376.4339833,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×112",
+      "t": 1787389377.4341068,
+      "source": "threads.jsonl",
+      "value": 112
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389377.4341068,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389378.4342322,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389378.4342322,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×111",
+      "t": 1787389379.4343896,
+      "source": "threads.jsonl",
+      "value": 111
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389379.4343896,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389380.4344802,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389380.4344802,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389381.4346075,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389381.4346075,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389382.4347303,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389382.4347303,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389383.434866,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389383.434866,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan futex_wait×113",
+      "t": 1787389384.4349911,
+      "source": "threads.jsonl",
+      "value": 113
+    },
+    {
+      "kind": "wchan",
+      "severity": "info",
+      "message": "wchan __x64_sys_epoll_wait×3",
+      "t": 1787389384.4349911,
+      "source": "threads.jsonl",
+      "value": 3
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 5592 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 40
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 12900 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 41
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 30622 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 42
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 6720 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 43
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 10559 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 44
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 6581 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 45
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 9765 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 46
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 6570 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 47
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 8170 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 48
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 8338 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 52
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 11112 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 53
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 6524 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 54
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 6536 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 55
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 9528 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 56
+    },
+    {
+      "kind": "futex",
+      "severity": "warn",
+      "message": "SLOW_FUTEX 5766 us tid=887601",
+      "t": null,
+      "source": "futex.bt.out",
+      "line": 57
+    },
+    {
+      "kind": "counter",
+      "severity": "info",
+      "message": "futex_waits=163441",
+      "t": null,
+      "source": "futex.bt.out",
+      "value": 163441
+    },
+    {
+      "kind": "gc",
+      "severity": "warn",
+      "message": "STW_PAUSE 6326 us",
+      "t": null,
+      "source": "mono_gc.bt.out",
+      "line": 43
+    },
+    {
+      "kind": "gc",
+      "severity": "warn",
+      "message": "STW_PAUSE 6986 us",
+      "t": null,
+      "source": "mono_gc.bt.out",
+      "line": 49
+    },
+    {
+      "kind": "counter",
+      "severity": "info",
+      "message": "gc_little=51304",
+      "t": null,
+      "source": "mono_gc.bt.out",
+      "value": 51304
+    }
+  ]
+}

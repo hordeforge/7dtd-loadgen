@@ -1,0 +1,13 @@
+{
+  "scenario": "horde-lite",
+  "lap": 2,
+  "world": "Navezgane",
+  "startUtc": "2026-08-22T09:08:45Z",
+  "endUtc": "2026-08-22T09:09:48Z",
+  "hostLoadStart": "6.62",
+  "hostLoadEnd": "5.16",
+  "loadgen": {"git": "7b064a0", "dirtyFiles": 63},
+  "server": {"adminPort": 8084, "litePort": 26902},
+  "matrixArgs": "--profile probe --timeout 70000 --count 1 --spawn-entity zombieBoe --spawn-per-player 4 --spawn-every-ms 15000",
+  "summary": {"pass": "1", "fail": "0"}
+}

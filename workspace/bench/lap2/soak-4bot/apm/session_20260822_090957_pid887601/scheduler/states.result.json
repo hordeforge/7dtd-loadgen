@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "states",
+  "layer": "scheduler",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 31.19758532405831,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 107104,
+  "artifacts": [
+    "scheduler/states.bt.out"
+  ],
+  "message": "expected timeout"
+}

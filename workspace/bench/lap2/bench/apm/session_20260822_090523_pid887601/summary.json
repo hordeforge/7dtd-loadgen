@@ -1,0 +1,344 @@
+{
+  "schema": "7dtd.apm.summary.v2",
+  "session_id": "session_20260822_090523_pid887601",
+  "layers": [
+    {
+      "layer": "scheduler",
+      "score": 50.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "main_thread_offcpu_ms": 9063.0,
+        "disk_block_ms": 146.2,
+        "disk_block_share": 0.0049,
+        "main_runq_stall_ms": 1.6,
+        "main_runq_stall_events": 0,
+        "blocks_over_10ms": 420,
+        "note": "off-CPU total includes healthy 20-TPS pacing sleep; see app_sim late_ticks"
+      },
+      "optimize": [
+        "app_sim.late_ticks is the lag headline (bridge tick overage)",
+        "scheduler/offcpu.bt.out stall stacks attribute blocks to call sites",
+        "D-state disk blocks on the tick thread = move IO off the main thread"
+      ]
+    },
+    {
+      "layer": "memory_cache",
+      "score": 40.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "cache_miss_rate": 0.1305,
+        "cache_misses": 1054971623.0,
+        "cache_references": 8087113739.0,
+        "LLC_load_misses": null,
+        "rss_growth_mb_per_s": 2.16,
+        "fd_growth": -20
+      },
+      "optimize": [
+        "Reduce working set (chunks loaded, mesh queues)",
+        "Avoid large per-tick allocations (GC pressure)",
+        "Lower ServerMaxAllowedViewDistance / MaxQueuedMeshLayers"
+      ]
+    },
+    {
+      "layer": "runtime_gc",
+      "score": 40.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "slow_gc_lines": 0,
+        "collect_a_little_hits": 33577,
+        "stw_pause_total_ms": 100.2,
+        "stw_pause_count": 6,
+        "stw_pause_worst_ms": 19.6
+      },
+      "optimize": [
+        "Cut allocations in hot Harmony paths",
+        "Object pools for per-tick lists",
+        "stw_pause_worst_ms is the direct main-thread freeze; cut gross alloc to shrink it"
+      ]
+    },
+    {
+      "layer": "sync_locks",
+      "score": 35.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "slow_futex_lines": 4,
+        "slow_futex_per_second": 0.133,
+        "main_thread_futex_wait_ms": 468.7,
+        "main_thread_futex_wait_share": 0.0156,
+        "threshold_ms": 5,
+        "scope": "main_thread"
+      },
+      "optimize": [
+        "Inspect futex waiter stacks in sync/futex.bt.out",
+        "Reduce lock hold time on main thread (Unity/Mono)",
+        "Avoid sync IO under locks; move work off sim thread"
+      ]
+    },
+    {
+      "layer": "cpu",
+      "score": 15.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "ipc": 2.05,
+        "cycles": 300505665329.0,
+        "instructions": 616175756914.0,
+        "main_thread_cpu_pct": 68.1,
+        "main_thread_share_of_process": 0.425
+      },
+      "optimize": [
+        "Reduce work on main sim thread (APM bridge managed sections)",
+        "AI LOD / MaxSpawnedZombies / view distance",
+        "Avoid Harmony on ultra-hot methods without budgets"
+      ]
+    },
+    {
+      "layer": "io",
+      "score": 10.0,
+      "state": "collected",
+      "confidence": "medium",
+      "signals": {
+        "slow_block_lines": 0,
+        "main_thread_slow_io": 0
+      },
+      "optimize": [
+        "NVMe for Saves; avoid network filesystem for region files",
+        "Tune autosave interval; reduce map rendering",
+        "Inspect vfs slow stacks + openat paths"
+      ]
+    },
+    {
+      "layer": "app_sim",
+      "score": null,
+      "state": "unavailable",
+      "confidence": "low",
+      "signals": {
+        "reason": "collector produced no usable evidence"
+      },
+      "optimize": []
+    }
+  ],
+  "recommendation": "Focus on **scheduler** (pressure 50.0). app_sim.late_ticks is the lag headline (bridge tick overage); scheduler/offcpu.bt.out stall stacks attribute blocks to call sites",
+  "health": null,
+  "metadata": {
+    "net": {
+      "udp_send_mb_per_second": 4.82,
+      "udp_recv_mb_per_second": 0.4,
+      "tcp_recv_mb_per_second": 0.0
+    },
+    "top_alloc_sites": [],
+    "top_churn_sites": [],
+    "cpu_hot_paths": {
+      "inclusive": [
+        [
+          "[UnityPlayer.so]",
+          34.1
+        ],
+        [
+          "[jit]",
+          30.2
+        ],
+        [
+          "[libc.so.6]",
+          25.7
+        ],
+        [
+          "[libmonobdwgc-2.0.so]",
+          11.2
+        ],
+        [
+          "[perf-887601.map]",
+          10.9
+        ],
+        [
+          "__pthread_cond_wait_common",
+          6.5
+        ],
+        [
+          "___pthread_cond_timedwait64",
+          5.6
+        ],
+        [
+          "__pthread_cleanup_pop",
+          2.8
+        ],
+        [
+          "mono_thread_info_uninstall_interrupt",
+          2.3
+        ],
+        [
+          "__condvar_confirm_wakeup",
+          2.1
+        ],
+        [
+          "GC_suspend_handler",
+          1.5
+        ],
+        [
+          "[steamclient.so]",
+          1.5
+        ]
+      ],
+      "self_game": [
+        [
+          "WaterSimulationCalcFlows, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.ProcessFlows",
+          0.0
+        ],
+        [
+          "WaterSimulationCalcFlows, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.ProcessFlowBelow",
+          0.0
+        ]
+      ],
+      "main_thread": []
+    },
+    "memory": {
+      "rss_start_mb": 3945.4,
+      "rss_end_mb": 4008.1,
+      "rss_growth_mb_per_s": 2.16,
+      "fd_start": 83,
+      "fd_end": 63
+    },
+    "lag_diagnosis": {
+      "laggy": false,
+      "verdict": "server met its tick deadline this window",
+      "causes": [
+        {
+          "cause": "disk_io_stall",
+          "severity": 0.03,
+          "detail": "146.2 ms main-thread disk blocking",
+          "fix": "move saves/region IO off the tick thread; NVMe for Saves; spread autosave (see io/vfs.bt.out SLOW_VFS_MAIN sites)"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "schema": "7dtd.apm.session.v2",
+    "utc": "2026-08-22T09:05:23.791594Z",
+    "pid": 887601,
+    "comm": "7DaysToDieServe",
+    "seconds": 30,
+    "only": "all",
+    "no_app": true,
+    "exe": "/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer.x86_64",
+    "cmdline": "./7DaysToDieServer.x86_64 -logfile /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/server_prefab_Navezgane_4096_2026-08-22__17-01-56.txt -quit -batchmode -nographics -dedicated -configfile=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/serverconfig_prefab.xml ",
+    "threads": 161,
+    "uname": "7.1.8-1-cachyos",
+    "analyzer_version": "2.1.0",
+    "capture_preset": "all",
+    "layers": [
+      "app",
+      "runtime",
+      "threads",
+      "sync",
+      "scheduler",
+      "cpu",
+      "memory",
+      "io",
+      "net"
+    ],
+    "tool_versions": {
+      "perf": "perf version 7.1.8-1",
+      "bpftrace": "bpftrace v0.26.0-1bac8a8da",
+      "python3": "Python 3.13.14"
+    }
+  },
+  "hw": {
+    "cycles": 300505665329.0,
+    "instructions": 616175756914.0,
+    "branches": 86245638241.0,
+    "branch-misses": 897513350.0,
+    "cache-references": 8087113739.0,
+    "cache-misses": 1054971623.0,
+    "context-switches": 0.0,
+    "cpu-migrations": 0.0,
+    "page-faults": 381865.0,
+    "msec": 65256.97,
+    "time_elapsed_s": 30.003476237
+  },
+  "threads": {
+    "n_threads": 142,
+    "states": {
+      "R": 6,
+      "S": 136
+    },
+    "wchan_top": {
+      "futex_wait": 126,
+      "0": 8,
+      "__x64_sys_epoll_wait": 3,
+      "__x64_sys_poll.cold": 2,
+      "hrtimer_nanosleep": 2,
+      "wait_woken": 1
+    },
+    "main_thread_cpu_pct_avg": 68.1,
+    "main_thread_share_of_process_avg": 0.425,
+    "top_cpu": [
+      {
+        "comm": "7DaysToDieServe",
+        "cpu_pct": 42.99,
+        "wchan": "0",
+        "state": "R"
+      },
+      {
+        "comm": "GenerateChunks",
+        "cpu_pct": 19.0,
+        "wchan": "0",
+        "state": "R"
+      },
+      {
+        "comm": "ChunkRegenerati",
+        "cpu_pct": 17.0,
+        "wchan": "futex_wait",
+        "state": "S"
+      },
+      {
+        "comm": "NCS_Writer_14_0",
+        "cpu_pct": 10.0,
+        "wchan": "futex_wait",
+        "state": "S"
+      },
+      {
+        "comm": "SaveChunks /hom",
+        "cpu_pct": 2.0,
+        "wchan": "0",
+        "state": "R"
+      },
+      {
+        "comm": "Job.Worker 1",
+        "cpu_pct": 2.0,
+        "wchan": "futex_wait",
+        "state": "S"
+      },
+      {
+        "comm": "ChunkCalc",
+        "cpu_pct": 1.0,
+        "wchan": "0",
+        "state": "R"
+      },
+      {
+        "comm": "Job.Worker 2",
+        "cpu_pct": 1.0,
+        "wchan": "futex_wait",
+        "state": "S"
+      }
+    ]
+  },
+  "flames": {
+    "interactive": "cpu/perf/flame.html",
+    "speedscope": "cpu/perf/profile.speedscope.json",
+    "svg": "cpu/perf/flame.svg",
+    "folded": "cpu/perf/stacks.folded"
+  },
+  "files": {
+    "futex": "sync/futex.bt.out",
+    "vfs": "io/vfs.bt.out",
+    "block": "io/block.bt.out",
+    "hw_stat": "memory/hw_stat.txt",
+    "flame_html": "cpu/perf/flame.html",
+    "speedscope": "cpu/perf/profile.speedscope.json",
+    "mono_gc": "runtime/mono_gc.bt.out"
+  }
+}

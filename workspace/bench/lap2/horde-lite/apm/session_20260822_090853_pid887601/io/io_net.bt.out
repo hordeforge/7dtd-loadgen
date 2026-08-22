@@ -1,0 +1,44 @@
+17:09:00 @tcp_recv: 4
+@pagefaults: 8185
+17:09:05 @tcp_recv: 6
+@pagefaults: 10383
+@opens: 2
+17:09:10 @tcp_recv: 8
+@pagefaults: 24639
+@opens: 21
+17:09:15 @tcp_recv: 10
+@pagefaults: 30833
+@opens: 21
+17:09:20 @tcp_recv: 12
+@pagefaults: 37665
+@opens: 24
+
+=== totals ===
+@tcp_recv: 12
+@tcp_recv_bytes: 12288
+@udp_send: 8360
+@udp_recv: 443
+@udp_send_bytes: 8307564
+@udp_recv_bytes: 634376
+@pagefaults: 37671
+@opens: 24
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/comb_over.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/buzzcut.bundle]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 19
+
+
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/comb_over.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/buzzcut.bundle]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 19
+@opens: 24
+@pagefaults: 37671
+@tcp_recv: 12
+@tcp_recv_bytes: 12288
+@udp_recv: 443
+@udp_recv_bytes: 634376
+@udp_send: 8360
+@udp_send_bytes: 8307564

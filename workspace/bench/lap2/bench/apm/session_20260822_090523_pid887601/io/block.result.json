@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "block",
+  "layer": "io",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 31.094336807029322,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 455,
+  "artifacts": [
+    "io/block.bt.out"
+  ],
+  "message": "expected timeout"
+}

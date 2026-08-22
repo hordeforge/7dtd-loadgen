@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "vfs",
+  "layer": "io",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 30.63292062608525,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 89,
+  "artifacts": [
+    "io/vfs.bt.out"
+  ],
+  "message": "expected timeout"
+}

@@ -137,6 +137,16 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
                 lines.append(f"| {sc} | " + " | ".join(
                     f"{w:.1f}" if w is not None else "n/a" for w in walls)
                     + f" | {worst*100:.1f}% | {verdict} |")
+        # Load-sensitive axis (bench profile only): actions/s lap-to-lap.
+        aps = []
+        for _, lap in laps:
+            b = lap["scenarios"].get("bench", {}).get("bench") or {}
+            aps.append(b.get("actionsPerSec"))
+        if all(a is not None for a in aps) and len(aps) >= 2 and aps[0]:
+            aps_delta = abs(aps[1] - aps[0]) / aps[0]
+            aps_ok = "OK" if aps_delta <= TOLERANCE else "OVER"
+            lines.append(f"\n- bench actions/s: {' -> '.join(f'{a:.2f}' for a in aps)} "
+                         f"(delta {aps_delta*100:.1f}% {aps_ok}, +-{TOLERANCE*100:.0f}% bound)")
         lines.append(f"\n- tolerance: +-{TOLERANCE*100:.0f}% per scenario; "
                      "over-tolerance rows are a finding (host contention), "
                      "recorded with hostLoad, never hidden.")

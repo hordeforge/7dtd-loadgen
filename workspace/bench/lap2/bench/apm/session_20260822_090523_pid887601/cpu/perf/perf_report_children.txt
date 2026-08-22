@@ -1,0 +1,1422 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 17K of event 'cpu/cycles/Pu'
+# Event count (approx.): 106026858612
+#
+# Children      Self       Samples  Command          Shared Object           Symbol                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+# ........  ........  ............  ...............  ......................  ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+#
+    13.58%     0.00%             0  ChunkRegenerati  [unknown]               [.] 0000000000000000
+            |
+            ---0
+               |          
+                --13.44%--0
+                          |          
+                           --11.82%--0x41ccfb84
+                                     |          
+                                      --11.73%--0x41cd52e0
+                                                |          
+                                                |--8.14%--0x41cd5458
+                                                |          |          
+                                                |           --2.29%--0x41cda0a6
+                                                |          
+                                                 --3.55%--0x41cd626c
+                                                           |          
+                                                            --2.47%--0x41d16b64
+                                                                      |          
+                                                                       --1.73%--0x41c28747
+
+    13.58%     0.00%             0  ChunkRegenerati  [unknown]               [.] 0x00005582bf3bc3a8
+            |
+            ---0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               |          
+                --13.54%--0x5582bf3bc3a8
+                          |          
+                           --13.28%--0x5582bf3bc3a8
+                                     |          
+                                      --12.54%--0x5582bf3bc3a8
+                                                |          
+                                                |--11.28%--0x5582bf3bc3a8
+                                                |          |          
+                                                |          |--7.23%--0x5582bf3bc3a8
+                                                |          |          |          
+                                                |          |          |--5.33%--0
+                                                |          |          |          0
+                                                |          |          |          0x41ccfb84
+                                                |          |          |          0x41cd52e0
+                                                |          |          |          |          
+                                                |          |          |           --4.35%--0x41cd5458
+                                                |          |          |                     |          
+                                                |          |          |                      --2.21%--0x41cda0a6
+                                                |          |          |          
+                                                |          |           --1.90%--0x5582bf3bc3a8
+                                                |          |                     |          
+                                                |          |                      --1.86%--0x5582bf3bc3a8
+                                                |          |                                |          
+                                                |          |                                 --1.76%--0x5582bf3bc3a8
+                                                |          |                                           0
+                                                |          |                                           |          
+                                                |          |                                            --1.62%--0
+                                                |          |          
+                                                |           --4.05%--0
+                                                |                     0
+                                                |                     0x41ccfb84
+                                                |                     0x41cd52e0
+                                                |                     |          
+                                                |                     |--2.57%--0x41cd626c
+                                                |                     |          |          
+                                                |                     |           --2.47%--0x41d16b64
+                                                |                     |                     |          
+                                                |                     |                      --1.73%--0x41c28747
+                                                |                     |          
+                                                |                      --1.48%--0x41cd5458
+                                                |          
+                                                 --1.26%--0
+                                                           0
+                                                           0x41ccfb84
+                                                           0x41cd52e0
+                                                           0x41cd5458
+
+    11.92%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582be808500
+            |
+            ---0x5582be808500
+               |          
+                --11.88%--0x7feefb9e578f
+                          |          
+                           --11.73%--0x7feefb846428
+                                     |          
+                                     |--5.34%--0x411407a6
+                                     |          |          
+                                     |          |--2.66%--0x7feed0081abb
+                                     |          |          0x7fef9000395b
+                                     |          |          |          
+                                     |          |           --1.44%--0x7feed0095573
+                                     |          |          
+                                     |           --1.13%--0x416ff934
+                                     |                     |          
+                                     |                      --1.04%--0x413e8368
+                                     |          
+                                      --5.32%--0x416f6adf
+                                                |          
+                                                |--2.33%--0x41a26c9c
+                                                |          
+                                                |--1.64%--0x41bd5b44
+                                                |          
+                                                 --1.35%--0x41cc9124
+                                                           0x7fef9000fdab
+                                                           |          
+                                                            --1.21%--0x7fef9000f45b
+                                                                      0x7fef90010903
+                                                                      0x7feed007a8b3
+                                                                      |          
+                                                                       --1.16%--0x41d514e4
+                                                                                 0x7fef90010b0b
+                                                                                 0x7feed0275bc3
+                                                                                 0x41c61874
+                                                                                 0x41c62fcc
+                                                                                 0x41cc3028
+                                                                                 0x41cc3730
+                                                                                 0x41cc4690
+                                                                                 0x41cc4690
+                                                                                 0x41cc4690
+                                                                                 |          
+                                                                                  --1.06%--0x41cc4690
+
+    11.88%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9e578f
+            |
+            ---0x7feefb9e578f
+               |          
+                --11.73%--0x7feefb846428
+                          |          
+                          |--5.34%--0x411407a6
+                          |          |          
+                          |          |--2.66%--0x7feed0081abb
+                          |          |          0x7fef9000395b
+                          |          |          |          
+                          |          |           --1.44%--0x7feed0095573
+                          |          |          
+                          |           --1.13%--0x416ff934
+                          |                     |          
+                          |                      --1.04%--0x413e8368
+                          |          
+                           --5.32%--0x416f6adf
+                                     |          
+                                     |--2.33%--0x41a26c9c
+                                     |          
+                                     |--1.64%--0x41bd5b44
+                                     |          
+                                      --1.35%--0x41cc9124
+                                                0x7fef9000fdab
+                                                |          
+                                                 --1.21%--0x7fef9000f45b
+                                                           0x7fef90010903
+                                                           0x7feed007a8b3
+                                                           |          
+                                                            --1.16%--0x41d514e4
+                                                                      0x7fef90010b0b
+                                                                      0x7feed0275bc3
+                                                                      0x41c61874
+                                                                      0x41c62fcc
+                                                                      0x41cc3028
+                                                                      0x41cc3730
+                                                                      0x41cc4690
+                                                                      0x41cc4690
+                                                                      0x41cc4690
+                                                                      |          
+                                                                       --1.06%--0x41cc4690
+
+    11.84%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c59184
+            |
+            ---0x41c59184
+               |          
+               |--8.65%--0x41c272d0
+               |          
+                --2.90%--0x41c28747
+
+    11.82%     0.00%             0  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041ccfb84
+            |
+            ---0x41ccfb84
+               |          
+                --11.73%--0x41cd52e0
+                          |          
+                          |--8.14%--0x41cd5458
+                          |          |          
+                          |           --2.29%--0x41cda0a6
+                          |          
+                           --3.55%--0x41cd626c
+                                     |          
+                                      --2.47%--0x41d16b64
+                                                |          
+                                                 --1.73%--0x41c28747
+
+    11.73%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb846428
+            |
+            ---0x7feefb846428
+               |          
+               |--5.34%--0x411407a6
+               |          |          
+               |          |--2.66%--0x7feed0081abb
+               |          |          0x7fef9000395b
+               |          |          |          
+               |          |           --1.44%--0x7feed0095573
+               |          |          
+               |           --1.13%--0x416ff934
+               |                     |          
+               |                      --1.04%--0x413e8368
+               |          
+                --5.32%--0x416f6adf
+                          |          
+                          |--2.33%--0x41a26c9c
+                          |          
+                          |--1.64%--0x41bd5b44
+                          |          
+                           --1.35%--0x41cc9124
+                                     0x7fef9000fdab
+                                     |          
+                                      --1.21%--0x7fef9000f45b
+                                                0x7fef90010903
+                                                0x7feed007a8b3
+                                                |          
+                                                 --1.16%--0x41d514e4
+                                                           0x7fef90010b0b
+                                                           0x7feed0275bc3
+                                                           0x41c61874
+                                                           0x41c62fcc
+                                                           0x41cc3028
+                                                           0x41cc3730
+                                                           0x41cc4690
+                                                           0x41cc4690
+                                                           0x41cc4690
+                                                           |          
+                                                            --1.06%--0x41cc4690
+
+    11.73%     0.00%             0  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cd52e0
+            |
+            ---0x41cd52e0
+               |          
+               |--8.14%--0x41cd5458
+               |          |          
+               |           --2.29%--0x41cda0a6
+               |          
+                --3.55%--0x41cd626c
+                          |          
+                           --2.47%--0x41d16b64
+                                     |          
+                                      --1.73%--0x41c28747
+
+    11.48%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--2.84%--___pthread_mutex_unlock (inlined)
+               |          __pthread_mutex_unlock_usercnt (inlined)
+               |          lll_mutex_unlock_optimized (inlined)
+               |          
+               |--2.66%--0
+               |          
+                --2.09%--0x7feefb9acc12
+
+     9.33%     9.33%           142  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c272d0
+            |          
+             --8.65%--0x41c59184
+                       0x41c272d0
+
+     8.14%     0.00%             0  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cd5458
+            |
+            ---0x41cd5458
+               |          
+                --2.29%--0x41cda0a6
+
+     6.29%     0.00%             0  GenerateChunks   [unknown]               [.] 0x00005582be808500
+            |
+            ---0x5582be808500
+               0x7feefb9e578f
+               0x7feefb846428
+               |          
+                --6.24%--0x4137da64
+                          0x413821e6
+                          |          
+                          |--3.13%--0x41c1c3f7
+                          |          0x41c24529
+                          |          |          
+                          |           --2.33%--0x41c252bc
+                          |          
+                           --1.86%--0x41c1c2ea
+                                     0x41e74a19
+                                     |          
+                                      --1.71%--0x41e78190
+
+     6.29%     0.00%             0  GenerateChunks   libmonobdwgc-2.0.so     [.] 0x00007feefb9e578f
+            |
+            ---0x7feefb9e578f
+               0x7feefb846428
+               |          
+                --6.24%--0x4137da64
+                          0x413821e6
+                          |          
+                          |--3.13%--0x41c1c3f7
+                          |          0x41c24529
+                          |          |          
+                          |           --2.33%--0x41c252bc
+                          |          
+                           --1.86%--0x41c1c2ea
+                                     0x41e74a19
+                                     |          
+                                      --1.71%--0x41e78190
+
+     6.29%     0.00%             0  GenerateChunks   libmonobdwgc-2.0.so     [.] 0x00007feefb846428
+            |
+            ---0x7feefb846428
+               |          
+                --6.24%--0x4137da64
+                          0x413821e6
+                          |          
+                          |--3.13%--0x41c1c3f7
+                          |          0x41c24529
+                          |          |          
+                          |           --2.33%--0x41c252bc
+                          |          
+                           --1.86%--0x41c1c2ea
+                                     0x41e74a19
+                                     |          
+                                      --1.71%--0x41e78190
+
+     6.24%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x000000004137da64
+            |
+            ---0x4137da64
+               0x413821e6
+               |          
+               |--3.13%--0x41c1c3f7
+               |          0x41c24529
+               |          |          
+               |           --2.33%--0x41c252bc
+               |          
+                --1.86%--0x41c1c2ea
+                          0x41e74a19
+                          |          
+                           --1.71%--0x41e78190
+
+     6.24%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x00000000413821e6
+            |
+            ---0x413821e6
+               |          
+               |--3.13%--0x41c1c3f7
+               |          0x41c24529
+               |          |          
+               |           --2.33%--0x41c252bc
+               |          
+                --1.86%--0x41c1c2ea
+                          0x41e74a19
+                          |          
+                           --1.71%--0x41e78190
+
+     5.34%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000411407a6
+            |
+            ---0x411407a6
+               |          
+               |--2.66%--0x7feed0081abb
+               |          0x7fef9000395b
+               |          |          
+               |           --1.44%--0x7feed0095573
+               |          
+                --1.13%--0x416ff934
+                          |          
+                           --1.04%--0x413e8368
+
+     5.32%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000416f6adf
+            |
+            ---0x416f6adf
+               |          
+               |--2.33%--0x41a26c9c
+               |          
+               |--1.64%--0x41bd5b44
+               |          
+                --1.35%--0x41cc9124
+                          0x7fef9000fdab
+                          |          
+                           --1.21%--0x7fef9000f45b
+                                     0x7fef90010903
+                                     0x7feed007a8b3
+                                     |          
+                                      --1.16%--0x41d514e4
+                                                0x7fef90010b0b
+                                                0x7feed0275bc3
+                                                0x41c61874
+                                                0x41c62fcc
+                                                0x41cc3028
+                                                0x41cc3730
+                                                0x41cc4690
+                                                0x41cc4690
+                                                0x41cc4690
+                                                |          
+                                                 --1.06%--0x41cc4690
+
+     5.27%     5.27%           100  7DaysToDieServe  libmonobdwgc-2.0.so     [.] GC_dirty_inner
+            |          
+             --2.52%--0x5582be808500
+                       0x7feefb9e578f
+                       0x7feefb846428
+                       |          
+                        --1.45%--0x411407a6
+
+     3.91%     3.91%            67  7DaysToDieServe  libc.so.6               [.] pthread_mutex_unlock
+            |          
+            |--2.84%--0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x5582be7cede8
+            |          0x1c00000000000001
+            |          0
+            |          ___pthread_mutex_unlock (inlined)
+            |          __pthread_mutex_unlock_usercnt (inlined)
+            |          lll_mutex_unlock_optimized (inlined)
+            |          
+             --1.06%--___pthread_mutex_unlock (inlined)
+                       __pthread_mutex_unlock_usercnt (inlined)
+                       lll_mutex_unlock_optimized (inlined)
+
+     3.91%     0.00%             0  7DaysToDieServe  libc.so.6               [.] ___pthread_mutex_unlock (inlined)
+            |
+            ---___pthread_mutex_unlock (inlined)
+               __pthread_mutex_unlock_usercnt (inlined)
+               lll_mutex_unlock_optimized (inlined)
+
+     3.91%     0.00%             0  7DaysToDieServe  libc.so.6               [.] __pthread_mutex_unlock_usercnt (inlined)
+            |
+            ---__pthread_mutex_unlock_usercnt (inlined)
+               lll_mutex_unlock_optimized (inlined)
+
+     3.91%     0.00%             0  7DaysToDieServe  libc.so.6               [.] lll_mutex_unlock_optimized (inlined)
+            |
+            ---lll_mutex_unlock_optimized (inlined)
+
+     3.82%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x00005582be7cede8
+            |
+            ---0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               0x5582be7cede8
+               |          
+                --3.77%--0x5582be7cede8
+                          |          
+                           --3.28%--0x5582be7cede8
+                                     0x1c00000000000001
+                                     0
+                                     |          
+                                      --2.84%--___pthread_mutex_unlock (inlined)
+                                                __pthread_mutex_unlock_usercnt (inlined)
+                                                lll_mutex_unlock_optimized (inlined)
+
+     3.82%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x1c00000000000001
+            |
+            ---0x1c00000000000001
+               0
+               |          
+                --2.84%--___pthread_mutex_unlock (inlined)
+                          __pthread_mutex_unlock_usercnt (inlined)
+                          lll_mutex_unlock_optimized (inlined)
+
+     3.55%     0.00%             0  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cd626c
+            |
+            ---0x41cd626c
+               |          
+                --2.47%--0x41d16b64
+                          |          
+                           --1.73%--0x41c28747
+
+     3.30%     3.30%            70  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c5927a
+            |
+            ---0x41c5927a
+
+     3.13%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c1c3f7
+            |
+            ---0x41c1c3f7
+               0x41c24529
+               |          
+                --2.33%--0x41c252bc
+
+     3.13%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c24529
+            |
+            ---0x41c24529
+               |          
+                --2.33%--0x41c252bc
+
+     3.06%     3.06%            51  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c28747
+            |          
+             --2.90%--0x41c59184
+                       0x41c28747
+
+     2.71%     2.71%            48  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cda1d0
+            |
+            ---0x41cda1d0
+
+     2.69%     2.69%            47  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041c28747
+            |
+            ---0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               |          
+                --2.37%--0x5582bf3bc3a8
+                          |          
+                           --1.73%--0x5582bf3bc3a8
+                                     0
+                                     0
+                                     0x41ccfb84
+                                     0x41cd52e0
+                                     0x41cd626c
+                                     0x41d16b64
+                                     0x41c28747
+
+     2.66%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed0081abb
+            |
+            ---0x7feed0081abb
+               0x7fef9000395b
+               |          
+                --1.44%--0x7feed0095573
+
+     2.66%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef9000395b
+            |
+            ---0x7fef9000395b
+               |          
+                --1.44%--0x7feed0095573
+
+     2.47%     0.00%             0  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041d16b64
+            |
+            ---0x41d16b64
+               |          
+                --1.73%--0x41c28747
+
+     2.39%     0.00%             0  7DaysToDieServe  [unknown]               [.] 0x0000000000120000
+            |
+            ---0x120000
+
+     2.33%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041a26c9c
+            |
+            ---0x41a26c9c
+
+     2.33%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c252bc
+            |
+            ---0x41c252bc
+
+     2.29%     2.21%            37  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cda0a6
+            |          
+             --2.21%--0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0x5582bf3bc3a8
+                       0
+                       0
+                       0x41ccfb84
+                       0x41cd52e0
+                       0x41cd5458
+                       0x41cda0a6
+
+     2.09%     2.09%            41  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001acc12
+            |
+            ---0
+               0x7feefb9acc12
+
+     2.09%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9acc12
+            |
+            ---0x7feefb9acc12
+
+     1.86%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c1c2ea
+            |
+            ---0x41c1c2ea
+               0x41e74a19
+               |          
+                --1.71%--0x41e78190
+
+     1.86%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041e74a19
+            |
+            ---0x41e74a19
+               |          
+                --1.71%--0x41e78190
+
+     1.76%     1.76%            31  7DaysToDieServe  libc.so.6               [.] pthread_mutex_trylock
+            |          
+             --1.07%--___pthread_mutex_trylock (inlined)
+
+     1.76%     0.00%             0  7DaysToDieServe  libc.so.6               [.] ___pthread_mutex_trylock (inlined)
+            |
+            ---___pthread_mutex_trylock (inlined)
+
+     1.71%     0.00%             0  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041e78190
+            |
+            ---0x41e78190
+
+     1.64%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041bd5b44
+            |
+            ---0x41bd5b44
+
+     1.59%     1.59%            31  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c355
+            |          
+             --1.04%--0x7feefba0c355
+
+     1.59%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefba0c355
+            |
+            ---0x7feefba0c355
+
+     1.44%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed0095573
+            |
+            ---0x7feed0095573
+
+     1.42%     1.42%            21  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041c28747
+            |          
+             --1.23%--0x5582be808500
+                       0x7feefb9e578f
+                       0x7feefb846428
+                       |          
+                        --1.18%--0x416f6adf
+                                  |          
+                                   --1.05%--0x41a26c9c
+
+     1.35%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041cc9124
+            |
+            ---0x41cc9124
+               0x7fef9000fdab
+               |          
+                --1.21%--0x7fef9000f45b
+                          0x7fef90010903
+                          0x7feed007a8b3
+                          |          
+                           --1.16%--0x41d514e4
+                                     0x7fef90010b0b
+                                     0x7feed0275bc3
+                                     0x41c61874
+                                     0x41c62fcc
+                                     0x41cc3028
+                                     0x41cc3730
+                                     0x41cc4690
+                                     0x41cc4690
+                                     0x41cc4690
+                                     |          
+                                      --1.06%--0x41cc4690
+
+     1.35%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef9000fdab
+            |
+            ---0x7fef9000fdab
+               |          
+                --1.21%--0x7fef9000f45b
+                          0x7fef90010903
+                          0x7feed007a8b3
+                          |          
+                           --1.16%--0x41d514e4
+                                     0x7fef90010b0b
+                                     0x7feed0275bc3
+                                     0x41c61874
+                                     0x41c62fcc
+                                     0x41cc3028
+                                     0x41cc3730
+                                     0x41cc4690
+                                     0x41cc4690
+                                     0x41cc4690
+                                     |          
+                                      --1.06%--0x41cc4690
+
+     1.33%     1.33%            28  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001cb62c
+            |
+            ---0x7feefb9cb62c
+
+     1.33%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefb9cb62c
+            |
+            ---0x7feefb9cb62c
+
+     1.24%     0.00%             0  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00007feefba0c35a
+            |
+            ---0x7feefba0c35a
+
+     1.24%     1.24%            27  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c35a
+     1.21%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef9000f45b
+            |
+            ---0x7fef9000f45b
+               0x7fef90010903
+               0x7feed007a8b3
+               |          
+                --1.16%--0x41d514e4
+                          0x7fef90010b0b
+                          0x7feed0275bc3
+                          0x41c61874
+                          0x41c62fcc
+                          0x41cc3028
+                          0x41cc3730
+                          0x41cc4690
+                          0x41cc4690
+                          0x41cc4690
+                          |          
+                           --1.06%--0x41cc4690
+
+     1.21%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef90010903
+            |
+            ---0x7fef90010903
+               0x7feed007a8b3
+               |          
+                --1.16%--0x41d514e4
+                          0x7fef90010b0b
+                          0x7feed0275bc3
+                          0x41c61874
+                          0x41c62fcc
+                          0x41cc3028
+                          0x41cc3730
+                          0x41cc4690
+                          0x41cc4690
+                          0x41cc4690
+                          |          
+                           --1.06%--0x41cc4690
+
+     1.21%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed007a8b3
+            |
+            ---0x7feed007a8b3
+               |          
+                --1.16%--0x41d514e4
+                          0x7fef90010b0b
+                          0x7feed0275bc3
+                          0x41c61874
+                          0x41c62fcc
+                          0x41cc3028
+                          0x41cc3730
+                          0x41cc4690
+                          0x41cc4690
+                          0x41cc4690
+                          |          
+                           --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041d514e4
+            |
+            ---0x41d514e4
+               0x7fef90010b0b
+               0x7feed0275bc3
+               0x41c61874
+               0x41c62fcc
+               0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007fef90010b0b
+            |
+            ---0x7fef90010b0b
+               0x7feed0275bc3
+               0x41c61874
+               0x41c62fcc
+               0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed0275bc3
+            |
+            ---0x7feed0275bc3
+               0x41c61874
+               0x41c62fcc
+               0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041c61874
+            |
+            ---0x41c61874
+               0x41c62fcc
+               0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041c62fcc
+            |
+            ---0x41c62fcc
+               0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041cc3028
+            |
+            ---0x41cc3028
+               0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041cc3730
+            |
+            ---0x41cc3730
+               0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.16%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041cc4690
+            |
+            ---0x41cc4690
+               0x41cc4690
+               0x41cc4690
+               |          
+                --1.06%--0x41cc4690
+
+     1.14%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00007feed026ecff
+            |
+            ---0x7feed026ecff
+
+     1.13%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000416ff934
+            |
+            ---0x416ff934
+               |          
+                --1.04%--0x413e8368
+
+     1.04%     0.00%             0  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000413e8368
+            |
+            ---0x413e8368
+
+
+
+#
+# (Tip: To count events every 1000 msec: perf stat -I 1000)
+#

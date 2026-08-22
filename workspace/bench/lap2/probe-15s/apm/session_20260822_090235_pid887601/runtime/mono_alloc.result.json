@@ -1,0 +1,13 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "mono_alloc",
+  "layer": "runtime_gc",
+  "status": "skipped",
+  "exit_code": null,
+  "duration_seconds": 0.0,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": null,
+  "artifacts": [],
+  "message": "collector not requested"
+}

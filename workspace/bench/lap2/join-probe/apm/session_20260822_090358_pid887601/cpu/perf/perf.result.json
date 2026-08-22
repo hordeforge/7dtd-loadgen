@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "perf",
+  "layer": "cpu",
+  "status": "ok",
+  "exit_code": 0,
+  "duration_seconds": 30.78941493202001,
+  "tool": "perf",
+  "tool_version": "perf version 7.1.8-1",
+  "sample_count": 217,
+  "artifacts": [
+    "cpu/perf/stacks.folded"
+  ],
+  "message": ""
+}

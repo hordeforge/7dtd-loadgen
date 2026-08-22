@@ -1,0 +1,110 @@
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7148", "t": 1787389523.9364116, "source": "threads.jsonl", "value": 148}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389523.9364116, "source": "threads.jsonl", "value": 3}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7152", "t": 1787389524.9365451, "source": "threads.jsonl", "value": 152}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389524.9365451, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=313 rssMB=4014.67578125", "t": 1787389524.94297, "source": "proc.jsonl", "value": 312.9451602237786}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3945\u21924015 MB", "t": 1787389524.94297, "source": "proc.jsonl", "value": 69.25}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7143", "t": 1787389525.9367092, "source": "threads.jsonl", "value": 143}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389525.9367092, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=207 rssMB=3945.67578125", "t": 1787389525.9431112, "source": "proc.jsonl", "value": 206.97078735682598}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7148", "t": 1787389526.936848, "source": "threads.jsonl", "value": 148}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389526.936848, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=171 rssMB=3792.69140625", "t": 1787389526.9432209, "source": "proc.jsonl", "value": 170.98124805114185}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7142", "t": 1787389527.9369755, "source": "threads.jsonl", "value": 142}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389527.9369755, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=301 rssMB=3667.19140625", "t": 1787389527.943336, "source": "proc.jsonl", "value": 300.96534198279915}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7141", "t": 1787389528.937111, "source": "threads.jsonl", "value": 141}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389528.937111, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=242 rssMB=3561.47265625", "t": 1787389528.9434144, "source": "proc.jsonl", "value": 241.98101907842712}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7149", "t": 1787389529.9372325, "source": "threads.jsonl", "value": 149}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389529.9372325, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=221 rssMB=3581.6328125", "t": 1787389529.9435184, "source": "proc.jsonl", "value": 220.97702932720503}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7150", "t": 1787389530.937355, "source": "threads.jsonl", "value": 150}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389530.937355, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=248 rssMB=3568.1328125", "t": 1787389530.943648, "source": "proc.jsonl", "value": 247.96783864397472}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7150", "t": 1787389531.9374917, "source": "threads.jsonl", "value": 150}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389531.9374917, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=231 rssMB=3421.6328125", "t": 1787389531.943724, "source": "proc.jsonl", "value": 230.98248757575772}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7153", "t": 1787389532.9376483, "source": "threads.jsonl", "value": 153}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389532.9376483, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=192 rssMB=3454.6328125", "t": 1787389532.9438567, "source": "proc.jsonl", "value": 191.97450594906482}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7149", "t": 1787389533.9377728, "source": "threads.jsonl", "value": 149}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389533.9377728, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=185 rssMB=3174.1953125", "t": 1787389533.9439673, "source": "proc.jsonl", "value": 184.97953641297923}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7141", "t": 1787389534.937895, "source": "threads.jsonl", "value": 141}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389534.937895, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=206 rssMB=3161.55859375", "t": 1787389534.9442523, "source": "proc.jsonl", "value": 205.9413252154273}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7145", "t": 1787389535.9380295, "source": "threads.jsonl", "value": 145}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389535.9380295, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=152 rssMB=3240.1484375", "t": 1787389535.9442832, "source": "proc.jsonl", "value": 151.9952889948918}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3162\u21923240 MB", "t": 1787389535.9442832, "source": "proc.jsonl", "value": 78.58984375}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7147", "t": 1787389536.9381502, "source": "threads.jsonl", "value": 147}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389536.9381502, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=278 rssMB=3259.6484375", "t": 1787389536.9444346, "source": "proc.jsonl", "value": 277.9579183392178}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7141", "t": 1787389537.938272, "source": "threads.jsonl", "value": 141}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389537.938272, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=154 rssMB=3310.8984375", "t": 1787389537.9445603, "source": "proc.jsonl", "value": 153.98065285585997}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3260\u21923311 MB", "t": 1787389537.9445603, "source": "proc.jsonl", "value": 51.25}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7156", "t": 1787389538.938391, "source": "threads.jsonl", "value": 156}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389538.938391, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=272 rssMB=3422.8984375", "t": 1787389538.9446144, "source": "proc.jsonl", "value": 271.9852798799198}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3311\u21923423 MB", "t": 1787389538.9446144, "source": "proc.jsonl", "value": 112.0}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7146", "t": 1787389539.9384797, "source": "threads.jsonl", "value": 146}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389539.9384797, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=252 rssMB=3480.1484375", "t": 1787389539.9448206, "source": "proc.jsonl", "value": 251.94804023389761}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3423\u21923480 MB", "t": 1787389539.9448206, "source": "proc.jsonl", "value": 57.25}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7151", "t": 1787389540.9386022, "source": "threads.jsonl", "value": 151}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389540.9386022, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=271 rssMB=3511.8984375", "t": 1787389540.9448535, "source": "proc.jsonl", "value": 270.99108391533366}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7145", "t": 1787389541.9387503, "source": "threads.jsonl", "value": 145}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389541.9387503, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=206 rssMB=3565.6953125", "t": 1787389541.9450057, "source": "proc.jsonl", "value": 205.9686698886421}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3512\u21923566 MB", "t": 1787389541.9450057, "source": "proc.jsonl", "value": 53.796875}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7140", "t": 1787389542.9388826, "source": "threads.jsonl", "value": 140}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389542.9388826, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=168 rssMB=3607.4453125", "t": 1787389542.945113, "source": "proc.jsonl", "value": 167.98197748902558}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7135", "t": 1787389543.9390037, "source": "threads.jsonl", "value": 135}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389543.9390037, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=216 rssMB=3633.7890625", "t": 1787389543.945172, "source": "proc.jsonl", "value": 215.98722914866713}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7142", "t": 1787389544.93913, "source": "threads.jsonl", "value": 142}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389544.93913, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=173 rssMB=3688.2890625", "t": 1787389544.9453003, "source": "proc.jsonl", "value": 172.97781227517032}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3634\u21923688 MB", "t": 1787389544.9453003, "source": "proc.jsonl", "value": 54.5}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7125", "t": 1787389545.9392645, "source": "threads.jsonl", "value": 125}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389545.9392645, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=275 rssMB=3735.7890625", "t": 1787389545.9454207, "source": "proc.jsonl", "value": 274.9668936058829}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7143", "t": 1787389546.9393902, "source": "threads.jsonl", "value": 143}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389546.9393902, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=216 rssMB=3811.0390625", "t": 1787389546.9455037, "source": "proc.jsonl", "value": 215.98208003905927}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3736\u21923811 MB", "t": 1787389546.9455037, "source": "proc.jsonl", "value": 75.25}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7148", "t": 1787389547.9394877, "source": "threads.jsonl", "value": 148}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389547.9394877, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=270 rssMB=3867.54296875", "t": 1787389547.9455633, "source": "proc.jsonl", "value": 269.98390770508615}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3811\u21923868 MB", "t": 1787389547.9455633, "source": "proc.jsonl", "value": 56.50390625}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7155", "t": 1787389548.939612, "source": "threads.jsonl", "value": 155}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389548.939612, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=246 rssMB=3944.40625", "t": 1787389548.9457898, "source": "proc.jsonl", "value": 245.94429419529783}
+{"kind": "rss_jump", "severity": "warn", "message": "RSS jump 3868\u21923944 MB", "t": 1787389548.9457898, "source": "proc.jsonl", "value": 76.86328125}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7152", "t": 1787389549.939736, "source": "threads.jsonl", "value": 152}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389549.939736, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=262 rssMB=3978.40625", "t": 1787389549.9458284, "source": "proc.jsonl", "value": 261.98988095266475}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7145", "t": 1787389550.9398534, "source": "threads.jsonl", "value": 145}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389550.9398534, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=179 rssMB=3995.65625", "t": 1787389550.9459023, "source": "proc.jsonl", "value": 178.98677113078818}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7141", "t": 1787389551.939991, "source": "threads.jsonl", "value": 141}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389551.939991, "source": "threads.jsonl", "value": 3}
+{"kind": "wchan", "severity": "info", "message": "wchan futex_wait\u00d7126", "t": 1787389552.9401178, "source": "threads.jsonl", "value": 126}
+{"kind": "wchan", "severity": "info", "message": "wchan __x64_sys_epoll_wait\u00d73", "t": 1787389552.9401178, "source": "threads.jsonl", "value": 3}
+{"kind": "cpu_spike", "severity": "warn", "message": "process cpu%=165 rssMB=4008.06640625", "t": 1787389552.9461305, "source": "proc.jsonl", "value": 164.98300727387848}
+{"kind": "futex", "severity": "warn", "message": "SLOW_FUTEX 6672 us tid=887601", "t": null, "source": "futex.bt.out", "line": 28}
+{"kind": "futex", "severity": "warn", "message": "SLOW_FUTEX 218036 us tid=887601", "t": null, "source": "futex.bt.out", "line": 35}
+{"kind": "futex", "severity": "warn", "message": "SLOW_FUTEX 14070 us tid=887601", "t": null, "source": "futex.bt.out", "line": 36}
+{"kind": "futex", "severity": "warn", "message": "SLOW_FUTEX 16719 us tid=887601", "t": null, "source": "futex.bt.out", "line": 37}
+{"kind": "counter", "severity": "info", "message": "futex_waits=1067462", "t": null, "source": "futex.bt.out", "value": 1067462}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 14686 us", "t": null, "source": "mono_gc.bt.out", "line": 43}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 12180 us", "t": null, "source": "mono_gc.bt.out", "line": 45}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 10333 us", "t": null, "source": "mono_gc.bt.out", "line": 47}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 18870 us", "t": null, "source": "mono_gc.bt.out", "line": 49}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 19596 us", "t": null, "source": "mono_gc.bt.out", "line": 51}
+{"kind": "gc", "severity": "warn", "message": "STW_PAUSE 12398 us", "t": null, "source": "mono_gc.bt.out", "line": 53}
+{"kind": "counter", "severity": "info", "message": "gc_little=33577", "t": null, "source": "mono_gc.bt.out", "value": 33577}

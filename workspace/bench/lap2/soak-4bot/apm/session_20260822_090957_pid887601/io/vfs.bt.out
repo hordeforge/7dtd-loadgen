@@ -1,0 +1,97 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:15:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:39:12-41: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:62:12-45: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:15:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:15:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @r_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:39:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:39:20-33: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @w_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:62:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:62:20-37: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @fsync_enter[tid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:16:5-27: WARNING: Return value discarded.
+    delete(@r_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:40:5-27: WARNING: Return value discarded.
+    delete(@w_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/soak-4bot/apm/session_20260822_090957_pid887601/bt/vfs.bt:63:5-31: WARNING: Return value discarded.
+    delete(@fsync_enter[tid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+17:10:03 @open_n: 58
+17:10:08 @open_n: 60
+17:10:13 @open_n: 60
+17:10:18 @open_n: 153
+17:10:23 @open_n: 155
+
+=== vfs_read latency us ===
+
+=== vfs_write latency us ===
+
+=== vfs_fsync latency us ===
+
+=== slow read stacks (>=1ms) ===
+
+=== slow write stacks (>=1ms) ===
+
+=== top openat paths ===
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/buzzcut.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/flattop_fro.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.2.7rg]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/screamer.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.2.7rg]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/gear/fitness.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back_long.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.0.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.-1.1.7rg]: 2
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/cornrows.bundle]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.0.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.1.7rg]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 15
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.0.7rg]: 119
+
+
+@open_n: 155
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/buzzcut.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/flattop_fro.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.2.7rg]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/zombies_assets_entities/zombies/screamer.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.2.7rg]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/gear/fitness.bundle]: 1
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/slicked_back_long.bundle]: 1
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.0.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.-1.1.7rg]: 2
+@open_path[/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Addressables/Standalone/player_assets_entities/player/male/hair/cornrows.bundle]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.0.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.1.7rg]: 2
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.2.1.7rg]: 3
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.1.1.7rg]: 15
+@open_path[/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/userdata/Saves/Navezgane/bench_stock_lap2/Region/r.0.0.7rg]: 119

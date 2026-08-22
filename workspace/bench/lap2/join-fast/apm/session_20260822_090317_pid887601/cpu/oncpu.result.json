@@ -1,0 +1,15 @@
+{
+  "schema": "7dtd.apm.collector-result.v1",
+  "name": "oncpu",
+  "layer": "cpu",
+  "status": "ok",
+  "exit_code": 124,
+  "duration_seconds": 30.293420727015473,
+  "tool": "bpftrace",
+  "tool_version": "bpftrace v0.26.0-1bac8a8da",
+  "sample_count": 74063,
+  "artifacts": [
+    "cpu/oncpu.bt.out"
+  ],
+  "message": "expected timeout"
+}

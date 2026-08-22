@@ -1,0 +1,147 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/block.bt:20:12-57: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @start[args.dev, args.sector]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/block.bt:20:12-57: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @start[args.dev, args.sector]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/block.bt:20:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @start[args.dev, args.sector]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/block.bt:20:20-49: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @start[args.dev, args.sector]) / 1000;
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap2/horde-lite/apm/session_20260822_090853_pid887601/bt/block.bt:21:5-43: WARNING: Return value discarded.
+    delete(@start[args.dev, args.sector]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+17:08:59 @issue_n: 5182
+@complete_n: 5133
+@lat_sum_us: 495975
+17:09:04 @issue_n: 6341
+@complete_n: 6262
+@lat_sum_us: 834692
+17:09:09 @issue_n: 7230
+@complete_n: 7140
+@lat_sum_us: 1063563
+17:09:14 @issue_n: 8366
+@complete_n: 8253
+@lat_sum_us: 1352346
+17:09:19 @issue_n: 10148
+@complete_n: 9965
+@lat_sum_us: 1610156
+17:09:24 @issue_n: 10578
+@complete_n: 10391
+@lat_sum_us: 1755399
+
+=== block RQ latency us ===
+@lat_us:
+[0]                    4 |                                                    |
+[1]                    5 |                                                    |
+[2, 4)                 1 |                                                    |
+[4, 8)               306 |@@                                                  |
+[8, 16)             1493 |@@@@@@@@@@@@@                                       |
+[16, 32)             609 |@@@@@                                               |
+[32, 64)             981 |@@@@@@@@                                            |
+[64, 128)           5718 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[128, 256)           738 |@@@@@@                                              |
+[256, 512)            44 |                                                    |
+[512, 1K)            124 |@                                                   |
+[1K, 2K)             212 |@                                                   |
+[2K, 4K)             130 |@                                                   |
+[4K, 8K)              24 |                                                    |
+[8K, 16K)              2 |                                                    |
+
+
+=== issue size bytes ===
+@issue_bytes:
+[0]                  156 |@                                                   |
+[1]                    0 |                                                    |
+[2, 4)                 0 |                                                    |
+[4, 8)                 0 |                                                    |
+[8, 16)                0 |                                                    |
+[16, 32)               0 |                                                    |
+[32, 64)               0 |                                                    |
+[64, 128)              0 |                                                    |
+[128, 256)             0 |                                                    |
+[256, 512)             0 |                                                    |
+[512, 1K)              2 |                                                    |
+[1K, 2K)               0 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)            2098 |@@@@@@@@@@@@@@@@@@@@@@                              |
+[8K, 16K)           1116 |@@@@@@@@@@@@                                        |
+[16K, 32K)          4815 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[32K, 64K)          1118 |@@@@@@@@@@@@                                        |
+[64K, 128K)          691 |@@@@@@@                                             |
+[128K, 256K)         582 |@@@@@@                                              |
+
+
+counts issue/complete:
+@issue_n: 10578
+@complete_n: 10391
+
+
+@complete_n: 10391
+@issue_bytes:
+[0]                  156 |@                                                   |
+[1]                    0 |                                                    |
+[2, 4)                 0 |                                                    |
+[4, 8)                 0 |                                                    |
+[8, 16)                0 |                                                    |
+[16, 32)               0 |                                                    |
+[32, 64)               0 |                                                    |
+[64, 128)              0 |                                                    |
+[128, 256)             0 |                                                    |
+[256, 512)             0 |                                                    |
+[512, 1K)              2 |                                                    |
+[1K, 2K)               0 |                                                    |
+[2K, 4K)               0 |                                                    |
+[4K, 8K)            2098 |@@@@@@@@@@@@@@@@@@@@@@                              |
+[8K, 16K)           1116 |@@@@@@@@@@@@                                        |
+[16K, 32K)          4815 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[32K, 64K)          1118 |@@@@@@@@@@@@                                        |
+[64K, 128K)          691 |@@@@@@@                                             |
+[128K, 256K)         582 |@@@@@@                                              |
+
+@issue_n: 10578
+@lat_sum_us: 1755399
+@lat_us:
+[0]                    4 |                                                    |
+[1]                    5 |                                                    |
+[2, 4)                 1 |                                                    |
+[4, 8)               306 |@@                                                  |
+[8, 16)             1493 |@@@@@@@@@@@@@                                       |
+[16, 32)             609 |@@@@@                                               |
+[32, 64)             981 |@@@@@@@@                                            |
+[64, 128)           5718 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[128, 256)           738 |@@@@@@                                              |
+[256, 512)            44 |                                                    |
+[512, 1K)            124 |@                                                   |
+[1K, 2K)             212 |@                                                   |
+[2K, 4K)             130 |@                                                   |
+[4K, 8K)              24 |                                                    |
+[8K, 16K)              2 |                                                    |
+
+@start[271581185, 3421075392]: 545589571578198
+@start[271581186, 3101671712]: 545589610571688
+@start[271581186, 3098124776]: 545589611148412
+@start[0, 0]: 545589627735670
+@start[271581185, 3328495488]: 545589634105651
+@start[271581185, 3421074880]: 545590109537159
+@start[271581184, 1401306112]: 545592520814642
+@start[271581186, 1386861856]: 545592521740945
+@start[271581185, 1307229312]: 545592524246657
+@start[271581185, 3325972640]: 545593032271316
+@start[271581185, 1165818864]: 545594212954969
+@start[271581185, 986119944]: 545594254898717
+@start[271581186, 1386960064]: 545595961717367
+@start[271581185, 860738000]: 545596004029278
+@start[271581185, 1307262848]: 545596019021715
+@start[271581184, 533161160]: 545596369324308
+@start[271581185, 3138591424]: 545597951605282
+@start[271581184, 3438641744]: 545600200184040
+@start[271581184, 1547572024]: 545605999842921
+@start[271581185, 1031363336]: 545607877961891
+@start[271581186, 53609928]: 545607883769904
+@start[271581186, 1386996128]: 545608324972466
+@start[271581186, 1387001184]: 545610280743769
+@start[271581186, 659660632]: 545619297293097
+@start[271581186, 862148552]: 545619298286275

@@ -1,0 +1,1185 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 17K of event 'cpu/cycles/Pu'
+# Event count (approx.): 106026858612
+#
+# Overhead       Samples  Command          Shared Object           Symbol                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+# ........  ............  ...............  ......................  .............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+#
+     9.33%           142  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c272d0
+            |
+            ---0x41c272d0
+               |          
+               |--8.65%--0x41c59184
+               |          
+                --0.69%--0x41c26e24
+
+     5.27%           100  7DaysToDieServe  libmonobdwgc-2.0.so     [.] GC_dirty_inner
+            |
+            ---GC_dirty_inner
+               |          
+               |--0.72%--0x413e8368
+               |          0x416ff934
+               |          0x411407a6
+               |          0x7feefb846428
+               |          0x7feefb9e578f
+               |          0x5582be808500
+               |          
+               |--0.62%--0x41bddbb4
+               |          0x41bd5b44
+               |          0x416f6adf
+               |          0x7feefb846428
+               |          0x7feefb9e578f
+               |          0x5582be808500
+               |          
+                --0.56%--0x7feed026ecff
+
+     3.91%            67  7DaysToDieServe  libc.so.6               [.] pthread_mutex_unlock
+            |
+            ---lll_mutex_unlock_optimized (inlined)
+               __pthread_mutex_unlock_usercnt (inlined)
+               ___pthread_mutex_unlock (inlined)
+               |          
+                --2.84%--0
+                          0x1c00000000000001
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+                          0x5582be7cede8
+
+     3.30%            70  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c5927a
+            |
+            ---0x41c5927a
+
+     3.06%            51  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c28747
+            |
+            ---0x41c28747
+               |          
+                --2.90%--0x41c59184
+
+     2.71%            48  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cda1d0
+            |
+            ---0x41cda1d0
+
+     2.69%            47  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041c28747
+            |
+            ---0x41c28747
+               |          
+               |--1.73%--0x41d16b64
+               |          0x41cd626c
+               |          0x41cd52e0
+               |          0x41ccfb84
+               |          0
+               |          0
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          0x5582bf3bc3a8
+               |          
+                --0.63%--0x41cd97f4
+                          |          
+                           --0.54%--0x41cd6b59
+                                     0x41cd5458
+                                     0x41cd52e0
+                                     0x41ccfb84
+                                     0
+                                     0
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+                                     0x5582bf3bc3a8
+
+     2.21%            37  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cda0a6
+            |
+            ---0x41cda0a6
+               0x41cd5458
+               0x41cd52e0
+               0x41ccfb84
+               0
+               0
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+
+     2.09%            41  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001acc12
+            |
+            ---0x7feefb9acc12
+               0
+
+     1.76%            31  7DaysToDieServe  libc.so.6               [.] pthread_mutex_trylock
+            |
+            ---___pthread_mutex_trylock (inlined)
+
+     1.59%            31  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c355
+            |
+            ---0x7feefba0c355
+
+     1.42%            21  7DaysToDieServe  [JIT] tid 887601        [.] 0x0000000041c28747
+            |
+            ---0x41c28747
+               |          
+                --0.76%--0x41cc9da5
+                          0x41a26c9c
+                          0x416f6adf
+                          0x7feefb846428
+                          0x7feefb9e578f
+                          0x5582be808500
+
+     1.33%            28  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001cb62c
+            |
+            ---0x7feefb9cb62c
+
+     1.24%            27  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x000000000020c35a
+            |
+            ---0x7feefba0c35a
+
+     0.92%            27  ChunkRegenerati  libmonobdwgc-2.0.so     [.] GC_dirty_inner
+            |
+            ---GC_dirty_inner
+               |          
+                --0.71%--0
+                          0
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+                          0x5582bf3bc3a8
+
+     0.89%            18  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001dcfa3
+            |
+            ---0x7feefb9dcfa3
+               |          
+                --0.59%--0x120000
+
+     0.76%            10  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001cb5b8
+            |
+            ---0x7feefb9cb5b8
+               |          
+                --0.57%--0
+                          0
+
+     0.74%             7  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041c272d0
+            |
+            ---0x41c272d0
+               0x41d16b64
+               0x41cd626c
+               0x41cd52e0
+               0x41ccfb84
+               0
+               0
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+
+     0.71%            17  7DaysToDieServe  [vdso]                  [.] __vdso_clock_gettime
+            |
+            ---__vdso_clock_gettime
+               __clock_gettime (inlined)
+
+     0.69%             2  7DaysToDieServe  [JIT] tid 887601        [.] 0x00000000416ff5c7
+            |
+            ---0x416ff5c7
+               0x411407a6
+               0x7feefb846428
+               0x7feefb9e578f
+               0x5582be808500
+
+     0.59%             1  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001cb75b
+            |
+            ---0x7feefb9cb75b
+               0x120000
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+               0x5582c16b7e40
+
+     0.58%             1  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041c55c28
+            |
+            ---0x41c55c28
+
+     0.57%            12  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001ce4d8
+            |
+            ---0x7feefb9ce4d8
+
+     0.55%             6  GenerateChunks   [JIT] tid 887601        [.] 0x0000000041b2d676
+            |
+            ---0x41b2d676
+               0x41a6a300
+               0x413821e6
+               0x4137da64
+               0x7feefb846428
+               0x7feefb9e578f
+               0x5582be808500
+
+     0.54%            11  7DaysToDieServe  libmonobdwgc-2.0.so     [.] 0x00000000001ac960
+            |
+            ---0x7feefb9ac960
+
+     0.54%            11  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cdb0b2
+            |
+            ---0x41cdb0b2
+
+     0.51%             2  ChunkRegenerati  [JIT] tid 887601        [.] 0x0000000041cd9f00
+            |
+            ---0x41cd9f00
+               0x41cd5458
+               0x41cd52e0
+               0x41ccfb84
+               0
+               0
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+               0x5582bf3bc3a8
+
+
+
+#
+# (Tip: To count events every 1000 msec: perf stat -I 1000)
+#
