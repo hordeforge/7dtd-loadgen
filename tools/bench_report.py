@@ -49,17 +49,46 @@ def bench_summary_from_log(path: Path) -> dict:
     return {}
 
 
-def apm_verdict(run_dir: Path) -> str:
-    """Best-effort APM lag verdict from the capture log/session."""
+def apm_summary(run_dir: Path) -> dict:
+    """Best-effort APM capture summary: lag verdict from apm.log, plus IPC and
+    per-layer scores from the session summary.json when present."""
+    out = {"verdict": "n/a", "ipc": None, "layers": {}}
     log = run_dir / "apm.log"
     if log.is_file():
         try:
             for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
                 if "lag diagnosis" in line or "lagVerdict" in line:
-                    return line.strip().split(":", 1)[-1].strip()[:80]
+                    out["verdict"] = line.strip().split(":", 1)[-1].strip()[:80]
+                    break
         except OSError:
             pass
-    return "n/a"
+    sessions = sorted((run_dir / "apm").glob("session_*/summary.json"))
+    if sessions:
+        try:
+            s = json.loads(sessions[-1].read_text(encoding="utf-8"))
+            for layer in s.get("layers") or []:
+                name = layer.get("layer")
+                score = layer.get("score")
+                if name and score is not None:
+                    out["layers"][name] = float(score)
+                sig = layer.get("signals") or {}
+                if name == "cpu" and sig.get("ipc") is not None:
+                    out["ipc"] = round(float(sig["ipc"]), 3)
+        except (ValueError, OSError, TypeError):
+            pass
+    return out
+
+
+def apm_cell(run_dir: Path) -> str:
+    """One report cell: 'verdict; ipc=..; scheduler=..' (layers with data)."""
+    a = apm_summary(run_dir)
+    parts = [a["verdict"]]
+    if a["ipc"] is not None:
+        parts.append(f"ipc={a['ipc']}")
+    top = sorted(a["layers"].items(), key=lambda kv: -kv[1])[:3]
+    for name, score in top:
+        parts.append(f"{name}={score:.0f}")
+    return "; ".join(parts)
 
 
 def load_lap(lap_dir: Path) -> dict:
@@ -88,7 +117,7 @@ def load_lap(lap_dir: Path) -> dict:
             "joinsFail": joins_fail,
             "hostLoad": f"{meta.get('hostLoadStart')}->{meta.get('hostLoadEnd')}",
             "bench": bench,
-            "apmVerdict": apm_verdict(meta_path.parent),
+            "apm": apm_cell(meta_path.parent),
         }
     return {"scenarios": scenarios}
 
@@ -100,7 +129,7 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
     lines.append(f"- scenarios: {', '.join(sorted(first))}")
     lines.append("\n## Per-lap scenario rows\n")
     lines.append("| lap | scenario | joins pass/fail | wall (s) | hostLoad | "
-                 "bench window | actions/s | active min/max | APM verdict |")
+                 "bench window | actions/s | active min/max | APM |")
     lines.append("|---|---|---|---|---|---|---|---|---|")
     for name, lap in laps:
         for sc in sorted(lap["scenarios"]):
@@ -114,7 +143,7 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
             wall = f"{s['wallS']}" if s["wallS"] is not None else "n/a"
             lines.append(f"| {name} | {sc} | {s['joinsPass']}/{s['joinsFail']} | "
                          f"{wall} | {s['hostLoad']} | {win} | {aps} | {active} | "
-                         f"{s['apmVerdict']} |")
+                         f"{s['apm']} |")
     # Repeatability across laps.
     if len(laps) >= 2:
         lines.append("\n## Repeatability (per-scenario wall, +-20% bound)\n")

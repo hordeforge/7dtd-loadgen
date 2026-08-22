@@ -95,3 +95,26 @@ def test_require_laps_gate(tmp_path):
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-q"]))
+
+
+def test_apm_cell_includes_ipc_and_layer_scores(tmp_path):
+    """A session summary.json with layers+ipc enriches the report cell."""
+    _make_lap(tmp_path, "lap1", {"bench": {
+        "scenario": "bench", "summary": {"pass": 16, "fail": 0},
+        "bench": {"actionsPerSec": 41.0}}})
+    scd = tmp_path / "lap1" / "bench"
+    apm = scd / "apm" / "session_x" / "summary.json"
+    apm.parent.mkdir(parents=True)
+    apm.write_text(json.dumps({
+        "layers": [
+            {"layer": "scheduler", "score": 50.0},
+            {"layer": "cpu", "score": 15.0, "signals": {"ipc": 2.062}},
+        ]}), encoding="utf-8")
+    (scd / "apm.log").write_text(
+        "finalized ...\n>> lag diagnosis: server met its tick deadline this window\n",
+        encoding="utf-8")
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+    assert "server met its tick deadline this window; ipc=2.062; scheduler=50; cpu=15" in md
