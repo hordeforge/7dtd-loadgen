@@ -1,0 +1,82 @@
+samples so far (by comm):
+@by_comm[LogicThread]: 1
+@by_comm[BatchDeleteObje]: 1
+@by_comm[ChunkCalc]: 1
+@by_comm[Job.Worker 13]: 1
+@by_comm[IPC:CSteamEngin]: 1
+@by_comm[Thread Pool Wor]: 1
+@by_comm[Job.Worker 30]: 1
+@by_comm[WaterSimulation]: 1
+@by_comm[ChunkRegenerati]: 1
+@by_comm[Job.Worker 6]: 2
+@by_comm[Job.Worker 22]: 2
+@by_comm[Job.Worker 25]: 2
+@by_comm[Job.Worker 20]: 2
+@by_comm[Job.Worker 27]: 2
+@by_comm[Job.Worker 16]: 2
+@by_comm[Job.Worker 14]: 3
+@by_comm[Job.Worker 0]: 3
+@by_comm[Job.Worker 26]: 3
+@by_comm[Job.Worker 21]: 3
+@by_comm[Job.Worker 19]: 3
+@by_comm[Job.Worker 24]: 3
+@by_comm[Job.Worker 23]: 3
+@by_comm[Job.Worker 12]: 3
+@by_comm[Job.Worker 29]: 3
+@by_comm[Job.Worker 7]: 4
+@by_comm[Job.Worker 5]: 4
+@by_comm[Job.Worker 28]: 4
+@by_comm[Job.Worker 17]: 4
+@by_comm[Job.Worker 10]: 4
+@by_comm[Job.Worker 15]: 5
+@by_comm[Job.Worker 4]: 5
+@by_comm[Job.Worker 9]: 5
+@by_comm[Job.Worker 3]: 6
+@by_comm[Job.Worker 18]: 6
+@by_comm[Job.Worker 11]: 7
+@by_comm[Job.Worker 2]: 8
+@by_comm[Job.Worker 8]: 8
+@by_comm[Job.Worker 1]: 8
+@by_comm[7DaysToDieServe]: 376
+samples so far (by comm):
+@by_comm[LogicThread]: 1
+@by_comm[CNet Encrypt:0]: 1
+@by_comm[ChunkCalc]: 1
+@by_comm[WaterSimulation]: 2
+@by_comm[SaveChunks /hom]: 2
+@by_comm[Job.Worker 12]: 3
+@by_comm[IPC:CSteamEngin]: 3
+@by_comm[BatchDeleteObje]: 3
+@by_comm[ChunkRegenerati]: 3
+@by_comm[Job.Worker 30]: 4
+@by_comm[Job.Worker 29]: 4
+@by_comm[Job.Worker 23]: 5
+@by_comm[Job.Worker 0]: 5
+@by_comm[Job.Worker 16]: 5
+@by_comm[Job.Worker 27]: 5
+@by_comm[Job.Worker 22]: 5
+@by_comm[Job.Worker 20]: 6
+@by_comm[Job.Worker 13]: 6
+@by_comm[Job.Worker 25]: 6
+@by_comm[Job.Worker 6]: 6
+@by_comm[Job.Worker 14]: 6
+@by_comm[Job.Worker 26]: 6
+@by_comm[Job.Worker 28]: 7
+@by_comm[Job.Worker 10]: 7
+@by_comm[Job.Worker 21]: 7
+@by_comm[Job.Worker 15]: 8
+@by_comm[Job.Worker 24]: 8
+@by_comm[Job.Worker 18]: 8
+@by_comm[Thread Pool Wor]: 8
+@by_comm[Job.Worker 19]: 8
+@by_comm[Job.Worker 9]: 9
+@by_comm[Job.Worker 11]: 9
+@by_comm[Job.Worker 7]: 9
+@by_comm[Job.Worker 17]: 10
+@by_comm[Job.Worker 5]: 10
+@by_comm[Job.Worker 4]: 11
+@by_comm[Job.Worker 3]: 11
+@by_comm[Job.Worker 8]: 13
+@by_comm[Job.Worker 1]: 17
+@by_comm[Job.Worker 2]: 18
+@by_comm[7DaysToDieServe]: 698

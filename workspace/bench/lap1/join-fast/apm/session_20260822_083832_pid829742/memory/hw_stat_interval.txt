@@ -1,0 +1,139 @@
+# started on Sat Aug 22 16:38:32 2026
+
+#           time             counts unit events
+     1.000862509      1,736,233,805      cycles:u                                                                (66.20%)
+     1.000862509      2,225,271,824      instructions:u                                                          (71.98%)
+     1.000862509         10,396,212      cache-misses:u                                                          (72.03%)
+     1.000862509                  0      context-switches:u                                                    
+     1.000862509                364      page-faults:u                                                         
+     2.001867106      2,294,054,529      cycles:u                                                                (57.76%)
+     2.001867106      3,177,333,291      instructions:u                                                          (65.89%)
+     2.001867106         10,493,828      cache-misses:u                                                          (69.11%)
+     2.001867106                  0      context-switches:u                                                    
+     2.001867106                477      page-faults:u                                                         
+     3.002862746      2,240,629,536      cycles:u                                                                (57.27%)
+     3.002862746      3,232,656,378      instructions:u                                                          (63.71%)
+     3.002862746         11,818,911      cache-misses:u                                                          (66.41%)
+     3.002862746                  0      context-switches:u                                                    
+     3.002862746                381      page-faults:u                                                         
+     4.004130248      2,550,683,491      cycles:u                                                                (56.06%)
+     4.004130248      3,768,854,547      instructions:u                                                          (62.27%)
+     4.004130248         10,732,131      cache-misses:u                                                          (66.05%)
+     4.004130248                  0      context-switches:u                                                    
+     4.004130248              1,022      page-faults:u                                                         
+     5.005497628      2,560,972,107      cycles:u                                                                (56.30%)
+     5.005497628      3,668,352,411      instructions:u                                                          (59.57%)
+     5.005497628         10,733,890      cache-misses:u                                                          (63.59%)
+     5.005497628                  0      context-switches:u                                                    
+     5.005497628              1,254      page-faults:u                                                         
+     6.005864579      2,194,034,640      cycles:u                                                                (57.62%)
+     6.005864579      2,792,339,293      instructions:u                                                          (59.78%)
+     6.005864579         10,455,987      cache-misses:u                                                          (61.39%)
+     6.005864579                  0      context-switches:u                                                    
+     6.005864579              1,328      page-faults:u                                                         
+     7.006864820      2,181,245,008      cycles:u                                                                (58.79%)
+     7.006864820      3,066,847,117      instructions:u                                                          (58.85%)
+     7.006864820         10,269,337      cache-misses:u                                                          (61.53%)
+     7.006864820                  0      context-switches:u                                                    
+     7.006864820              1,746      page-faults:u                                                         
+     8.007870883      2,839,896,252      cycles:u                                                                (60.73%)
+     8.007870883      4,459,311,157      instructions:u                                                          (60.45%)
+     8.007870883         10,627,693      cache-misses:u                                                          (60.49%)
+     8.007870883                  0      context-switches:u                                                    
+     8.007870883              1,456      page-faults:u                                                         
+     9.008873741      1,976,766,256      cycles:u                                                                (56.29%)
+     9.008873741      2,602,244,580      instructions:u                                                          (60.68%)
+     9.008873741         10,053,844      cache-misses:u                                                          (63.81%)
+     9.008873741                  0      context-switches:u                                                    
+     9.008873741              1,252      page-faults:u                                                         
+    10.009864927      2,397,530,193      cycles:u                                                                (57.60%)
+    10.009864927      3,548,336,319      instructions:u                                                          (63.34%)
+    10.009864927         10,853,129      cache-misses:u                                                          (62.70%)
+    10.009864927                  0      context-switches:u                                                    
+    10.009864927              1,154      page-faults:u                                                         
+    11.011110482      2,130,762,495      cycles:u                                                                (56.40%)
+    11.011110482      4,098,964,416      instructions:u                                                          (60.47%)
+    11.011110482         10,569,409      cache-misses:u                                                          (63.44%)
+    11.011110482                  0      context-switches:u                                                    
+    11.011110482                492      page-faults:u                                                         
+    12.011865316      1,838,109,098      cycles:u                                                                (57.68%)
+    12.011865316      2,164,371,313      instructions:u                                                          (59.79%)
+    12.011865316         10,230,024      cache-misses:u                                                          (63.43%)
+    12.011865316                  0      context-switches:u                                                    
+    12.011865316                 40      page-faults:u                                                         
+    13.012862535      1,830,555,053      cycles:u                                                                (59.11%)
+    13.012862535      2,184,527,017      instructions:u                                                          (58.62%)
+    13.012862535         10,740,773      cache-misses:u                                                          (62.54%)
+    13.012862535                  0      context-switches:u                                                    
+    13.012862535              1,044      page-faults:u                                                         
+    14.013920820      1,797,092,598      cycles:u                                                                (55.56%)
+    14.013920820      2,147,712,316      instructions:u                                                          (61.02%)
+    14.013920820         10,398,554      cache-misses:u                                                          (65.63%)
+    14.013920820                  0      context-switches:u                                                    
+    14.013920820                540      page-faults:u                                                         
+    15.014863519      1,802,445,424      cycles:u                                                                (58.27%)
+    15.014863519      2,186,336,762      instructions:u                                                          (59.04%)
+    15.014863519         10,753,149      cache-misses:u                                                          (62.24%)
+    15.014863519                  0      context-switches:u                                                    
+    15.014863519              1,249      page-faults:u                                                         
+    16.015862393      1,933,163,320      cycles:u                                                                (59.05%)
+    16.015862393      2,146,666,587      instructions:u                                                          (56.10%)
+    16.015862393         10,077,723      cache-misses:u                                                          (59.78%)
+    16.015862393                  0      context-switches:u                                                    
+    16.015862393                823      page-faults:u                                                         
+    17.017167074      2,215,871,791      cycles:u                                                                (60.03%)
+    17.017167074      2,871,484,025      instructions:u                                                          (56.19%)
+    17.017167074         10,445,017      cache-misses:u                                                          (61.79%)
+    17.017167074                  0      context-switches:u                                                    
+    17.017167074              1,171      page-faults:u                                                         
+    18.017870524      2,299,583,356      cycles:u                                                                (59.31%)
+    18.017870524      2,809,484,547      instructions:u                                                          (57.55%)
+    18.017870524         10,669,468      cache-misses:u                                                          (60.66%)
+    18.017870524                  0      context-switches:u                                                    
+    18.017870524              1,663      page-faults:u                                                         
+    19.018889088      1,917,396,591      cycles:u                                                                (60.87%)
+    19.018889088      2,189,508,876      instructions:u                                                          (63.55%)
+    19.018889088         10,375,738      cache-misses:u                                                          (59.94%)
+    19.018889088                  0      context-switches:u                                                    
+    19.018889088              1,881      page-faults:u                                                         
+    20.019870983      2,874,384,215      cycles:u                                                                (60.32%)
+    20.019870983      4,007,601,110      instructions:u                                                          (62.69%)
+    20.019870983         11,154,945      cache-misses:u                                                          (62.91%)
+    20.019870983                  0      context-switches:u                                                    
+    20.019870983              1,994      page-faults:u                                                         
+    21.020863138      2,511,662,527      cycles:u                                                                (56.11%)
+    21.020863138      3,790,714,648      instructions:u                                                          (60.38%)
+    21.020863138         10,083,071      cache-misses:u                                                          (65.33%)
+    21.020863138                  0      context-switches:u                                                    
+    21.020863138              1,653      page-faults:u                                                         
+    22.022142393      2,576,201,821      cycles:u                                                                (56.60%)
+    22.022142393      3,531,247,194      instructions:u                                                          (58.99%)
+    22.022142393         10,419,502      cache-misses:u                                                          (61.89%)
+    22.022142393                  0      context-switches:u                                                    
+    22.022142393              1,690      page-faults:u                                                         
+    23.022863200      1,962,318,818      cycles:u                                                                (60.42%)
+    23.022863200      2,187,808,228      instructions:u                                                          (56.11%)
+    23.022863200         11,532,300      cache-misses:u                                                          (57.97%)
+    23.022863200                  0      context-switches:u                                                    
+    23.022863200              1,326      page-faults:u                                                         
+    24.024028863      1,962,451,639      cycles:u                                                                (62.06%)
+    24.024028863      2,034,389,373      instructions:u                                                          (55.43%)
+    24.024028863          9,885,618      cache-misses:u                                                          (55.61%)
+    24.024028863                  0      context-switches:u                                                    
+    24.024028863                220      page-faults:u                                                         
+    25.024873022      2,361,473,174      cycles:u                                                                (64.01%)
+    25.024873022      3,152,860,747      instructions:u                                                          (55.30%)
+    25.024873022          9,847,838      cache-misses:u                                                          (55.04%)
+    25.024873022                  0      context-switches:u                                                    
+    25.024873022                186      page-faults:u                                                         
+    26.025861945      3,015,049,785      cycles:u                                                                (62.98%)
+    26.025861945      4,211,513,853      instructions:u                                                          (60.68%)
+    26.025861945         10,123,251      cache-misses:u                                                          (58.47%)
+    26.025861945                  0      context-switches:u                                                    
+    26.025861945                 92      page-faults:u                                                         
+#           time             counts unit events
+    27.026862659      1,890,861,279      cycles:u                                                                (61.54%)
+    27.026862659      2,054,625,025      instructions:u                                                          (63.16%)
+    27.026862659         10,102,391      cache-misses:u                                                          (58.83%)
+    27.026862659                  0      context-switches:u                                                    
+    27.026862659                 59      page-faults:u                                                         

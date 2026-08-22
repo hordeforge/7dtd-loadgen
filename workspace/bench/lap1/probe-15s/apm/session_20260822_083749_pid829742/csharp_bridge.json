@@ -1,0 +1,246 @@
+{
+  "schema": "7dtd.apm.bridge.v3",
+  "session": "session_20260822_083749_pid829742",
+  "attribution": {},
+  "stall_correlation": [],
+  "top_managed_sections": [],
+  "top_native_frames": [
+    {
+      "frame": "[jit]",
+      "weight": 20483
+    },
+    {
+      "frame": "[UnityPlayer.so]",
+      "weight": 5321
+    },
+    {
+      "frame": "[libmonobdwgc-2.0.so]",
+      "weight": 582
+    },
+    {
+      "frame": "[libc.so.6]",
+      "weight": 452
+    },
+    {
+      "frame": "[perf-829742.map]",
+      "weight": 415
+    },
+    {
+      "frame": "[steamclient.so]",
+      "weight": 160
+    },
+    {
+      "frame": "__pthread_cond_wait_common",
+      "weight": 140
+    },
+    {
+      "frame": "___pthread_cond_timedwait64",
+      "weight": 97
+    },
+    {
+      "frame": "___pthread_mutex_unlock",
+      "weight": 91
+    },
+    {
+      "frame": "__pthread_mutex_unlock_usercnt",
+      "weight": 87
+    },
+    {
+      "frame": "lll_mutex_unlock_optimized",
+      "weight": 85
+    },
+    {
+      "frame": "internal_syscall_cancel",
+      "weight": 63
+    },
+    {
+      "frame": "GC_suspend_handler",
+      "weight": 46
+    },
+    {
+      "frame": "___pthread_cond_wait",
+      "weight": 45
+    },
+    {
+      "frame": "syscall_cancel",
+      "weight": 45
+    },
+    {
+      "frame": "__pthread_cleanup_pop",
+      "weight": 43
+    },
+    {
+      "frame": "__nanosleep",
+      "weight": 40
+    },
+    {
+      "frame": "epoll_wait",
+      "weight": 39
+    },
+    {
+      "frame": "usleep",
+      "weight": 38
+    },
+    {
+      "frame": "___pthread_mutex_trylock",
+      "weight": 37
+    },
+    {
+      "frame": "mono_threads_exit_gc_safe_region_internal",
+      "weight": 28
+    },
+    {
+      "frame": "syscall",
+      "weight": 28
+    },
+    {
+      "frame": "GC_dirty_inner",
+      "weight": 28
+    },
+    {
+      "frame": "__condvar_confirm_wakeup",
+      "weight": 27
+    },
+    {
+      "frame": "mono_thread_info_uninstall_interrupt",
+      "weight": 22
+    }
+  ],
+  "bridges": [
+    {
+      "id": "gc_mono",
+      "title": "Mono / Boehm GC",
+      "evidence": {
+        "native_frames": [
+          {
+            "frame": "[libmonobdwgc-2.0.so]",
+            "weight": 582
+          }
+        ],
+        "layer_signals": {
+          "collect_a_little_hits": 49668.0
+        },
+        "managed_sections": []
+      },
+      "derived": {
+        "native_weight_share": 0.0203,
+        "section_heat_ms": 0,
+        "thresholds": {
+          "native_share_min": 0.005,
+          "section_score_min_ms": 1.0
+        }
+      },
+      "inference": {
+        "confidence": 0.79,
+        "priority": 13.47,
+        "required_layer": "runtime_gc",
+        "csharp": [
+          "System.GC pressure from managed allocations on the main sim thread",
+          "Common alloc sites: LINQ in hot loops, string concat in AI, new List per tick"
+        ]
+      },
+      "experiment": {
+        "suggestion": "Apply one lever below, re-run the identical `7dtd-apm scenario run` workload, then `7dtd-apm compare` the before/after sessions.",
+        "harmony_targets": [
+          "GameManager.gmUpdate",
+          "World.TickEntities",
+          "EntityAlive.updateTasks",
+          "EntityAlive.OnUpdateLive",
+          "EAIManager.Update"
+        ],
+        "mod_apis": [
+          "EfficientServer: APM bridge DeepMode → find which section correlates with GC",
+          "Harmony: remove allocs in Prefix/Postfix on listed targets",
+          "Pool List/Dictionary; avoid string.Format in entity tick",
+          "XML: reduce entity count (MaxSpawnedZombies) to cut GC volume"
+        ]
+      }
+    },
+    {
+      "id": "futex_lock",
+      "title": "Lock / futex contention",
+      "evidence": {
+        "native_frames": [
+          {
+            "frame": "__pthread_cond_wait_common",
+            "weight": 140
+          },
+          {
+            "frame": "___pthread_cond_timedwait64",
+            "weight": 97
+          },
+          {
+            "frame": "___pthread_mutex_unlock",
+            "weight": 91
+          },
+          {
+            "frame": "__pthread_mutex_unlock_usercnt",
+            "weight": 87
+          },
+          {
+            "frame": "___pthread_cond_wait",
+            "weight": 45
+          },
+          {
+            "frame": "___pthread_mutex_trylock",
+            "weight": 37
+          },
+          {
+            "frame": "___pthread_mutex_lock",
+            "weight": 7
+          },
+          {
+            "frame": "pthread_mutex_unlock@plt",
+            "weight": 2
+          },
+          {
+            "frame": "pthread_mutex_lock@plt",
+            "weight": 1
+          }
+        ],
+        "layer_signals": {
+          "slow_futex_lines": 1.0
+        },
+        "managed_sections": []
+      },
+      "derived": {
+        "native_weight_share": 0.0177,
+        "section_heat_ms": 0,
+        "thresholds": {
+          "native_share_min": 0.005,
+          "section_score_min_ms": 1.0
+        }
+      },
+      "inference": {
+        "confidence": 0.79,
+        "priority": 13.17,
+        "required_layer": "sync_locks",
+        "csharp": [
+          "Managed lock (lock/Monitor) or native mutex under Mono/Unity",
+          "Often GC STW, thread pool, or net package queues"
+        ]
+      },
+      "experiment": {
+        "suggestion": "Apply one lever below, re-run the identical `7dtd-apm scenario run` workload, then `7dtd-apm compare` the before/after sessions.",
+        "harmony_targets": [
+          "GameManager.gmUpdate",
+          "ConnectionManager.Update",
+          "ThreadManager.UpdateMainThreadTasks"
+        ],
+        "mod_apis": [
+          "Host APM: open sync/futex.bt.out waiter stacks",
+          "If stacks show mono_gc_* → fix allocations (see gc_mono)",
+          "Avoid blocking IO inside Harmony on main thread",
+          "Do not hold locks across SpawnEntityInWorld storms generated by a controlled scenario"
+        ]
+      }
+    }
+  ],
+  "playbook_md": "## Recommended order of work\n\n### 1. Mono / Boehm GC (priority=13.47, conf=0.79)\nNative evidence (2.0% of sampled weight): [libmonobdwgc-2.0.so]\nStructured layer signals: collect_a_little_hits=49668.0\nC# surface:\n  - System.GC pressure from managed allocations on the main sim thread\n  - Common alloc sites: LINQ in hot loops, string concat in AI, new List per tick\nHarmony targets (start here):\n  - `GameManager.gmUpdate`\n  - `World.TickEntities`\n  - `EntityAlive.updateTasks`\n  - `EntityAlive.OnUpdateLive`\n  - `EAIManager.Update`\nMod / config levers:\n  - EfficientServer: APM bridge DeepMode → find which section correlates with GC\n  - Harmony: remove allocs in Prefix/Postfix on listed targets\n  - Pool List/Dictionary; avoid string.Format in entity tick\n  - XML: reduce entity count (MaxSpawnedZombies) to cut GC volume\nExperiment: Apply one lever below, re-run the identical `7dtd-apm scenario run` workload, then `7dtd-apm compare` the before/after sessions.\n\n### 2. Lock / futex contention (priority=13.17, conf=0.79)\nNative evidence (1.8% of sampled weight): __pthread_cond_wait_common, ___pthread_cond_timedwait64, ___pthread_mutex_unlock, __pthread_mutex_unlock_usercnt\nStructured layer signals: slow_futex_lines=1.0\nC# surface:\n  - Managed lock (lock/Monitor) or native mutex under Mono/Unity\n  - Often GC STW, thread pool, or net package queues\nHarmony targets (start here):\n  - `GameManager.gmUpdate`\n  - `ConnectionManager.Update`\n  - `ThreadManager.UpdateMainThreadTasks`\nMod / config levers:\n  - Host APM: open sync/futex.bt.out waiter stacks\n  - If stacks show mono_gc_* → fix allocations (see gc_mono)\n  - Avoid blocking IO inside Harmony on main thread\n  - Do not hold locks across SpawnEntityInWorld storms generated by a controlled scenario\nExperiment: Apply one lever below, re-run the identical `7dtd-apm scenario run` workload, then `7dtd-apm compare` the before/after sessions.",
+  "how_to_use": {
+    "1": "Read bridges[] ordered by inference.priority",
+    "2": "Check evidence/derived to see exactly why each bridge fired",
+    "3": "Run the suggested experiment and compare compatible APM sessions",
+    "4": "For exact method bodies see 7dtd-research/il/<Type>.txt or ILSpy Assembly-CSharp"
+  }
+}

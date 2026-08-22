@@ -1,0 +1,54 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_083749_pid829742/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_083749_pid829742/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_083749_pid829742/bt/runqlat.bt:20:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_083749_pid829742/bt/runqlat.bt:20:20-40: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_083749_pid829742/bt/runqlat.bt:21:5-34: WARNING: Return value discarded.
+    delete(@wake[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== run-queue latency (us) for 7DaysToDieServe ===
+0-10us ideal; multi-ms = CPU contention or affinity issues
+@runqlat_us:
+[0]                 8107 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3221 |@@@@@@@@@@@@@@@@@@@@                                |
+[2, 4)               883 |@@@@@                                               |
+[4, 8)                91 |                                                    |
+[8, 16)               57 |                                                    |
+[16, 32)              27 |                                                    |
+[32, 64)              14 |                                                    |
+[64, 128)             11 |                                                    |
+[128, 256)            14 |                                                    |
+[256, 512)            16 |                                                    |
+[512, 1K)             16 |                                                    |
+[1K, 2K)               4 |                                                    |
+[2K, 4K)               1 |                                                    |
+[4K, 8K)               1 |                                                    |
+[8K, 16K)              1 |                                                    |
+
+
+
+@runqlat_us:
+[0]                 8107 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[1]                 3221 |@@@@@@@@@@@@@@@@@@@@                                |
+[2, 4)               883 |@@@@@                                               |
+[4, 8)                91 |                                                    |
+[8, 16)               57 |                                                    |
+[16, 32)              27 |                                                    |
+[32, 64)              14 |                                                    |
+[64, 128)             11 |                                                    |
+[128, 256)            14 |                                                    |
+[256, 512)            16 |                                                    |
+[512, 1K)             16 |                                                    |
+[1K, 2K)               4 |                                                    |
+[2K, 4K)               1 |                                                    |
+[4K, 8K)               1 |                                                    |
+[8K, 16K)              1 |                                                    |
+

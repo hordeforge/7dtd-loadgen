@@ -1,0 +1,2145 @@
+Mono path[0] = '/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/Managed'
+Mono config path = '/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/MonoBleedingEdge/etc'
+Preloaded 'libEOSSDK-Linux-Shipping.so'
+Preloaded 'libMagick.so'
+Preloaded 'lib_burst_generated.so'
+Preloaded 'libdiscord_partner_sdk.so'
+Preloaded 'libgetrss.so'
+Preloaded 'libsteam_api.so'
+Preloaded 'steamclient.so'
+Unable to preload the following plugins:
+	libEOSSDK-LinuxArm64-Shipping.so
+	libMouseLib.so
+Input System module state changed to: Initialized.
+[PhysX] Initialized MultithreadedTaskDispatcher with 32 workers.
+Loading player data from /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/data.unity3d
+Initialize engine version: 2022.3.62f2 (7670c08855a9)
+[Subsystems] Discovering subsystems at path /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/UnitySubsystems
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0; jobified=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.072 seconds
+- Finished resetting the current domain, in  0.001 seconds
+ERROR: Shader Hidden/LandClaimBoundary shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Sprites/Default shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Sprites/Mask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Legacy Shaders/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader GUI/Text Shader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Cube_UI_Glow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Cube_UI_Glow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Cube_UI_Glow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Unlit/Transparent Colored shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+The referenced script on this Behaviour (Game Object 'BlockProcessor') is missing!
+[PhysX] Initialized MultithreadedTaskDispatcher with 32 workers.
+UnloadTime: 0.335529 ms
+2026-08-22T16:37:09 0.000 INF Version: V 3.1.0 (b14) Compatibility Version: V 3.1.0, Build: LinuxServer 64 Bit
+2026-08-22T16:37:09 0.007 INF System information:
+2026-08-22T16:37:09 0.007 INF    OS: Linux 7.1 CachyOS Linux  64bit
+2026-08-22T16:37:09 0.008 INF    CPU: AMD Ryzen 9 9950X 16-Core Processor (cores: 32)
+2026-08-22T16:37:09 0.008 INF    RAM: 126412 MB
+2026-08-22T16:37:09 0.008 INF    GPU: Null Device (128 MB)
+2026-08-22T16:37:09 0.010 INF    Graphics API: NULL 1.0 [1.0] (shader level 3.0)
+2026-08-22T16:37:09 0.011 INF Local UTC offset: 8 hours
+2026-08-22T16:37:09 0.022 INF Command line arguments: ./7DaysToDieServer.x86_64 -logfile /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/server_prefab_Navezgane_4096_2026-08-22__16-37-08.txt -quit -batchmode -nographics -dedicated -configfile=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/serverconfig_prefab.xml
+2026-08-22T16:37:09 0.025 INF Parsing server configfile: /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/serverconfig_prefab.xml
+2026-08-22T16:37:09 0.041 INF Parsing server configfile successfully completed
+2026-08-22T16:37:09 0.042 INF Overriding default user data path to /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata
+2026-08-22T16:37:09 0.045 INF [Platform] Init
+2026-08-22T16:37:09 0.075 INF [Platform] Using native platform: Steam
+2026-08-22T16:37:09 0.075 INF [Platform] Using server platform: Steam
+2026-08-22T16:37:09 0.075 INF [Platform] Using server platform: LAN
+2026-08-22T16:37:09 0.075 INF [Platform] Using server platform: Local
+2026-08-22T16:37:09 0.077 INF Starting PlayerInputManager...
+2026-08-22T16:37:09 0.078 INF InControl (version 1.8.9 build 9376, native module = False, XInput = False)
+2026-08-22T16:37:09 0.080 INF InControl (version 1.8.9 build 9376)
+2026-08-22T16:37:09 0.144 INF UnityInputDeviceManager enabled.
+2026-08-22T16:37:09 0.153 INF [Platform] Initializing Steam
+2026-08-22T16:37:09 0.157 INF [Platform] Initializing LAN
+2026-08-22T16:37:09 0.157 INF [Platform] Initializing Local
+2026-08-22T16:37:09 0.166 INF [SaveDataUtils] InitStatic Begin
+2026-08-22T16:37:09 0.168 INF [SaveDataUtils] UserGameDataDir: /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata
+2026-08-22T16:37:09 0.168 INF [SaveDataUtils] SdPlayerPrefs -> Unity
+2026-08-22T16:37:09 0.168 INF [SaveDataUtils] InitStatic Complete
+2026-08-22T16:37:09 0.187 INF Last played version: V 3.1.0
+2026-08-22T16:37:09 0.187 INF Starting dedicated server level=Navezgane game name=bench_stock_lap1
+2026-08-22T16:37:09 0.187 INF Maximum allowed players: 64
+2026-08-22T16:37:09 0.187 INF Game mode: GameModeSurvival
+2026-08-22T16:37:09 0.187 INF Crossplay: False
+2026-08-22T16:37:09 0.188 INF Localization language from prefs: English
+2026-08-22T16:37:09 0.359 INF Awake IsFocused: True
+2026-08-22T16:37:09 0.359 INF Awake
+2026-08-22T16:37:09 0.508 INF Dedicated server only build
+ERROR: Shader Occlusion/DepthCopy shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:09 0.525 INF Occlusion: Awake
+2026-08-22T16:37:09 0.525 INF Texture quality is set to 3
+ERROR: Shader Legacy Shaders/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Entity Tint Mask' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Entity Tint Mask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Entity Tint Mask' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:09 0.572 INF [MODS] Start loading from: '/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Mods'
+2026-08-22T16:37:09 0.576 INF [MODS]   Trying to load from folder: '0_TFP_Harmony'
+2026-08-22T16:37:09 0.579 INF [MODS]     Loaded assembly 0Harmony (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/0Harmony.dll)
+2026-08-22T16:37:09 0.579 INF [MODS]     Loaded assembly Mono.Cecil.Mdb (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/Mono.Cecil.Mdb.dll)
+2026-08-22T16:37:09 0.579 INF [MODS]     Loaded assembly Mono.Cecil.Pdb (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/Mono.Cecil.Pdb.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly Mono.Cecil.Rocks (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/Mono.Cecil.Rocks.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly Mono.Cecil (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/Mono.Cecil.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.Backports (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.Backports.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.Core (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.Core.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.ILHelpers (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.ILHelpers.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.Iced (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.Iced.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.RuntimeDetour (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.RuntimeDetour.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly MonoMod.Utils (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/MonoMod.Utils.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly System.ValueTuple (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/System.ValueTuple.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded assembly TfpHarmony (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/TfpHarmony.dll)
+2026-08-22T16:37:09 0.580 INF [MODS]     Loaded Mod: TFP_Harmony (1.1.0.4)
+2026-08-22T16:37:09 0.580 INF [MODS]   Trying to load from folder: '7dtd-apm-bridge'
+2026-08-22T16:37:09 0.581 INF [MODS]     Loaded assembly 7dtd-apm-bridge (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/7dtd-apm-bridge.dll)
+2026-08-22T16:37:09 0.581 INF [MODS]     Loaded Mod: 7dtd-apm-bridge (2.0.0)
+2026-08-22T16:37:09 0.581 INF [MODS]   Trying to load from folder: 'BotMod'
+2026-08-22T16:37:09 0.581 INF [MODS]     Loaded assembly BotMod (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/BotMod/BotMod.dll)
+2026-08-22T16:37:09 0.581 INF [MODS]     Loaded Mod: BotMod (0.2.0)
+2026-08-22T16:37:09 0.581 INF [MODS]   Trying to load from folder: 'EfficientServer'
+2026-08-22T16:37:09 0.582 INF [MODS]     Loaded assembly EfficientServer (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/EfficientServer/EfficientServer.dll)
+2026-08-22T16:37:09 0.582 INF [MODS]     Loaded Mod: EfficientServer (1.17.0)
+2026-08-22T16:37:09 0.582 INF [MODS]   Trying to load from folder: 'ScriptOrderProbe'
+2026-08-22T16:37:09 0.582 INF [MODS]     Loaded assembly ScriptOrderProbe (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/ScriptOrderProbe/ScriptOrderProbe.dll)
+2026-08-22T16:37:09 0.582 INF [MODS]     Loaded Mod: ScriptOrderProbe (0.1.0)
+2026-08-22T16:37:09 0.582 INF [MODS] Initializing mod code
+2026-08-22T16:37:09 0.582 INF [MODS]   Initializing mod TFP_Harmony
+2026-08-22T16:37:09 0.590 INF [MODS]     Found ModAPI in assembly TfpHarmony (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/TfpHarmony.dll), creating instance
+2026-08-22T16:37:09 0.591 INF [MODS]       [Harmony] Init done
+Fallback handler could not load library /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/MonoBleedingEdge/x86_64/data-0x55ec9f10f3c0.so
+2026-08-22T16:37:09 0.758 INF [MODS]     Initialized code in mod 'TFP_Harmony' in assembly TfpHarmony (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/0_TFP_Harmony/TfpHarmony.dll)
+2026-08-22T16:37:09 0.758 INF [MODS]   Initializing mod 7dtd-apm-bridge
+2026-08-22T16:37:09 0.759 INF [MODS]     Found ModAPI in assembly 7dtd-apm-bridge (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/7dtd-apm-bridge.dll), creating instance
+2026-08-22T16:37:11 2.622 INF [7dtd-apm] ready version=2.1.0 hooks=85 output=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/telemetry
+2026-08-22T16:37:11 2.622 INF [MODS]     Initialized code in mod '7dtd-apm-bridge' in assembly 7dtd-apm-bridge (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/7dtd-apm-bridge/7dtd-apm-bridge.dll)
+2026-08-22T16:37:11 2.622 INF [MODS]   Initializing mod BotMod
+2026-08-22T16:37:11 2.622 INF [MODS]     Found ModAPI in assembly BotMod (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/BotMod/BotMod.dll), creating instance
+Fallback handler could not load library /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/MonoBleedingEdge/x86_64/monobdwgc-2.0
+2026-08-22T16:37:11 2.640 INF [BotMod] BotMod v0.2.0 loading. ModPath=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/BotMod Enabled=True DedicatedOnly=True
+2026-08-22T16:37:11 2.665 INF [BotMod] Harmony patches applied.
+2026-08-22T16:37:11 2.665 INF [BotMod] BotSurvivorPatch: EntityClass.AddClass not found — no inject.
+2026-08-22T16:37:11 2.665 INF [BotMod] BotSurvivorPatch: survivor still unavailable — bots stay soldier-pool.
+2026-08-22T16:37:11 2.665 INF [BotMod] BotMod init OK. Commands: bot help
+2026-08-22T16:37:11 2.665 INF [MODS]     Initialized code in mod 'BotMod' in assembly BotMod (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/BotMod/BotMod.dll)
+2026-08-22T16:37:11 2.665 INF [MODS]   Initializing mod EfficientServer
+2026-08-22T16:37:11 2.666 INF [MODS]     Found ModAPI in assembly EfficientServer (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/EfficientServer/EfficientServer.dll), creating instance
+2026-08-22T16:37:11 2.673 INF [EfficientServer] versions: mod=1.17.0.0 Assembly-CSharp=0.0.0.0 game=V 3.1.0 (b14); config(enabled=True, dedicatedOnly=True, gcGuard=True, gcIncremental=False)
+2026-08-22T16:37:11 2.676 INF [EfficientServer] patched AiLodPatch -> DMD<System.Void World:EntityActivityUpdate()>
+2026-08-22T16:37:11 2.677 INF [EfficientServer] patched UpdateTasksLodPatch -> DMD<System.Void EntityAlive:updateTasks()>
+2026-08-22T16:37:11 2.687 INF [EfficientServer] GcGuardPatch: rerouted 1 GC.Collect() call(s) in gmUpdate
+2026-08-22T16:37:11 2.692 INF [EfficientServer] patched GcGuardPatch -> DMD<System.Void GameManager:gmUpdate()>
+2026-08-22T16:37:11 2.694 INF [EfficientServer] patched AstarGraphThrottlePatch -> DMD<System.Void AstarManager:UpdateGraphs(System.Single)>
+2026-08-22T16:37:11 2.697 INF [EfficientServer] AstarMoveThresholdPatch: rescan dead-zone 100 -> 100
+2026-08-22T16:37:11 2.700 INF [EfficientServer] patched AstarMoveThresholdPatch -> DMD<System.Void AstarManager:UpdateGraphPos(AstarVoxelGrid, UnityEngine.Vector2)> (matched but config-disabled)
+2026-08-22T16:37:11 2.701 INF [EfficientServer] patched PathAdmissionPatch -> DMD<System.Void EntityAlive:FindPath(UnityEngine.Vector3, System.Single, System.Boolean, EAIBase)> (matched but config-disabled)
+2026-08-22T16:37:11 2.705 INF [EfficientServer] patched FastSendPatch -> DMD<System.Void ConnectionManager:SendPackage(NetPackage, System.Boolean, System.Int32, System.Int32, System.Int32, System.Nullable`1[[UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Int32, System.Boolean)>
+2026-08-22T16:37:11 2.721 INF [EfficientServer] InitScanPoolPatch: rerouted 1 LevelGridNode newarr
+2026-08-22T16:37:11 2.729 INF [EfficientServer] patched InitScanPoolPatch -> DMD<System.Boolean Pathfinding.LayerGridGraph+<ScanInternal>d__21:MoveNext()> (matched but config-disabled)
+2026-08-22T16:37:11 2.731 INF [EfficientServer] ChunkSendThrottlePatch: rerouted 1 chunk batch-cap constant
+2026-08-22T16:37:11 2.732 INF [EfficientServer] patched ChunkSendThrottlePatch -> DMD<System.Void ChunkManager:SendChunksToClients()> (matched but config-disabled)
+2026-08-22T16:37:11 2.734 INF [EfficientServer] patched ExplosionParticlesPatch -> DMD<UnityEngine.GameObject GameManager:ExplosionClient(UnityEngine.Vector3, UnityEngine.Quaternion, System.Int32, System.Int32, System.Single, System.Single, System.Int32, System.Collections.Generic.List`1[[BlockChangeInfo, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]])>
+2026-08-22T16:37:11 2.739 INF [EfficientServer] patched EntityDistributionStridePatch -> DMD<System.Void NetEntityDistribution:OnUpdateEntities()> (matched but config-disabled)
+2026-08-22T16:37:11 2.742 INF [EfficientServer] patched GovernorPatch -> DMD<System.Boolean GameManager:UpdateTick()>
+2026-08-22T16:37:11 2.747 INF [EfficientServer] patched TickGuardPatch -> DMD<System.Boolean GameManager:UpdateTick()>
+2026-08-22T16:37:11 2.749 INF [EfficientServer] patched BenchGodPatch -> DMD<System.Int32 EntityPlayer:DamageEntity(DamageSource, System.Int32, System.Boolean, System.Single)> (matched but config-disabled)
+2026-08-22T16:37:11 2.752 INF [EfficientServer] patched CrowdCollisionLodPatch -> DMD<System.Void Entity:ccEntityCollision(UnityEngine.Vector3)>
+2026-08-22T16:37:11 2.754 INF [EfficientServer] patched TargetFpsPatch -> DMD<System.Boolean GameManager:UpdateTick()> (matched but config-disabled)
+2026-08-22T16:37:11 2.756 INF [EfficientServer] patched UpdatePatch -> DMD<System.Void AvatarZombieController:Update()>
+2026-08-22T16:37:11 2.759 INF [EfficientServer] patched LateUpdatePatch -> DMD<System.Void AvatarZombieController:LateUpdate()>
+2026-08-22T16:37:11 2.759 INF [EfficientServer] init OK. matched methods=18 dedicatedOnly=True path=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/EfficientServer
+2026-08-22T16:37:11 2.759 INF [MODS]     Initialized code in mod 'EfficientServer' in assembly EfficientServer (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/EfficientServer/EfficientServer.dll)
+2026-08-22T16:37:11 2.759 INF [MODS]   Initializing mod ScriptOrderProbe
+2026-08-22T16:37:11 2.759 INF [MODS]     Found ModAPI in assembly ScriptOrderProbe (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/ScriptOrderProbe/ScriptOrderProbe.dll), creating instance
+2026-08-22T16:37:11 2.859 WRN [MODS][Harmony] AccessTools.Method: Could not find method for type AstarManager and name Update and parameters 
+2026-08-22T16:37:11 2.859 INF [ScriptOrder] method not found: AstarManager.Update
+2026-08-22T16:37:11 2.873 INF [ScriptOrder] script-order probe: 9 peers patched, 1 missing
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameFocus: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameAwake: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameStarting: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents MainMenuOpening: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents MainMenuOpened: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameStartDone: receiver#0 mod=(null) core=False
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameStartDone: receiver#1 mod=(null) core=False
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameStartDone: 2 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents CreateWorldDone: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameUpdate: receiver#0 mod=(null) core=False
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameUpdate: 1 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents WorldShuttingDown: receiver#0 mod=(null) core=False
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents WorldShuttingDown: 1 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents GameShutdown: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents ServerRegistered: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents UnityUpdate: 0 receiver(s)
+2026-08-22T16:37:11 2.882 INF [ScriptOrder] ModEvents PlayerLogin: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents PlayerJoinedGame: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents PlayerSpawning: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents PlayerSpawnedInWorld: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents PlayerDisconnected: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents SavePlayerData: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents GameMessage: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents ChatMessage: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents CalcChunkColorsDone: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents EntityKilled: 0 receiver(s)
+2026-08-22T16:37:11 2.883 INF [ScriptOrder] ModEvents dump complete
+2026-08-22T16:37:11 2.883 INF [MODS]     Initialized code in mod 'ScriptOrderProbe' in assembly ScriptOrderProbe (in /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/ScriptOrderProbe/ScriptOrderProbe.dll)
+2026-08-22T16:37:11 2.883 INF [MODS] Loading done
+2026-08-22T16:37:11 2.898 INF Loading permissions file at '/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/serveradmin.xml'
+2026-08-22T16:37:11 2.908 INF Loading permissions file done.
+2026-08-22T16:37:12 2.923 INF Creating TransformDebug GameObject
+ERROR: Shader Legacy Shaders/Particles/Additive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/partPyro_template_lit_B' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/partPyro_template_lit_B shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/partPyro_template_lit_B' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/partPyro_fireShader_A' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/partPyro_fireShader_A shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/partPyro_fireShader_A' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/bloodShader_O_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/bloodShader_O_packed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/bloodShader_O_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/bloodShader_U_packed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/bloodShader_T_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/bloodShader_T_packed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/bloodShader_T_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Particles/Standard Surface shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Autodesk Interactive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Autodesk XFade' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Autodesk XFade shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Autodesk XFade' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: '7DTD/7DTD_Glass' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/7DTD_Glass shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Glass' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: '7DTD/7DTD_Fire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/7DTD_Fire shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Fire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/vomitShader_T_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/vomitShader_T_packed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/vomitShader_T_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy/AlphaSelfIllum shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Legacy Shaders/Particles/Alpha Blended Premultiply shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Particles/Blood_Particle shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Standard Surface shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Standard Surface' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/shader_gas_lit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Particles/Standard Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Particles/Standard Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/shader_gas_customLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/shader_gas_customLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/shader_gas_customLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Transparent shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/S_transLit_NLA' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/S_transLit_NLA shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/S_transLit_NLA' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/surfaceShader_particleEnhanced' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/surfaceShader_particleEnhanced shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/surfaceShader_particleEnhanced' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Specular shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Bumped Specular shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Standard (Specular setup)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard (Specular setup) shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard (Specular setup)' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Particles/Alpha Blended shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Autodesk' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Autodesk shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Autodesk' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Glass Reflex' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Glass Reflex shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Glass Reflex' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/Lit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Lit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Lit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Particles/Additive (Soft) shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/BasicUV_TA' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/BasicUV_TA shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/BasicUV_TA' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Shader Forge/PaintParticle shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/shader_gas_unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/shader_gas_unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/shader_gas_unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Shader Forge/7DTD_Fire_New shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Bumped Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Transparent/Cutout/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Transparent/Cutout/Bumped Specular shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Transparent/Cutout/Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Transparent/Cutout/Bumped Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Transparent/Cutout/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Dismember/CopExplosion' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Dismember/CopExplosion shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Dismember/CopExplosion' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/Liquid' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Liquid shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Liquid' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Character shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Game/Dismember/Bloodcap shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/VertexLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Reflective/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/VertexLit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Reflective/Bumped Diffuse shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/Bumped Diffuse' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Legacy Shaders/Reflective/Bumped Specular shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Legacy Shaders/Reflective/Bumped Specular' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/sparkShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/sparkShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/sparkShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'stainedGlass' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader stainedGlass shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'stainedGlass' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/barrelLiquidShader_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/barrelLiquidShader_packed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/barrelLiquidShader_packed' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Hidden/Game/ChunkTransparent shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+2026-08-22T16:37:12 3.726 INF Loaded (local): events in 0.00
+2026-08-22T16:37:12 3.732 INF Loaded (local): rwgmixer in 0.00
+2026-08-22T16:37:12 3.736 INF Loaded (local): archetypes in 0.00
+2026-08-22T16:37:12 3.737 INF Loaded (local): loadingscreen in 0.00
+2026-08-22T16:37:12 3.743 INF Added 1336 subtitle data entries and 3 speaker colors
+2026-08-22T16:37:12 3.743 INF Loaded (local): subtitles in 0.00
+2026-08-22T16:37:12 3.744 INF Loaded (local): videos in 0.00
+2026-08-22T16:37:12 3.745 INF Loaded (local): sandbox_overrides in 0.00
+2026-08-22T16:37:12 3.745 INF WorldStaticData.Init() needed 0.800 s
+2026-08-22T16:37:12 3.746 INF Started Telnet on 8084
+2026-08-22T16:37:12 3.755 WRN [Discord] Full Discord integration only available when running with EOS cross platform provider!
+2026-08-22T16:37:12 3.758 INF [PartyQuests] Initialized
+2026-08-22T16:37:12 3.758 INF Awake done in 3399 ms
+2026-08-22T16:37:12 3.791 INF [ScriptOrder] frame=1 seq=1 GameManager.FixedUpdate
+2026-08-22T16:37:12 3.792 INF [ScriptOrder] frame=1 seq=2 Origin.FixedUpdate
+2026-08-22T16:37:12 3.793 INF [ScriptOrder] frame=1 seq=3 SdtdConsole.Update
+2026-08-22T16:37:12 3.794 INF [ScriptOrder] frame=1 seq=4 ConnectionManager.Update
+2026-08-22T16:37:12 3.795 INF [ScriptOrder] frame=1 seq=5 GameManager.Update
+2026-08-22T16:37:12 3.822 INF [7dtd-apm] APM updates=1 gmUpdateAvg=13.55ms tickAvg=0.00ms spikes=0 sections=83
+2026-08-22T16:37:12 3.832 INF [ScriptOrder] frame=1 seq=6 ConnectionManager.LateUpdate
+2026-08-22T16:37:12 3.832 INF [ScriptOrder] frame=1 seq=7 GameManager.LateUpdate
+2026-08-22T16:37:12 3.842 INF [ScriptOrder] frame=2 seq=8 GameManager.FixedUpdate
+2026-08-22T16:37:12 3.842 INF [ScriptOrder] frame=2 seq=9 Origin.FixedUpdate
+2026-08-22T16:37:12 3.842 INF [ScriptOrder] frame=2 seq=10 SdtdConsole.Update
+2026-08-22T16:37:12 3.842 INF [ScriptOrder] frame=2 seq=11 ConnectionManager.Update
+2026-08-22T16:37:12 3.842 INF [ScriptOrder] frame=2 seq=12 GameManager.Update
+2026-08-22T16:37:12 3.854 INF [ScriptOrder] frame=2 seq=13 ConnectionManager.LateUpdate
+2026-08-22T16:37:12 3.854 INF [ScriptOrder] frame=2 seq=14 GameManager.LateUpdate
+2026-08-22T16:37:12 3.854 INF [ScriptOrder] frame=3 seq=15 SdtdConsole.Update
+2026-08-22T16:37:12 3.854 INF [ScriptOrder] frame=3 seq=16 ConnectionManager.Update
+2026-08-22T16:37:12 3.854 INF [ScriptOrder] frame=3 seq=17 GameManager.Update
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=3 seq=18 ConnectionManager.LateUpdate
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=3 seq=19 GameManager.LateUpdate
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=4 seq=20 GameManager.FixedUpdate
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=4 seq=21 Origin.FixedUpdate
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=4 seq=22 SdtdConsole.Update
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=4 seq=23 ConnectionManager.Update
+2026-08-22T16:37:12 3.865 INF [ScriptOrder] frame=4 seq=24 GameManager.Update
+2026-08-22T16:37:12 3.876 INF [ScriptOrder] frame=4 seq=25 ConnectionManager.LateUpdate
+2026-08-22T16:37:12 3.876 INF [ScriptOrder] frame=4 seq=26 GameManager.LateUpdate
+2026-08-22T16:37:13 4.385 INF [ScriptOrder] frame=60 seq=352 GameManager.FixedUpdate
+2026-08-22T16:37:13 4.385 INF [ScriptOrder] frame=60 seq=353 Origin.FixedUpdate
+2026-08-22T16:37:13 4.385 INF [ScriptOrder] frame=60 seq=354 SdtdConsole.Update
+2026-08-22T16:37:13 4.385 INF [ScriptOrder] frame=60 seq=355 ConnectionManager.Update
+2026-08-22T16:37:13 4.385 INF [ScriptOrder] frame=60 seq=356 GameManager.Update
+2026-08-22T16:37:13 4.393 INF [ScriptOrder] frame=60 seq=357 ConnectionManager.LateUpdate
+2026-08-22T16:37:13 4.393 INF [ScriptOrder] frame=60 seq=358 GameManager.LateUpdate
+2026-08-22T16:37:13 4.859 INF [ScriptOrder] frame=120 seq=700 SdtdConsole.Update
+2026-08-22T16:37:13 4.859 INF [ScriptOrder] frame=120 seq=701 ConnectionManager.Update
+2026-08-22T16:37:13 4.859 INF [ScriptOrder] frame=120 seq=702 GameManager.Update
+2026-08-22T16:37:13 4.868 INF [ScriptOrder] frame=120 seq=703 ConnectionManager.LateUpdate
+2026-08-22T16:37:13 4.868 INF [ScriptOrder] frame=120 seq=704 GameManager.LateUpdate
+2026-08-22T16:37:14 5.378 INF [ScriptOrder] frame=180 seq=1052 SdtdConsole.Update
+2026-08-22T16:37:14 5.378 INF [ScriptOrder] frame=180 seq=1053 ConnectionManager.Update
+2026-08-22T16:37:14 5.378 INF [ScriptOrder] frame=180 seq=1054 GameManager.Update
+2026-08-22T16:37:14 5.394 INF [ScriptOrder] frame=180 seq=1055 ConnectionManager.LateUpdate
+2026-08-22T16:37:14 5.394 INF [ScriptOrder] frame=180 seq=1056 GameManager.LateUpdate
+2026-08-22T16:37:14 5.855 INF [ScriptOrder] frame=240 seq=1400 SdtdConsole.Update
+2026-08-22T16:37:14 5.855 INF [ScriptOrder] frame=240 seq=1401 ConnectionManager.Update
+2026-08-22T16:37:14 5.855 INF [ScriptOrder] frame=240 seq=1402 GameManager.Update
+2026-08-22T16:37:14 5.862 INF [ScriptOrder] frame=240 seq=1403 ConnectionManager.LateUpdate
+2026-08-22T16:37:14 5.862 INF [ScriptOrder] frame=240 seq=1404 GameManager.LateUpdate
+2026-08-22T16:37:15 6.334 INF [PermissionsManager] ResolvePermissions(_perms: [All], _canPrompt: False)
+2026-08-22T16:37:15 6.344 INF [PermissionsManager] ResolvePermissions(_perms: [All], _canPrompt: False) Fetching Title Storage Overrides...
+2026-08-22T16:37:15 6.344 INF [PermissionsManager] ResolvePermissions(_perms: [All], _canPrompt: False) Fetched Title Storage Overrides!
+2026-08-22T16:37:15 6.346 INF NET: Starting server protocols
+2026-08-22T16:37:15 6.347 INF [NET] Disabling protocol: SteamNetworking
+2026-08-22T16:37:15 6.360 INF NET: LiteNetLib server started
+2026-08-22T16:37:15 6.361 INF StartGame
+2026-08-22T16:37:15 6.362 INF NetPackageManager Init
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1748 GameManager.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1749 Origin.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1750 GameManager.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1751 Origin.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1752 GameManager.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1753 Origin.FixedUpdate
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1754 SdtdConsole.Update
+2026-08-22T16:37:15 6.385 INF [ScriptOrder] frame=300 seq=1755 ConnectionManager.Update
+2026-08-22T16:37:15 6.386 INF [ScriptOrder] frame=300 seq=1756 GameManager.Update
+2026-08-22T16:37:15 6.396 INF [ScriptOrder] frame=300 seq=1757 ConnectionManager.LateUpdate
+2026-08-22T16:37:15 6.396 INF [ScriptOrder] frame=300 seq=1758 GameManager.LateUpdate
+2026-08-22T16:37:15 6.428 INF Persistent GamePrefs saved
+GamePref.AdminFileName = serveradmin.xml
+GamePref.AirDropFrequency = 0
+GamePref.AirDropMarker = False
+GamePref.AISmellMode = 3
+GamePref.AllowSpawnNearBackpack = True
+GamePref.AllowSpawnNearFriend = 2
+GamePref.AutopilotMode = 0
+GamePref.BedrollDeadZoneSize = 15
+GamePref.BedrollExpiryTime = 45
+GamePref.BiomeProgression = True
+GamePref.BlockDamageAI = 100
+GamePref.BlockDamageAIBM = 100
+GamePref.BlockDamagePlayer = 100
+GamePref.BloodMoonEnemyCount = 8
+GamePref.BloodMoonFrequency = 0
+GamePref.BloodMoonRange = 0
+GamePref.BloodMoonWarning = 8
+GamePref.BuildCreate = False
+GamePref.CameraRestrictionMode = 0
+GamePref.ConnectToServerIP = 127.0.0.1
+GamePref.ConnectToServerPort = 26900
+GamePref.CreateLevelDim = 4096
+GamePref.CreateLevelName = My Level
+GamePref.CreativeMenuEnabled = False
+GamePref.DayCount = 3
+GamePref.DayLightLength = 12
+GamePref.DayNightLength = 40
+GamePref.DeathPenalty = 1
+GamePref.DebugMenuEnabled = False
+GamePref.DebugMenuShowTasks = False
+GamePref.DebugPanelsEnabled = -
+GamePref.DebugStopEnemiesMoving = False
+GamePref.DiscordAutoJoinVoiceMode = 0
+GamePref.DiscordDisabled = False
+GamePref.DiscordDmPrivacyMode = True
+GamePref.DiscordFirstTimeInfoShown = False
+GamePref.DiscordInputVolume = 1
+GamePref.DiscordLastAccountType = 0
+GamePref.DiscordMuteDmNotifications = True
+GamePref.DiscordOutputVolume = 1
+GamePref.DiscordSelectedInputDevice = default
+GamePref.DiscordSelectedOutputDevice = default
+GamePref.DiscordVoiceModePtt = False
+GamePref.DiscordVoiceVadModeAuto = True
+GamePref.DiscordVoiceVadThreshold = -60
+GamePref.DropOnDeath = 1
+GamePref.DropOnQuit = 0
+GamePref.DynamicMeshDistance = 1000
+GamePref.DynamicMeshEnabled = False
+GamePref.DynamicMeshLandClaimBuffer = 3
+GamePref.DynamicMeshLandClaimOnly = True
+GamePref.DynamicMeshMaxItemCache = 3
+GamePref.DynamicMeshMaxRegionCache = 1
+GamePref.DynamicMeshUseImposters = False
+GamePref.DynamicSpawner = 
+GamePref.EACEnabled = False
+GamePref.EnableMapRendering = False
+GamePref.EnemyDifficulty = 1
+GamePref.EnemySpawnMode = True
+GamePref.EulaLatestVersion = 0
+GamePref.EulaVersionAccepted = -1
+GamePref.FavoriteServersList = 
+GamePref.FragLimit = 20
+GamePref.GameDifficulty = 1
+GamePref.GameGuidClient = 
+GamePref.GameMode = GameModeSurvival
+GamePref.GameName = bench_stock_lap1
+GamePref.GameNameClient = My Game
+GamePref.GameSaveStorageType = 0
+GamePref.GameVersion = V 3.1.0
+GamePref.GameWorld = Navezgane
+GamePref.GameWorldLocationType = 5
+GamePref.HideCommandExecutionLog = 0
+GamePref.IgnoreEOSSanctions = True
+GamePref.JarRefund = 60
+GamePref.JoiningOptions = True
+GamePref.LandClaimCount = 5
+GamePref.LandClaimDeadZone = 30
+GamePref.LandClaimDecayMode = 0
+GamePref.LandClaimExpiryTime = 7
+GamePref.LandClaimOfflineDelay = 0
+GamePref.LandClaimOfflineDurabilityModifier = 4
+GamePref.LandClaimOnlineDurabilityModifier = 4
+GamePref.LandClaimSize = 41
+GamePref.Language = English
+GamePref.LanguageBrowser = 
+GamePref.LastGameResetRevision = 0
+GamePref.LastLoadedPrefab = 
+GamePref.LastLoadingTipRead = -1
+GamePref.LootAbundance = 100
+GamePref.LootRespawnDays = 7
+GamePref.LootTimer = 
+GamePref.MatchLength = 10
+GamePref.MaxChunkAge = -1
+GamePref.MaxQueuedMeshLayers = 500
+GamePref.MaxSpawnedAnimals = 20
+GamePref.MaxSpawnedZombies = 16
+GamePref.MaxUncoveredMapChunksPerPlayer = 131072
+GamePref.NoGraphicsMode = True
+GamePref.OptionsAllowController = True
+GamePref.OptionsAmbientVolumeLevel = 1
+GamePref.OptionsAudioOcclusion = False
+GamePref.OptionsAutoPartyWithFriends = True
+GamePref.OptionsBackgroundGlobalOpacity = 0.95
+GamePref.OptionsBindingsResetRevision = 0
+GamePref.OptionsChatCommunication = True
+GamePref.OptionsControllerAimAssists = True
+GamePref.OptionsControllerCursorHoverSensitivity = 0.5
+GamePref.OptionsControllerCursorSnap = True
+GamePref.OptionsControllerIconStyle = 0
+GamePref.OptionsControllerJoystickLayout = 0
+GamePref.OptionsControllerLookAcceleration = 4
+GamePref.OptionsControllerLookAxisDeadzone = 0.1
+GamePref.OptionsControllerLookInvert = False
+GamePref.OptionsControllerMoveAxisDeadzone = 0.1
+GamePref.OptionsControllerSensitivityX = 0.35
+GamePref.OptionsControllerSensitivityY = 0.25
+GamePref.OptionsControllerTriggerEffects = False
+GamePref.OptionsControllerVehicleSensitivity = 1
+GamePref.OptionsControllerVibration = True
+GamePref.OptionsControllerVibrationStrength = 2
+GamePref.OptionsControllerWeaponAiming = False
+GamePref.OptionsControllerZoomSensitivity = 0.5
+GamePref.OptionsControlsDefaultQuickAction = 0
+GamePref.OptionsControlsResetRevision = 0
+GamePref.OptionsControlsSprintLock = 1
+GamePref.OptionsCrosshairADS = True
+GamePref.OptionsCrosshairColor = 0
+GamePref.OptionsCrosshairDot3P = True
+GamePref.OptionsCrosshairEnabled = True
+GamePref.OptionsCrosshairOpacity = 1
+GamePref.OptionsCrosshairRangedEnabled = True
+GamePref.OptionsCrosshairScale = 1
+GamePref.OptionsCrosshairThickness = 0.2
+GamePref.OptionsCrossplay = True
+GamePref.OptionsDisableChunkLODs = False
+GamePref.OptionsDisableXmlEvents = False
+GamePref.OptionsDynamicMusicDailyTime = 0.45
+GamePref.OptionsDynamicMusicEnabled = True
+GamePref.OptionsFilterProfanity = False
+GamePref.OptionsForegroundGlobalOpacity = 1
+GamePref.OptionsGfx3PCameraMode = 0
+GamePref.OptionsGfxAA = 1
+GamePref.OptionsGfxAASharpness = 0
+GamePref.OptionsGfxBloom = True
+GamePref.OptionsGfxBrightness = 0.5
+GamePref.OptionsGfxCameraDistance3P = 0.25
+GamePref.OptionsGfxDefaultFirstPersonCamera = True
+GamePref.OptionsGfxDOF = False
+GamePref.OptionsGfxDynamicMinFPS = 30
+GamePref.OptionsGfxDynamicMode = 0
+GamePref.OptionsGfxDynamicScale = 1
+GamePref.OptionsGfxFOV = 65
+GamePref.OptionsGfxFOV3P = 65
+GamePref.OptionsGfxFSRPreset = 2
+GamePref.OptionsGfxGrassDistance = 1
+GamePref.OptionsGfxLimitFpsInGame = -1
+GamePref.OptionsGfxLODDistance = 0.5
+GamePref.OptionsGfxMotionBlur = 1
+GamePref.OptionsGfxMotionBlurEnabled = True
+GamePref.OptionsGfxObjQuality = 3
+GamePref.OptionsGfxOcclusion = True
+GamePref.OptionsGfxQualityPreset = 2
+GamePref.OptionsGfxReflectQuality = 1
+GamePref.OptionsGfxReflectShadows = False
+GamePref.OptionsGfxResetRevision = 0
+GamePref.OptionsGfxResolution = 0
+GamePref.OptionsGfxShadowDistance = 1
+GamePref.OptionsGfxShadowQuality = 1
+GamePref.OptionsGfxSignQuality = 2
+GamePref.OptionsGfxSSAO = True
+GamePref.OptionsGfxSSReflections = 1
+GamePref.OptionsGfxStreamMipmaps = True
+GamePref.OptionsGfxSunShafts = True
+GamePref.OptionsGfxTerrainQuality = 3
+GamePref.OptionsGfxTexFilter = 1
+GamePref.OptionsGfxTexQuality = 1
+GamePref.OptionsGfxTreeDistance = 4
+GamePref.OptionsGfxUpscalerMode = 4
+GamePref.OptionsGfxViewDistance = 6
+GamePref.OptionsGfxVsync = 1
+GamePref.OptionsGfxWaterPtlLimiter = 0.5
+GamePref.OptionsGfxWaterQuality = 1
+GamePref.OptionsHudOpacity = 1
+GamePref.OptionsHudSize = 1
+GamePref.OptionsInterfaceSensitivity = 0.5
+GamePref.OptionsIntroMovieEnabled = True
+GamePref.OptionsInvertMouse = False
+GamePref.OptionsJournalPopup = True
+GamePref.OptionsLookSensitivity = 0.5
+GamePref.OptionsMenuMusicVolumeLevel = 0.7
+GamePref.OptionsMicVolumeLevel = 0.75
+GamePref.OptionsMumblePositionalAudioSupport = False
+GamePref.OptionsMusicVolumeLevel = 0.6
+GamePref.OptionsOverallAudioVolumeLevel = 1
+GamePref.OptionsPlayChanceFrequency = 3
+GamePref.OptionsPlayChanceProbability = 0.983
+GamePref.OptionsPlayerModelTexture = Player/Male/Player_male
+GamePref.OptionsPOICulling = 1
+GamePref.OptionsPoiVolumesSkipDeleteConfirmation = False
+GamePref.OptionsQuestsAutoAccept = True
+GamePref.OptionsQuestsAutoShare = True
+GamePref.OptionsScreenBoundsValue = 1
+GamePref.OptionsSelectionBoxAlphaMultiplier = 0.4
+GamePref.OptionsShowCompass = True
+GamePref.OptionsShowConsoleButton = False
+GamePref.OptionsShowCrosshair = True
+GamePref.OptionsStabSpawnBlocksOnGround = True
+GamePref.OptionsSubtitlesEnabled = True
+GamePref.OptionsTempCelsius = False
+GamePref.OptionsUiCompassUseEnglishCardinalDirections = False
+GamePref.OptionsUiFpsScaling = 1
+GamePref.OptionsVehicleLookSensitivity = 0.5
+GamePref.OptionsVoiceChatEnabled = True
+GamePref.OptionsVoiceInputDevice = 
+GamePref.OptionsVoiceOutputDevice = 
+GamePref.OptionsVoiceVolumeLevel = 0.75
+GamePref.OptionsWeaponAiming = False
+GamePref.OptionsZoomAccel = 0.5
+GamePref.OptionsZoomSensitivity = 0.3
+GamePref.PartySharedKillRange = 100
+GamePref.PersistentPlayerProfiles = False
+GamePref.PlayerAutologin = False
+GamePref.PlayerKillingMode = 0
+GamePref.PlayerName = Player
+GamePref.PlayerSafeZoneHours = 5
+GamePref.PlayerSafeZoneLevel = 5
+GamePref.PlaytestBiome = 3
+GamePref.QuestProgressionDailyLimit = 4
+GamePref.RebuildMap = False
+GamePref.Region = Europe
+GamePref.ResetUnprotectedChunks = 0
+GamePref.SandboxCode = 
+GamePref.SandboxPreset = 
+GamePref.SaveDataLimit = -1
+GamePref.SaveDataLimitType = Unlimited
+GamePref.SelectionContextMode = 0
+GamePref.SelectionOperationMode = 0
+GamePref.ServerAdminSlots = 0
+GamePref.ServerAdminSlotsPermission = 0
+GamePref.ServerAllowCrossplay = False
+GamePref.ServerDescription = 7DTD loadtest dedicated (EAC/crossplay/SteamNet off)
+GamePref.ServerDisabledNetworkProtocols = SteamNetworking
+GamePref.ServerEACPeerToPeer = True
+GamePref.ServerEnabled = True
+GamePref.ServerIP = 
+GamePref.ServerIsPublic = True
+GamePref.ServerLoginConfirmationText = 
+GamePref.ServerMatchmakingGroup = 
+GamePref.ServerMaxAllowedViewDistance = 6
+GamePref.ServerMaxPlayerCount = 64
+GamePref.ServerMaxWorldTransferSpeedKiBs = 512
+GamePref.ServerName = 7DTD LoadGen
+GamePref.ServerPort = 26900
+GamePref.ServerReservedSlots = 0
+GamePref.ServerReservedSlotsPermission = 100
+GamePref.ServerVisibility = 0
+GamePref.ServerWebsiteURL = 
+GamePref.ShowFriendPlayerOnMap = True
+GamePref.SkipSpawnButton = False
+GamePref.StormFreq = 100
+GamePref.TelnetEnabled = True
+GamePref.TelnetFailedLoginLimit = 10
+GamePref.TelnetFailedLoginsBlocktime = 10
+GamePref.TelnetPort = 8084
+GamePref.TerminalWindowEnabled = False
+GamePref.TwitchBloodMoonAllowed = False
+GamePref.TwitchServerPermission = 1000
+GamePref.UNUSED_ControlPanelEnabled = False
+GamePref.UNUSED_ControlPanelPort = 8080
+GamePref.UNUSED_LastLoadedPrefabSize = 
+GamePref.UNUSED_NewGameSetDefaults = 
+GamePref.UNUSED_OptionsBloom = 
+GamePref.UNUSED_OptionsDOF = 
+GamePref.UNUSED_OptionsFieldOfViewNew = 
+GamePref.UNUSED_OptionsGamma = 
+GamePref.UNUSED_OptionsGfxGameplayResolutionHeight = 
+GamePref.UNUSED_OptionsGfxGameplayResolutionWidth = 
+GamePref.UNUSED_OptionsGfxUMATexQuality = 
+GamePref.UNUSED_OptionsMotionBlur = 
+GamePref.UNUSED_OptionsObjectBlur = 
+GamePref.UNUSED_OptionsPlayerModel = playerMale
+GamePref.UNUSED_OptionsReflectionBounces = 
+GamePref.UNUSED_OptionsReflectionCullList = 
+GamePref.UNUSED_OptionsReflectionFarClip = 
+GamePref.UNUSED_OptionsReflectionRefreshMode = 
+GamePref.UNUSED_OptionsReflectionShadowDistance = 
+GamePref.UNUSED_OptionsReflectionTimeSlicingMode = 
+GamePref.UNUSED_OptionsSSAO = 
+GamePref.UNUSED_OptionsStreamingMipmapsBudget = 
+GamePref.UNUSED_OptionsSunShafts = 
+GamePref.UNUSED_PlayerId = 
+GamePref.UNUSED_SaveGameFolder = 
+GamePref.UNUSED_UserDataFolder = 
+GamePref.UserWorldStorageType = 0
+GamePref.WebDashboardEnabled = True
+GamePref.WebDashboardPort = 8080
+GamePref.WebDashboardUrl = 
+GamePref.WorldGenSeed = botpoi4k
+GamePref.WorldGenSize = 4096
+GamePref.XPMultiplier = 100
+GamePref.ZombieBMMove = 3
+GamePref.ZombieFeralMove = 3
+GamePref.ZombieFeralSense = 0
+GamePref.ZombieMove = 2
+GamePref.ZombieMoveNight = 3
+GamePref.ZombiePlayers = True
+GameStat.AirDropFrequency = 0
+GameStat.AirDropMarker = True
+GameStat.AllowedViewDistance = 12
+GameStat.AnimalCount = 0
+GameStat.AutoParty = False
+GameStat.BedrollExpiryTime = 45
+GameStat.BiomeGSModifier = 100
+GameStat.BiomeLSModifier = 100
+GameStat.BiomeProgression = True
+GameStat.BlockDamageAI = 100
+GameStat.BlockDamageAIBM = 100
+GameStat.BlockDamagePlayer = 100
+GameStat.BloodMoonDay = 0
+GameStat.BloodMoonEnemyCount = 8
+GameStat.BloodMoonWarning = 8
+GameStat.CameraRestrictionMode = 0
+GameStat.ChunkStabilityEnabled = True
+GameStat.CurrentRoundIx = 0
+GameStat.DayLightLength = 18
+GameStat.DayLimitActive = False
+GameStat.DayLimitThisRound = 0
+GameStat.DayNightLength = 60
+GameStat.DeathPenalty = XPOnly
+GameStat.DropOnDeath = 1
+GameStat.DropOnQuit = 0
+GameStat.EnemyCount = 0
+GameStat.EnemyDifficulty = Normal
+GameStat.EnemySpawnMode = True
+GameStat.FragLimitActive = False
+GameStat.FragLimitThisRound = 0
+GameStat.GameDifficulty = 2
+GameStat.GameModeId = 0
+GameStat.GameState = 0
+GameStat.GlobalGSModifier = 100
+GameStat.GlobalLSModifier = 100
+GameStat.GlobalMessageToShow = 
+GameStat.IsCreativeMenuEnabled = False
+GameStat.IsFlyingEnabled = False
+GameStat.IsPlayerCollisionEnabled = True
+GameStat.IsPlayerDamageEnabled = True
+GameStat.IsResetMapOnRestart = False
+GameStat.IsSaveSupplyCrates = True
+GameStat.IsSpawnEnemies = True
+GameStat.IsSpawnNearOtherPlayer = False
+GameStat.IsTeleportEnabled = False
+GameStat.IsVersionCheckDone = False
+GameStat.JarRefund = 60
+GameStat.LandClaimCount = 5
+GameStat.LandClaimDeadZone = 30
+GameStat.LandClaimDecayMode = 0
+GameStat.LandClaimExpiryTime = 3
+GameStat.LandClaimOfflineDelay = 0
+GameStat.LandClaimOfflineDurabilityModifier = 32
+GameStat.LandClaimOnlineDurabilityModifier = 32
+GameStat.LandClaimSize = 41
+GameStat.LoadScene = 
+GameStat.LootAbundance = 100
+GameStat.LootRespawnDays = 7
+GameStat.LootTimer = 
+GameStat.OptionsPOICulling = 0
+GameStat.PartySharedKillRange = 100
+GameStat.PlayerKillingMode = KillStrangersOnly
+GameStat.QuestProgressionDailyLimit = 4
+GameStat.SandboxCode = 
+GameStat.SandboxPreset = 
+GameStat.ScoreDiedMultiplier = -5
+GameStat.ScorePlayerKillMultiplier = 1
+GameStat.ScoreZombieKillMultiplier = 1
+GameStat.ShowAllPlayersOnMap = False
+GameStat.ShowFriendPlayerOnMap = True
+GameStat.ShowSpawnWindow = False
+GameStat.ShowWindow = 
+GameStat.StormFreq = 0
+GameStat.TimeLimitActive = False
+GameStat.TimeLimitThisRound = 0
+GameStat.TimeOfDayIncPerSec = 20
+GameStat.TwitchBloodMoonAllowed = True
+GameStat.UNUSED_GameDifficultyBonus = 
+GameStat.UNUSED_ShowZombieCounter = 
+GameStat.XPMultiplier = 100
+GameStat.ZombieHordeMeter = False
+Sandbox Code: 
+Sandbox Options:
+  - Invalid code -
+2026-08-22T16:37:15 6.448 INF [PlatformApplication] restart required = False
+2026-08-22T16:37:15 6.450 INF StartAsServer
+2026-08-22T16:37:15 6.508 WRN save folder does not exist
+2026-08-22T16:37:15 6.572 INF Loaded (local): events in 0.01
+2026-08-22T16:37:15 6.697 INF Loaded (local): materials in 0.09
+2026-08-22T16:37:15 6.751 INF Loaded (local): physicsbodies in 0.02
+2026-08-22T16:37:15 6.809 INF Loaded (local): painting in 0.02
+2026-08-22T16:37:16 6.960 INF Loaded (local): shapes in 0.03
+2026-08-22T16:37:16 7.233 INF [ScriptOrder] frame=360 seq=2136 GameManager.FixedUpdate
+2026-08-22T16:37:16 7.233 INF [ScriptOrder] frame=360 seq=2137 Origin.FixedUpdate
+2026-08-22T16:37:16 7.233 INF [ScriptOrder] frame=360 seq=2138 SdtdConsole.Update
+2026-08-22T16:37:16 7.233 INF [ScriptOrder] frame=360 seq=2139 ConnectionManager.Update
+2026-08-22T16:37:16 7.233 INF [ScriptOrder] frame=360 seq=2140 GameManager.Update
+2026-08-22T16:37:16 7.314 INF [ScriptOrder] frame=360 seq=2141 ConnectionManager.LateUpdate
+2026-08-22T16:37:16 7.314 INF [ScriptOrder] frame=360 seq=2142 GameManager.LateUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2836 GameManager.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2837 Origin.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2838 GameManager.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2839 Origin.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2840 GameManager.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2841 Origin.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2842 GameManager.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2843 Origin.FixedUpdate
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2844 SdtdConsole.Update
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2845 ConnectionManager.Update
+2026-08-22T16:37:20 11.290 INF [ScriptOrder] frame=420 seq=2846 GameManager.Update
+2026-08-22T16:37:20 11.352 INF [ScriptOrder] frame=420 seq=2847 ConnectionManager.LateUpdate
+2026-08-22T16:37:20 11.352 INF [ScriptOrder] frame=420 seq=2848 GameManager.LateUpdate
+ERROR: Shader Legacy Shaders/Transparent/Cutout/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SpeedTree8' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SpeedTree8 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SpeedTree8' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Nature/SpeedTree8' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Nature/SpeedTree8 shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Nature/SpeedTree8' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/BlockMissing shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Liquid' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/7DTD_Liquid shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Liquid' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/SignTextShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/SignTextShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/SignTextShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SemiTransGlow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SemiTransGlow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+WARNING: Shader Unsupported: 'GameScreenFlicker' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader GameScreenFlicker shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'GameScreenFlicker' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+The referenced script on this Behaviour (Game Object '<null>') is missing!
+WARNING: Shader Unsupported: 'Game/TorchFire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/TorchFire shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/TorchFire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/TorchFire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/TorchFire shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/TorchFire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: '7DTD/TorchGlow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/TorchGlow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/TorchGlow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: '7DTD/7DTD_Cobweb' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/7DTD_Cobweb shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Cobweb' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/EntityTintMaskSSS shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/EntityTintMaskSSS shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3514 GameManager.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3515 Origin.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3516 GameManager.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3517 Origin.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3518 GameManager.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3519 Origin.FixedUpdate
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3520 SdtdConsole.Update
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3521 ConnectionManager.Update
+2026-08-22T16:37:24 15.049 INF [ScriptOrder] frame=480 seq=3522 GameManager.Update
+2026-08-22T16:37:24 15.113 INF [ScriptOrder] frame=480 seq=3523 ConnectionManager.LateUpdate
+2026-08-22T16:37:24 15.113 INF [ScriptOrder] frame=480 seq=3524 GameManager.LateUpdate
+WARNING: Shader Unsupported: 'Game/CharacterPlayerOutfit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/CharacterPlayerOutfit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/CharacterPlayerOutfit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/Lit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Lit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Lit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: '7DTD/7DTD_Sign_Illuminated' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/7DTD_Sign_Illuminated shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/7DTD_Sign_Illuminated' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Custom/SignTextShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Custom/SignTextShader shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Custom/SignTextShader' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/SignTech/Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SignTech/Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SignTech/Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/SignTech/CutoutFallback' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SignTech/CutoutFallback shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SignTech/CutoutFallback' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/SignTech/Cutout' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SignTech/Cutout shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SignTech/Cutout' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Cloth Sign' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Cloth Sign shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Cloth Sign' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Cloth' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Cloth shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Cloth' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Entity Tint Mask Sign' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Entity Tint Mask Sign shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Entity Tint Mask Sign' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/SpeedTree' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SpeedTree shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SpeedTree' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/SpeedTree Billboard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/SpeedTree Billboard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/SpeedTree Billboard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/EntityTintMaskSSS shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/EntityTintMaskSSS' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Nature/SpeedTree Billboard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Nature/SpeedTree Billboard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Nature/SpeedTree Billboard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Nature/SpeedTree' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Nature/SpeedTree shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Nature/SpeedTree' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game/Autodesk XFade' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Autodesk XFade shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Autodesk XFade' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+Unloading 5 Unused Serialized files (Serialized files now loaded: 52)
+2026-08-22T16:37:27 17.925 INF Block IDs with mapping
+2026-08-22T16:37:27 17.936 INF Block IDs total 24809, terr 30, last 25030
+2026-08-22T16:37:27 17.949 INF Loaded (local): blocks in 10.72
+Unloading 27611 unused Assets to reduce memory usage. Loaded Objects now: 194969.
+Total: 259.651117 ms (FindLiveObjects: 7.771563 ms CreateObjectMapping: 9.151289 ms MarkObjects: 227.127802 ms  DeleteObjects: 15.599812 ms)
+
+2026-08-22T16:37:27 18.349 INF Loaded (local): progression in 0.08
+WARNING: Shader Unsupported: '7DTD_Unity5/WaterInBucket' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD_Unity5/WaterInBucket shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD_Unity5/WaterInBucket' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:27 18.565 INF Loaded (local): buffs in 0.15
+2026-08-22T16:37:27 18.592 INF [ScriptOrder] frame=540 seq=4174 SdtdConsole.Update
+2026-08-22T16:37:27 18.592 INF [ScriptOrder] frame=540 seq=4175 ConnectionManager.Update
+2026-08-22T16:37:27 18.592 INF [ScriptOrder] frame=540 seq=4176 GameManager.Update
+2026-08-22T16:37:27 18.600 INF [ScriptOrder] frame=540 seq=4177 ConnectionManager.LateUpdate
+2026-08-22T16:37:27 18.600 INF [ScriptOrder] frame=540 seq=4178 GameManager.LateUpdate
+2026-08-22T16:37:27 18.619 INF Loaded (local): misc in 0.02
+WARNING: Shader Unsupported: '7DTD/TorchGlow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD/TorchGlow shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD/TorchGlow' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:28 19.096 WRN Type:ItemClassWildChicken, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null is missing the UnityEngine.Scripting.Preserve attribute, this will fail on consoles
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/Unlit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/Unlit' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:28 19.190 INF Loaded (local): items in 0.39
+ERROR: Shader Shader Forge/7DTD_Particle_Additive shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Glass Reflex' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/Glass Reflex shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/Glass Reflex' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:28 19.375 INF Item IDs with mapping
+2026-08-22T16:37:28 19.376 INF ItemIDs from Mapping
+2026-08-22T16:37:28 19.378 INF ItemClass assignLeftOverItems 67056 of 81920
+2026-08-22T16:37:28 19.467 INF Loaded (local): item_modifiers in 0.09
+2026-08-22T16:37:28 19.611 INF Loaded (local): entityclasses in 0.09
+2026-08-22T16:37:28 19.675 INF Loaded (local): qualityinfo in 0.02
+2026-08-22T16:37:28 19.844 INF Loaded (local): sounds in 0.05
+2026-08-22T16:37:29 19.939 INF Loaded (local): recipes in 0.05
+2026-08-22T16:37:29 19.986 INF [ScriptOrder] frame=600 seq=4612 GameManager.FixedUpdate
+2026-08-22T16:37:29 19.986 INF [ScriptOrder] frame=600 seq=4613 Origin.FixedUpdate
+2026-08-22T16:37:29 19.986 INF [ScriptOrder] frame=600 seq=4614 SdtdConsole.Update
+2026-08-22T16:37:29 19.986 INF [ScriptOrder] frame=600 seq=4615 ConnectionManager.Update
+2026-08-22T16:37:29 19.986 INF [ScriptOrder] frame=600 seq=4616 GameManager.Update
+2026-08-22T16:37:29 20.003 INF [ScriptOrder] frame=600 seq=4617 ConnectionManager.LateUpdate
+2026-08-22T16:37:29 20.003 INF [ScriptOrder] frame=600 seq=4618 GameManager.LateUpdate
+2026-08-22T16:37:29 20.013 INF Loaded (local): blockplaceholders in 0.03
+2026-08-22T16:37:29 20.116 INF Loaded (local): loot in 0.06
+2026-08-22T16:37:29 20.237 INF Loaded (local): entitygroups in 0.04
+2026-08-22T16:37:29 20.309 INF Loaded (local): utilityai in 0.02
+2026-08-22T16:37:29 20.377 INF Loaded (local): vehicles in 0.02
+2026-08-22T16:37:29 20.456 INF Loaded (local): rwgmixer in 0.03
+2026-08-22T16:37:29 20.538 INF Loaded (local): weathersurvival in 0.03
+2026-08-22T16:37:29 20.616 INF Loaded (local): archetypes in 0.03
+2026-08-22T16:37:29 20.768 INF Loaded (local): challenges in 0.03
+2026-08-22T16:37:29 20.865 INF Loaded (local): quests in 0.06
+2026-08-22T16:37:29 20.877 INF [ScriptOrder] frame=660 seq=5002 SdtdConsole.Update
+2026-08-22T16:37:29 20.877 INF [ScriptOrder] frame=660 seq=5003 ConnectionManager.Update
+2026-08-22T16:37:29 20.877 INF [ScriptOrder] frame=660 seq=5004 GameManager.Update
+2026-08-22T16:37:29 20.888 INF [ScriptOrder] frame=660 seq=5005 ConnectionManager.LateUpdate
+2026-08-22T16:37:29 20.888 INF [ScriptOrder] frame=660 seq=5006 GameManager.LateUpdate
+2026-08-22T16:37:30 20.942 INF Loaded (local): traders in 0.03
+2026-08-22T16:37:30 21.014 INF Loaded (local): npc in 0.03
+2026-08-22T16:37:30 21.085 INF Loaded (local): dialogs in 0.03
+2026-08-22T16:37:30 21.157 INF Loaded (local): ui_display in 0.03
+2026-08-22T16:37:30 21.252 INF Loaded (local): nav_objects in 0.04
+2026-08-22T16:37:30 21.356 INF Loaded (local): gamestages in 0.03
+2026-08-22T16:37:30 21.592 INF Loaded (local): gameevents in 0.17
+2026-08-22T16:37:30 21.686 INF Loaded (local): twitch in 0.04
+2026-08-22T16:37:30 21.744 INF Loaded (local): twitch_events in 0.02
+2026-08-22T16:37:30 21.790 INF [ScriptOrder] frame=720 seq=5392 GameManager.FixedUpdate
+2026-08-22T16:37:30 21.790 INF [ScriptOrder] frame=720 seq=5393 Origin.FixedUpdate
+2026-08-22T16:37:30 21.790 INF [ScriptOrder] frame=720 seq=5394 SdtdConsole.Update
+2026-08-22T16:37:30 21.790 INF [ScriptOrder] frame=720 seq=5395 ConnectionManager.Update
+2026-08-22T16:37:30 21.790 INF [ScriptOrder] frame=720 seq=5396 GameManager.Update
+2026-08-22T16:37:30 21.818 INF [ScriptOrder] frame=720 seq=5397 ConnectionManager.LateUpdate
+2026-08-22T16:37:30 21.818 INF [ScriptOrder] frame=720 seq=5398 GameManager.LateUpdate
+2026-08-22T16:37:30 21.830 INF Loaded (local): dmscontent in 0.04
+2026-08-22T16:37:30 21.891 INF Loaded (local): XUi_Common/styles in 0.02
+2026-08-22T16:37:31 21.946 INF Loaded (local): XUi_Common/templates in 0.01
+2026-08-22T16:37:31 22.001 INF Loaded (local): XUi_InGame/styles in 0.02
+2026-08-22T16:37:31 22.059 INF Loaded (local): XUi_InGame/templates in 0.02
+2026-08-22T16:37:31 22.130 INF Loaded (local): XUi_InGame/windows in 0.02
+2026-08-22T16:37:31 22.178 INF Loaded (local): XUi_InGame/xui in 0.02
+2026-08-22T16:37:31 22.250 INF Loaded (local): biomes in 0.03
+2026-08-22T16:37:31 22.314 INF Loaded (local): worldglobal in 0.02
+2026-08-22T16:37:31 22.387 INF Loaded (local): spawning in 0.03
+2026-08-22T16:37:31 22.423 INF [ScriptOrder] frame=780 seq=5756 GameManager.FixedUpdate
+2026-08-22T16:37:31 22.423 INF [ScriptOrder] frame=780 seq=5757 Origin.FixedUpdate
+2026-08-22T16:37:31 22.423 INF [ScriptOrder] frame=780 seq=5758 SdtdConsole.Update
+2026-08-22T16:37:31 22.423 INF [ScriptOrder] frame=780 seq=5759 ConnectionManager.Update
+2026-08-22T16:37:31 22.423 INF [ScriptOrder] frame=780 seq=5760 GameManager.Update
+2026-08-22T16:37:31 22.431 INF [ScriptOrder] frame=780 seq=5761 ConnectionManager.LateUpdate
+2026-08-22T16:37:31 22.431 INF [ScriptOrder] frame=780 seq=5762 GameManager.LateUpdate
+2026-08-22T16:37:31 22.447 INF Loaded (local): loadingscreen in 0.02
+2026-08-22T16:37:31 22.492 INF Added 1336 subtitle data entries and 3 speaker colors
+2026-08-22T16:37:31 22.501 INF Loaded (local): subtitles in 0.02
+2026-08-22T16:37:31 22.560 INF Loaded (local): videos in 0.02
+2026-08-22T16:37:31 22.634 INF Loaded (local): signs in 0.03
+2026-08-22T16:37:31 22.697 INF Loaded (local): sandbox_overrides in 0.02
+2026-08-22T16:37:31 22.723 INF Loading players.xml
+2026-08-22T16:37:31 22.729 INF createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), bench_stock_lap1, GameModeSurvival
+2026-08-22T16:37:31 22.730 INF Occlusion: Disabled
+2026-08-22T16:37:31 22.741 INF Started thread ChunkCalc
+2026-08-22T16:37:31 22.742 INF Started thread ChunkMeshBake
+2026-08-22T16:37:31 22.742 INF Started thread ChunkRegeneration
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameFocus: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameFocus: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameAwake: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStarting: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStarting: receiver#1 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStarting: 2 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents MainMenuOpening: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents MainMenuOpening: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents MainMenuOpened: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents MainMenuOpened: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStartDone: receiver#0 mod=(null) core=False
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStartDone: receiver#1 mod=(null) core=False
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStartDone: receiver#2 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStartDone: receiver#3 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameStartDone: 4 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents CreateWorldDone: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameUpdate: receiver#0 mod=(null) core=False
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameUpdate: receiver#1 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameUpdate: 2 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents WorldShuttingDown: receiver#0 mod=(null) core=False
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents WorldShuttingDown: receiver#1 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents WorldShuttingDown: receiver#2 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents WorldShuttingDown: receiver#3 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents WorldShuttingDown: 4 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameShutdown: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameShutdown: receiver#1 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameShutdown: 2 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents ServerRegistered: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents ServerRegistered: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents UnityUpdate: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents UnityUpdate: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerLogin: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerJoinedGame: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerJoinedGame: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerSpawning: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerSpawning: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerSpawnedInWorld: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerSpawnedInWorld: receiver#1 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerSpawnedInWorld: 2 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerDisconnected: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents PlayerDisconnected: 1 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents SavePlayerData: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents GameMessage: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents ChatMessage: 0 receiver(s)
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents CalcChunkColorsDone: receiver#0 mod=(null) core=True
+2026-08-22T16:37:31 22.758 INF [ScriptOrder] ModEvents CalcChunkColorsDone: 1 receiver(s)
+2026-08-22T16:37:31 22.759 INF [ScriptOrder] ModEvents EntityKilled: 0 receiver(s)
+2026-08-22T16:37:31 22.759 INF [ScriptOrder] ModEvents dump complete
+2026-08-22T16:37:31 22.768 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:37:31 22.768 INF [ScriptOrder] entity dump: Entities.list Count=0
+2026-08-22T16:37:31 22.768 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:37:31 22.768 INF [ScriptOrder] entity GO enabled dump: total=0 goActive=0 goInactive=0 mbEnabled=0 mbDisabled=0
+2026-08-22T16:37:31 22.788 INF World.Load: Navezgane Navezgane (src: GameData, DeviceLocal)
+2026-08-22T16:37:31 22.789 INF Loading base world file header...
+2026-08-22T16:37:31 22.794 INF Loaded world file from different version: 'V 4.0 (b8)'
+2026-08-22T16:37:31 22.804 WRN Next Airdrop: 4 12:00
+2026-08-22T16:37:31 22.804 INF BloodMoon SetDay: day 7, last day 0, freq 7, range 0
+2026-08-22T16:37:31 22.808 WRN Next Airdrop: 4 12:00
+2026-08-22T16:37:31 22.808 INF BloodMoon SetDay: day 7, last day 0, freq 7, range 0
+2026-08-22T16:37:31 22.824 INF Started thread WaterSimulationApplyChanges
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6268 GameManager.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6269 Origin.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6270 GameManager.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6271 Origin.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6272 GameManager.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6273 Origin.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6274 GameManager.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6275 Origin.FixedUpdate
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6276 SdtdConsole.Update
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6277 ConnectionManager.Update
+2026-08-22T16:37:33 24.605 INF [ScriptOrder] frame=840 seq=6278 GameManager.Update
+2026-08-22T16:37:33 24.678 INF [ScriptOrder] frame=840 seq=6279 ConnectionManager.LateUpdate
+2026-08-22T16:37:33 24.678 INF [ScriptOrder] frame=840 seq=6280 GameManager.LateUpdate
+2026-08-22T16:37:35 26.499 INF Started thread GenerateChunks
+2026-08-22T16:37:36 26.987 INF Calculating world hashes took 470 ms (world size 193 MiB)
+2026-08-22T16:37:36 26.989 INF Initial ENABLE_FILE_BACKED_ARRAYS == False
+2026-08-22T16:37:36 27.047 INF GenWorldFromRaw load dtm took 530ms
+2026-08-22T16:37:36 27.101 INF Biomes image size w= 3072, h = 3072
+2026-08-22T16:37:36 27.569 INF GenWorldFromRaw biomes took 522ms
+Unloading 1 Unused Serialized files (Serialized files now loaded: 52)
+Unloading 4075 unused Assets to reduce memory usage. Loaded Objects now: 191429.
+Total: 379.833614 ms (FindLiveObjects: 7.613366 ms CreateObjectMapping: 10.457219 ms MarkObjects: 360.194688 ms  DeleteObjects: 1.567740 ms)
+
+Texture with ID 2676 and with size 6144x6144 was too large for graphics device maximum supported texture size (4096x4096). Falling back to a dummy texture. Generate mip maps to provide lower size fallback.
+Texture with ID 2677 and with size 6144x6144 was too large for graphics device maximum supported texture size (4096x4096). Falling back to a dummy texture. Generate mip maps to provide lower size fallback.
+2026-08-22T16:37:37 28.594 INF GenWorldFromRaw shader control textures took 393ms
+2026-08-22T16:37:37 28.691 INF [ScriptOrder] frame=900 seq=6946 GameManager.FixedUpdate
+2026-08-22T16:37:37 28.691 INF [ScriptOrder] frame=900 seq=6947 Origin.FixedUpdate
+2026-08-22T16:37:37 28.691 INF [ScriptOrder] frame=900 seq=6948 SdtdConsole.Update
+2026-08-22T16:37:37 28.692 INF [ScriptOrder] frame=900 seq=6949 ConnectionManager.Update
+2026-08-22T16:37:37 28.692 INF [ScriptOrder] frame=900 seq=6950 GameManager.Update
+2026-08-22T16:37:37 28.722 INF [ScriptOrder] frame=900 seq=6951 ConnectionManager.LateUpdate
+2026-08-22T16:37:37 28.722 INF [ScriptOrder] frame=900 seq=6952 GameManager.LateUpdate
+2026-08-22T16:37:37 28.882 INF Computed 506 chunk groups containing a total of 9722 chunks. Largest group contains 435 chunks.
+2026-08-22T16:37:37 28.885 INF Started thread SaveChunks /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/userdata/Saves/Navezgane/bench_stock_lap1/Region
+2026-08-22T16:37:37 28.886 INF GenWorldFromRaw misc took 291ms
+2026-08-22T16:37:38 29.339 INF GenWorldFromRaw splats took 453ms
+Unloading 0 Unused Serialized files (Serialized files now loaded: 52)
+Unloading 0 unused Assets to reduce memory usage. Loaded Objects now: 191433.
+Total: 339.795267 ms (FindLiveObjects: 7.959265 ms CreateObjectMapping: 9.488172 ms MarkObjects: 322.147415 ms  DeleteObjects: 0.199634 ms)
+
+2026-08-22T16:37:39 30.349 INF [DECO] read 
+2026-08-22T16:37:39 30.361 INF DecoManager chunks
+2026-08-22T16:37:40 30.929 INF Dynamic Music Initialized on Server
+2026-08-22T16:37:40 30.929 INF Dynamic Music Initialized on Dedi
+2026-08-22T16:37:40 30.943 INF AstarManager Init
+WARNING: Shader Unsupported: '7DTD_Unity5/Wire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader 7DTD_Unity5/Wire shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: '7DTD_Unity5/Wire' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+WARNING: Shader Unsupported: 'Game Particles/surfaceShader_masked_Embers' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game Particles/surfaceShader_masked_Embers shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game Particles/surfaceShader_masked_Embers' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:40 31.268 INF createWorld() done
+2026-08-22T16:37:40 31.291 INF Loaded player
+2026-08-22T16:37:40 31.327 INF [LANMasterServerAnnouncer] listening on 11000 and multicast group 239.192.0.1
+2026-08-22T16:37:40 31.327 INF [PlayerInteractions] JoinedMultplayerServer
+Unloading 2 Unused Serialized files (Serialized files now loaded: 52)
+Unloading 12 unused Assets to reduce memory usage. Loaded Objects now: 193475.
+Total: 380.859067 ms (FindLiveObjects: 6.707107 ms CreateObjectMapping: 7.091077 ms MarkObjects: 366.888690 ms  DeleteObjects: 0.171612 ms)
+
+dlopen failed trying to load:
+steamclient.so
+with error:
+steamclient.so: cannot open shared object file: No such file or directory
+[S_API] SteamAPI_Init(): Loaded '/home/maci/.local/share/Steam/linux64/steamclient.so' OK.  (First tried local 'steamclient.so')
+Shutdown handler: initialize.
+08/22 16:37:41 minidumps folder is set to /tmp/dumps
+Setting breakpad minidump AppID = 251570
+SteamInternal_SetMinidumpSteamID:  Caching Steam ID:  76561197960265728 [API loaded no]
+[S_API FAIL] Tried to access Steam interface SteamNetworkingUtils004 before SteamAPI_Init succeeded.
+2026-08-22T16:37:41 31.990 INF [Steamworks.NET] Registering auth callbacks
+2026-08-22T16:37:41 31.992 INF [Steamworks.NET] GameServer.Init successful
+2026-08-22T16:37:41 32.015 WRN Next Airdrop: 4 12:00
+2026-08-22T16:37:41 32.019 INF Loading dymesh settings
+2026-08-22T16:37:41 32.019 INF Dynamic Mesh Settings
+2026-08-22T16:37:41 32.019 INF Use Imposter Values: False
+2026-08-22T16:37:41 32.019 INF Only Player Areas: True
+2026-08-22T16:37:41 32.019 INF Player Area Buffer: 3
+2026-08-22T16:37:41 32.019 INF Max View Distance: 1000
+2026-08-22T16:37:41 32.019 INF Regen all on new world: False
+2026-08-22T16:37:41 32.020 INF Dynamic mesh disabled on world start
+2026-08-22T16:37:41 32.021 INF [BotMod] BotManager ready. TargetBots=6 diff=4 weapon=mixed
+2026-08-22T16:37:41 32.021 INF [BotMod] GameStartDone -> BotManager started.
+2026-08-22T16:37:41 32.025 INF [BotMod] BotNeuralBrain: loaded ok: /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Mods/BotMod/evolved/best.json (325 weights, hidden=16)
+2026-08-22T16:37:41 32.026 INF [EfficientServer] mesh budgets: OnlyPlayerAreas=True buf=2 loadMs=2 syncs=2
+2026-08-22T16:37:41 32.039 INF [EfficientServer] skip-patch DynamicMusic.Conductor.Update
+2026-08-22T16:37:41 32.051 INF [EfficientServer] skip-patch WaterSplashCubes.Update
+2026-08-22T16:37:41 32.060 INF [EfficientServer] skip-patch EnvironmentAudioManager.Update: method not found (skip disabled)
+2026-08-22T16:37:41 32.078 INF [EfficientServer] skip-patch EnvironmentAudioManager.FixedUpdate
+2026-08-22T16:37:41 32.088 INF [EfficientServer] skip-patch EnvironmentAudioManager.LateUpdate: method not found (skip disabled)
+2026-08-22T16:37:41 32.104 INF [EfficientServer] skip-patch WorldEnvironment.AmbientSpectrumFrameUpdate
+2026-08-22T16:37:41 32.104 INF [EfficientServer] job workers = 31 (vanilla)
+2026-08-22T16:37:41 32.105 WRN [Web] WebDashboardUrl not set. Recommended to set it to the public URL pointing to your dashboard / reverse proxy
+2026-08-22T16:37:41 32.107 INF [Web] Serving basic webserver files from /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/7DaysToDieServer_Data/../Data/Web/webroot
+2026-08-22T16:37:41 32.120 INF Started thread SSE-Processing_/sse/
+2026-08-22T16:37:41 32.170 INF [Web] OpenAPI preparation done
+2026-08-22T16:37:41 32.177 INF [Web] Started Webserver on port 8080
+2026-08-22T16:37:41 32.194 INF StartGame done
+2026-08-22T16:37:41 32.219 INF [BotMod] DM spawns: 8 from /home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Navezgane/spawnpoints.xml (world=Navezgane)
+WARNING: Shader Unsupported: 'Game/GlassSimple' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Game/GlassSimple shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Game/GlassSimple' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+2026-08-22T16:37:41 32.330 INF [BotMod] Bot spawned: [Bot] Slash_97 [gunMGT1AK47] id=171 at (512.00, 62.00, 942.00) (1/6)
+2026-08-22T16:37:41 32.332 INF [7dtd-apm] SPIKE gmUpdateDuration=120.98ms
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7607 GameManager.FixedUpdate
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7608 Origin.FixedUpdate
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7609 GameManager.FixedUpdate
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7610 Origin.FixedUpdate
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7611 SdtdConsole.Update
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7612 ConnectionManager.Update
+2026-08-22T16:37:41 32.435 INF [ScriptOrder] frame=960 seq=7613 GameManager.Update
+2026-08-22T16:37:41 32.449 INF [ScriptOrder] frame=960 seq=7614 WorldEnvironment.Update
+2026-08-22T16:37:41 32.455 INF [ScriptOrder] frame=960 seq=7615 ConnectionManager.LateUpdate
+2026-08-22T16:37:41 32.455 INF [ScriptOrder] frame=960 seq=7616 GameManager.LateUpdate
+2026-08-22T16:37:41 32.748 INF [Steamworks.NET] GameServer.LogOn successful, SteamID=90291386404407326, public IP=11*.18*.19*.23*
+2026-08-22T16:37:41 32.760 INF [Discord] Global lobby: 118.189.191.239_2BF835527076E147934A78FBA1BA7263
+2026-08-22T16:37:42 33.259 INF [BotMod] Bot spawned: [Bot] Phobos_84 [gunHandgunT3SMG5] id=172 at (1063.00, 62.00, 515.00) (2/6)
+2026-08-22T16:37:42 33.622 INF NET: LiteNetLib: Connect from: 127.0.0.19:60612 / 0
+2026-08-22T16:37:42 33.624 INF Started thread NCS_Reader_0_0
+2026-08-22T16:37:42 33.624 INF Started thread NCS_Writer_0_0
+2026-08-22T16:37:42 33.624 INF Started thread NCS_Reader_0_1
+2026-08-22T16:37:42 33.624 INF Started thread NCS_Writer_0_1
+2026-08-22T16:37:42 33.628 INF [NET] PlayerConnected EntityID=-1, PltfmId='Local_<none>', CrossId='<unknown/none>', OwnerID='<unknown/none>', PlayerName='', ClientNumber='1'
+2026-08-22T16:37:42 33.635 INF NET: LiteNetLib: Connect from: 127.0.0.20:47482 / 1
+2026-08-22T16:37:42 33.636 INF Started thread NCS_Reader_1_0
+2026-08-22T16:37:42 33.636 INF Started thread NCS_Writer_1_0
+2026-08-22T16:37:42 33.636 INF Started thread NCS_Reader_1_1
+2026-08-22T16:37:42 33.636 INF [NET] PlayerConnected EntityID=-1, PltfmId='Local_<none>', CrossId='<unknown/none>', OwnerID='<unknown/none>', PlayerName='', ClientNumber='2'
+2026-08-22T16:37:42 33.636 INF Started thread NCS_Writer_1_1
+2026-08-22T16:37:42 33.668 INF NPPL.Read
+2026-08-22T16:37:42 33.668 INF NPPL.Read
+2026-08-22T16:37:42 33.687 INF PlayerLogin: REFake1/V 3.1.0
+2026-08-22T16:37:42 33.687 INF Client IP: 127.0.0.19
+2026-08-22T16:37:42 33.688 INF [Auth] PlayerName authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.688 INF [Auth] ServerState authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.688 INF [Auth] MpHostAllowed authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.688 INF [Auth] PlayerId authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.689 INF [Auth] DuplicateUserId authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.689 INF [Auth] VersionCheck authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.690 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.690 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.690 INF [Auth] LegacyModAuthorizations authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.690 INF [Auth] PlatformAuth authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.691 INF [Auth] BansAndWhitelist authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.691 INF [Auth] Crossplay authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.692 INF [EncryptionAgreement] Unsupported client device Unknown
+2026-08-22T16:37:42 33.692 INF [Auth] Encryption authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.692 INF PlayerLogin: REFake2/V 3.1.0
+2026-08-22T16:37:42 33.692 INF Client IP: 127.0.0.20
+2026-08-22T16:37:42 33.692 INF [Auth] PlayerName authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] ServerState authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] MpHostAllowed authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] PlayerId authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] DuplicateUserId authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] VersionCheck authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] LegacyModAuthorizations authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] PlatformAuth authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] BansAndWhitelist authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [Auth] Crossplay authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.692 INF [EncryptionAgreement] Unsupported client device Unknown
+2026-08-22T16:37:42 33.692 INF [Auth] Encryption authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.737 INF [Auth] Finalizer authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:42 33.741 INF Allowing player with id Local_REFake1
+2026-08-22T16:37:42 33.743 INF [Auth] Finalizer authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:42 33.747 INF Allowing player with id Local_REFake2
+2026-08-22T16:37:42 33.788 INF RequestToEnterGame: Local_REFake1/REFake1
+2026-08-22T16:37:42 33.792 INF RequestToEnterGame: Local_REFake2/REFake2
+2026-08-22T16:37:42 33.852 INF [7dtd-apm] APM updates=987 gmUpdateAvg=0.21ms tickAvg=30.47ms spikes=1 sections=83
+2026-08-22T16:37:42 33.853 INF Preparing Localization chunks for clients
+2026-08-22T16:37:42 33.853 INF Localization size: 151 B, chunk count: 1
+2026-08-22T16:37:42 33.854 INF Starting to send Localization to EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'...
+2026-08-22T16:37:42 33.854 INF Starting to send Localization to EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'...
+2026-08-22T16:37:43 34.153 INF Sending Localization to EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1' done
+2026-08-22T16:37:43 34.169 INF Sending Localization to EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2' done
+2026-08-22T16:37:43 34.257 INF [BotMod] Bot spawned: [Bot] TankJr_60 [gunHandgunT3SMG5] id=173 at (1041.00, 62.00, 1059.00) (3/6)
+2026-08-22T16:37:43 34.489 INF RequestToSpawnPlayer: 174, REFake1, 5
+2026-08-22T16:37:43 34.569 INF Created player with id=174
+2026-08-22T16:37:43 34.579 INF [PlayerInteractions] persistent player login
+2026-08-22T16:37:43 34.580 INF RequestToSpawnPlayer: 175, REFake2, 6
+2026-08-22T16:37:43 34.584 INF Created player with id=175
+2026-08-22T16:37:43 34.588 INF [PlayerInteractions] persistent player login
+2026-08-22T16:37:43 34.635 INF Telnet connection from: 127.0.0.1:45056
+2026-08-22T16:37:43 34.635 INF Started thread TelnetClient_127.0.0.1:45056
+2026-08-22T16:37:43 34.636 INF Telnet connection from: 127.0.0.1:45062
+2026-08-22T16:37:43 34.636 INF Started thread TelnetClient_127.0.0.1:45062
+2026-08-22T16:37:43 34.805 INF [BotMod] [Bot] Phobos_84 -> 175 dmg=9 res=0 hp 100->91 weap=gunHandgunT3SMG5
+2026-08-22T16:37:44 35.308 INF [BotMod] Bot spawned: [Bot] Hunter_56 [gunShotgunT1DoubleBarrel] id=176 at (-273.00, 62.00, 449.00) (4/6)
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8285 GameManager.FixedUpdate
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8286 Origin.FixedUpdate
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8287 GameManager.FixedUpdate
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8288 Origin.FixedUpdate
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8289 SdtdConsole.Update
+2026-08-22T16:37:44 35.618 INF [ScriptOrder] frame=1020 seq=8290 ConnectionManager.Update
+2026-08-22T16:37:44 35.619 INF [ScriptOrder] frame=1020 seq=8291 GameManager.Update
+2026-08-22T16:37:44 35.633 INF [ScriptOrder] frame=1020 seq=8292 WorldEnvironment.Update
+2026-08-22T16:37:44 35.662 INF [ScriptOrder] frame=1020 seq=8293 ConnectionManager.LateUpdate
+2026-08-22T16:37:44 35.662 INF [ScriptOrder] frame=1020 seq=8294 GameManager.LateUpdate
+2026-08-22T16:37:45 36.334 INF [BotMod] Bot spawned: [Bot] TankJr_26 [gunShotgunT1DoubleBarrel] id=177 at (919.00, 62.00, 878.00) (5/6)
+2026-08-22T16:37:45 36.637 WRN [PROPS] ActionTarget implicitly converted to Vector3, but failed: ActionTarget
+2026-08-22T16:37:45 36.639 INF [BotMod] Kill: [Bot] Phobos_84 killed EntityPlayer
+2026-08-22T16:37:45 36.639 INF [BotMod] [Bot] [Bot] Phobos_84 fragged EntityPlayer (K:2 Z:0 D:0 S:0)
+2026-08-22T16:37:45 36.640 INF [BotMod] [Bot] Phobos_84 KILLED 175 with gunHandgunT3SMG5
+2026-08-22T16:37:45 36.646 ERR IOException in TelnetClient_127.0.0.1:45056: Unable to write data to the transport connection: The socket has been shut down.
+2026-08-22T16:37:45 36.648 EXC Unable to write data to the transport connection: The socket has been shut down. ---> The socket has been shut down
+  at System.Net.Sockets.Socket.Send (System.Byte[] buffer, System.Int32 offset, System.Int32 size, System.Net.Sockets.SocketFlags socketFlags) [0x00016] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x00065] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+Rethrow as IOException: Unable to write data to the transport connection: The socket has been shut down.
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x000ac] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at TelnetConnection.handleWriting () [0x0004b] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+  at TelnetConnection.HandlerThread (ThreadManager+ThreadInfo _tInfo) [0x00022] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+UnityEngine.StackTraceUtility:ExtractStringFromException(Object)
+Log:Exception(Exception)
+TelnetConnection:HandlerThread(ThreadInfo)
+ThreadManager:myThreadInvoke(Object)
+System.Threading.QueueUserWorkItemCallback:System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+System.Threading.ThreadPoolWorkQueue:Dispatch()
+System.Threading._ThreadPoolWaitCallback:PerformWaitCallback()
+
+2026-08-22T16:37:45 36.650 INF Telnet connection closed: 127.0.0.1:45056
+2026-08-22T16:37:45 36.650 INF Exited thread TelnetClient_127.0.0.1:45056
+2026-08-22T16:37:45 36.651 ERR IOException in TelnetClient_127.0.0.1:45062: Unable to write data to the transport connection: The socket has been shut down.
+2026-08-22T16:37:45 36.651 EXC Unable to write data to the transport connection: The socket has been shut down. ---> The socket has been shut down
+  at System.Net.Sockets.Socket.Send (System.Byte[] buffer, System.Int32 offset, System.Int32 size, System.Net.Sockets.SocketFlags socketFlags) [0x00016] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x00065] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+Rethrow as IOException: Unable to write data to the transport connection: The socket has been shut down.
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x000ac] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at TelnetConnection.handleWriting () [0x0004b] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+  at TelnetConnection.HandlerThread (ThreadManager+ThreadInfo _tInfo) [0x00022] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+UnityEngine.StackTraceUtility:ExtractStringFromException(Object)
+Log:Exception(Exception)
+TelnetConnection:HandlerThread(ThreadInfo)
+ThreadManager:myThreadInvoke(Object)
+System.Threading.QueueUserWorkItemCallback:System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+System.Threading.ThreadPoolWorkQueue:Dispatch()
+System.Threading._ThreadPoolWaitCallback:PerformWaitCallback()
+
+2026-08-22T16:37:45 36.651 INF Telnet connection closed: 127.0.0.1:45062
+2026-08-22T16:37:45 36.651 INF Exited thread TelnetClient_127.0.0.1:45062
+2026-08-22T16:37:46 37.338 INF [BotMod] Bot spawned: [Bot] Sorlag_29 [gunHandgunT3SMG5] id=178 at (323.00, 59.00, 505.00) (6/6)
+2026-08-22T16:37:46 37.824 INF NET: LiteNetLib: Client disconnect from: 127.0.0.19:60612 / 0 (RemoteConnectionClose)
+2026-08-22T16:37:46 37.851 INF NET: LiteNetLib: MT: Client disconnect from: 127.0.0.19:60612 / 0 (RemoteConnectionClose)
+2026-08-22T16:37:46 37.851 INF [NET] PlayerDisconnected EntityID=174, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:46 37.852 WRN DynamicMusic: 174 was not in Bloodmoon state cache on disconnect
+2026-08-22T16:37:46 37.853 INF Player disconnected: EntityID=174, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='1'
+2026-08-22T16:37:46 37.853 INF Exited thread NCS_Reader_0_0
+2026-08-22T16:37:46 37.853 INF Exited thread NCS_Writer_0_0
+2026-08-22T16:37:46 37.853 INF Exited thread NCS_Writer_0_1
+2026-08-22T16:37:46 37.853 INF Exited thread NCS_Reader_0_1
+2026-08-22T16:37:46 37.855 INF GMSG: Player 'REFake1' left the game
+2026-08-22T16:37:46 37.857 INF [PlayerInteractions] persistent player disconnect
+2026-08-22T16:37:47 37.985 INF NET: LiteNetLib: Client disconnect from: 127.0.0.20:47482 / 1 (RemoteConnectionClose)
+2026-08-22T16:37:47 38.001 INF NET: LiteNetLib: MT: Client disconnect from: 127.0.0.20:47482 / 1 (RemoteConnectionClose)
+2026-08-22T16:37:47 38.001 INF [NET] PlayerDisconnected EntityID=175, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:47 38.001 WRN DynamicMusic: 175 was not in Bloodmoon state cache on disconnect
+2026-08-22T16:37:47 38.001 INF Player disconnected: EntityID=175, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='2'
+2026-08-22T16:37:47 38.001 INF Exited thread NCS_Reader_1_1
+2026-08-22T16:37:47 38.001 INF GMSG: Player 'REFake2' left the game
+2026-08-22T16:37:47 38.001 INF Exited thread NCS_Writer_1_0
+2026-08-22T16:37:47 38.001 INF Exited thread NCS_Writer_1_1
+2026-08-22T16:37:47 38.001 INF Exited thread NCS_Reader_1_0
+2026-08-22T16:37:47 38.001 INF [PlayerInteractions] persistent player disconnect
+2026-08-22T16:37:47 38.637 INF [ScriptOrder] frame=1080 seq=8947 GameManager.FixedUpdate
+2026-08-22T16:37:47 38.638 INF [ScriptOrder] frame=1080 seq=8948 Origin.FixedUpdate
+2026-08-22T16:37:47 38.647 INF [ScriptOrder] frame=1080 seq=8949 GameManager.FixedUpdate
+2026-08-22T16:37:47 38.648 INF [ScriptOrder] frame=1080 seq=8950 Origin.FixedUpdate
+2026-08-22T16:37:47 38.648 INF [ScriptOrder] frame=1080 seq=8951 SdtdConsole.Update
+2026-08-22T16:37:47 38.648 INF [ScriptOrder] frame=1080 seq=8952 ConnectionManager.Update
+2026-08-22T16:37:47 38.648 INF [ScriptOrder] frame=1080 seq=8953 GameManager.Update
+2026-08-22T16:37:47 38.664 INF [ScriptOrder] frame=1080 seq=8954 WorldEnvironment.Update
+2026-08-22T16:37:47 38.665 INF [ScriptOrder] frame=1080 seq=8955 ConnectionManager.LateUpdate
+2026-08-22T16:37:47 38.665 INF [ScriptOrder] frame=1080 seq=8956 GameManager.LateUpdate
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity dump: Entities.list Count=5
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity 171 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity 173 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity 176 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity 177 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity 178 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:37:49 40.222 INF [ScriptOrder] entity GO enabled dump: total=5 goActive=5 goInactive=0 mbEnabled=5 mbDisabled=0
+2026-08-22T16:37:50 41.650 INF [ScriptOrder] frame=1140 seq=9607 GameManager.FixedUpdate
+2026-08-22T16:37:50 41.650 INF [ScriptOrder] frame=1140 seq=9608 Origin.FixedUpdate
+2026-08-22T16:37:50 41.650 INF [ScriptOrder] frame=1140 seq=9609 GameManager.FixedUpdate
+2026-08-22T16:37:50 41.650 INF [ScriptOrder] frame=1140 seq=9610 Origin.FixedUpdate
+2026-08-22T16:37:50 41.651 INF [ScriptOrder] frame=1140 seq=9611 GameManager.FixedUpdate
+2026-08-22T16:37:50 41.651 INF [ScriptOrder] frame=1140 seq=9612 Origin.FixedUpdate
+2026-08-22T16:37:50 41.651 INF [ScriptOrder] frame=1140 seq=9613 SdtdConsole.Update
+2026-08-22T16:37:50 41.651 INF [ScriptOrder] frame=1140 seq=9614 ConnectionManager.Update
+2026-08-22T16:37:50 41.651 INF [ScriptOrder] frame=1140 seq=9615 GameManager.Update
+2026-08-22T16:37:50 41.665 INF [ScriptOrder] frame=1140 seq=9616 WorldEnvironment.Update
+2026-08-22T16:37:50 41.666 INF [ScriptOrder] frame=1140 seq=9617 ConnectionManager.LateUpdate
+2026-08-22T16:37:50 41.666 INF [ScriptOrder] frame=1140 seq=9618 GameManager.LateUpdate
+2026-08-22T16:37:53 44.403 INF [BotMod] Bot spawned: [Bot] Bones_28 [gunHandgunT1Pistol] id=179 at (850.00, 62.00, 642.00) (6/6)
+2026-08-22T16:37:53 44.655 INF [ScriptOrder] frame=1200 seq=10269 GameManager.FixedUpdate
+2026-08-22T16:37:53 44.655 INF [ScriptOrder] frame=1200 seq=10270 Origin.FixedUpdate
+2026-08-22T16:37:53 44.655 INF [ScriptOrder] frame=1200 seq=10271 GameManager.FixedUpdate
+2026-08-22T16:37:53 44.655 INF [ScriptOrder] frame=1200 seq=10272 Origin.FixedUpdate
+2026-08-22T16:37:53 44.656 INF [ScriptOrder] frame=1200 seq=10273 SdtdConsole.Update
+2026-08-22T16:37:53 44.656 INF [ScriptOrder] frame=1200 seq=10274 ConnectionManager.Update
+2026-08-22T16:37:53 44.656 INF [ScriptOrder] frame=1200 seq=10275 GameManager.Update
+2026-08-22T16:37:53 44.673 INF [ScriptOrder] frame=1200 seq=10276 WorldEnvironment.Update
+2026-08-22T16:37:53 44.673 INF [ScriptOrder] frame=1200 seq=10277 ConnectionManager.LateUpdate
+2026-08-22T16:37:53 44.673 INF [ScriptOrder] frame=1200 seq=10278 GameManager.LateUpdate
+2026-08-22T16:37:55 45.966 INF Clearing all pools
+2026-08-22T16:37:56 47.655 INF [ScriptOrder] frame=1260 seq=10929 GameManager.FixedUpdate
+2026-08-22T16:37:56 47.655 INF [ScriptOrder] frame=1260 seq=10930 Origin.FixedUpdate
+2026-08-22T16:37:56 47.656 INF [ScriptOrder] frame=1260 seq=10931 GameManager.FixedUpdate
+2026-08-22T16:37:56 47.656 INF [ScriptOrder] frame=1260 seq=10932 Origin.FixedUpdate
+2026-08-22T16:37:56 47.656 INF [ScriptOrder] frame=1260 seq=10933 SdtdConsole.Update
+2026-08-22T16:37:56 47.656 INF [ScriptOrder] frame=1260 seq=10934 ConnectionManager.Update
+2026-08-22T16:37:56 47.656 INF [ScriptOrder] frame=1260 seq=10935 GameManager.Update
+2026-08-22T16:37:56 47.672 INF [ScriptOrder] frame=1260 seq=10936 WorldEnvironment.Update
+2026-08-22T16:37:56 47.675 INF [ScriptOrder] frame=1260 seq=10937 ConnectionManager.LateUpdate
+2026-08-22T16:37:56 47.675 INF [ScriptOrder] frame=1260 seq=10938 GameManager.LateUpdate
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11591 GameManager.FixedUpdate
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11592 Origin.FixedUpdate
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11593 GameManager.FixedUpdate
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11594 Origin.FixedUpdate
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11595 SdtdConsole.Update
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11596 ConnectionManager.Update
+2026-08-22T16:37:59 50.676 INF [ScriptOrder] frame=1320 seq=11597 GameManager.Update
+2026-08-22T16:37:59 50.689 INF [ScriptOrder] frame=1320 seq=11598 WorldEnvironment.Update
+2026-08-22T16:37:59 50.690 INF [ScriptOrder] frame=1320 seq=11599 ConnectionManager.LateUpdate
+2026-08-22T16:37:59 50.690 INF [ScriptOrder] frame=1320 seq=11600 GameManager.LateUpdate
+2026-08-22T16:38:02 53.702 INF [ScriptOrder] frame=1380 seq=12253 GameManager.FixedUpdate
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12254 Origin.FixedUpdate
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12255 GameManager.FixedUpdate
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12256 Origin.FixedUpdate
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12257 SdtdConsole.Update
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12258 ConnectionManager.Update
+2026-08-22T16:38:02 53.703 INF [ScriptOrder] frame=1380 seq=12259 GameManager.Update
+2026-08-22T16:38:02 53.716 INF [ScriptOrder] frame=1380 seq=12260 WorldEnvironment.Update
+2026-08-22T16:38:02 53.716 INF [ScriptOrder] frame=1380 seq=12261 ConnectionManager.LateUpdate
+2026-08-22T16:38:02 53.716 INF [ScriptOrder] frame=1380 seq=12262 GameManager.LateUpdate
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity dump: Entities.list Count=6
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 171 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 173 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 176 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 177 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 178 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity 179 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:04 55.276 INF [ScriptOrder] entity GO enabled dump: total=6 goActive=6 goInactive=0 mbEnabled=6 mbDisabled=0
+2026-08-22T16:38:05 56.703 INF [ScriptOrder] frame=1440 seq=12913 GameManager.FixedUpdate
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12914 Origin.FixedUpdate
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12915 GameManager.FixedUpdate
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12916 Origin.FixedUpdate
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12917 SdtdConsole.Update
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12918 ConnectionManager.Update
+2026-08-22T16:38:05 56.704 INF [ScriptOrder] frame=1440 seq=12919 GameManager.Update
+2026-08-22T16:38:05 56.716 INF [ScriptOrder] frame=1440 seq=12920 WorldEnvironment.Update
+2026-08-22T16:38:05 56.718 INF [ScriptOrder] frame=1440 seq=12921 ConnectionManager.LateUpdate
+2026-08-22T16:38:05 56.718 INF [ScriptOrder] frame=1440 seq=12922 GameManager.LateUpdate
+2026-08-22T16:38:08 59.703 INF [ScriptOrder] frame=1500 seq=13573 GameManager.FixedUpdate
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13574 Origin.FixedUpdate
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13575 GameManager.FixedUpdate
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13576 Origin.FixedUpdate
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13577 SdtdConsole.Update
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13578 ConnectionManager.Update
+2026-08-22T16:38:08 59.704 INF [ScriptOrder] frame=1500 seq=13579 GameManager.Update
+2026-08-22T16:38:08 59.718 INF [ScriptOrder] frame=1500 seq=13580 WorldEnvironment.Update
+2026-08-22T16:38:08 59.719 INF [ScriptOrder] frame=1500 seq=13581 ConnectionManager.LateUpdate
+2026-08-22T16:38:08 59.719 INF [ScriptOrder] frame=1500 seq=13582 GameManager.LateUpdate
+2026-08-22T16:38:11 62.044 INF [BotMod] Bots alive: 6/6
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14235 GameManager.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14236 Origin.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14237 GameManager.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14238 Origin.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14239 GameManager.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14240 Origin.FixedUpdate
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14241 SdtdConsole.Update
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14242 ConnectionManager.Update
+2026-08-22T16:38:11 62.732 INF [ScriptOrder] frame=1560 seq=14243 GameManager.Update
+2026-08-22T16:38:11 62.746 INF [ScriptOrder] frame=1560 seq=14244 WorldEnvironment.Update
+2026-08-22T16:38:11 62.747 INF [ScriptOrder] frame=1560 seq=14245 ConnectionManager.LateUpdate
+2026-08-22T16:38:11 62.747 INF [ScriptOrder] frame=1560 seq=14246 GameManager.LateUpdate
+2026-08-22T16:38:12 63.891 INF [7dtd-apm] APM updates=1583 gmUpdateAvg=0.37ms tickAvg=37.98ms spikes=1 sections=83
+2026-08-22T16:38:13 64.762 INF [DECO] written 75600, in 16ms
+2026-08-22T16:38:13 64.763 INF [DECO] write thread 0ms
+2026-08-22T16:38:14 65.758 INF [ScriptOrder] frame=1620 seq=14899 GameManager.FixedUpdate
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14900 Origin.FixedUpdate
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14901 GameManager.FixedUpdate
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14902 Origin.FixedUpdate
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14903 SdtdConsole.Update
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14904 ConnectionManager.Update
+2026-08-22T16:38:14 65.759 INF [ScriptOrder] frame=1620 seq=14905 GameManager.Update
+2026-08-22T16:38:14 65.770 INF [ScriptOrder] frame=1620 seq=14906 WorldEnvironment.Update
+2026-08-22T16:38:14 65.791 INF [ScriptOrder] frame=1620 seq=14907 ConnectionManager.LateUpdate
+2026-08-22T16:38:14 65.791 INF [ScriptOrder] frame=1620 seq=14908 GameManager.LateUpdate
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15565 GameManager.FixedUpdate
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15566 Origin.FixedUpdate
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15567 GameManager.FixedUpdate
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15568 Origin.FixedUpdate
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15569 SdtdConsole.Update
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15570 ConnectionManager.Update
+2026-08-22T16:38:17 68.820 INF [ScriptOrder] frame=1680 seq=15571 GameManager.Update
+2026-08-22T16:38:17 68.833 INF [ScriptOrder] frame=1680 seq=15572 WorldEnvironment.Update
+2026-08-22T16:38:17 68.834 INF [ScriptOrder] frame=1680 seq=15573 ConnectionManager.LateUpdate
+2026-08-22T16:38:17 68.834 INF [ScriptOrder] frame=1680 seq=15574 GameManager.LateUpdate
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity dump: Entities.list Count=6
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 171 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 173 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 176 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 177 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 178 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity 179 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:19 70.389 INF [ScriptOrder] entity GO enabled dump: total=6 goActive=6 goInactive=0 mbEnabled=6 mbDisabled=0
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16225 GameManager.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16226 Origin.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16227 GameManager.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16228 Origin.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16229 GameManager.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16230 Origin.FixedUpdate
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16231 SdtdConsole.Update
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16232 ConnectionManager.Update
+2026-08-22T16:38:20 71.831 INF [ScriptOrder] frame=1740 seq=16233 GameManager.Update
+2026-08-22T16:38:20 71.844 INF [ScriptOrder] frame=1740 seq=16234 WorldEnvironment.Update
+2026-08-22T16:38:20 71.844 INF [ScriptOrder] frame=1740 seq=16235 ConnectionManager.LateUpdate
+2026-08-22T16:38:20 71.844 INF [ScriptOrder] frame=1740 seq=16236 GameManager.LateUpdate
+2026-08-22T16:38:23 74.831 INF [ScriptOrder] frame=1800 seq=16885 GameManager.FixedUpdate
+2026-08-22T16:38:23 74.831 INF [ScriptOrder] frame=1800 seq=16886 Origin.FixedUpdate
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16887 GameManager.FixedUpdate
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16888 Origin.FixedUpdate
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16889 GameManager.FixedUpdate
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16890 Origin.FixedUpdate
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16891 SdtdConsole.Update
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16892 ConnectionManager.Update
+2026-08-22T16:38:23 74.832 INF [ScriptOrder] frame=1800 seq=16893 GameManager.Update
+2026-08-22T16:38:23 74.845 INF [ScriptOrder] frame=1800 seq=16894 WorldEnvironment.Update
+2026-08-22T16:38:23 74.845 INF [ScriptOrder] frame=1800 seq=16895 ConnectionManager.LateUpdate
+2026-08-22T16:38:23 74.845 INF [ScriptOrder] frame=1800 seq=16896 GameManager.LateUpdate
+2026-08-22T16:38:24 75.465 INF NET: LiteNetLib: Connect from: 127.0.0.20:38243 / 1
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Reader_1_0
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Writer_1_0
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Reader_1_1
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Writer_1_1
+2026-08-22T16:38:24 75.466 INF [NET] PlayerConnected EntityID=-1, PltfmId='Local_<none>', CrossId='<unknown/none>', OwnerID='<unknown/none>', PlayerName='', ClientNumber='3'
+2026-08-22T16:38:24 75.466 INF NET: LiteNetLib: Connect from: 127.0.0.19:42240 / 0
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Reader_0_0
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Writer_0_0
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Reader_0_1
+2026-08-22T16:38:24 75.466 INF Started thread NCS_Writer_0_1
+2026-08-22T16:38:24 75.466 INF [NET] PlayerConnected EntityID=-1, PltfmId='Local_<none>', CrossId='<unknown/none>', OwnerID='<unknown/none>', PlayerName='', ClientNumber='4'
+2026-08-22T16:38:24 75.496 INF NPPL.Read
+2026-08-22T16:38:24 75.496 INF NPPL.Read
+2026-08-22T16:38:24 75.532 INF PlayerLogin: REFake2/V 3.1.0
+2026-08-22T16:38:24 75.532 INF Client IP: 127.0.0.20
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerName authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] ServerState authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] MpHostAllowed authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerId authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] DuplicateUserId authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] VersionCheck authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] LegacyModAuthorizations authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] PlatformAuth authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] BansAndWhitelist authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [Auth] Crossplay authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF [EncryptionAgreement] Unsupported client device Unknown
+2026-08-22T16:38:24 75.532 INF [Auth] Encryption authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.532 INF PlayerLogin: REFake1/V 3.1.0
+2026-08-22T16:38:24 75.532 INF Client IP: 127.0.0.19
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerName authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] ServerState authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] MpHostAllowed authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerId authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] DuplicateUserId authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] VersionCheck authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] PlayerSlots authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] LegacyModAuthorizations authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] PlatformAuth authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] BansAndWhitelist authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [Auth] Crossplay authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.532 INF [EncryptionAgreement] Unsupported client device Unknown
+2026-08-22T16:38:24 75.532 INF [Auth] Encryption authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.582 INF [Auth] Finalizer authorization successful: EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:24 75.587 INF Allowing player with id Local_REFake2
+2026-08-22T16:38:24 75.588 INF [Auth] Finalizer authorization successful: EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:24 75.591 INF Allowing player with id Local_REFake1
+2026-08-22T16:38:24 75.632 INF RequestToEnterGame: Local_REFake2/REFake2
+2026-08-22T16:38:24 75.632 INF RequestToEnterGame: Local_REFake1/REFake1
+2026-08-22T16:38:24 75.694 INF Starting to send Localization to EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'...
+2026-08-22T16:38:24 75.694 INF Starting to send Localization to EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'...
+2026-08-22T16:38:25 75.948 INF Sending Localization to EntityID=-1, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3' done
+2026-08-22T16:38:25 75.959 INF Sending Localization to EntityID=-1, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4' done
+2026-08-22T16:38:25 76.282 INF RequestToSpawnPlayer: 180, REFake2, 6
+2026-08-22T16:38:25 76.287 INF Created player with id=180
+2026-08-22T16:38:25 76.289 INF [PlayerInteractions] persistent player login
+2026-08-22T16:38:25 76.332 INF RequestToSpawnPlayer: 181, REFake1, 5
+2026-08-22T16:38:25 76.336 INF Created player with id=181
+2026-08-22T16:38:25 76.337 INF [PlayerInteractions] persistent player login
+2026-08-22T16:38:25 76.417 INF Telnet connection from: 127.0.0.1:51432
+2026-08-22T16:38:25 76.417 INF Started thread TelnetClient_127.0.0.1:51432
+2026-08-22T16:38:25 76.453 INF Telnet connection from: 127.0.0.1:51442
+2026-08-22T16:38:25 76.453 INF Started thread TelnetClient_127.0.0.1:51442
+2026-08-22T16:38:26 77.831 INF [ScriptOrder] frame=1860 seq=17545 GameManager.FixedUpdate
+2026-08-22T16:38:26 77.831 INF [ScriptOrder] frame=1860 seq=17546 Origin.FixedUpdate
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17547 GameManager.FixedUpdate
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17548 Origin.FixedUpdate
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17549 GameManager.FixedUpdate
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17550 Origin.FixedUpdate
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17551 SdtdConsole.Update
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17552 ConnectionManager.Update
+2026-08-22T16:38:26 77.832 INF [ScriptOrder] frame=1860 seq=17553 GameManager.Update
+2026-08-22T16:38:26 77.845 INF [ScriptOrder] frame=1860 seq=17554 WorldEnvironment.Update
+2026-08-22T16:38:26 77.846 INF [ScriptOrder] frame=1860 seq=17555 ConnectionManager.LateUpdate
+2026-08-22T16:38:26 77.846 INF [ScriptOrder] frame=1860 seq=17556 GameManager.LateUpdate
+2026-08-22T16:38:28 79.634 INF NET: LiteNetLib: Client disconnect from: 127.0.0.19:42240 / 0 (RemoteConnectionClose)
+2026-08-22T16:38:28 79.636 ERR IOException in TelnetClient_127.0.0.1:51442: Unable to write data to the transport connection: The socket has been shut down.
+2026-08-22T16:38:28 79.636 EXC Unable to write data to the transport connection: The socket has been shut down. ---> The socket has been shut down
+  at System.Net.Sockets.Socket.Send (System.Byte[] buffer, System.Int32 offset, System.Int32 size, System.Net.Sockets.SocketFlags socketFlags) [0x00016] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x00065] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+Rethrow as IOException: Unable to write data to the transport connection: The socket has been shut down.
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x000ac] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at TelnetConnection.handleWriting () [0x0004b] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+  at TelnetConnection.HandlerThread (ThreadManager+ThreadInfo _tInfo) [0x00022] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+UnityEngine.StackTraceUtility:ExtractStringFromException(Object)
+Log:Exception(Exception)
+TelnetConnection:HandlerThread(ThreadInfo)
+ThreadManager:myThreadInvoke(Object)
+System.Threading.QueueUserWorkItemCallback:System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+System.Threading.ThreadPoolWorkQueue:Dispatch()
+System.Threading._ThreadPoolWaitCallback:PerformWaitCallback()
+
+2026-08-22T16:38:28 79.636 INF Telnet connection closed: 127.0.0.1:51442
+2026-08-22T16:38:28 79.636 INF Exited thread TelnetClient_127.0.0.1:51442
+2026-08-22T16:38:28 79.645 INF NET: LiteNetLib: MT: Client disconnect from: 127.0.0.19:42240 / 0 (RemoteConnectionClose)
+2026-08-22T16:38:28 79.645 INF [NET] PlayerDisconnected EntityID=181, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:28 79.645 WRN DynamicMusic: 181 was not in Bloodmoon state cache on disconnect
+2026-08-22T16:38:28 79.645 INF Player disconnected: EntityID=181, PltfmId='Local_REFake1', CrossId='Local_REFake1', OwnerID='<unknown/none>', PlayerName='REFake1', ClientNumber='4'
+2026-08-22T16:38:28 79.645 INF Exited thread NCS_Writer_0_0
+2026-08-22T16:38:28 79.645 INF Exited thread NCS_Reader_0_0
+2026-08-22T16:38:28 79.645 INF Exited thread NCS_Writer_0_1
+2026-08-22T16:38:28 79.645 INF Exited thread NCS_Reader_0_1
+2026-08-22T16:38:28 79.645 INF GMSG: Player 'REFake1' left the game
+2026-08-22T16:38:28 79.645 INF [PlayerInteractions] persistent player disconnect
+2026-08-22T16:38:28 79.650 ERR IOException in TelnetClient_127.0.0.1:51432: Unable to write data to the transport connection: The socket has been shut down.
+2026-08-22T16:38:28 79.651 EXC Unable to write data to the transport connection: The socket has been shut down. ---> The socket has been shut down
+  at System.Net.Sockets.Socket.Send (System.Byte[] buffer, System.Int32 offset, System.Int32 size, System.Net.Sockets.SocketFlags socketFlags) [0x00016] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x00065] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+Rethrow as IOException: Unable to write data to the transport connection: The socket has been shut down.
+  at System.Net.Sockets.NetworkStream.Write (System.Byte[] buffer, System.Int32 offset, System.Int32 size) [0x000ac] in <b6d85684387445d1bc2505c6de8fed9f>:0 
+  at TelnetConnection.handleWriting () [0x0004b] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+  at TelnetConnection.HandlerThread (ThreadManager+ThreadInfo _tInfo) [0x00022] in <45dc491acd8a4242bd87a82d58eff30d>:0 
+UnityEngine.StackTraceUtility:ExtractStringFromException(Object)
+Log:Exception(Exception)
+TelnetConnection:HandlerThread(ThreadInfo)
+ThreadManager:myThreadInvoke(Object)
+System.Threading.QueueUserWorkItemCallback:System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+System.Threading.ThreadPoolWorkQueue:Dispatch()
+System.Threading._ThreadPoolWaitCallback:PerformWaitCallback()
+
+2026-08-22T16:38:28 79.651 INF Telnet connection closed: 127.0.0.1:51432
+2026-08-22T16:38:28 79.651 INF Exited thread TelnetClient_127.0.0.1:51432
+2026-08-22T16:38:28 79.770 INF NET: LiteNetLib: Client disconnect from: 127.0.0.20:38243 / 1 (RemoteConnectionClose)
+2026-08-22T16:38:28 79.790 INF NET: LiteNetLib: MT: Client disconnect from: 127.0.0.20:38243 / 1 (RemoteConnectionClose)
+2026-08-22T16:38:28 79.791 INF [NET] PlayerDisconnected EntityID=180, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:28 79.791 WRN DynamicMusic: 180 was not in Bloodmoon state cache on disconnect
+2026-08-22T16:38:28 79.791 INF Player disconnected: EntityID=180, PltfmId='Local_REFake2', CrossId='Local_REFake2', OwnerID='<unknown/none>', PlayerName='REFake2', ClientNumber='3'
+2026-08-22T16:38:28 79.791 INF Exited thread NCS_Reader_1_0
+2026-08-22T16:38:28 79.791 INF Exited thread NCS_Writer_1_0
+2026-08-22T16:38:28 79.791 INF Exited thread NCS_Reader_1_1
+2026-08-22T16:38:28 79.791 INF Exited thread NCS_Writer_1_1
+2026-08-22T16:38:28 79.791 INF GMSG: Player 'REFake2' left the game
+2026-08-22T16:38:28 79.791 INF [PlayerInteractions] persistent player disconnect
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18211 GameManager.FixedUpdate
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18212 Origin.FixedUpdate
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18213 GameManager.FixedUpdate
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18214 Origin.FixedUpdate
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18215 SdtdConsole.Update
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18216 ConnectionManager.Update
+2026-08-22T16:38:29 80.884 INF [ScriptOrder] frame=1920 seq=18217 GameManager.Update
+2026-08-22T16:38:29 80.897 INF [ScriptOrder] frame=1920 seq=18218 WorldEnvironment.Update
+2026-08-22T16:38:29 80.898 INF [ScriptOrder] frame=1920 seq=18219 ConnectionManager.LateUpdate
+2026-08-22T16:38:29 80.898 INF [ScriptOrder] frame=1920 seq=18220 GameManager.LateUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18875 GameManager.FixedUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18876 Origin.FixedUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18877 GameManager.FixedUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18878 Origin.FixedUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18879 GameManager.FixedUpdate
+2026-08-22T16:38:33 83.929 INF [ScriptOrder] frame=1980 seq=18880 Origin.FixedUpdate
+2026-08-22T16:38:33 83.930 INF [ScriptOrder] frame=1980 seq=18881 SdtdConsole.Update
+2026-08-22T16:38:33 83.930 INF [ScriptOrder] frame=1980 seq=18882 ConnectionManager.Update
+2026-08-22T16:38:33 83.930 INF [ScriptOrder] frame=1980 seq=18883 GameManager.Update
+2026-08-22T16:38:33 83.941 INF [ScriptOrder] frame=1980 seq=18884 WorldEnvironment.Update
+2026-08-22T16:38:33 83.944 INF [ScriptOrder] frame=1980 seq=18885 ConnectionManager.LateUpdate
+2026-08-22T16:38:33 83.944 INF [ScriptOrder] frame=1980 seq=18886 GameManager.LateUpdate
+2026-08-22T16:38:34 85.511 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:38:34 85.511 INF [ScriptOrder] entity dump: Entities.list Count=5
+2026-08-22T16:38:34 85.511 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:38:34 85.511 INF [ScriptOrder] entity 171 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:34 85.511 INF [ScriptOrder] entity 173 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:34 85.512 INF [ScriptOrder] entity 176 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:34 85.512 INF [ScriptOrder] entity 177 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:34 85.512 INF [ScriptOrder] entity 178 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:34 85.512 INF [ScriptOrder] entity GO enabled dump: total=5 goActive=5 goInactive=0 mbEnabled=5 mbDisabled=0
+2026-08-22T16:38:34 85.573 INF [BotMod] Bot spawned: [Bot] TankJr_84 [gunShotgunT3AutoShotgun] id=182 at (1041.00, 62.00, 1059.00) (6/6)
+2026-08-22T16:38:35 86.056 INF [BotMod] Kill: [Bot] TankJr_60 killed [Bot] TankJr_84
+2026-08-22T16:38:35 86.056 INF [BotMod] [Bot] [Bot] TankJr_60 fragged [Bot] TankJr_84 (K:2 Z:0 D:0 S:0)
+2026-08-22T16:38:35 86.057 INF [BotMod] victim [Bot] [Bot] TankJr_84 died (D:0 S:0)
+2026-08-22T16:38:35 86.057 INF [BotMod] [Bot] TankJr_60 KILLED 182 with gunHandgunT3SMG5
+2026-08-22T16:38:35 86.559 INF [BotMod] Bot spawned: [Bot] Hunter_33 [gunShotgunT1DoubleBarrel] id=183 at (-273.00, 64.71, 449.00) (6/6)
+2026-08-22T16:38:36 86.957 INF [ScriptOrder] frame=2040 seq=19539 GameManager.FixedUpdate
+2026-08-22T16:38:36 86.957 INF [ScriptOrder] frame=2040 seq=19540 Origin.FixedUpdate
+2026-08-22T16:38:36 86.958 INF [ScriptOrder] frame=2040 seq=19541 GameManager.FixedUpdate
+2026-08-22T16:38:36 86.958 INF [ScriptOrder] frame=2040 seq=19542 Origin.FixedUpdate
+2026-08-22T16:38:36 86.958 INF [ScriptOrder] frame=2040 seq=19543 SdtdConsole.Update
+2026-08-22T16:38:36 86.958 INF [ScriptOrder] frame=2040 seq=19544 ConnectionManager.Update
+2026-08-22T16:38:36 86.958 INF [ScriptOrder] frame=2040 seq=19545 GameManager.Update
+2026-08-22T16:38:36 86.972 INF [ScriptOrder] frame=2040 seq=19546 WorldEnvironment.Update
+2026-08-22T16:38:36 86.973 INF [ScriptOrder] frame=2040 seq=19547 ConnectionManager.LateUpdate
+2026-08-22T16:38:36 86.973 INF [ScriptOrder] frame=2040 seq=19548 GameManager.LateUpdate
+2026-08-22T16:38:36 87.731 INF Clearing all pools
+2026-08-22T16:38:39 89.968 INF [ScriptOrder] frame=2100 seq=20199 GameManager.FixedUpdate
+2026-08-22T16:38:39 89.968 INF [ScriptOrder] frame=2100 seq=20200 Origin.FixedUpdate
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20201 GameManager.FixedUpdate
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20202 Origin.FixedUpdate
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20203 GameManager.FixedUpdate
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20204 Origin.FixedUpdate
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20205 SdtdConsole.Update
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20206 ConnectionManager.Update
+2026-08-22T16:38:39 89.969 INF [ScriptOrder] frame=2100 seq=20207 GameManager.Update
+2026-08-22T16:38:39 89.982 INF [ScriptOrder] frame=2100 seq=20208 WorldEnvironment.Update
+2026-08-22T16:38:39 89.982 INF [ScriptOrder] frame=2100 seq=20209 ConnectionManager.LateUpdate
+2026-08-22T16:38:39 89.983 INF [ScriptOrder] frame=2100 seq=20210 GameManager.LateUpdate
+2026-08-22T16:38:41 92.085 INF [BotMod] Bots alive: 6/6
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20861 GameManager.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20862 Origin.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20863 GameManager.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20864 Origin.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20865 GameManager.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20866 Origin.FixedUpdate
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20867 SdtdConsole.Update
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20868 ConnectionManager.Update
+2026-08-22T16:38:42 92.993 INF [ScriptOrder] frame=2160 seq=20869 GameManager.Update
+2026-08-22T16:38:42 93.006 INF [ScriptOrder] frame=2160 seq=20870 WorldEnvironment.Update
+2026-08-22T16:38:42 93.011 INF [ScriptOrder] frame=2160 seq=20871 ConnectionManager.LateUpdate
+2026-08-22T16:38:42 93.011 INF [ScriptOrder] frame=2160 seq=20872 GameManager.LateUpdate
+2026-08-22T16:38:42 93.907 INF [7dtd-apm] APM updates=2178 gmUpdateAvg=0.39ms tickAvg=41.39ms spikes=1 sections=83
+2026-08-22T16:38:45 95.996 INF [ScriptOrder] frame=2220 seq=21523 GameManager.FixedUpdate
+2026-08-22T16:38:45 95.996 INF [ScriptOrder] frame=2220 seq=21524 Origin.FixedUpdate
+2026-08-22T16:38:45 95.997 INF [ScriptOrder] frame=2220 seq=21525 GameManager.FixedUpdate
+2026-08-22T16:38:45 95.997 INF [ScriptOrder] frame=2220 seq=21526 Origin.FixedUpdate
+2026-08-22T16:38:45 95.997 INF [ScriptOrder] frame=2220 seq=21527 SdtdConsole.Update
+2026-08-22T16:38:45 95.997 INF [ScriptOrder] frame=2220 seq=21528 ConnectionManager.Update
+2026-08-22T16:38:45 95.997 INF [ScriptOrder] frame=2220 seq=21529 GameManager.Update
+2026-08-22T16:38:45 96.010 INF [ScriptOrder] frame=2220 seq=21530 WorldEnvironment.Update
+2026-08-22T16:38:45 96.011 INF [ScriptOrder] frame=2220 seq=21531 ConnectionManager.LateUpdate
+2026-08-22T16:38:45 96.011 INF [ScriptOrder] frame=2220 seq=21532 GameManager.LateUpdate
+2026-08-22T16:38:48 98.996 INF [ScriptOrder] frame=2280 seq=22183 GameManager.FixedUpdate
+2026-08-22T16:38:48 98.996 INF [ScriptOrder] frame=2280 seq=22184 Origin.FixedUpdate
+2026-08-22T16:38:48 98.997 INF [ScriptOrder] frame=2280 seq=22185 GameManager.FixedUpdate
+2026-08-22T16:38:48 98.997 INF [ScriptOrder] frame=2280 seq=22186 Origin.FixedUpdate
+2026-08-22T16:38:48 98.997 INF [ScriptOrder] frame=2280 seq=22187 SdtdConsole.Update
+2026-08-22T16:38:48 98.997 INF [ScriptOrder] frame=2280 seq=22188 ConnectionManager.Update
+2026-08-22T16:38:48 98.997 INF [ScriptOrder] frame=2280 seq=22189 GameManager.Update
+2026-08-22T16:38:48 99.011 INF [ScriptOrder] frame=2280 seq=22190 WorldEnvironment.Update
+2026-08-22T16:38:48 99.012 INF [ScriptOrder] frame=2280 seq=22191 ConnectionManager.LateUpdate
+2026-08-22T16:38:48 99.012 INF [ScriptOrder] frame=2280 seq=22192 GameManager.LateUpdate
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity dump: World=World Entities=DictionaryList`2
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity dump: Entities.list Count=7
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity dump: Players.list Count=0
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity 171 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity 173 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.578 INF [ScriptOrder] entity 176 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.579 INF [ScriptOrder] entity 177 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.579 INF [ScriptOrder] entity 178 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.579 INF [ScriptOrder] entity 182 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.579 INF [ScriptOrder] entity 183 EntityTrader goActive=True mbEnabled=True
+2026-08-22T16:38:49 100.579 INF [ScriptOrder] entity GO enabled dump: total=7 goActive=7 goInactive=0 mbEnabled=7 mbDisabled=0
+2026-08-22T16:38:51 102.006 INF [ScriptOrder] frame=2340 seq=22843 GameManager.FixedUpdate
+2026-08-22T16:38:51 102.006 INF [ScriptOrder] frame=2340 seq=22844 Origin.FixedUpdate
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22845 GameManager.FixedUpdate
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22846 Origin.FixedUpdate
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22847 GameManager.FixedUpdate
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22848 Origin.FixedUpdate
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22849 SdtdConsole.Update
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22850 ConnectionManager.Update
+2026-08-22T16:38:51 102.007 INF [ScriptOrder] frame=2340 seq=22851 GameManager.Update
+2026-08-22T16:38:51 102.020 INF [ScriptOrder] frame=2340 seq=22852 WorldEnvironment.Update
+2026-08-22T16:38:51 102.025 INF [ScriptOrder] frame=2340 seq=22853 ConnectionManager.LateUpdate
+2026-08-22T16:38:51 102.025 INF [ScriptOrder] frame=2340 seq=22854 GameManager.LateUpdate
+2026-08-22T16:38:54 105.090 INF [ScriptOrder] frame=2400 seq=23511 GameManager.FixedUpdate
+2026-08-22T16:38:54 105.090 INF [ScriptOrder] frame=2400 seq=23512 Origin.FixedUpdate
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23513 GameManager.FixedUpdate
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23514 Origin.FixedUpdate
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23515 GameManager.FixedUpdate
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23516 Origin.FixedUpdate
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23517 SdtdConsole.Update
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23518 ConnectionManager.Update
+2026-08-22T16:38:54 105.091 INF [ScriptOrder] frame=2400 seq=23519 GameManager.Update
+2026-08-22T16:38:54 105.104 INF [ScriptOrder] frame=2400 seq=23520 WorldEnvironment.Update
+2026-08-22T16:38:54 105.105 INF [ScriptOrder] frame=2400 seq=23521 ConnectionManager.LateUpdate
+2026-08-22T16:38:54 105.105 INF [ScriptOrder] frame=2400 seq=23522 GameManager.LateUpdate
+2026-08-22T16:38:57 108.090 INF [ScriptOrder] frame=2460 seq=24171 GameManager.FixedUpdate
+2026-08-22T16:38:57 108.090 INF [ScriptOrder] frame=2460 seq=24172 Origin.FixedUpdate
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24173 GameManager.FixedUpdate
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24174 Origin.FixedUpdate
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24175 GameManager.FixedUpdate
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24176 Origin.FixedUpdate
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24177 SdtdConsole.Update
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24178 ConnectionManager.Update
+2026-08-22T16:38:57 108.091 INF [ScriptOrder] frame=2460 seq=24179 GameManager.Update
+2026-08-22T16:38:57 108.102 INF [ScriptOrder] frame=2460 seq=24180 WorldEnvironment.Update
+2026-08-22T16:38:57 108.108 INF [ScriptOrder] frame=2460 seq=24181 ConnectionManager.LateUpdate
+2026-08-22T16:38:57 108.108 INF [ScriptOrder] frame=2460 seq=24182 GameManager.LateUpdate
+2026-08-22T16:39:00 111.126 INF [ScriptOrder] frame=2520 seq=24835 GameManager.FixedUpdate
+2026-08-22T16:39:00 111.126 INF [ScriptOrder] frame=2520 seq=24836 Origin.FixedUpdate
+2026-08-22T16:39:00 111.126 INF [ScriptOrder] frame=2520 seq=24837 GameManager.FixedUpdate
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24838 Origin.FixedUpdate
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24839 GameManager.FixedUpdate
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24840 Origin.FixedUpdate
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24841 SdtdConsole.Update
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24842 ConnectionManager.Update
+2026-08-22T16:39:00 111.127 INF [ScriptOrder] frame=2520 seq=24843 GameManager.Update
+2026-08-22T16:39:00 111.141 INF [ScriptOrder] frame=2520 seq=24844 WorldEnvironment.Update
+2026-08-22T16:39:00 111.141 INF [ScriptOrder] frame=2520 seq=24845 ConnectionManager.LateUpdate
+2026-08-22T16:39:00 111.141 INF [ScriptOrder] frame=2520 seq=24846 GameManager.LateUpdate

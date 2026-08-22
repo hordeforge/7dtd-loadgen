@@ -130,9 +130,19 @@ for sc in "${scenarios[@]}"; do
   h1=$(hostload)
   t1=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-  pass=$(grep -oP "pass=\d+" "$run_dir/client.log" | tail -1 | cut -d= -f2)
-  fail=$(grep -oP "fail=\d+" "$run_dir/client.log" | tail -1 | cut -d= -f2)
-  bench_line=$(grep "BENCH_SUMMARY" "$run_dir/client.log" | tail -1 || true)
+  pass=$(python3 -c "
+import json
+try:
+    print(json.load(open('$run_dir/stats.json')).get('pass', 0))
+except Exception:
+    print(0)" 2>/dev/null)
+  fail=$(python3 -c "
+import json
+try:
+    print(json.load(open('$run_dir/stats.json')).get('fail', 0))
+except Exception:
+    print(0)" 2>/dev/null)
+  bench_line=$(grep -a "BENCH_SUMMARY" "$run_dir/client.log" 2>/dev/null | tail -1 || true)
   cat >"$run_dir/run-meta.json" <<EOF
 {
   "scenario": "$sc",

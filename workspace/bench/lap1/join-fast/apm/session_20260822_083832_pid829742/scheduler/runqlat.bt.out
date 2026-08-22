@@ -1,0 +1,15 @@
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_083832_pid829742/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_083832_pid829742/bt/runqlat.bt:20:12-48: WARNING: signed operands for '/' can lead to undefined behavior (cast to unsigned to silence warning)
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_083832_pid829742/bt/runqlat.bt:20:12-17: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+           ~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_083832_pid829742/bt/runqlat.bt:20:20-40: WARNING: Expression of type: uint64 being cast to type: int64. This may cause unexpected results. Use an explicit cast to suppress this warning.
+    $us = (nsecs - @wake[args.next_pid]) / 1000;
+                   ~~~~~~~~~~~~~~~~~~~~
+/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/join-fast/apm/session_20260822_083832_pid829742/bt/runqlat.bt:21:5-34: WARNING: Return value discarded.
+    delete(@wake[args.next_pid]);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

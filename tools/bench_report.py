@@ -75,11 +75,17 @@ def load_lap(lap_dir: Path) -> dict:
             except (ValueError, OSError):
                 pass
         bench = (stats.get("bench") or {}) if isinstance(stats, dict) else {}
+        # stats.json is the authoritative join outcome (client.log can contain
+        # binary bytes that defeat grep); fall back to run-meta summary.
+        joins_pass = stats.get("pass") if isinstance(stats, dict) and stats.get("pass") is not None \
+            else meta.get("summary", {}).get("pass")
+        joins_fail = stats.get("fail") if isinstance(stats, dict) and stats.get("fail") is not None \
+            else meta.get("summary", {}).get("fail")
         wall = iso_delta(meta.get("startUtc", ""), meta.get("endUtc", ""))
         scenarios[sc] = {
             "wallS": round(wall, 1) if wall is not None else None,
-            "joinsPass": meta.get("summary", {}).get("pass"),
-            "joinsFail": meta.get("summary", {}).get("fail"),
+            "joinsPass": joins_pass,
+            "joinsFail": joins_fail,
             "hostLoad": f"{meta.get('hostLoadStart')}->{meta.get('hostLoadEnd')}",
             "bench": bench,
             "apmVerdict": apm_verdict(meta_path.parent),
