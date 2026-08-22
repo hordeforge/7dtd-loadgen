@@ -35,6 +35,11 @@ help:
 	@echo "  make compare-sut         Stock-vs-zdtd comparison: run the same client scenario"
 	@echo "                          against both servers and diff the observable surface"
 	@echo "                          (SCENARIO=join-probe SUT=all|stock|zdtd)"
+	@echo "  make bench-stock         Stock benchmark lane: one stock dedicated (fresh save,"
+	@echo "                          fixed world) runs the scenario matrix incl. the bench"
+	@echo "                          profile; per-scenario APM + stats-json + hostLoad evidence"
+	@echo "                          under workspace/bench/lapN (LAP=1 BENCH_ADMIN_PORT=8084)"
+	@echo "  make bench-report        Consolidate workspace/bench/lap* into bench-stock.md/json"
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
@@ -122,6 +127,15 @@ compare-all:
 	bash scripts/compare_sut.sh --list | while read -r id; do \
 		bash scripts/compare_sut.sh --scenario "$$id" --sut all || exit 1; \
 	done
+
+# Stock benchmark lane (see scripts/bench_stock.sh). LAP=1 default;
+# BENCH_LAPS_ONLY=1 runs just the bench profile for a fast smoke.
+LAP ?= 1
+bench-stock:
+	bash scripts/bench_stock.sh --lap "$(LAP)"
+
+bench-report:
+	uv run --with pytest python "$(ROOT)/tools/bench_report.py" --laps-dir "$(ROOT)/workspace/bench"
 
 # Same scenario (join-fast) on every supported world: the world matrix.
 # Each world keeps its own evidence dir (join-fast-<world>). Worlds that

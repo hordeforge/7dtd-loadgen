@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""Consolidate bench-stock lap evidence into a machine-readable report.
+
+Walks workspace/bench/lap<N>/<scenario>/ run-meta.json + stats.json (and the
+BENCH_SUMMARY line) and emits bench-stock.md + bench-stock.json at the laps
+root. A repeatability section compares per-scenario wall across laps
+(+-20% threshold) so the 2-lap claim is computed, not asserted.
+
+Usage:
+  bench_report.py --laps-dir <dir> [--require-laps N] [--out <dir>]
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import re
+import sys
+from pathlib import Path
+
+TOLERANCE = 0.20  # per-scenario wall repeatability bound
+
+
+def iso_delta(a: str, b: str) -> float | None:
+    try:
+        ta = dt.datetime.fromisoformat(a.replace("Z", "+00:00"))
+        tb = dt.datetime.fromisoformat(b.replace("Z", "+00:00"))
+        return max(0.0, (tb - ta).total_seconds())
+    except (ValueError, TypeError):
+        return None
+
+
+def bench_summary_from_log(path: Path) -> dict:
+    """Parse the BENCH_SUMMARY console line (best effort)."""
+    try:
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not line.startswith("BENCH_SUMMARY"):
+                continue
+            out = {}
+            for m in re.finditer(r"(\w+)=([\d.]+)", line):
+                try:
+                    out[m.group(1)] = float(m.group(2))
+                except ValueError:
+                    pass
+            return out
+    except OSError:
+        pass
+    return {}
+
+
+def apm_verdict(run_dir: Path) -> str:
+    """Best-effort APM lag verdict from the capture log/session."""
+    log = run_dir / "apm.log"
+    if log.is_file():
+        try:
+            for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+                if "lag verdict" in line or "lagVerdict" in line:
+                    return line.strip().split(":", 1)[-1].strip()[:80]
+        except OSError:
+            pass
+    return "n/a"
+
+
+def load_lap(lap_dir: Path) -> dict:
+    scenarios = {}
+    for meta_path in sorted(lap_dir.glob("*/run-meta.json")):
+        sc = meta_path.parent.name
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        stats = {}
+        stats_path = meta_path.parent / "stats.json"
+        if stats_path.is_file():
+            try:
+                stats = json.loads(stats_path.read_text(encoding="utf-8"))
+            except (ValueError, OSError):
+                pass
+        bench = (stats.get("bench") or {}) if isinstance(stats, dict) else {}
+        wall = iso_delta(meta.get("startUtc", ""), meta.get("endUtc", ""))
+        scenarios[sc] = {
+            "wallS": round(wall, 1) if wall is not None else None,
+            "joinsPass": meta.get("summary", {}).get("pass"),
+            "joinsFail": meta.get("summary", {}).get("fail"),
+            "hostLoad": f"{meta.get('hostLoadStart')}->{meta.get('hostLoadEnd')}",
+            "bench": bench,
+            "apmVerdict": apm_verdict(meta_path.parent),
+        }
+    return {"scenarios": scenarios}
+
+
+def render_md(laps: list[tuple[str, dict]]) -> str:
+    lines = ["# bench-stock (stock dedicated benchmark)\n"]
+    lines.append(f"- laps: {len(laps)} ({', '.join(n for n, _ in laps)})")
+    first = laps[0][1]["scenarios"]
+    lines.append(f"- scenarios: {', '.join(sorted(first))}")
+    lines.append("\n## Per-lap scenario rows\n")
+    lines.append("| lap | scenario | joins pass/fail | wall (s) | hostLoad | "
+                 "bench window | actions/s | active min/max | APM verdict |")
+    lines.append("|---|---|---|---|---|---|---|---|---|")
+    for name, lap in laps:
+        for sc in sorted(lap["scenarios"]):
+            s = lap["scenarios"][sc]
+            b = s["bench"]
+            win = "n/a"
+            if b:
+                win = f"{int(b.get('windowStartMs', 0))}-{int(b.get('windowEndMs', 0))}"
+            aps = f"{b.get('actionsPerSec', 0):.1f}" if b else "n/a"
+            active = f"{b.get('activeMin', '?')}/{b.get('activeMax', '?')}" if b else "n/a"
+            wall = f"{s['wallS']}" if s["wallS"] is not None else "n/a"
+            lines.append(f"| {name} | {sc} | {s['joinsPass']}/{s['joinsFail']} | "
+                         f"{wall} | {s['hostLoad']} | {win} | {aps} | {active} | "
+                         f"{s['apmVerdict']} |")
+    # Repeatability across laps.
+    if len(laps) >= 2:
+        lines.append("\n## Repeatability (per-scenario wall, +-20% bound)\n")
+        lines.append("| scenario | " + " | ".join(n for n, _ in laps)
+                     + " | delta% | verdict |")
+        lines.append("|---|---|---|---|---|")
+        names = [n for n, _ in laps]
+        for sc in sorted(first):
+            walls = []
+            for _, lap in laps:
+                s = lap["scenarios"].get(sc, {})
+                walls.append(s.get("wallS"))
+            if any(w is None for w in walls) or walls[0] == 0:
+                verdict = "n/a (missing wall)"
+            else:
+                base = walls[0]
+                worst = max(abs((w - base) / base) for w in walls)
+                verdict = f"OK ({worst*100:.1f}%)" if worst <= TOLERANCE else \
+                    f"OVER ({worst*100:.1f}%) - hostLoad check"
+                lines.append(f"| {sc} | " + " | ".join(
+                    f"{w:.1f}" if w is not None else "n/a" for w in walls)
+                    + f" | {worst*100:.1f}% | {verdict} |")
+        lines.append(f"\n- tolerance: +-{TOLERANCE*100:.0f}% per scenario; "
+                     "over-tolerance rows are a finding (host contention), "
+                     "recorded with hostLoad, never hidden.")
+    return "\n".join(lines) + "\n"
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--laps-dir", type=Path, default=Path("workspace/bench"))
+    ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--require-laps", type=int, default=0)
+    args = ap.parse_args()
+
+    lap_dirs = sorted(
+        d for d in args.laps_dir.iterdir()
+        if d.is_dir()
+        and any(p.name == "run-meta.json" for p in d.glob("*/run-meta.json"))
+    )
+    if not lap_dirs:
+        print(f"ERROR: no lap evidence under {args.laps_dir}", file=sys.stderr)
+        return 2
+    if args.require_laps and len(lap_dirs) < args.require_laps:
+        print(f"ERROR: need {args.require_laps} laps, found {len(lap_dirs)} "
+              f"({[d.name for d in lap_dirs]})", file=sys.stderr)
+        return 2
+
+    laps = [(d.name, load_lap(d)) for d in lap_dirs]
+    payload = {
+        "schema": "7dtd.loadgen.benchstock.v1",
+        "tolerance": TOLERANCE,
+        "laps": {name: lap for name, lap in laps},
+    }
+    md = render_md(laps)
+    out_dir = args.out or args.laps_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "bench-stock.md").write_text(md, encoding="utf-8")
+    (out_dir / "bench-stock.json").write_text(
+        json.dumps(payload, indent=1, sort_keys=True), encoding="utf-8")
+    print(md)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
