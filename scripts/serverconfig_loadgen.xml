@@ -31,7 +31,10 @@
 	<property name="ServerAdminSlots" value="0"/>
 	<property name="ServerAdminSlotsPermission" value="0"/>
 
-	<!-- No web dashboard / map render (less network + CPU) -->
+	<!-- Web dashboard ON (port 8080) for the APM dashboard webuser seeded by
+	     start_dedicated_prefab.sh; map render off. The dashboard is an admin
+	     surface: keep 8080/8081 off the public internet. See docs/THREAT_MODEL.md R1.
+	     No dashboard password is set here (WebDashboardUrl empty). -->
 	<property name="WebDashboardEnabled" value="true"/>
 	<property name="WebDashboardPort" value="8080"/>
 	<property name="WebDashboardUrl" value=""/>

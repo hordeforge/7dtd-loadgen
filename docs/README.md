@@ -6,6 +6,7 @@
 | Doc | Role |
 |---|---|
 | [`../README.md`](../README.md) | Build, join, dedicated worlds, workload controls |
+| [`THREAT_MODEL.md`](THREAT_MODEL.md) | Attack surface, trust boundaries, risk-ranked threats |
 | [`REALEARTH.md`](REALEARTH.md) | RealEarth dedicated bot scenarios |
 | [`../TODO.md`](../TODO.md) | Protocol and workload backlog |
 | [`../AGENTS.md`](../AGENTS.md) | Agent / project rules |
