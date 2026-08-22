@@ -23,6 +23,7 @@ import json
 import os
 import re
 import sys
+from datetime import datetime
 
 ENTITY_ROW = re.compile(r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\blifetime=\S+, remote=\S+, dead=(True|False)")
 # Stock listents names come as "[type=EntityPlayer, name=EntityPlayer, id=171]";
@@ -152,9 +153,8 @@ def telnet_snapshot(run_dir):
             readings.append((ts, dm.groups()))
     rate = None
     if len(readings) >= 2:
-        import datetime
-        t0 = datetime.datetime.fromisoformat(readings[0][0].replace("Z", "+00:00"))
-        t1 = datetime.datetime.fromisoformat(readings[1][0].replace("Z", "+00:00"))
+        t0 = datetime.fromisoformat(readings[0][0].replace("Z", "+00:00"))
+        t1 = datetime.fromisoformat(readings[1][0].replace("Z", "+00:00"))
         dt = (t1 - t0).total_seconds()
         def gm(r):
             d, h, mnt = (int(x) for x in r[1])

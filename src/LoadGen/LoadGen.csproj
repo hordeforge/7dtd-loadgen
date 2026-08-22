@@ -18,6 +18,9 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup>
+  <!-- Fallback only (CI / no game install). Pin 1.2.x to match the major the
+       dedicated server bundles; LiteNetLib 2.x changes wire/API behavior and
+       would diverge from the protocol the bots emulate. -->
   <ItemGroup Condition="!Exists('$(GameManaged)/LiteNetLib.dll')">
     <PackageReference Include="LiteNetLib" Version="1.2.0" />
   </ItemGroup>

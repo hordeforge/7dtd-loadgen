@@ -44,8 +44,7 @@ while [[ $# -gt 0 ]]; do
       shift 2 ;;
     --world) WORLD_NAME="$2"; shift 2 ;;
     --list)
-      python3 -c "import json,sys; print('\n'.join(json.load(open(sys.argv[1]))))" \
-        "$ROOT/scripts/scenarios/sut.json"
+      python3 "$ROOT/scripts/sut_catalog.py" list
       exit 0 ;;
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
@@ -70,16 +69,7 @@ fi
 # Scenario knobs: env (if explicitly set) wins, then the catalog, then
 # defaults. The catalog is scripts/scenarios/sut.json.
 read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY < <(
-  python3 -c "
-import json, sys
-try:
-    s = json.load(open('$ROOT/scripts/scenarios/sut.json'))['$SCENARIO_ID']
-    print(s.get('count', ''), s.get('actions', ''), s.get('timeoutMs', ''),
-          s.get('spawnEntity', ''), s.get('spawnPerPlayer', ''), s.get('spawnEveryMs', ''),
-          s.get('snapshotDelayMs', ''))
-except (KeyError, OSError, ValueError):
-    print('', '', '', '', '', '', '')
-" 2>/dev/null || echo "       "
+  python3 "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID"
 )
 COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
 ACTIONS="${COMPARE_ACTIONS:-${CAT_ACTIONS:-0}}"

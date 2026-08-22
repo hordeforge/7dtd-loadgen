@@ -68,7 +68,7 @@ selftest: build
 	@"$(EXE)" --self-test-join --actions 24 --seed 7
 
 unittest:
-	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q
+	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true
 
 test: build selftest unittest
 	@if command -v uv >/dev/null; then \

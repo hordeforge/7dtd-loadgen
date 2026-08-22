@@ -129,52 +129,31 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
 fi
 
 TMPCFG="$USERDATA/serverconfig_prefab.xml"
-python3 - <<PY
-from pathlib import Path
-import re
-src = Path("$CONFIG_SRC").read_text(encoding="utf-8")
-ud = str(Path("$USERDATA").resolve())
-if 'name="UserDataFolder"' not in src:
-    src = src.replace(
-        "<ServerSettings>",
-        f'<ServerSettings>\n\t<property name="UserDataFolder" value="{ud}"/>',
-    )
-else:
-    src = re.sub(r'name="UserDataFolder"\s*value="[^"]*"', f'name="UserDataFolder" value="{ud}"', src)
-repls = {
-    "GameWorld": "$WORLD_NAME",
-    "GameName": "$GAME_NAME",
-    "WorldGenSeed": "$WORLD_GEN_SEED",
-    "WorldGenSize": "$WORLD_GEN_SIZE",
-    "ServerMaxPlayerCount": "$MAX_PLAYERS",
-    "EACEnabled": "false",
-    "ServerAllowCrossplay": "false",
-    "ServerDisabledNetworkProtocols": "SteamNetworking",
-    "ServerVisibility": "0",
-    "WebDashboardEnabled": "true",
-    "IgnoreEOSSanctions": "true",
-    "EnemySpawnMode": "true",
-    "ZombieMove": "2",
-    "ZombieMoveNight": "3",
-    "MaxSpawnedZombies": "$MAX_ZOMBIES",
-    "EnemyDifficulty": "$ENEMY_DIFFICULTY",
-    "TelnetPort": "$TELNET_PORT",
-    "DayNightLength": "40",
-    "DayLightLength": "12",
-    "BuildCreate": "false",
-    "DynamicMeshEnabled": "$DYNAMIC_MESH",
-}
-for k, v in repls.items():
-    src = re.sub(rf'name="{k}"\s*value="[^"]*"', f'name="{k}" value="{v}"', src)
-Path("$TMPCFG").write_text(src, encoding="utf-8")
-print(f"Config → $TMPCFG")
-for line in src.splitlines():
-    if any(x in line for x in (
-        "GameWorld", "GameName", "WorldGen", "EnemySpawn", "ZombieMove",
-        "MaxSpawnedZombies", "MaxPlayer",
-    )):
-        print(" ", line.strip())
-PY
+# Config rendering lives in render_serverconfig.py; every value passes as
+# argv data, never interpolated into the program's source.
+python3 "$ROOT/scripts/render_serverconfig.py" \
+  "$CONFIG_SRC" "$TMPCFG" --userdata "$USERDATA" \
+  --set "GameWorld=$WORLD_NAME" \
+  --set "GameName=$GAME_NAME" \
+  --set "WorldGenSeed=$WORLD_GEN_SEED" \
+  --set "WorldGenSize=$WORLD_GEN_SIZE" \
+  --set "ServerMaxPlayerCount=$MAX_PLAYERS" \
+  --set "EACEnabled=false" \
+  --set "ServerAllowCrossplay=false" \
+  --set "ServerDisabledNetworkProtocols=SteamNetworking" \
+  --set "ServerVisibility=0" \
+  --set "WebDashboardEnabled=true" \
+  --set "IgnoreEOSSanctions=true" \
+  --set "EnemySpawnMode=true" \
+  --set "ZombieMove=2" \
+  --set "ZombieMoveNight=3" \
+  --set "MaxSpawnedZombies=$MAX_ZOMBIES" \
+  --set "EnemyDifficulty=$ENEMY_DIFFICULTY" \
+  --set "TelnetPort=$TELNET_PORT" \
+  --set "DayNightLength=40" \
+  --set "DayLightLength=12" \
+  --set "BuildCreate=false" \
+  --set "DynamicMeshEnabled=$DYNAMIC_MESH"
 
 LOG="$USERDATA/server_prefab_${WORLD_NAME}_${WORLD_GEN_SIZE}_$(date +%Y-%m-%d__%H-%M-%S).txt"
 echo "$LOG" >"$USERDATA/dedicated.logpath"

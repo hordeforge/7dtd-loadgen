@@ -141,31 +141,8 @@ LOADGEN_COUNT="$COUNT" LOADGEN_CONCURRENCY="$CONCURRENCY" LOADGEN_TIMEOUT="$TIME
 LOADGEN_ACTIONS="$ACTIONS" LOADGEN_RAMP_MS="$RAMP_MS" LOADGEN_BOT_MODE="$BOT_MODE" LOADGEN_BOT_MIX="$BOT_MIX" \
 LOADGEN_DEATH="$DEATH" LOADGEN_MANIFEST_PATH="$MANIFEST" \
 LOADGEN_MAX_DYNAMITE="$MAX_DYNAMITE" LOADGEN_SEED="$SEED" LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" \
-LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" python3 - <<'PY'
-import json, os
-from datetime import datetime, timezone
-from pathlib import Path
-
-def integer(name):
-    try: return int(os.environ.get(name, "0"))
-    except ValueError: return 0
-
-manifest = {
-    "schema": "7dtd.loadgen.run.v1", "endedAt": datetime.now(timezone.utc).isoformat(),
-    "mode": os.environ["LOADGEN_MODE"], "target": {"host": os.environ["LOADGEN_HOST"], "port": integer("LOADGEN_PORT")},
-    "workload": {"clients": integer("LOADGEN_COUNT"), "concurrency": integer("LOADGEN_CONCURRENCY"),
-        "timeoutMs": integer("LOADGEN_TIMEOUT"), "actionsPerClient": integer("LOADGEN_ACTIONS"),
-        "rampMs": integer("LOADGEN_RAMP_MS"), "botMode": os.environ.get("LOADGEN_BOT_MODE") or "auto",
-        "deathMode": os.environ.get("LOADGEN_DEATH") or "auto",
-        "seed": os.environ.get("LOADGEN_SEED") or "default",
-        "maxDynamite": os.environ.get("LOADGEN_MAX_DYNAMITE") or "default",
-        "spawnEntity": os.environ.get("LOADGEN_SPAWN_ENTITY") or "default",
-        "spawnPerPlayer": integer("LOADGEN_SPAWN_PER_PLAYER"),
-        "spawnEveryMs": integer("LOADGEN_SPAWN_EVERY_MS")},
-    "result": {"exitCode": integer("LOADGEN_RC"), "passed": integer("LOADGEN_RC") == 0}
-}
-Path(os.environ["LOADGEN_MANIFEST_PATH"]).write_text(json.dumps(manifest, indent=2) + "\n")
-PY
+LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
+  python3 "$ROOT/scripts/loadgen_manifest.py"
 echo "manifest: $MANIFEST"
 
 if [[ -n "$SCRATCH_OUT" && -d "$SCRATCH_OUT" && -f "$LOG" ]]; then

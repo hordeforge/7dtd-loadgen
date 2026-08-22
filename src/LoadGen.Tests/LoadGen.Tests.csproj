@@ -6,11 +6,18 @@
     <IsPackable>false</IsPackable>
     <!-- Build flags (LangVersion, PathMap, CI normalization) live in
          Directory.Build.props at the repo root. -->
+    <!-- Supply-chain pin: commit the full transitive test-package graph with
+         content hashes. Restore updates packages.lock.json on deliberate
+         version bumps; the Makefile test lane restores in locked mode so CI
+         fails on drift instead of floating. Scoped here because
+         LoadGen.csproj's LiteNetLib source is conditional (game DLL vs NuGet
+         fallback), which would make a shared lock file differ per machine. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../LoadGen/LoadGen.csproj" />

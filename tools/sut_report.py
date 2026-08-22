@@ -216,7 +216,7 @@ def main():
                          f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
 
     # ---- stock APM (7dtd-apm capture; reported, not compared: format differs) ----
-    sa = (stock or {}).get("apmStock") if stock else None
+    sa = stock.get("apmStock") if stock else None
     if sa:
         lines.append("\n## stock APM (7dtd-apm capture window; no zdtd equivalent format)\n")
         if sa.get("session"):

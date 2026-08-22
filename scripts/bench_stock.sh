@@ -144,18 +144,7 @@ for sc in "${scenarios[@]}"; do
   h1=$(hostload)
   t1=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-  pass=$(python3 -c "
-import json
-try:
-    print(json.load(open('$run_dir/stats.json')).get('pass', 0))
-except Exception:
-    print(0)" 2>/dev/null)
-  fail=$(python3 -c "
-import json
-try:
-    print(json.load(open('$run_dir/stats.json')).get('fail', 0))
-except Exception:
-    print(0)" 2>/dev/null)
+  read -r pass fail <<<"$(python3 "$ROOT/scripts/stats_pass_fail.py" "$run_dir/stats.json")"
   bench_line=$(grep -a "BENCH_SUMMARY" "$run_dir/client.log" 2>/dev/null | tail -1 || true)
   cat >"$run_dir/run-meta.json" <<EOF
 {

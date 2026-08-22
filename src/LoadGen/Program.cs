@@ -131,6 +131,34 @@ public static class Program
         catch (OperationCanceledException) { }
     }
 
+    /// <summary>Periodic telnet pressure loop shared by the zombie trickle and
+    /// wandering hordes: one fresh telnet session per wave (long sessions drop
+    /// half-open sockets), fixed backoff on faults, ends with cancellation.</summary>
+    static Task RunTelnetPressureLoop(
+        string label, CancellationToken ct,
+        int startDelayMs, int intervalMs, int errorBackoffMs,
+        Func<TelnetAdmin> createAdmin, Action<TelnetAdmin> wave)
+        => Task.Run(() =>
+        {
+            try { Task.Delay(startDelayMs, ct).Wait(); } catch { return; }
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    using var admin = createAdmin();
+                    if (admin.Connect())
+                        wave(admin);
+                    Task.Delay(intervalMs, ct).Wait();
+                }
+                catch (OperationCanceledException) { break; }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
+                    try { Task.Delay(errorBackoffMs, ct).Wait(); } catch { break; }
+                }
+            }
+        });
+
     static int RunSelfTestJoin(string[] args)
     {
         int actions = 24;
@@ -428,31 +456,15 @@ public static class Program
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] ZOMBIE_SPAWN telnet={telnetHost}:{telnetPort} " +
                 $"everyMs={spawnEveryMs} perPlayer={spawnPerPlayer} entity={spawnEntity}");
-            spawnTask = Task.Run(() =>
-            {
-                // First wave after bots have a chance to join
-                try { Task.Delay(8_000, spawnCts.Token).Wait(); } catch { return; }
-                while (!spawnCts.IsCancellationRequested)
+            // First wave after bots have had a chance to join.
+            spawnTask = RunTelnetPressureLoop("spawn", spawnCts.Token,
+                startDelayMs: 8_000, intervalMs: Math.Max(5_000, spawnEveryMs),
+                errorBackoffMs: 10_000,
+                () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine)
                 {
-                    try
-                    {
-                        // Fresh telnet each wave — long sessions drop half-open sockets.
-                        using var admin = new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine)
-                        {
-                            KillFallback = killFallback,
-                        };
-                        if (admin.Connect())
-                            admin.SpawnZombiesNearPlayers(spawnEntity, spawnPerPlayer);
-                        Task.Delay(Math.Max(5_000, spawnEveryMs), spawnCts.Token).Wait();
-                    }
-                    catch (OperationCanceledException) { break; }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET spawn err: {ex.Message}");
-                        try { Task.Delay(10_000, spawnCts.Token).Wait(); } catch { break; }
-                    }
-                }
-            });
+                    KillFallback = killFallback,
+                },
+                admin => admin.SpawnZombiesNearPlayers(spawnEntity, spawnPerPlayer));
         }
 
         // Deterministic per-client mode from the weighted mix (repeatable across
@@ -482,25 +494,11 @@ public static class Program
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] WANDERING_HORDE telnet={telnetHost}:{telnetPort} "
                 + $"everyMs={hordeEveryMs} waves={hordeWaves}");
-            hordeTask = Task.Run(() =>
-            {
-                try { Task.Delay(20_000, spawnCts.Token).Wait(); } catch { return; }
-                while (!spawnCts.IsCancellationRequested)
-                {
-                    try
-                    {
-                        using var admin = new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine);
-                        if (admin.Connect()) admin.SpawnWanderingHorde(hordeWaves, 2);
-                        Task.Delay(Math.Max(15_000, hordeEveryMs), spawnCts.Token).Wait();
-                    }
-                    catch (OperationCanceledException) { break; }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET horde err: {ex.Message}");
-                        try { Task.Delay(15_000, spawnCts.Token).Wait(); } catch { break; }
-                    }
-                }
-            });
+            hordeTask = RunTelnetPressureLoop("horde", spawnCts.Token,
+                startDelayMs: 20_000, intervalMs: Math.Max(15_000, hordeEveryMs),
+                errorBackoffMs: 15_000,
+                () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine),
+                admin => admin.SpawnWanderingHorde(hordeWaves, 2));
         }
 
         // Per-bot session: rejoin on early disconnect until overall wall clock expires.
@@ -1042,7 +1040,7 @@ public static class Program
         if (!string.IsNullOrEmpty(logPath))
             WriteArtifact("log", logPath, () => File.WriteAllText(logPath, summary.ToReport()));
         Console.WriteLine(summary.ToReport());
-        if (summary.PassRate + 1e-9 < minPassRate)
+        if (!Program.JoinGatePass(summary.Pass, summary.Total, minPassRate))
         {
             Console.WriteLine($"FAIL: passRate={summary.PassRate:P2} < minPassRate={minPassRate:P2}");
             return 1;
@@ -1157,7 +1155,7 @@ public static class LoadRunner
                 {
                     if (rampMs > 0 && count > 1)
                     {
-                        int delay = (int)((long)slot * rampMs / count);
+                        int delay = Program.RampDelayMs(slot, count, rampMs);
                         if (delay > 0) await Task.Delay(delay).ConfigureAwait(false);
                     }
                     int id = idBase + Interlocked.Increment(ref nextId) - 1;
@@ -1384,7 +1382,8 @@ static class SelfTest
                 rampMs: Math.Min(2000, count), quiet: true);
             Console.WriteLine(summary.ToReport());
             double connectRate = summary.Total == 0 ? 0 : (double)summary.Connected / summary.Total;
-            pass = summary.PassRate + 1e-9 >= minPassRate && connectRate + 1e-9 >= Math.Min(minPassRate, 0.90);
+            pass = Program.JoinGatePass(summary.Pass, summary.Total, minPassRate)
+                && Program.JoinGatePass(summary.Connected, summary.Total, Math.Min(minPassRate, 0.90));
         }
         cts.Cancel();
         try { hostLoop.Wait(1000); } catch { /* ignore */ }
