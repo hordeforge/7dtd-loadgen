@@ -164,7 +164,8 @@ def main() -> int:
         proc.wait(timeout=10)
     except subprocess.TimeoutExpired:
         proc.kill()
-    out = log_path.read_text() if log_path.exists() else ""
+    out = (log_path.read_text(encoding="utf-8", errors="replace")
+           if log_path.exists() else "")
     joins = out.count("STAGE Joined")
     rejoin_lines = [l for l in out.splitlines() if "REJOIN" in l]
     joined_lines = [l for l in out.splitlines() if "PASS joined" in l]

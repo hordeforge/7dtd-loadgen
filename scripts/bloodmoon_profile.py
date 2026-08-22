@@ -91,7 +91,7 @@ def alive():
     telnet(["apm dump"])
     time.sleep(1.5)
     try:
-        return int((json.loads(APM_SNAP.read_text()).get("world") or {}).get("entityAlives") or 0)
+        return int((json.loads(APM_SNAP.read_text(encoding="utf-8")).get("world") or {}).get("entityAlives") or 0)
     except (OSError, json.JSONDecodeError, ValueError):
         return -1
 
@@ -222,7 +222,7 @@ def snapshot():
     telnet(["apm dump"])
     time.sleep(1.5)
     try:
-        return json.loads(APM_SNAP.read_text())
+        return json.loads(APM_SNAP.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
 

@@ -210,7 +210,7 @@ def test_realearth_sibling_project_layout():
     assert (REALEARTH_ROOT / "scripts" / "start_dedicated_minimal.sh").is_file()
     assert (REALEARTH_ROOT / "scripts" / "serverconfig_height_test.xml").is_file()
     assert (REALEARTH_ROOT / "Config" / "realearth.mp.json").is_file()
-    mp = json.loads((REALEARTH_ROOT / "Config" / "realearth.mp.json").read_text())
+    mp = json.loads((REALEARTH_ROOT / "Config" / "realearth.mp.json").read_text(encoding="utf-8"))
     assert mp.get("MultiplayerOriginMode") == "SharedFixed"
     assert mp.get("EngineHeightStockSafe") is False
     assert int(mp.get("SeaLevelGameY", 0)) == 100

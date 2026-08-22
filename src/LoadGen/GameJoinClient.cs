@@ -905,7 +905,7 @@ public sealed class GameJoinClient
         string text = ExtractPrintable(body);
         if (string.IsNullOrEmpty(text) || text.Length < 4) return;
 
-        log($"CHAT {(text.Length > 160 ? text[..160] : text)}");
+        log($"CHAT {Snippet(text, 160)}");
 
         string lower = text.ToLowerInvariant();
         string ourName = (opt.PlayerName + opt.ClientId).ToLowerInvariant();
@@ -931,7 +931,7 @@ public sealed class GameJoinClient
             State.DeathCause = "world_radiation";
         else
             State.DeathCause = "world_death";
-        string snippet = text.Length > 120 ? text[..120] : text;
+        string snippet = Snippet(text, 120);
         log($"DEATH cause={State.DeathCause} entity={State.EntityId} via=chat text={snippet}");
     }
 
@@ -950,6 +950,17 @@ public sealed class GameJoinClient
             i = end;
         }
         return false;
+    }
+
+    /// <summary>Truncate for logging without splitting a surrogate pair: chat
+    /// text is server-controlled and may end in emoji at the cut point.</summary>
+    static string Snippet(string s, int maxChars)
+    {
+        if (s.Length <= maxChars) return s;
+        int len = maxChars;
+        if (char.IsHighSurrogate(s[len - 1]))
+            len--;
+        return s[..len];
     }
 
     static string ExtractPrintable(byte[] body)

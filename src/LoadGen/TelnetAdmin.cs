@@ -17,6 +17,7 @@ public sealed class TelnetAdmin : IDisposable
     TcpClient? _tcp;
     NetworkStream? _stream;
     readonly StringBuilder _buf = new();
+    readonly Utf8ChunkDecoder _decoder = new();
 
     public TelnetAdmin(string host, int port, string password, Action<string>? log = null)
     {
@@ -216,7 +217,10 @@ public sealed class TelnetAdmin : IDisposable
     void WriteLine(string s)
     {
         if (_stream == null) return;
-        byte[] data = Encoding.ASCII.GetBytes(s + "\n");
+        // The server telnet speaks UTF-8 (see ReadAvailable); commands echo
+        // player names parsed from its output, so ASCII here would corrupt any
+        // non-ASCII name (kill Zöé -> kill Zo?e).
+        byte[] data = Encoding.UTF8.GetBytes(s + "\n");
         _stream.Write(data, 0, data.Length);
         _stream.Flush();
     }
@@ -233,7 +237,7 @@ public sealed class TelnetAdmin : IDisposable
                 if (_stream.DataAvailable)
                 {
                     int n = _stream.Read(tmp, 0, tmp.Length);
-                    if (n > 0) _buf.Append(Encoding.UTF8.GetString(tmp, 0, n));
+                    if (n > 0) _buf.Append(_decoder.Decode(tmp.AsSpan(0, n)));
                 }
                 else
                     Thread.Sleep(50);
@@ -245,7 +249,15 @@ public sealed class TelnetAdmin : IDisposable
         }
         string all = _buf.ToString();
         if (_buf.Length > 8000)
+        {
             _buf.Remove(0, _buf.Length - 4000);
+            // The ring cut can land between the halves of a surrogate pair
+            // (chat text with emoji); drop a lone lead so the retained window
+            // stays well-formed.
+            if (_buf.Length > 0 && char.IsHighSurrogate(_buf[0])
+                && (_buf.Length == 1 || !char.IsLowSurrogate(_buf[1])))
+                _buf.Remove(0, 1);
+        }
         return all;
     }
 
@@ -257,5 +269,6 @@ public sealed class TelnetAdmin : IDisposable
         _stream = null;
         _tcp = null;
         _buf.Clear();
+        _decoder.Reset();
     }
 }
