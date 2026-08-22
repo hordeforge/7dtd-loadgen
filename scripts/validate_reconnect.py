@@ -91,6 +91,20 @@ def kill_server() -> bool:
     return True
 
 
+def start_server(players: int) -> None:
+    env = dict(
+        os.environ,
+        RE_WORLD_NAME="Navezgane",
+        RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
+        RE_SERVER_MAX_PLAYERS=str(max(players, 16)),
+    )
+    subprocess.Popen(
+        ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
+        cwd=ROOT, env=env,
+        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--players", type=int, default=8)
@@ -101,17 +115,7 @@ def main() -> int:
     skip_start = os.environ.get("SKIP_SERVER_START", "0") == "1"
     if not skip_start:
         print(f"[reconnect] starting dedicated (Navezgane, {args.players} players)...")
-        env = dict(
-            os.environ,
-            RE_WORLD_NAME="Navezgane",
-            RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
-            RE_SERVER_MAX_PLAYERS=str(max(args.players, 16)),
-        )
-        subprocess.Popen(
-            ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
-            cwd=ROOT, env=env,
-            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
-        )
+        start_server(args.players)
         if not telnet_ready():
             print("[reconnect] FAIL: server did not come up")
             return 1
@@ -148,17 +152,7 @@ def main() -> int:
                 print("[reconnect] FAIL: aborting with the cohort still up")
                 return 1
             print("[reconnect] restarting server...")
-            env = dict(
-                os.environ,
-                RE_WORLD_NAME="Navezgane",
-                RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
-                RE_SERVER_MAX_PLAYERS=str(max(args.players, 16)),
-            )
-            subprocess.Popen(
-                ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
-                cwd=ROOT, env=env,
-                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
-            )
+            start_server(args.players)
             if not telnet_ready():
                 print("[reconnect] FAIL: server did not come back up")
                 return 1

@@ -15,14 +15,13 @@ from pathlib import Path
 
 import pytest
 
+from loadgen_cli import run as _run_cli
+
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_FILE = ROOT / "scripts" / "scenarios" / "realearth.json"
 REALEARTH_ROOT = Path(os.environ.get("REALEARTH_ROOT", ROOT.parent / "7dtd-realworld"))
 START_RE = ROOT / "scripts" / "start_dedicated_realearth.sh"
 RUN_SCENARIO = ROOT / "scripts" / "run_scenario.sh"
-EXE = ROOT / "src" / "LoadGen" / "bin" / "Release" / "net8.0" / "7dtd-loadgen"
-DLL = ROOT / "src" / "LoadGen" / "bin" / "Release" / "net8.0" / "7dtd-loadgen.dll"
-PROJ = ROOT / "src" / "LoadGen" / "LoadGen.csproj"
 
 # Tests that assert on the 7dtd-realworld sibling (product assumptions, layout,
 # height-test serverconfig) only run when the sibling is present; a single-repo
@@ -32,41 +31,6 @@ needs_realearth_sibling = pytest.mark.skipif(
     not REALEARTH_PRESENT,
     reason="7dtd-realworld sibling not checked out; set REALEARTH_ROOT",
 )
-
-
-def _dotnet_env() -> dict[str, str]:
-    env = os.environ.copy()
-    for r in (
-        env.get("DOTNET_ROOT", ""),
-        str(Path.home() / ".cache" / "dotnet-sdk"),
-        str(Path.home() / ".dotnet"),
-    ):
-        if r and Path(r, "dotnet").is_file():
-            env["DOTNET_ROOT"] = r
-            env["PATH"] = f"{r}:{env.get('PATH', '')}"
-            break
-    return env
-
-
-def _build() -> None:
-    r = subprocess.run(
-        ["dotnet", "build", str(PROJ), "-c", "Release", "-v", "q"],
-        cwd=str(ROOT),
-        env=_dotnet_env(),
-        capture_output=True,
-        text=True,
-        timeout=120,
-    )
-    assert r.returncode == 0, f"build failed:\n{r.stdout}\n{r.stderr}"
-
-
-def _run_cli(args: list[str], timeout: float = 60.0) -> subprocess.CompletedProcess[str]:
-    _build()
-    env = _dotnet_env()
-    cmd = [str(EXE), *args] if EXE.is_file() else ["dotnet", "exec", str(DLL), *args]
-    return subprocess.run(
-        cmd, cwd=str(ROOT), env=env, capture_output=True, text=True, timeout=timeout
-    )
 
 
 def _load_scenarios() -> dict:

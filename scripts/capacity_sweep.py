@@ -75,15 +75,7 @@ def main():
     finally:
         # Every exit path stops the cohort and the server this sweep owns;
         # a leaked workload keeps loading the host until its wall clock expires.
-        B.log("tearing down")
-        B.telnet(["kickall"])
-        if bots is not None:
-            bots.terminate()
-            try:
-                bots.wait(timeout=15)
-            except subprocess.TimeoutExpired:
-                bots.kill()
-        subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+        B.teardown(bots)
         subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
     B.log("=== CAPACITY SWEEP COMPLETE ===")
 
