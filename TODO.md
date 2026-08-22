@@ -280,5 +280,9 @@ record, and documentation of any protocol-version restriction.
   "V 3.10". Reverted to VersionLongString (16/16 PASS live) + pin test
   (LoginVersion_IsTheDisplayForm_Empirically) so it cannot silently return;
   research docs/network.md corrected with the empirical evidence.
-- [ ] 2-lap repeatability evidence (goal): two bench-stock laps on the same
-  world/seed, both committed, +-20% verdict from make bench-report.
+- [x] 2-lap repeatability evidence (goal): two bench-stock laps on the same
+  world/seed, both committed (96d6c0c): all 7 scenarios pass on both laps;
+  wall delta 0.0-2.4% per scenario (+-20% bound) and bench actions/s
+  40.87 -> 41.37 (+1.2%) - the repeatability claim holds even under host
+  contention (soak-4bot ran under hostLoad up to 20.9, recorded, verdict
+  still OK).
