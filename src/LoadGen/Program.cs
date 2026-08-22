@@ -74,13 +74,61 @@ public static class Program
         if (args.Any(a => a == "--self-test")) mode = "self-test";
         if (args.Any(a => a == "--self-test-join")) mode = "self-test-join";
 
-        return mode switch
+        try
         {
-            "self-test-join" => RunSelfTestJoin(args),
-            "self-test" => SelfTest.Run(args),
-            "join" => RunJoin(args),
-            _ => RunProbe(args),
-        };
+            return mode switch
+            {
+                "self-test-join" => RunSelfTestJoin(args),
+                "self-test" => SelfTest.Run(args),
+                "join" => RunJoin(args),
+                _ => RunProbe(args),
+            };
+        }
+        // CLI boundary: a malformed numeric flag (--count abc, --port 99999999999)
+        // must fail as a clean usage error, not an unhandled-exception stack
+        // trace. Parse sites use int/double.Parse, whose failure modes are
+        // exactly these two types; wider exception families stay visible.
+        catch (Exception ex) when (ex is FormatException or OverflowException)
+        {
+            Console.Error.WriteLine($"FAIL: bad argument value: {ex.Message} (see --help)");
+            return 2;
+        }
+    }
+
+    /// <summary>Write a run artifact (log/stats-json/run manifest) without letting
+    /// an IO failure mask the run's exit code: the measurement finished, so its
+    /// gate result must still propagate. Evidence loss goes to stderr, loudly.</summary>
+    internal static void WriteArtifact(string label, string path, Action write)
+    {
+        try
+        {
+            write();
+            Console.WriteLine($"{label}: {path}");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                $"[{DateTime.UtcNow:O}] ERROR writing {label} {path}: {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    /// <summary>Bounded wait for a background task to observe cancellation. A
+    /// fault surfaces on stderr instead of vanishing: a dead spawner/sampler
+    /// silently degrades the workload while the run still looks normal.</summary>
+    static void AwaitTeardown(string name, Task? task)
+    {
+        if (task == null) return;
+        try
+        {
+            task.Wait(2000);
+        }
+        catch (AggregateException ex)
+        {
+            var baseEx = ex.GetBaseException();
+            Console.Error.WriteLine(
+                $"[{DateTime.UtcNow:O}] ERROR {name} task faulted: {baseEx.GetType().Name}: {baseEx.Message}");
+        }
+        catch (OperationCanceledException) { }
     }
 
     static int RunSelfTestJoin(string[] args)
@@ -112,7 +160,7 @@ public static class Program
             $"deaths={sm.DeathCount} respawns={sm.RespawnCount} " +
             $"died={sm.Died} cause={sm.DeathCause} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
         if (!string.IsNullOrEmpty(logPath))
-            File.WriteAllLines(logPath, lines.Concat(sm.Log));
+            WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines.Concat(sm.Log)));
         if (rc == 0)
             Log("PASS: self-test-join joined + actions");
         else
@@ -142,13 +190,15 @@ public static class Program
                     ["offlineGate"] = true,
                 },
             };
-            var dir = Path.GetDirectoryName(Path.GetFullPath(runManifestPath));
-            if (!string.IsNullOrEmpty(dir))
-                Directory.CreateDirectory(dir);
-            File.WriteAllText(
-                runManifestPath,
-                System.Text.Json.JsonSerializer.Serialize(run, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }) + "\n");
-            Log($"run_manifest: {runManifestPath}");
+            WriteArtifact("run_manifest", runManifestPath, () =>
+            {
+                var dir = Path.GetDirectoryName(Path.GetFullPath(runManifestPath));
+                if (!string.IsNullOrEmpty(dir))
+                    Directory.CreateDirectory(dir);
+                File.WriteAllText(
+                    runManifestPath,
+                    System.Text.Json.JsonSerializer.Serialize(run, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }) + "\n");
+            });
         }
         return rc;
     }
@@ -509,7 +559,8 @@ public static class Program
                         }
                         catch (Exception ex)
                         {
-                            log?.Invoke($"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} failed={ex.Message}");
+                            (log ?? Console.Error.WriteLine)(
+                                $"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} failed={ex.GetType().Name}: {ex.Message}");
                         }
                     },
                     Log = log,
@@ -522,7 +573,10 @@ public static class Program
                 catch (Exception ex)
                 {
                     lastRc = 1;
-                    log?.Invoke($"[{DateTime.UtcNow:O}] join#{clientId} EX: {ex.GetType().Name}: {ex.Message}");
+                    // log is null for most cohort members; route to stderr so the
+                    // fault is never invisible (summary only carries the count).
+                    (log ?? Console.Error.WriteLine)(
+                        $"[{DateTime.UtcNow:O}] join#{clientId} EX: {ex.GetType().Name}: {ex.Message}");
                 }
                 last = c.State;
                 accWalks += last.WalkActions;
@@ -598,10 +652,10 @@ public static class Program
             Action<string> log = s => { Console.WriteLine(s); lines.Add(s); };
             var (rc, sm) = RunWithRejoin(opt.ClientId, log);
             spawnCts.Cancel();
-            try { spawnTask?.Wait(2000); } catch { /* ignore */ }
-            try { hordeTask?.Wait(2000); } catch { /* ignore */ }
+            AwaitTeardown("zombie_spawn", spawnTask);
+            AwaitTeardown("wandering_horde", hordeTask);
             if (!string.IsNullOrEmpty(logPath))
-                File.WriteAllLines(logPath, lines);
+                WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines));
             // Single-bot runs still write stats-json so the bench lane evidence
             // is uniform (probe-15s/join-fast/join-probe/horde-lite are count=1).
             if (!string.IsNullOrEmpty(statsJsonPath))
@@ -641,10 +695,12 @@ public static class Program
                     ["minPassRate"] = minPassRate,
                     ["gatePass"] = pass1 >= minPassRate - 1e-9,
                 };
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
-                File.WriteAllText(statsJsonPath,
-                    System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
-                Console.WriteLine($"stats: {statsJsonPath}");
+                WriteArtifact("stats", statsJsonPath, () =>
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
+                    File.WriteAllText(statsJsonPath,
+                        System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
+                });
             }
             return rc;
         }
@@ -718,8 +774,10 @@ public static class Program
                 }
                 catch (Exception ex)
                 {
-                    if (i < 5)
-                        Console.WriteLine($"[{DateTime.UtcNow:O}] join#{id} EX: {ex.GetType().Name}: {ex.Message}");
+                    // Unconditional: a cohort-wide fault must never be invisible
+                    // just because the bot's console log was throttled off.
+                    Console.Error.WriteLine(
+                        $"[{DateTime.UtcNow:O}] join#{id} EX: {ex.GetType().Name}: {ex.Message}");
                     results.Add((id, 1, JoinStage.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, "exception", -1, opt.Mode.ToString(), 0, 0, 0));
                 }
             }
@@ -727,11 +785,11 @@ public static class Program
         })).ToArray();
         Task.WaitAll(tasks);
         benchCts.Cancel();
-        try { benchSampler?.Wait(2000); } catch { /* ignore */ }
+        AwaitTeardown("bench_sampler", benchSampler);
         bench?.SampleActive(0); // final sample so the curve shows the ramp-down
         spawnCts.Cancel();
-        try { spawnTask?.Wait(2000); } catch { /* ignore */ }
-        try { hordeTask?.Wait(2000); } catch { /* ignore */ }
+        AwaitTeardown("zombie_spawn", spawnTask);
+        AwaitTeardown("wandering_horde", hordeTask);
 
         int pass = results.Count(r => r.rc == 0);
         // Cast to long before summing: per-bot counts are int, but the total
@@ -866,9 +924,12 @@ public static class Program
             }
             var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
             if (!string.IsNullOrEmpty(statsJsonPath))
-            {                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
-                File.WriteAllText(statsJsonPath, System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
-                Console.WriteLine($"stats: {statsJsonPath}");
+            {
+                WriteArtifact("stats", statsJsonPath, () =>
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
+                    File.WriteAllText(statsJsonPath, System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
+                });
             }
             if (!string.IsNullOrEmpty(runManifestPath))
             {
@@ -898,14 +959,16 @@ public static class Program
                         ["notes"] = "Tall Y + inject soak when dedicated expanded",
                     },
                 };
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(runManifestPath))!);
-                File.WriteAllText(runManifestPath, System.Text.Json.JsonSerializer.Serialize(run, jsonOpts) + "\n");
-                Console.WriteLine($"run_manifest: {runManifestPath}");
+                WriteArtifact("run_manifest", runManifestPath, () =>
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(runManifestPath))!);
+                    File.WriteAllText(runManifestPath, System.Text.Json.JsonSerializer.Serialize(run, jsonOpts) + "\n");
+                });
             }
         }
         if (!string.IsNullOrEmpty(logPath))
         {
-            File.WriteAllText(logPath, report + "\n");
+            WriteArtifact("log", logPath, () => File.WriteAllText(logPath, report + "\n"));
             var csvPath = Path.ChangeExtension(logPath, null) + "_deaths.csv";
             var csv = new System.Text.StringBuilder();
             csv.AppendLine(
@@ -919,8 +982,7 @@ public static class Program
                     $"{r.breaks},{r.attacks},{r.drowns},{r.suicides},{r.killed},{r.died}," +
                     $"{r.deathCause},{r.deathCount},{r.respawnCount},{r.rejoinCount}");
             }
-            File.WriteAllText(csvPath, csv.ToString());
-            Console.WriteLine($"DEATH_CSV {csvPath}");
+            WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }
         return JoinGatePass(pass, count, minPassRate) ? 0 : 1;
     }
@@ -978,7 +1040,7 @@ public static class Program
             $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={minPassRate:P0}");
         var summary = LoadRunner.Run(host, port, key, timeoutMs, count, concurrency, rampMs, quiet, idBase: clientId);
         if (!string.IsNullOrEmpty(logPath))
-            File.WriteAllText(logPath, summary.ToReport());
+            WriteArtifact("log", logPath, () => File.WriteAllText(logPath, summary.ToReport()));
         Console.WriteLine(summary.ToReport());
         if (summary.PassRate + 1e-9 < minPassRate)
         {
@@ -1100,7 +1162,27 @@ public static class LoadRunner
                     }
                     int id = idBase + Interlocked.Increment(ref nextId) - 1;
                     Action<string>? log = quiet ? null : (msg => { if (id < idBase + 8) Console.WriteLine(msg); });
-                    results.Add(LiteNetProbe.Run(host, port, key, timeoutMs, id, log, keepLines: !quiet && id < idBase + 8));
+                    ProbeResult r;
+                    try
+                    {
+                        r = LiteNetProbe.Run(host, port, key, timeoutMs, id, log, keepLines: !quiet && id < idBase + 8);
+                    }
+                    // Isolate: one faulting probe must not take Task.WaitAll down
+                    // with an AggregateException and destroy the whole cohort summary.
+                    catch (Exception ex)
+                    {
+                        log?.Invoke($"EX: {ex.GetType().Name}: {ex.Message}");
+                        r = new ProbeResult
+                        {
+                            Pass = false,
+                            Stages = new HashSet<string>(),
+                            Connected = false,
+                            Packets = 0,
+                            Lines = new List<string>(),
+                            ElapsedMs = 0,
+                        };
+                    }
+                    results.Add(r);
                 }
                 finally { gate.Release(); }
             });
@@ -1308,7 +1390,7 @@ static class SelfTest
         try { hostLoop.Wait(1000); } catch { /* ignore */ }
         server.Stop();
         if (!string.IsNullOrEmpty(logPath))
-            File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n");
+            Program.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
         Console.WriteLine(pass ? $"PASS: self-test count={count}" : "FAIL: self-test");
         return pass ? 0 : 1;
     }

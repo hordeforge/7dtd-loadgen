@@ -119,13 +119,26 @@ if [[ -n "${LOADGEN_SERVER_SCRIPT:-}" && "$START_SERVER" == "1" ]]; then
   # port and /dev/tcp is TCP-only, so probing it can never succeed. The telnet
   # admin port is a real TCP listener that comes up once the server is ready.
   READY_PORT="${LOADGEN_TELNET_PORT:-8081}"
+  server_ready=0
   for _ in $(seq 1 90); do
     if bash -c "echo >/dev/tcp/${LOADGEN_HOST}/${READY_PORT}" 2>/dev/null; then
       echo "telnet port ${READY_PORT} open"
+      server_ready=1
       break
     fi
     sleep 2
   done
+  if [[ "$server_ready" != "1" ]]; then
+    # Fail loudly instead of pointing bots at a server that never came up:
+    # every join would fail with confusing per-bot errors and a false gate FAIL.
+    echo "ERROR: server did not open ${LOADGEN_HOST}:${READY_PORT} within 180s; see its boot output" >&2
+    pidfile="${RE_DEDICATED_USERDATA:-$HOME/.cache/7dtd-loadgen}/dedicated.pid"
+    if [[ -f "$pidfile" ]]; then
+      kill -9 "$(cat "$pidfile" 2>/dev/null)" 2>/dev/null || true
+      echo "killed half-booted server (pidfile $pidfile)" >&2
+    fi
+    exit 1
+  fi
 fi
 
 chmod +x "$ROOT/scripts/run_loadgen.sh"

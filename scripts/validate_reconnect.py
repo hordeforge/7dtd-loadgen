@@ -76,18 +76,19 @@ def server_pid() -> int | None:
     return None
 
 
-def kill_server() -> None:
+def kill_server() -> bool:
     pid = server_pid()
     if pid is None:
         print("[reconnect] no server pid found (already down)")
-        return
+        return True
     print(f"[reconnect] killing server pid={pid}")
     os.kill(pid, signal.SIGTERM)
     if not wait_gone():
         print("[reconnect] server did not stop in time")
-        sys.exit(1)
+        return False
     time.sleep(5)  # let the port fully release before restart
     print("[reconnect] server down")
+    return True
 
 
 def main() -> int:
@@ -133,37 +134,44 @@ def main() -> int:
         "--log", str(log_path),
         "--host", "127.0.0.1", "--port", str(GAME_PORT + 2),
     ]
-    proc = subprocess.Popen(cmd, stdout=log_path.open("w"), stderr=subprocess.STDOUT)
-    time.sleep(args.hold_before_kill)
+    # The cohort must never outlive this script: every exit path (failed kill,
+    # failed restart, Ctrl-C) terminates the bots in the finally below, or they
+    # keep wandering against a dead server until their wall clock expires.
+    with log_path.open("w") as fh:
+        proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT)
+        try:
+            time.sleep(args.hold_before_kill)
 
-    # Kill and restart mid-cohort.
-    print("[reconnect] killing server mid-cohort...")
-    kill_server()
-    print("[reconnect] restarting server...")
-    env = dict(
-        os.environ,
-        RE_WORLD_NAME="Navezgane",
-        RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
-        RE_SERVER_MAX_PLAYERS=str(max(args.players, 16)),
-    )
-    subprocess.Popen(
-        ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
-        cwd=ROOT, env=env,
-        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
-    )
-    if not telnet_ready():
-        print("[reconnect] FAIL: server did not come back up")
-        proc.terminate()
-        return 1
-    print("[reconnect] server restarted")
+            # Kill and restart mid-cohort.
+            print("[reconnect] killing server mid-cohort...")
+            if not kill_server():
+                print("[reconnect] FAIL: aborting with the cohort still up")
+                return 1
+            print("[reconnect] restarting server...")
+            env = dict(
+                os.environ,
+                RE_WORLD_NAME="Navezgane",
+                RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
+                RE_SERVER_MAX_PLAYERS=str(max(args.players, 16)),
+            )
+            subprocess.Popen(
+                ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
+                cwd=ROOT, env=env,
+                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+            )
+            if not telnet_ready():
+                print("[reconnect] FAIL: server did not come back up")
+                return 1
+            print("[reconnect] server restarted")
 
-    # Observe rejoins for the hold window.
-    time.sleep(args.hold_after_restart)
-    proc.terminate()
-    try:
-        proc.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        proc.kill()
+            # Observe rejoins for the hold window.
+            time.sleep(args.hold_after_restart)
+        finally:
+            proc.terminate()
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
     out = (log_path.read_text(encoding="utf-8", errors="replace")
            if log_path.exists() else "")
     joins = out.count("STAGE Joined")

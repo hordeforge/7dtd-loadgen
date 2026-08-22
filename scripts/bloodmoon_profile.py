@@ -123,9 +123,10 @@ def join_ramped(target):
                LOADGEN_RAMP_MS=ramp_ms, LOADGEN_TIMEOUT="3600000", LOADGEN_BOT_MODE="wander",
                LOADGEN_ACTIONS="100000000", LOADGEN_NO_SPAWN="1", LOADGEN_SEED="7777",
                LOADGEN_QUIET="1")
-    fh = (ROOT / "bloodmoon_bots.log").open("wb")
-    p = subprocess.Popen(["bash", str(ROOT / "scripts/run_loadgen.sh")], cwd=ROOT, env=env,
-                         stdout=fh, stderr=fh)
+    fh_path = ROOT / "bloodmoon_bots.log"
+    with fh_path.open("wb") as fh:
+        p = subprocess.Popen(["bash", str(ROOT / "scripts/run_loadgen.sh")], cwd=ROOT, env=env,
+                             stdout=fh, stderr=fh)
     # wait for a STABLE cohort (tolerate ramp churn): count must hold >= 90% target twice.
     deadline = time.time() + target * 1000 / 1000 + 180
     hits = 0
@@ -242,49 +243,60 @@ def health():
             "lateTicks": u.get("lateTicks"), "stallMs": u.get("tickStallMsTotal")}
 
 
+def teardown(bots):
+    """Stop the workload on every exit path. A cohort left running keeps loading
+    the server (and the host) until its own wall clock expires, poisoning any
+    run that follows; Ctrl-C mid-spawn must tear down exactly like a clean end."""
+    log("tearing down")
+    telnet(["kickall", "kick all"])
+    if bots is not None:
+        bots.terminate()
+        try:
+            bots.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            bots.kill()
+    subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+
+
 def main():
     if "--start-server" in sys.argv:
         start_server()
     log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies (GS{GAMESTAGE}) ===")
-    bots, joined = join_ramped(PLAYERS)
-    log(f"players stable: {joined}/{PLAYERS}")
-    set_gamestage(GAMESTAGE)
-    # Bench godmode (mod diagnostic): level-1 bots die to endgame zombies in
-    # seconds, collapsing target anchors into a spawn-equilibrium plateau instead
-    # of an active siege. Immortal bots keep the horde attacking.
-    telnet(["es benchgod on"], settle=1)
-    log("benchgod on (bots immortal - active-siege load)")
-    log(f"spawning endgame mix to {ZOMBIES}...")
-    za = spawn_endgame(ZOMBIES)
-    time.sleep(8)  # let the spawn churn settle before reading steady-state health
-    h = health()
-    log("=== LOAD ESTABLISHED ===")
-    log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  entityAlives={h.get('entityAlives')}")
-    log(f"  frame={h.get('frameMs')}ms (50ms=20TPS budget)  tickMax={h.get('tickMaxMs')}ms  "
-        f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  stall={h.get('stallMs')}ms")
-    frame = h.get("frameMs")
-    keeps = isinstance(frame, (int, float)) and frame <= 55
-    log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
-    if HOLD_S <= 0:
-        log("holding load (BM_HOLD_S=0). Attach APM/capture now. Ctrl-C to tear down.")
-        try:
-            while True:
-                time.sleep(30)
-                h = health()
-                log(f"  hold: alive={h.get('entityAlives')} frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
-        except KeyboardInterrupt:
-            pass
-    else:
-        log(f"holding {HOLD_S}s...")
-        time.sleep(HOLD_S)
-    log("tearing down")
-    telnet(["kickall", "kick all"])
-    bots.terminate()
+    bots = None
     try:
-        bots.wait(timeout=15)
-    except subprocess.TimeoutExpired:
-        bots.kill()
-    subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+        bots, joined = join_ramped(PLAYERS)
+        log(f"players stable: {joined}/{PLAYERS}")
+        set_gamestage(GAMESTAGE)
+        # Bench godmode (mod diagnostic): level-1 bots die to endgame zombies in
+        # seconds, collapsing target anchors into a spawn-equilibrium plateau instead
+        # of an active siege. Immortal bots keep the horde attacking.
+        telnet(["es benchgod on"], settle=1)
+        log("benchgod on (bots immortal - active-siege load)")
+        log(f"spawning endgame mix to {ZOMBIES}...")
+        za = spawn_endgame(ZOMBIES)
+        time.sleep(8)  # let the spawn churn settle before reading steady-state health
+        h = health()
+        log("=== LOAD ESTABLISHED ===")
+        log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  entityAlives={h.get('entityAlives')}")
+        log(f"  frame={h.get('frameMs')}ms (50ms=20TPS budget)  tickMax={h.get('tickMaxMs')}ms  "
+            f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  stall={h.get('stallMs')}ms")
+        frame = h.get("frameMs")
+        keeps = isinstance(frame, (int, float)) and frame <= 55
+        log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
+        if HOLD_S <= 0:
+            log("holding load (BM_HOLD_S=0). Attach APM/capture now. Ctrl-C to tear down.")
+            try:
+                while True:
+                    time.sleep(30)
+                    h = health()
+                    log(f"  hold: alive={h.get('entityAlives')} frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
+            except KeyboardInterrupt:
+                pass
+        else:
+            log(f"holding {HOLD_S}s...")
+            time.sleep(HOLD_S)
+    finally:
+        teardown(bots)
     log("=== BLOOD MOON STANDARD COMPLETE ===")
 
 

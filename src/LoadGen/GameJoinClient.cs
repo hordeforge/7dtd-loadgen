@@ -635,7 +635,12 @@ public sealed class GameJoinClient
                 string key = r.ReadString();
                 log($"STAGE AuthState: {key}");
             }
-            catch { /* ignore */ }
+            catch (Exception ex)
+            {
+                // Handshake breadcrumb, not fatal: a malformed AuthState body
+                // must still be visible when the join later stalls or fails.
+                log($"STAGE AuthState unreadable (bodyLen={body.Length}): {ex.Message}");
+            }
             return;
         }
 

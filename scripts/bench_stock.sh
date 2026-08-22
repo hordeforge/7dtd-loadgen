@@ -33,6 +33,17 @@ BENCH_LAPS_ONLY="${BENCH_LAPS_ONLY:-0}"
 OUT="$ROOT/workspace/bench/lap$LAP"
 mkdir -p "$OUT"
 
+# A harness that dies mid-lap (set -e abort, SIGINT) must not leave the booted
+# server holding ports and memory: the next lap's pre-flight would refuse to
+# start and the orphan keeps loading the host. Track the pidfile and kill on exit.
+SERVER_PIDFILE=""
+cleanup() {
+  if [[ -n "$SERVER_PIDFILE" && -f "$SERVER_PIDFILE" ]]; then
+    kill -9 "$(cat "$SERVER_PIDFILE" 2>/dev/null)" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT INT TERM
+
 git_short() { git -C "$1" rev-parse --short HEAD 2>/dev/null || echo unknown; }
 git_dirty() { git -C "$1" status --porcelain 2>/dev/null | wc -l; }
 hostload() { awk '{print $1}' /proc/loadavg 2>/dev/null || echo "n/a"; }
@@ -84,6 +95,7 @@ if [[ "$ready" != 1 ]]; then
   kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
   exit 1
 fi
+SERVER_PIDFILE="$USERDATA/dedicated.pid"
 echo "  stock ready (StartGame done); hostLoad=$(hostload)"
 
 mapfile -t scenarios <<<"$SCEN_KEYS"
@@ -165,8 +177,9 @@ EOF
   [[ -n "$bench_line" ]] && echo "  $bench_line"
 done
 
-# Stop the server cleanly.
+# Stop the server cleanly (the EXIT trap is a no-op backstop after this).
 kill "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
+SERVER_PIDFILE=""
 sleep 2
 
 echo "=== lap $LAP summary ==="

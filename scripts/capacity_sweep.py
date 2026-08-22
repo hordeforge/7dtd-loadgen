@@ -33,45 +33,58 @@ def frame_alive():
 
 
 def main():
-    B.start_server()
-    bots, joined = B.join_ramped(B.PLAYERS)
-    B.log(f"players stable: {joined}/{B.PLAYERS}")
-    B.set_gamestage(B.GAMESTAGE)
+    bots = None
+    try:
+        B.start_server()
+        bots, joined = B.join_ramped(B.PLAYERS)
+        B.log(f"players stable: {joined}/{B.PLAYERS}")
+        B.set_gamestage(B.GAMESTAGE)
 
-    curve = []
-    over = 0
-    target = 0
-    while target < MAX_Z and over < 2:
-        target += STEP
-        B.spawn_endgame(target)
-        time.sleep(15)
-        f1, a1 = frame_alive()
-        time.sleep(5)
-        f2, a2 = frame_alive()
-        f = (f1 + f2) / 2 if f1 and f2 else (f1 or f2)
-        curve.append({"zombies": a2 or a1, "frame_ms": round(f, 1)})
-        B.log(f"  zombies={a2 or a1} frame={f:.1f}ms {'OVER' if f > BUDGET else 'ok'}")
-        over = over + 1 if f > BUDGET else 0
+        curve = []
+        over = 0
+        target = 0
+        while target < MAX_Z and over < 2:
+            target += STEP
+            B.spawn_endgame(target)
+            time.sleep(15)
+            f1, a1 = frame_alive()
+            time.sleep(5)
+            f2, a2 = frame_alive()
+            f = (f1 + f2) / 2 if f1 and f2 else (f1 or f2)
+            curve.append({"zombies": a2 or a1, "frame_ms": round(f, 1)})
+            B.log(f"  zombies={a2 or a1} frame={f:.1f}ms {'OVER' if f > BUDGET else 'ok'}")
+            over = over + 1 if f > BUDGET else 0
 
-    B.log("=== CEILING REACHED ===")
-    ok = [p for p in curve if p["frame_ms"] <= BUDGET]
-    ceiling = ok[-1]["zombies"] if ok else 0
-    B.log(f"  CAPACITY: {joined} players sustain ~{ceiling} endgame zombies at 20 TPS "
-          f"(first sustained break at ~{curve[-1]['zombies']})")
-    B.log(f"  curve: {json.dumps(curve)}")
+        B.log("=== CEILING REACHED ===")
+        ok = [p for p in curve if p["frame_ms"] <= BUDGET]
+        ceiling = ok[-1]["zombies"] if ok else 0
+        B.log(f"  CAPACITY: {joined} players sustain ~{ceiling} endgame zombies at 20 TPS "
+              f"(first sustained break at ~{curve[-1]['zombies']})")
+        B.log(f"  curve: {json.dumps(curve)}")
 
-    if CAPTURE:
-        pid = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
-                             capture_output=True, text=True).stdout.split()[0]
-        B.log("=== capture at ceiling (90s, deep sections) ===")
-        subprocess.run(["uv", "run", "7dtd-apm", "capture", "--seconds", "90",
-                        "--pid", pid, "--telnet-port", "8081", "--reset-bridge"],
-                       cwd="/home/maci/Desktop/7dtd/7dtd-apm", check=False)
-
-    B.telnet(["kickall"])
-    bots.terminate()
-    subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
-    subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
+        if CAPTURE:
+            pids = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
+                                  capture_output=True, text=True).stdout.split()
+            if pids:
+                B.log("=== capture at ceiling (90s, deep sections) ===")
+                subprocess.run(["uv", "run", "7dtd-apm", "capture", "--seconds", "90",
+                                "--pid", pids[0], "--telnet-port", "8081", "--reset-bridge"],
+                               cwd="/home/maci/Desktop/7dtd/7dtd-apm", check=False)
+            else:
+                B.log("server process not found; skipping ceiling capture")
+    finally:
+        # Every exit path stops the cohort and the server this sweep owns;
+        # a leaked workload keeps loading the host until its wall clock expires.
+        B.log("tearing down")
+        B.telnet(["kickall"])
+        if bots is not None:
+            bots.terminate()
+            try:
+                bots.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                bots.kill()
+        subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+        subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
     B.log("=== CAPACITY SWEEP COMPLETE ===")
 
 
