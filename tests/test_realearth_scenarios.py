@@ -123,11 +123,9 @@ def test_realearth_p0_through_p8_phase_modules_shipped():
     assert "re-tall-solid-runtime-poi-gate" in ids
 
 
-def test_run_manifest_written_by_selftest():
+def test_run_manifest_written_by_selftest(tmp_path):
     """CLI --run-manifest writes 7dtd.loadgen.run.v1 (loadgen gap for RealEarth campaigns)."""
-    import tempfile
-
-    scratch = Path(os.environ.get("LOADGEN_TEST_SCRATCH", tempfile.mkdtemp(prefix="lg-run-")))
+    scratch = Path(os.environ.get("LOADGEN_TEST_SCRATCH", str(tmp_path)))
     scratch.mkdir(parents=True, exist_ok=True)
     man = scratch / "run_manifest_test.json"
     r = _run_cli(

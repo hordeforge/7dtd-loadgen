@@ -92,11 +92,6 @@ def test_require_laps_gate(tmp_path):
     assert "need 2 laps, found 1" in r.stderr
 
 
-if __name__ == "__main__":
-    import pytest
-    sys.exit(pytest.main([__file__, "-q"]))
-
-
 def test_apm_cell_includes_ipc_and_layer_scores(tmp_path):
     """A session summary.json with layers+ipc enriches the report cell."""
     _make_lap(tmp_path, "lap1", {"bench": {
