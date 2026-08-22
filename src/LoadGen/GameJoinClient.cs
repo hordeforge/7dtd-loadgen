@@ -37,6 +37,8 @@ public sealed class GameJoinClient
 
     public JoinStateMachine State { get; } = new();
 
+    BenchClock? _bench;
+
     public sealed class Options
     {
         public string Host { get; set; } = "127.0.0.1";
@@ -80,6 +82,8 @@ public sealed class GameJoinClient
         /// <summary>Optional server-side provisioning hook invoked at the start of each life.</summary>
         public Action<int>? OnLifeStarted { get; set; }
         public Action<string>? Log { get; set; }
+        /// <summary>Optional cohort bench clock; counts deaths/respawns inside the window.</summary>
+        public BenchClock? Bench { get; set; }
     }
 
     public int Run(Options opt)
@@ -90,6 +94,8 @@ public sealed class GameJoinClient
             opt.Log?.Invoke(line);
             State.Note(line);
         }
+
+        _bench = opt.Bench;
 
         string bindIp = string.IsNullOrWhiteSpace(opt.LocalBindIp) ? "0.0.0.0" : opt.LocalBindIp!;
         try
@@ -390,6 +396,7 @@ public sealed class GameJoinClient
                             CohortSize = Math.Max(1, opt.CohortSize),
                             MaxLifetimeMs = (int)Math.Min(remainingMs, int.MaxValue),
                             Log = Log,
+                            Bench = opt.Bench,
                             ShouldStop = () =>
                             {
                                 if (State.IsTerminal || State.Died) return true;
@@ -413,6 +420,7 @@ public sealed class GameJoinClient
                     if (State.Died)
                     {
                         State.DeathCount++;
+                        opt.Bench?.OnDeath();
                         Log(
                             $"DEATH #{State.DeathCount} entity={State.EntityId} cause={State.DeathCause} " +
                             $"walks={State.WalkActions} jumps={State.JumpActions} " +
@@ -816,6 +824,7 @@ public sealed class GameJoinClient
         if (wasRespawn)
         {
             State.RespawnCount++;
+            _bench?.OnRespawn();
             State.ClearDeathForNewLife();
             log($"STAGE Respawned: entity={entityId} count={State.RespawnCount}");
         }

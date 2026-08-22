@@ -20,4 +20,7 @@
   <ItemGroup Condition="!Exists('$(GameManaged)/LiteNetLib.dll')">
     <PackageReference Include="LiteNetLib" Version="1.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LoadGen.Tests" />
+  </ItemGroup>
 </Project>

@@ -34,6 +34,8 @@ HORDE_EVERY_MS="${LOADGEN_HORDE_EVERY_MS:-}"
 TELNET_HOST="${LOADGEN_TELNET_HOST:-}"
 TELNET_PORT="${LOADGEN_TELNET_PORT:-}"
 TELNET_PASSWORD="${LOADGEN_TELNET_PASSWORD:-}"
+BENCH_WARMUP_MS="${LOADGEN_BENCH_WARMUP_MS:-}"
+BENCH_WINDOW_MS="${LOADGEN_BENCH_WINDOW_MS:-}"
 HORDE_WAVES="${LOADGEN_HORDE_WAVES:-}"
 MAX_DYNAMITE="${LOADGEN_MAX_DYNAMITE:-}"
 NO_SPAWN="${LOADGEN_NO_SPAWN:-}"
@@ -90,6 +92,8 @@ case "$MODE" in
     if [[ -n "$TELNET_HOST" ]]; then args+=(--telnet-host "$TELNET_HOST"); fi
     if [[ -n "$TELNET_PORT" ]]; then args+=(--telnet-port "$TELNET_PORT"); fi
     if [[ -n "$TELNET_PASSWORD" ]]; then args+=(--telnet-password "$TELNET_PASSWORD"); fi
+    if [[ -n "$BENCH_WARMUP_MS" ]]; then args+=(--bench-warmup-ms "$BENCH_WARMUP_MS"); fi
+    if [[ -n "$BENCH_WINDOW_MS" ]]; then args+=(--bench-window-ms "$BENCH_WINDOW_MS"); fi
     if [[ -n "$HORDE_EVERY_MS" ]]; then args+=(--horde-every-ms "$HORDE_EVERY_MS"); fi
     if [[ -n "$HORDE_WAVES" ]]; then args+=(--horde-waves "$HORDE_WAVES"); fi
     if [[ -n "$MAX_DYNAMITE" ]]; then args+=(--max-dynamite "$MAX_DYNAMITE"); fi

@@ -129,6 +129,8 @@ public static class ActionLoop
         /// <summary>True when client should stop (disconnect, world death, fail).</summary>
         public Func<bool>? ShouldStop { get; set; }
         public Action<string>? Log { get; set; }
+        /// <summary>Optional cohort bench clock; counts action iterations inside the window.</summary>
+        public BenchClock? Bench { get; set; }
     }
 
     public static Stats Run(
@@ -310,6 +312,8 @@ public static class ActionLoop
                 if (ping >= 0) PingStats.Record(ping);
             }
             ActionKind kind = PickAction(opt.Mode, rng, i, n, deathAt, opt.Death, stats.Chats, maxChats);
+            // Bench mode counts one action iteration per pick, inside the window.
+            opt.Bench?.OnAction();
             // Every joined client gets a bounded chance to exercise destructive world load.
             bool demolition = opt.Mode == BotMode.Demolition;
             bool wantDynamite = demolition

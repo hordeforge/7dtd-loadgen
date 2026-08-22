@@ -176,6 +176,11 @@ public static class Program
         int spawnEveryMs = 20_000;
         int spawnPerPlayer = 4;
         string spawnEntity = "zombieBoe";
+        // Benchmark mode: joins settle during warm-up, the measurement window is
+        // [warmupMs, warmupMs+windowMs) after the cohort start, and the stats-json
+        // gets a bench block (window counts + active-client curve). 0 = disabled.
+        int benchWarmupMs = 30_000;
+        int benchWindowMs = 0;
         // Wandering hordes: periodic scout-horde bursts that spawn at distance and
         // path in as a group. 0 = off. Slower cadence than the per-player trickle.
         int hordeEveryMs = 0;
@@ -220,11 +225,20 @@ public static class Program
                 opt.Respawn = true;
                 opt.TimeoutMs = 600_000; timeoutSet = true;
                 break;
+            case "bench": // ramped steady-wander cohort with a warm-up + window
+                count = 16; concurrency = 16; opt.ActionCount = 0;
+                joinRampMs = 15_000;
+                benchWarmupMs = 30_000; benchWindowMs = 60_000;
+                // ramp + warm-up + window + teardown margin; --timeout overrides.
+                opt.TimeoutMs = 130_000; timeoutSet = true;
+                // A pure join/action bench must not include telnet world pressure.
+                spawnZombies = false; killFallback = false;
+                break;
             case "":
                 break;
             default:
                 Console.Error.WriteLine(
-                    $"FAIL: unknown --profile '{profile}' (probe|join-burst|steady-wander|death-soak|mixed)");
+                    $"FAIL: unknown --profile '{profile}' (probe|join-burst|steady-wander|death-soak|mixed|bench)");
                 return 3;
         }
 
@@ -311,6 +325,8 @@ public static class Program
             else if (args[i] == "--max-lives" && i + 1 < args.Length) opt.MaxLives = int.Parse(args[++i]);
             else if (args[i] == "--respawn-delay-ms" && i + 1 < args.Length) opt.RespawnDelayMs = int.Parse(args[++i]);
             else if (args[i] == "--respawn-timeout-ms" && i + 1 < args.Length) opt.RespawnTimeoutMs = int.Parse(args[++i]);
+            else if (args[i] == "--bench-warmup-ms" && i + 1 < args.Length) benchWarmupMs = int.Parse(args[++i]);
+            else if (args[i] == "--bench-window-ms" && i + 1 < args.Length) benchWindowMs = int.Parse(args[++i]);
         }
 
         if (count < 1) count = 1;
@@ -438,6 +454,7 @@ public static class Program
         }
 
         // Per-bot session: rejoin on early disconnect until overall wall clock expires.
+        var bench = benchWindowMs > 0 ? new BenchClock(benchWarmupMs, benchWindowMs) : null;
         (int rc, JoinStateMachine s) RunWithRejoin(int clientId, Action<string>? log)
         {
             var sessionSw = Stopwatch.StartNew();
@@ -478,6 +495,7 @@ public static class Program
                     RespawnDelayMs = opt.RespawnDelayMs,
                     RespawnTimeoutMs = opt.RespawnTimeoutMs,
                     LocalBindIp = GameJoinClient.LoopbackBindForIndex(clientId + attempt * 17),
+                    Bench = bench,
                     OnLifeStarted = entityId =>
                     {
                         try
@@ -618,14 +636,30 @@ public static class Program
             int drowns, int suicides, int killed, bool died, string deathCause, int entityId, string mode,
             int deathCount, int respawnCount, int rejoinCount)>();
         var gate = new SemaphoreSlim(concurrency);
+        // Bench clock: window-sliced counts + per-second active-cohort curve.
+        var running = new System.Collections.Concurrent.ConcurrentDictionary<int, byte>();
+        var benchCts = new CancellationTokenSource();
+        var benchSampler = Task.Run(async () =>
+        {
+            try
+            {
+                while (!benchCts.IsCancellationRequested)
+                {
+                    bench?.SampleActive(running.Count);
+                    await Task.Delay(1000, benchCts.Token).ConfigureAwait(false);
+                }
+            }
+            catch (OperationCanceledException) { /* normal stop */ }
+        });
         var tasks = Enumerable.Range(0, count).Select(i => Task.Run(async () =>
         {
             if (joinRampMs > 0 && count > 1)
                 await Task.Delay(RampDelayMs(i, count, joinRampMs)).ConfigureAwait(false);
             await gate.WaitAsync().ConfigureAwait(false);
+            int id = opt.ClientId + i;
+            running.TryAdd(id, 0);
             try
             {
-                int id = opt.ClientId + i;
                 Action<string>? log = i < 3 ? Console.WriteLine : null;
                 try
                 {
@@ -643,9 +677,12 @@ public static class Program
                     results.Add((id, 1, JoinStage.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, "exception", -1, opt.Mode.ToString(), 0, 0, 0));
                 }
             }
-            finally { gate.Release(); }
+            finally { running.TryRemove(id, out _); gate.Release(); }
         })).ToArray();
         Task.WaitAll(tasks);
+        benchCts.Cancel();
+        try { benchSampler.Wait(2000); } catch { /* ignore */ }
+        bench?.SampleActive(0); // final sample so the curve shows the ramp-down
         spawnCts.Cancel();
         try { spawnTask?.Wait(2000); } catch { /* ignore */ }
         try { hordeTask?.Wait(2000); } catch { /* ignore */ }
@@ -700,6 +737,19 @@ public static class Program
                 $"  id={r.id} rc={r.rc} mode={r.mode} entity={r.entityId} w={r.walks} j={r.jumps} " +
                 $"deaths={r.deathCount} respawns={r.respawnCount} rejoins={r.rejoinCount} " +
                 $"lastDied={r.died} cause={r.deathCause}"));
+        if (bench is { } b)
+        {
+            var (wStart, wEnd, _) = b.WindowBounds;
+            var (wActions, wDeaths, wRespawns) = b.WindowCounts;
+            double aps = b.WindowMs > 0 ? wActions * 1000.0 / b.WindowMs : 0;
+            double jps = wStart > 0 ? pass * 1000.0 / wStart : 0;
+            Console.WriteLine(
+                $"BENCH_SUMMARY warmupMs={b.WarmupMs} windowMs={b.WindowMs} " +
+                $"actionsInWindow={wActions} actionsPerSec={aps:0.00} " +
+                $"deathsInWindow={wDeaths} respawnsInWindow={wRespawns} " +
+                $"joinRatePerSec={jps:0.000} activeMin={b.ActiveMin} activeMax={b.ActiveMax} " +
+                $"activeAtWindowStart={b.ActiveAtWindowStart} activeAtWindowEnd={b.ActiveAtWindowEnd}");
+        }
         Console.WriteLine(report);
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
         {
@@ -746,6 +796,28 @@ public static class Program
             payload["pingP95Ms"] = ping.p95;
             payload["pingMaxMs"] = ping.max;
             payload["pingSpikesOver150Ms"] = ping.spikes;
+            if (bench is { } b2)
+            {
+                var (wStart, wEnd, _) = b2.WindowBounds;
+                var (wActions, wDeaths, wRespawns) = b2.WindowCounts;
+                payload["bench"] = new Dictionary<string, object?>
+                {
+                    ["warmupMs"] = b2.WarmupMs,
+                    ["windowMs"] = b2.WindowMs,
+                    ["windowStartMs"] = wStart,
+                    ["windowEndMs"] = wEnd,
+                    ["actionsInWindow"] = wActions,
+                    ["actionsPerSec"] = Math.Round(b2.WindowMs > 0 ? wActions * 1000.0 / b2.WindowMs : 0, 2),
+                    ["deathsInWindow"] = wDeaths,
+                    ["respawnsInWindow"] = wRespawns,
+                    ["joinRatePerSec"] = Math.Round(wStart > 0 ? pass * 1000.0 / wStart : 0, 3),
+                    ["activeMin"] = b2.ActiveMin,
+                    ["activeMax"] = b2.ActiveMax,
+                    ["activeAtWindowStart"] = b2.ActiveAtWindowStart,
+                    ["activeAtWindowEnd"] = b2.ActiveAtWindowEnd,
+                    ["activeCurve"] = b2.ActiveCurve().Select(s => new[] { s.Ms, s.Active }).ToList(),
+                };
+            }
             var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
             if (!string.IsNullOrEmpty(statsJsonPath))
             {
@@ -883,8 +955,12 @@ public static class Program
             "  --self-test-join    In-process mock 7DTD join + actions (CI gate)\n" +
             "\n" +
             "Join bot flags:\n" +
-            "  --profile probe|join-burst|steady-wander|death-soak|mixed\n" +
+            "  --profile probe|join-burst|steady-wander|death-soak|mixed|bench\n" +
             "      preset cohort defaults; explicit flags override per key\n" +
+            "      bench = ramped wander cohort + warm-up + measurement window\n" +
+            "  --bench-warmup-ms N   bench warm-up before the window (default 30000)\n" +
+            "  --bench-window-ms N   bench measurement window; >0 enables the bench\n" +
+            "      summary (stats-json bench block + BENCH_SUMMARY line)\n" +
             "  --mode wander|mixed|chatty|combat|patrol|chaos\n" +
             "      default: wander (walk until world death)\n" +
             "  --death none|...   default none: never self-kill; wait for world death\n" +
