@@ -742,33 +742,35 @@ public static class PackageCodec
         if (encrypted != 0)
             return list; // EAC encryption not implemented
 
-        byte[] payloadBytes;
+        // Uncompressed frames parse straight from the receive buffer: copying
+        // the whole payload first was a full extra allocation per packet on the
+        // hottest receive path. Only compressed frames need the byte[] (for
+        // inflation); bodies are always copied out for the caller either way.
+        ReadOnlySpan<byte> payload;
         if (compressed != 0)
         {
-            var raw = data.Slice(o, payloadSize).ToArray();
-            if (!TryInflate(raw, out payloadBytes!))
+            if (!TryInflate(data.Slice(o, payloadSize).ToArray(), out byte[]? inflated))
                 return list;
+            payload = inflated;
         }
         else
         {
-            payloadBytes = data.Slice(o, payloadSize).ToArray();
+            payload = data.Slice(o, payloadSize);
         }
 
         int po = 0;
-        for (int i = 0; i < count && po + 6 <= payloadBytes.Length; i++)
+        for (int i = 0; i < count && po + 6 <= payload.Length; i++)
         {
             // contentLen = size AFTER the int32 field (pkgId + body). Compare via
             // subtraction (the loop guarantees po+4 <= length) so a crafted huge
             // contentLen cannot overflow po+4+contentLen into a negative that
             // slips past the bound check and drives an out-of-bounds BlockCopy.
-            int contentLen = BinaryPrimitives.ReadInt32LittleEndian(payloadBytes.AsSpan(po));
-            if (contentLen < 2 || contentLen > payloadBytes.Length - po - 4)
+            int contentLen = BinaryPrimitives.ReadInt32LittleEndian(payload.Slice(po));
+            if (contentLen < 2 || contentLen > payload.Length - po - 4)
                 break;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(payloadBytes.AsSpan(po + 4));
+            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(payload.Slice(po + 4));
             int bodyLen = contentLen - 2;
-            var body = new byte[bodyLen];
-            Buffer.BlockCopy(payloadBytes, po + 6, body, 0, bodyLen);
-            list.Add((id, body));
+            list.Add((id, payload.Slice(po + 6, bodyLen).ToArray()));
             po += 4 + contentLen;
         }
         return list;
@@ -784,36 +786,47 @@ public static class PackageCodec
     public static bool TryInflate(byte[] compressed, out byte[]? inflated)
     {
         inflated = null;
-        foreach (bool zlib in new[] { false, true })
+        // Scratch buffer comes from the shared pool: a fresh 64 KB rental per
+        // compressed frame was steady GC churn on busy chunk streams.
+        var chunk = System.Buffers.ArrayPool<byte>.Shared.Rent(64 * 1024);
+        try
         {
-            try
+            // Attempt 0 = raw DEFLATE (Noemax DeflateOutputStream), 1 = zlib wrapper.
+            for (int attempt = 0; attempt < 2; attempt++)
             {
-                using var input = new MemoryStream(compressed);
-                Stream dec = zlib
-                    ? new ZLibStream(input, CompressionMode.Decompress, leaveOpen: true)
-                    : new DeflateStream(input, CompressionMode.Decompress, leaveOpen: true);
-                using (dec)
-                using (var output = new MemoryStream())
+                bool zlib = attempt == 1;
+                try
                 {
-                    var chunk = new byte[64 * 1024];
-                    int read;
-                    bool overflow = false;
-                    while ((read = dec.Read(chunk, 0, chunk.Length)) > 0)
+                    using var input = new MemoryStream(compressed);
+                    Stream dec = zlib
+                        ? new ZLibStream(input, CompressionMode.Decompress, leaveOpen: true)
+                        : new DeflateStream(input, CompressionMode.Decompress, leaveOpen: true);
+                    using (dec)
+                    using (var output = new MemoryStream())
                     {
-                        if (output.Length + read > MaxInflatedBytes) { overflow = true; break; }
-                        output.Write(chunk, 0, read);
-                    }
-                    if (!overflow && output.Length > 0)
-                    {
-                        inflated = output.ToArray();
-                        return true;
+                        int read;
+                        bool overflow = false;
+                        while ((read = dec.Read(chunk, 0, chunk.Length)) > 0)
+                        {
+                            if (output.Length + read > MaxInflatedBytes) { overflow = true; break; }
+                            output.Write(chunk, 0, read);
+                        }
+                        if (!overflow && output.Length > 0)
+                        {
+                            inflated = output.ToArray();
+                            return true;
+                        }
                     }
                 }
+                catch
+                {
+                    // try next format
+                }
             }
-            catch
-            {
-                // try next format
-            }
+        }
+        finally
+        {
+            System.Buffers.ArrayPool<byte>.Shared.Return(chunk);
         }
         return false;
     }

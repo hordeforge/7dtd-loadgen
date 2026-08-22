@@ -207,7 +207,9 @@ public sealed class GameJoinClient
         bool loginSent = false;
         bool actionsDone = false;
         bool respawnTimedOut = false;
-
+        // Reused drain buffers: allocating a List per poll iteration was steady
+        // GC churn at cohort scale (every bot drains ~50-100x/sec).
+        var recvBatch = new List<byte[]>();
         try
         {
         while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
@@ -226,14 +228,14 @@ public sealed class GameJoinClient
             }
 
             // Inbound
-            List<byte[]> batch;
             lock (gate)
             {
-                batch = inbox.ToList();
+                foreach (var item in inbox)
+                    recvBatch.Add(item);
                 inbox.Clear();
             }
 
-            foreach (var data in batch)
+            foreach (var data in recvBatch)
             {
                 State.PackagesReceived++;
                 // Challenge (raw 17 bytes, no channel game framing)
@@ -285,6 +287,7 @@ public sealed class GameJoinClient
                     });
                 }
             }
+            recvBatch.Clear();
 
             // After PackageIds, send PlayerLogin without waiting for another inbound package
             if (!loginSent
@@ -321,16 +324,17 @@ public sealed class GameJoinClient
                     mode = ActionLoop.BotMode.Mixed;
                 State.BotModeName = mode.ToString();
 
+                var pollBatch = new List<byte[]>();
                 void PollInbox()
                 {
                     net.PollEvents();
-                    List<byte[]> inBatch;
                     lock (gate)
                     {
-                        inBatch = inbox.ToList();
+                        foreach (var item in inbox)
+                            pollBatch.Add(item);
                         inbox.Clear();
                     }
-                    foreach (var data in inBatch)
+                    foreach (var data in pollBatch)
                     {
                         State.PackagesReceived++;
                         if (PackageCodec.TryParseChallenge(data, out _))
@@ -342,6 +346,7 @@ public sealed class GameJoinClient
                                 lock (gate) sendQueue.Enqueue(pkt);
                             });
                     }
+                    pollBatch.Clear();
                     lock (gate)
                     {
                         while (sendQueue.Count > 0 && peer != null)
@@ -567,9 +572,7 @@ public sealed class GameJoinClient
     {
         // PackageIds is always id 0 until remapped; also match by content heuristic
         bool looksLikePackageIds = body.Length > 16 && !State.PackageIds.ContainsKey("NetPackagePlayerLogin");
-        string? typeName = null;
-        foreach (var kv in State.PackageIds)
-            if (kv.Value == id) { typeName = kv.Key; break; }
+        string? typeName = State.TryGetTypeName(id, out var mappedName) ? mappedName : null;
         // After join, high-volume entity/chunk packages would flood logs for hour-long runs.
         bool noisy = typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityRelPosAndRot"
             or "NetPackageEntityAliveFlags" or "NetPackageEntityStat" or "NetPackageEntityStats"

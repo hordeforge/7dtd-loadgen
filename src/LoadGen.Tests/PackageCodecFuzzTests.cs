@@ -100,4 +100,49 @@ public sealed class PackageCodecFuzzTests
             }
         }
     }
+
+    [Fact]
+    public void CompressedFrame_RawDeflate_DecodesBodies()
+    {
+        // Noemax writes raw DEFLATE (no zlib header); TryInflate must resolve it
+        // on the first attempt and the bodies must survive the span-based parse.
+        byte[] body = { 1, 2, 3, 4, 5 };
+        byte[] inner = InnerPackage(contentLen: body.Length + 2, pkgId: 7, body);
+        byte[] compressed;
+        using (var ms = new MemoryStream())
+        {
+            using (var ds = new System.IO.Compression.DeflateStream(
+                ms, System.IO.Compression.CompressionLevel.SmallestSize))
+                ds.Write(inner, 0, inner.Length);
+            compressed = ms.ToArray();
+        }
+        var frame = Frame(compressed, null, compressed: 1, encrypted: 0, count: 1);
+
+        var pkgs = PackageCodec.ParseChannelPayload(frame);
+
+        Assert.Single(pkgs);
+        Assert.Equal((ushort)7, pkgs[0].id);
+        Assert.Equal(body, pkgs[0].body);
+    }
+
+    [Fact]
+    public void UncompressedFrame_BodiesMatchSourceBytes()
+    {
+        // The uncompressed path parses straight from the receive buffer; each
+        // body must still be an independent copy (callers own their arrays).
+        byte[] bodyA = { 9, 8, 7 };
+        byte[] bodyB = { 5, 4, 3, 2 };
+        var payload = new List<byte>();
+        payload.AddRange(InnerPackage(bodyA.Length + 2, 3, bodyA));
+        payload.AddRange(InnerPackage(bodyB.Length + 2, 4, bodyB));
+        var frame = Frame(payload.ToArray(), null, compressed: 0, encrypted: 0, count: 2);
+
+        var pkgs = PackageCodec.ParseChannelPayload(frame);
+
+        Assert.Equal(2, pkgs.Count);
+        Assert.Equal((ushort)3, pkgs[0].id);
+        Assert.Equal(bodyA, pkgs[0].body);
+        Assert.Equal((ushort)4, pkgs[1].id);
+        Assert.Equal(bodyB, pkgs[1].body);
+    }
 }

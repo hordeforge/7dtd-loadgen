@@ -21,11 +21,20 @@ public enum JoinStage
 
 public sealed class JoinStateMachine
 {
+    // Soak cohorts log continuously (walk/turn/chat/unparsed-frame lines) for
+    // hours; nothing reads mid-session history and only --self-test-join dumps
+    // Log at exit (those runs stay far below the cap). Keep the newest lines so
+    // a 1000-bot multi-hour run cannot retain hundreds of MB of strings.
+    const int MaxLogLines = 4000;
+    const int LogTrimToLines = 2000;
     readonly List<string> _log = new();
     public JoinStage Stage { get; private set; } = JoinStage.Created;
     public string? FailReason { get; private set; }
     public IReadOnlyList<string> Log => _log;
     public Dictionary<string, ushort> PackageIds { get; } = new(StringComparer.Ordinal);
+    /// <summary>Reverse of <see cref="PackageIds"/> so the per-package type
+    /// lookup on the receive hot path is O(1) instead of scanning every mapping.</summary>
+    readonly Dictionary<ushort, string> _typeNamesById = new();
     /// <summary>Compat version from NetPackagePackageIds (for VersionAuthorizer LongStringNoBuild).</summary>
     public PackageCodec.VersionInfo ServerVersion { get; set; } = PackageCodec.GameVersion;
     public int EntityId { get; set; } = -1;
@@ -94,6 +103,7 @@ public sealed class JoinStateMachine
         Stage = next;
         string line = detail == null ? $"STAGE {next}" : $"STAGE {next}: {detail}";
         _log.Add(line);
+        TrimLog();
     }
 
     public void Fail(string reason)
@@ -102,12 +112,35 @@ public sealed class JoinStateMachine
         FailReason = reason;
         Stage = JoinStage.Failed;
         _log.Add($"STAGE Failed: {reason}");
+        TrimLog();
     }
 
-    public void Note(string msg) => _log.Add(msg);
+    public void Note(string msg)
+    {
+        _log.Add(msg);
+        TrimLog();
+    }
+
+    void TrimLog()
+    {
+        if (_log.Count > MaxLogLines)
+            _log.RemoveRange(0, _log.Count - LogTrimToLines);
+    }
 
     public bool TryGetPackageId(string typeName, out ushort id) =>
         PackageIds.TryGetValue(typeName, out id);
+
+    /// <summary>O(1) package-id → type-name lookup for the receive path.</summary>
+    public bool TryGetTypeName(ushort id, out string typeName)
+    {
+        if (_typeNamesById.TryGetValue(id, out var name))
+        {
+            typeName = name;
+            return true;
+        }
+        typeName = "";
+        return false;
+    }
 
     public void ApplyPackageMappings(string[] mappings)
     {
@@ -117,6 +150,11 @@ public sealed class JoinStateMachine
             if (!string.IsNullOrEmpty(mappings[i]))
                 PackageIds[mappings[i]] = (ushort)i;
         }
+        // Rebuild from the final forward map so the reverse view always agrees
+        // with it (duplicate names keep the last index on both sides).
+        _typeNamesById.Clear();
+        foreach (var kv in PackageIds)
+            _typeNamesById[kv.Value] = kv.Key;
         Advance(JoinStage.PackageIdsReceived, $"count={mappings.Length}");
     }
 

@@ -63,6 +63,52 @@ public sealed class JoinStateMachineTests
         Assert.False(sm.PackageIds.ContainsKey(""));
         Assert.Equal(JoinStage.PackageIdsReceived, sm.Stage);
     }
+
+    [Fact]
+    public void TryGetTypeName_ReverseLookup_MatchesForwardMap()
+    {
+        var sm = new JoinStateMachine();
+        sm.ApplyPackageMappings(new[] { "NetPackagePackageIds", "NetPackagePlayerLogin", "", "NetPackageChat" });
+
+        // Every forward entry resolves back through the O(1) reverse map.
+        foreach (var kv in sm.PackageIds)
+        {
+            Assert.True(sm.TryGetTypeName(kv.Value, out var name));
+            Assert.Equal(kv.Key, name);
+        }
+        // Empty mapping slots resolve to nothing.
+        Assert.False(sm.TryGetTypeName(2, out _));
+        Assert.False(sm.TryGetTypeName(999, out _));
+    }
+
+    [Fact]
+    public void ApplyPackageMappings_Reapply_DropsStaleReverseIds()
+    {
+        var sm = new JoinStateMachine();
+        sm.ApplyPackageMappings(new[] { "Old1", "Old2" });
+        Assert.True(sm.TryGetTypeName(1, out _));
+
+        // A second PackageIds packet remaps everything; stale ids must not
+        // survive in the reverse map (it mirrors the cleared forward map).
+        sm.ApplyPackageMappings(new[] { "New1" });
+        Assert.False(sm.TryGetTypeName(1, out _));
+        Assert.True(sm.TryGetTypeName(0, out var name));
+        Assert.Equal("New1", name);
+    }
+
+    [Fact]
+    public void Note_BeyondCap_RetainsNewestLines_Only()
+    {
+        var sm = new JoinStateMachine();
+        for (int i = 0; i < 9000; i++)
+            sm.Note($"line {i}");
+
+        // Retention stays bounded for multi-hour soak sessions...
+        Assert.True(sm.Log.Count <= 4000);
+        // ...and the newest lines survive the trim.
+        Assert.Contains("line 8999", sm.Log[^1]);
+        Assert.Equal("line 8999", sm.Log[^1]);
+    }
 }
 
 /// <summary>
