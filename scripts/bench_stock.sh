@@ -61,14 +61,16 @@ if pgrep -af "7DaysToDieServer.x86_64" >/dev/null 2>&1; then
 fi
 
 echo "=== bench-stock lap $LAP world=$WORLD_NAME admin=$ADMIN_PORT ==="
-echo "matrix: ${!SCEN_MATRIX[*]}"
+# Sort keys: associative-array iteration order is hash-based, and lap
+# summaries/evidence must list scenarios identically on every run.
+SCEN_KEYS=$(printf '%s\n' "${!SCEN_MATRIX[@]}" | LC_ALL=C sort)
+echo "matrix: $SCEN_KEYS"
 
 # One server session per lap, fresh save (per-lap userdata).
 USERDATA="$OUT/userdata"
 RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="bench_stock_lap${LAP}" \
   RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 RE_TELNET_PORT="$ADMIN_PORT" \
   bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$OUT/boot.log" 2>&1 &
-BOOT_PID=$!
 ready=0
 for _ in $(seq 1 150); do
   stock_log="$(cat "$USERDATA/dedicated.logpath" 2>/dev/null || true)"
@@ -84,7 +86,7 @@ if [[ "$ready" != 1 ]]; then
 fi
 echo "  stock ready (StartGame done); hostLoad=$(hostload)"
 
-scenarios=("${!SCEN_MATRIX[@]}")
+mapfile -t scenarios <<<"$SCEN_KEYS"
 [[ "$BENCH_LAPS_ONLY" == "1" ]] && scenarios=(bench)
 summary=()
 for sc in "${scenarios[@]}"; do

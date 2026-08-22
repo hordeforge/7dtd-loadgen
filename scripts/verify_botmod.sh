@@ -2,8 +2,6 @@
 # Verify BotMod bots via telnet listents / bot list.
 # Usage: LOADGEN_TELNET_PORT=8081 LOADGEN_TELNET_PASSWORD=retest ./scripts/verify_botmod.sh [--want N] [--spawn-near]
 set -euo pipefail
-PORT="${LOADGEN_TELNET_PORT:-8081}"
-PASSWD="${LOADGEN_TELNET_PASSWORD:-retest}"
 WANT="${1:-}"
 if [[ "$1" == "--want" ]]; then WANT="$2"; shift 2; fi
 WANT="${WANT:-4}"

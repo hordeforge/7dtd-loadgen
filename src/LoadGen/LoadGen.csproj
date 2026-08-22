@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>7dtd-loadgen</AssemblyName>
     <RootNamespace>SevenDTD.LoadGen</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <!-- Build flags (LangVersion, PathMap, CI normalization) live in
+         Directory.Build.props at the repo root. -->
     <!-- Prefer game LiteNetLib (protocol-compatible with dedicated). Override: -p:GameDir=... -->
     <GameDir Condition="'$(GameDir)'==''">$(HOME)/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server</GameDir>
     <GameManaged>$(GameDir)/7DaysToDieServer_Data/Managed</GameManaged>

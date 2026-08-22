@@ -1,0 +1,18 @@
+<Project>
+  <!-- Central build flags: single source of truth for every project in src/. -->
+  <PropertyGroup>
+    <!-- Pin the language level instead of 'latest', which floats with whichever
+         SDK compiles the tree (SDK 8 -> C# 12, SDK 9 -> C# 13, ...). -->
+    <LangVersion>12</LangVersion>
+    <Deterministic>true</Deterministic>
+    <!-- Map the checkout directory out of emitted bits so two checkouts at
+         different paths produce identical DLL/PDB bytes. -->
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+    <!-- Do not query git while compiling: implicit SourceLink embeds the
+         absolute checkout path plus a HEAD-commit URL into PDBs, which makes
+         artifacts depend on git metadata and checkout location. -->
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <!-- Normalize source paths extra on CI (GitHub Actions sets CI). -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

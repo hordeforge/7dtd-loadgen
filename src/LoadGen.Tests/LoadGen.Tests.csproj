@@ -4,7 +4,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <LangVersion>latest</LangVersion>
+    <!-- Build flags (LangVersion, PathMap, CI normalization) live in
+         Directory.Build.props at the repo root. -->
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />

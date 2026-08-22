@@ -71,8 +71,12 @@ unittest:
 	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q
 
 test: build selftest unittest
-	@command -v uv >/dev/null && cd "$(ROOT)" && uv run --with pytest pytest tests -q --tb=short \
-		|| python3 -m pytest tests -q --tb=short
+	@if command -v uv >/dev/null; then \
+		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short; \
+	else \
+		echo "WARN: uv not found; falling back to system python3" >&2; \
+		cd "$(ROOT)" && python3 -m pytest tests -q --tb=short; \
+	fi
 
 dedicated dedicated-4k:
 	@chmod +x "$(SCRIPTS)/start_dedicated_prefab.sh"
@@ -103,7 +107,8 @@ scenarios:
 	@"$(SCRIPTS)/run_scenario.sh" --list
 
 clean:
-	rm -rf "$(ROOT)/src/LoadGen/bin" "$(ROOT)/src/LoadGen/obj"
+	rm -rf "$(ROOT)/src/LoadGen/bin" "$(ROOT)/src/LoadGen/obj" \
+		"$(ROOT)/src/LoadGen.Tests/bin" "$(ROOT)/src/LoadGen.Tests/obj"
 	@echo "OK clean"
 
 # Run the research corpus's round-trip checker over every probe save this rig
@@ -141,7 +146,7 @@ bench-stock:
 	bash scripts/bench_stock.sh --lap "$(LAP)"
 
 bench-report:
-	uv run --with pytest python "$(ROOT)/tools/bench_report.py" --laps-dir "$(ROOT)/workspace/bench"
+	uv run --locked python "$(ROOT)/tools/bench_report.py" --laps-dir "$(ROOT)/workspace/bench"
 
 # Same scenario (join-fast) on every supported world: the world matrix.
 # Each world keeps its own evidence dir (join-fast-<world>). Worlds that

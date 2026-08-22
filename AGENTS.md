@@ -70,12 +70,20 @@ Lab telnet (from README helpers): `127.0.0.1:8081` (test-only credentials).
 ## Layout
 
 ```text
+Directory.Build.props  Shared C# build flags: LangVersion pin, PathMap, no
+                       git queries at compile time (keeps artifacts
+                       byte-identical across checkout paths)
+global.json            SDK pin: 8.0.x only (rollForward latestFeature)
 src/LoadGen/       C# client (join, actions, death, respawn, telnet pressure)
 src/LoadGen.Tests/ C# unit tests (`make unittest`)
 scripts/           dedicated start + client/scenario/bench runners
 tests/             Python gates: golden-wire, self-test, scenario/compare/bench
 tools/             report + comparison tooling
 ```
+
+Python test deps come from `uv.lock` (`make test` runs
+`uv run --locked --extra dev pytest`); do not bypass the lock with
+`uv run --with`.
 
 ## Workload controls
 
