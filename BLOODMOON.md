@@ -6,9 +6,9 @@ fine. Runner: [`scripts/bloodmoon_profile.py`](scripts/bloodmoon_profile.py).
 
 ```bash
 # stand up a fresh server with blood-moon caps + the load, hold for measurement:
-BM_HOLD_S=0 uv run --project ../7dtd-apm python scripts/bloodmoon_profile.py --start-server
+BM_HOLD_S=0 uv run --project ../7dtd-server-apm python scripts/bloodmoon_profile.py --start-server
 # against an already-running server, tear down after 120 s:
-BM_HOLD_S=120 uv run --project ../7dtd-apm python scripts/bloodmoon_profile.py
+BM_HOLD_S=120 uv run --project ../7dtd-server-apm python scripts/bloodmoon_profile.py
 ```
 
 Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
@@ -26,16 +26,16 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   exploders. Telnet spawn **bypasses the `MaxSpawnedZombies` world cap** (which the
   server otherwise scales to only `MaxSpawnedZombies x1.9` on a blood moon, ~122 at
   the default 64; the 1.9x is `AIDirectorBloodMoonParty.Tick`'s
-  `AIDirector.CanSpawn(1.9f)` gate - [`7dtd-research/docs/aidirector.md`](../7dtd-research/docs/aidirector.md)).
+  `AIDirector.CanSpawn(1.9f)` gate - [`7dtd-engine-research/docs/aidirector.md`](../7dtd-engine-research/docs/aidirector.md)).
   Outside blood moons the stock sleepers restore against a separate **x2.1**
   headroom: `SleeperVolume.UpdateSpawn` gates on `AIDirector.CanSpawn(2.1f)`
-  ([`7dtd-research/docs/spawning.md`](../7dtd-research/docs/spawning.md) 8, and the
+  ([`7dtd-engine-research/docs/spawning.md`](../7dtd-engine-research/docs/spawning.md) 8, and the
   `RE_MAX_ZOMBIES` comment in `scripts/start_dedicated_prefab.sh`).
 - **Day-7 blood moon fires regardless of the config's 0.** The generated
   serverconfig sets `BloodMoonFrequency=0`, which the sandbox sync treats as the
   **7-day default** (live-observed 2026-08-11: `SetDay` logged `freq 7` and
   `BloodMoon starting for day 7` at dusk -
-  [`7dtd-research/docs/aidirector.md`](../7dtd-research/docs/aidirector.md)).
+  [`7dtd-engine-research/docs/aidirector.md`](../7dtd-engine-research/docs/aidirector.md)).
   The profile's `BloodMoonFrequency`/`BloodMoonRange` gameprefs are the real
   levers; a 0 does not disable the horde.
 - **High gamestage.** The stock `gamestage` console command is **read-only**
@@ -74,15 +74,15 @@ sustain **~147 endgame zombies at 20 TPS** (break by ~245). Under the **v1.13.0
 shipping defaults** (2026-07-21, adaptive governor managing the throttles), the same
 load sustains **~232 zombies (+58%)**, breaking at ~279-378. At the ceiling
 the tick is fully attributed: TickEntities 63%, OnUpdateEntities 30%
-(stride-halved), chunk send 5% (see `7dtd-optimizer/docs/RESULTS.md` 3h).
+(stride-halved), chunk send 5% (see `7dtd-server-optimizer/docs/RESULTS.md` 3h).
 
 Note on "20 TPS": the full entity-sim/replication tick is gated at ~20 Hz
 regardless of the server frame rate (measured - see
-`7dtd-optimizer/docs/RESULTS.md` 3k); raising `settargetfps` smooths delivery
+`7dtd-server-optimizer/docs/RESULTS.md` 3k); raising `settargetfps` smooths delivery
 jitter but does not change TPS or these capacity numbers.
 
 So 64p + endgame blood moon is a **saturation ceiling**, not a steady-state baseline:
 it defines where the server falls over (entity tick + network replication + explosions,
 in that order), and every optimization lever should be judged against moving that
 ceiling. The lighter steady-state standard (64p + ~300 basic zombies) lives in the APM
-profile system (`../7dtd-apm/plans/profile.canonical.json`).
+profile system (`../7dtd-server-apm/plans/profile.canonical.json`).

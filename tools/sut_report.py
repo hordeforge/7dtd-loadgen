@@ -215,10 +215,10 @@ def main():
             lines.append(f"- tick mean/p99/max ns: {za['tickMeanNs']} / "
                          f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
 
-    # ---- stock APM (7dtd-apm capture; reported, not compared: format differs) ----
+    # ---- stock APM (7dtd-server-apm capture; reported, not compared: format differs) ----
     sa = stock.get("apmStock") if stock else None
     if sa:
-        lines.append("\n## stock APM (7dtd-apm capture window; no zdtd equivalent format)\n")
+        lines.append("\n## stock APM (7dtd-server-apm capture window; no zdtd equivalent format)\n")
         if sa.get("session"):
             lines.append(f"- session: {sa['session']}")
         if sa.get("lagVerdict"):
@@ -286,7 +286,7 @@ def main():
         lines.append("- no axis-level differences on the compared surface")
     lines.append("\n*Triage each finding: zdtd bug vs harness artifact vs known "
                  "divergence. Known divergences are recorded in "
-                 "zdtd/docs/PROVENANCE.md (divergence register).*")
+                 "zdtd-server/docs/PROVENANCE.md (divergence register).*")
 
     report = "\n".join(lines)
     with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8") as fh:

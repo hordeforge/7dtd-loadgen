@@ -123,4 +123,4 @@ Boot evidence per side:
 - telnet: game-clock rate differs (stock=0.3333 zdtd=0.4; 60-min day = 0.4)
 - telnet: entity count differs (stock=7 zdtd=11)
 
-*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*
+*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd-server/docs/PROVENANCE.md (divergence register).*

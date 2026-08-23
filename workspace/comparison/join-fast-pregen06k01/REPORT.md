@@ -73,4 +73,4 @@ Boot evidence per side:
 - telnet: entity count differs (stock=7 zdtd=None)
 - telnet: player count differs (stock=1 zdtd=None)
 
-*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*
+*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd-server/docs/PROVENANCE.md (divergence register).*

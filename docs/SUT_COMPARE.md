@@ -20,9 +20,9 @@ run scenario on both servers (compare_sut.sh)
   -> capture surface.json per side (sut_capture.py)
   -> diff into REPORT.md + diff.json (sut_report.py)
   -> triage each finding
-       zdtd bug            -> fix in ../zdtd
+       zdtd bug            -> fix in ../zdtd-server
        harness artifact    -> fix here
-       known divergence    -> record in ../zdtd/docs/PROVENANCE.md (3.9)
+       known divergence    -> record in ../zdtd-server/docs/PROVENANCE.md (3.9)
   -> re-run
 ```
 
@@ -128,7 +128,7 @@ silently accepted.
 
 - zdtd: periodic `{"type":"zdtd_apm"` JSON in server.log, summarized into the
   surface (`apm` key) - tick mean/p99/max ns, join/net counters.
-- stock: `7dtd-apm capture --seconds N --no-app` started right before the
+- stock: `7dtd-server-apm capture --seconds N --no-app` started right before the
   telnet snapshot (aligned with the connected window), session finalized under
   `stock/apm/session_*/`, summarized into the surface (`apmStock` key) - layer
   scores, IPC, GC alloc rate, lag verdict. `COMPARE_APM=0` disables;

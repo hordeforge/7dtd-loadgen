@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Stock dedicated server benchmark lane: boots ONE stock dedicated (fixed
 # world/seed, fresh save per lap) and runs the scenario matrix against it,
-# attaching 7dtd-apm on the stock side and writing per-scenario evidence
+# attaching 7dtd-server-apm on the stock side and writing per-scenario evidence
 # (client log, stats-json with the bench block, APM capture, run-meta with
 # hostLoad) under workspace/bench/lap<N>/<scenario>/.
 #
@@ -27,7 +27,7 @@ WORLD_NAME="${COMPARE_WORLD:-Navezgane}"
 ADMIN_PORT="${BENCH_ADMIN_PORT:-8084}"
 COMPARE_APM="${COMPARE_APM:-1}"
 APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
-APM_PROJECT="$ROOT/../7dtd-apm"
+APM_PROJECT="$ROOT/../7dtd-server-apm"
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 BENCH_LAPS_ONLY="${BENCH_LAPS_ONLY:-0}"
 OUT="$ROOT/workspace/bench/lap$LAP"
@@ -137,7 +137,7 @@ for sc in "${scenarios[@]}"; do
     fi
     mkdir -p "$run_dir/apm"
     SEVENDTD_APM_DIR="$run_dir/apm" SEVENDTD_TELNET_PASSWORD="$TELNET_PASSWORD" \
-      uv run --project "$APM_PROJECT" 7dtd-apm capture --seconds "$APM_SECONDS" --no-app \
+      uv run --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
         --telnet-port "$ADMIN_PORT" >"$run_dir/apm.log" 2>&1 &
     APM_PID=$!
   fi

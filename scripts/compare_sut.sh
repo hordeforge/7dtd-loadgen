@@ -82,14 +82,14 @@ SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
 WORLD_NAME="${WORLD_NAME:-${COMPARE_WORLD:-Navezgane}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
-# Stock-side cost axis via the sibling 7dtd-apm tool (bridge must be installed
-# in the stock dedicated server; see ../7dtd-apm). COMPARE_APM=0 disables;
+# Stock-side cost axis via the sibling 7dtd-server-apm tool (bridge must be installed
+# in the stock dedicated server; see ../7dtd-server-apm). COMPARE_APM=0 disables;
 # COMPARE_APM_SECONDS sizes the window (default 30s, aligned with the telnet
 # snapshot while the bot is connected). A capture failure is logged and never
 # fails the scenario.
 COMPARE_APM="${COMPARE_APM:-1}"
 APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
-APM_PROJECT="$ROOT/../7dtd-apm"
+APM_PROJECT="$ROOT/../7dtd-server-apm"
 # Stock telnet auth (test-only lab password, never a secret).
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 # Per-side admin/telnet ports. Hosts may have 8081/8082 occupied by an
@@ -308,7 +308,7 @@ EOF
     sleep $((SNAPSHOT_DELAY_MS / 1000))
   fi
 
-  # Stock cost axis: 7dtd-apm capture over the connected window, aligned with
+  # Stock cost axis: 7dtd-server-apm capture over the connected window, aligned with
   # the telnet snapshot below. Runs detached; we wait for it after the client.
   APM_PID=""
   if [[ "$sut" == "stock" && "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] \
@@ -316,7 +316,7 @@ EOF
     APM_DIR="$run_dir/apm"
     mkdir -p "$APM_DIR"
     SEVENDTD_APM_DIR="$APM_DIR" SEVENDTD_TELNET_PASSWORD="$TELNET_PASSWORD" \
-      uv run --project "$APM_PROJECT" 7dtd-apm capture --seconds "$APM_SECONDS" --no-app \
+      uv run --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
       --telnet-port "$TELNET_PORT" >"$run_dir/apm.log" 2>&1 &
     APM_PID=$!
     echo "  apm capture started (${APM_SECONDS}s, no-app; window aligns with snapshot)"
@@ -363,8 +363,8 @@ EOF
   # reader judge whether cost numbers (wall, APM) were taken under contention.
   LOADGEN_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   LOADGEN_DIRTY="$(git -C "$ROOT" status --porcelain 2>/dev/null | wc -l)"
-  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd}" status --porcelain 2>/dev/null | wc -l)"
+  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" status --porcelain 2>/dev/null | wc -l)"
   HOST_LOAD="$(cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo unknown)"
   cat >"$run_dir/run-meta.json" <<EOF
 {

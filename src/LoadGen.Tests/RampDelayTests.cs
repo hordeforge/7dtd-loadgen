@@ -7,7 +7,7 @@ namespace SevenDTD.LoadGen.Tests;
 /// Ramp stagger math for --ramp-ms (join pacing). Linear across the cohort,
 /// first bot at 0, clamp protects the Task.Delay(int) cast at scale. The ramp
 /// is the validated workaround for the stock LiteNetLib join-churn race
-/// (7dtd-research docs/network.md §4.0): 24 bots at 3000 ms -> 0 drops vs 302
+/// (7dtd-engine-research docs/network.md §4.0): 24 bots at 3000 ms -> 0 drops vs 302
 /// non-ramped.
 /// </summary>
 public sealed class RampDelayTests

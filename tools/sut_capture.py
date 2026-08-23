@@ -256,7 +256,7 @@ def zdtd_apm_summary(path):
 
 
 def stock_apm_summary(run_dir):
-    """Compact stock cost snapshot from the 7dtd-apm session the harness ran
+    """Compact stock cost snapshot from the 7dtd-server-apm session the harness ran
     (run_dir/apm/session_*/summary.json). Reported, not compared: the zdtd APM
     JSON is tick/counter based, the stock capture is CPU/layer based, so a
     direct diff would be meaningless."""

@@ -10,7 +10,7 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] RealEarth scenario catalog + loadgen scripts/tests.
 - [ ] Live-validate H500 join/demolition against expanded dedicated.
   (Blocked on realworld product lane: needs the YDim=16384 expanded dedi -
-  `7dtd-realworld make engine-expand` + `install-height-500`. Sample verified
+  `7dtd-realearth make engine-expand` + `install-height-500`. Sample verified
   well-formed 2026-08-10: peak_elev_m=468, sea 32, full solid inject, previews
   present; the expanded-server retarget is realworld's next item.)
 
@@ -99,8 +99,8 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Documentation and release
 
-- [x] Add a complete baseline/candidate example integrated with `7dtd-apm`.
-  (Exists: ../7dtd-apm/plans/profile.canonical.json (heavy 64p canonical),
+- [x] Add a complete baseline/candidate example integrated with `7dtd-server-apm`.
+  (Exists: ../7dtd-server-apm/plans/profile.canonical.json (heavy 64p canonical),
   profile.tiers.json (incl. tier-moderate former baseline), campaign.default.json;
   loadgen README links them.)
 - [x] Add troubleshooting for ports, per-IP throttling, empty worlds, and RWG
@@ -136,7 +136,7 @@ record, and documentation of any protocol-version restriction.
 | Login deny reason 14 on some soaks | **open if repro** | Earlier misread; re-verify if full bot soaks fail after ready |
 | H500 / expanded-world live validate | open | Next checkbox above |
 | EAC/encrypted servers | unsupported | Documented non-goal unless scoped |
-| Named workload profiles in-repo | partial | Canonical profiles live under `7dtd-apm/plans/` |
+| Named workload profiles in-repo | partial | Canonical profiles live under `7dtd-server-apm/plans/` |
 
 ## SUT comparison harness (2026-08-12)
 
@@ -239,7 +239,7 @@ record, and documentation of any protocol-version restriction.
   unsupported (missing capability); Pregen04k01 absent. The C2S payload
   Overflow fires on EVERY pregen (1/join); only Pregen06k01 breaks the
   join - a precise zdtd defect signature for the fix.
-- [x] Consider: optional 7dtd-apm capture attach during the harness's stock phase
+- [x] Consider: optional 7dtd-server-apm capture attach during the harness's stock phase
   so the cost axis covers BOTH servers - done, 2026-08-12: COMPARE_APM=1 runs
   a 30s (COMPARE_APM_SECONDS) no-app capture over the connected window,
   finalized under stock/apm/, summarized as apmStock in the surface/report
@@ -268,7 +268,7 @@ record, and documentation of any protocol-version restriction.
   a BENCH_SUMMARY line. 5 unit tests.
 - [x] bench-stock lane: one stock dedicated (fixed world, fresh save per lap)
   runs the matrix (probe-15s, join-fast, join-probe, wander-2bot, soak-4bot,
-  bench, horde-lite) with a 7dtd-apm capture per scenario (aligned to the bench
+  bench, horde-lite) with a 7dtd-server-apm capture per scenario (aligned to the bench
   window) + per-scenario run-meta (git hashes, hostLoad, timestamps). make
   bench-stock LAP=N -> workspace/bench/lapN/; make bench-report consolidates
   with a +-20% per-scenario wall repeatability section (over-tolerance rows

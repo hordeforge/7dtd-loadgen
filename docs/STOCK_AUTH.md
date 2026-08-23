@@ -2,7 +2,7 @@
 
 How the stock dedicated validates joins, and the two ways to run the real
 stock client against a test server without valid Steam auth. RE ground truth:
-`../7dtd-research/docs/platform-auth.md` (authorizer chain, Steam/EOS/Local
+`../7dtd-engine-research/docs/platform-auth.md` (authorizer chain, Steam/EOS/Local
 platforms). This doc is the operational decision for the harness.
 
 ## How join auth works (stock V3.1.0)
@@ -43,7 +43,7 @@ selects Local (and EOS crossplay off), the client initializes `Platform.Local`
 and joins as `Local_<name>` - no ticket, no Steam dependency, exactly the
 fully-local-network model.
 
-- `7dtd-connect` ships the switch: `CLIENT_PLATFORM=local ./scripts/launch_client.sh`
+- `7dtd-fastconnect` ships the switch: `CLIENT_PLATFORM=local ./scripts/launch_client.sh`
   backs up the game's `platform.cfg`, selects `platform=Local,
   crossplatform=None`, and restores on exit (self-healing after a hard kill).
   Playtest launches flow the env through, so `CLIENT_PLATFORM=local make
@@ -62,7 +62,7 @@ fully-local-network model.
 
 A Harmony patch on the server's Steam auth
 (`AuthenticationServer.AuthenticateUser`) that auto-passes loopback/synthetic
-SteamIds (`7dtd-clanker` ships this: `Patch_SteamAuthServer_SyntheticBypass`; the
+SteamIds (`7dtd-fps-bots` ships this: `Patch_SteamAuthServer_SyntheticBypass`; the
 parallel FPS-bot session runs it, log line `[BotMod] synthetic auth bypass for
 SteamId=...`).
 

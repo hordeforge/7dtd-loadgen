@@ -19,17 +19,17 @@ from loadgen_cli import run as _run_cli
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_FILE = ROOT / "scripts" / "scenarios" / "realearth.json"
-REALEARTH_ROOT = Path(os.environ.get("REALEARTH_ROOT", ROOT.parent / "7dtd-realworld"))
+REALEARTH_ROOT = Path(os.environ.get("REALEARTH_ROOT", ROOT.parent / "7dtd-realearth"))
 START_RE = ROOT / "scripts" / "start_dedicated_realearth.sh"
 RUN_SCENARIO = ROOT / "scripts" / "run_scenario.sh"
 
-# Tests that assert on the 7dtd-realworld sibling (product assumptions, layout,
+# Tests that assert on the 7dtd-realearth sibling (product assumptions, layout,
 # height-test serverconfig) only run when the sibling is present; a single-repo
 # CI checkout does not have it. Same guard pattern as the live-server tests.
 REALEARTH_PRESENT = REALEARTH_ROOT.is_dir()
 needs_realearth_sibling = pytest.mark.skipif(
     not REALEARTH_PRESENT,
-    reason="7dtd-realworld sibling not checked out; set REALEARTH_ROOT",
+    reason="7dtd-realearth sibling not checked out; set REALEARTH_ROOT",
 )
 
 
@@ -165,7 +165,7 @@ def test_realearth_scripts_exist_and_are_executable_bits():
 
 @needs_realearth_sibling
 def test_realearth_sibling_project_layout():
-    """Bots stay in loadgen; RealEarth server scripts stay in 7dtd-realworld."""
+    """Bots stay in loadgen; RealEarth server scripts stay in 7dtd-realearth."""
     assert REALEARTH_ROOT.is_dir(), (
         f"RealEarth sibling missing at {REALEARTH_ROOT}; set REALEARTH_ROOT"
     )

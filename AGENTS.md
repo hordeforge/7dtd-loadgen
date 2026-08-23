@@ -12,8 +12,8 @@ Workspace root guide: [`../MODDING_BEST_PRACTICES.md`](../MODDING_BEST_PRACTICES
 
 | Owns | Does not own |
 |---|---|
-| net8 LiteNetLib join bots, actions, death/respawn | Server measurement (use `7dtd-apm`) |
-| Dedicated start helpers and workload runners | Runtime optim patches (use `7dtd-optimizer`) |
+| net8 LiteNetLib join bots, actions, death/respawn | Server measurement (use `7dtd-server-apm`) |
+| Dedicated start helpers and workload runners | Runtime optim patches (use `7dtd-server-optimizer`) |
 | Protocol self-tests and golden-wire gates | In-game `Mods/` install |
 | Controlled multiplayer demand for A/B runs | RealEarth terrain generation |
 
@@ -108,23 +108,23 @@ with server config and APM session IDs when comparing runs.
 
 | Project | Role |
 |---|---|
-| `../7dtd-apm` | Capture/compare while load runs; may call public runners only |
-| `../7dtd-optimizer` | Optim under test; independent install |
-| `../7dtd-realworld` | Optional RealEarth world under test; bots used to live under its tools |
+| `../7dtd-server-apm` | Capture/compare while load runs; may call public runners only |
+| `../7dtd-server-optimizer` | Optim under test; independent install |
+| `../7dtd-realearth` | Optional RealEarth world under test; bots used to live under its tools |
 
 Do not silently install mods into game trees from loadgen except via explicit
 documented dedicated-start scripts the operator runs.
 
 ## RealEarth
 
-[`docs/REALEARTH.md`](docs/REALEARTH.md) - scenario catalog; server scripts stay in `../7dtd-realworld`.
+[`docs/REALEARTH.md`](docs/REALEARTH.md) - scenario catalog; server scripts stay in `../7dtd-realearth`.
 
-## Stock-game research -> 7dtd-research
+## Stock-game research -> 7dtd-engine-research
 
 Anything that studies the **stock** dedicated server belongs in
-[`../7dtd-research/`](../7dtd-research/), not here: reverse-engineering
+[`../7dtd-engine-research/`](../7dtd-engine-research/), not here: reverse-engineering
 narratives (`docs/`), the Mono.Cecil dump tooling (`tools/`), wire/protocol
 analysis, and engine cost/loop RE. This repo owns load generation and LiteNetLib test clients;
 it does not host stock-game RE docs or dumpers. When RE is needed, add it
-under `../7dtd-research/` and link back. How to RE:
-[`../7dtd-research/docs/re-methodology.md`](../7dtd-research/docs/re-methodology.md).
+under `../7dtd-engine-research/` and link back. How to RE:
+[`../7dtd-engine-research/docs/re-methodology.md`](../7dtd-engine-research/docs/re-methodology.md).

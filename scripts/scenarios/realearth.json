@@ -1,6 +1,6 @@
 {
   "schema": "7dtd.loadgen.scenarios.v1",
-  "notes": "In-game LiteNetLib bot scenarios for RealEarth dedicated. Server bring-up lives in sibling 7dtd-realworld; bots and gates live here.",
+  "notes": "In-game LiteNetLib bot scenarios for RealEarth dedicated. Server bring-up lives in sibling 7dtd-realearth; bots and gates live here.",
   "defaults": {
     "host": "127.0.0.1",
     "port": 26902,
@@ -8,7 +8,7 @@
     "telnetPasswordEnv": "LOADGEN_TELNET_PASSWORD",
     "telnetPasswordDefault": "retest",
     "userdata": "~/.cache/realearth-dedicated",
-    "realearthRoot": "../7dtd-realworld"
+    "realearthRoot": "../7dtd-realearth"
   },
   "scenarios": [
     {

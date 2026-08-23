@@ -1,10 +1,10 @@
 # RealEarth scenarios (loadgen)
 
 **Owns:** LiteNetLib bot scenarios against a RealEarth dedicated world.  
-**Not:** server install, YDim expand, packs, or product status (sibling **`7dtd-realworld`**).
+**Not:** server install, YDim expand, packs, or product status (sibling **`7dtd-realearth`**).
 
 In-game client load for **RealEarth** reuses this project’s LiteNetLib bots.
-Server install, YDim expand, and packs stay in sibling **`7dtd-realworld`**.
+Server install, YDim expand, and packs stay in sibling **`7dtd-realearth`**.
 
 ## Layout
 
@@ -14,7 +14,7 @@ Server install, YDim expand, and packs stay in sibling **`7dtd-realworld`**.
 | Start RealEarth dedicated | [`scripts/start_dedicated_realearth.sh`](../scripts/start_dedicated_realearth.sh) |
 | Run named scenario | [`scripts/run_scenario.sh`](../scripts/run_scenario.sh) |
 | Pytest gates | [`tests/test_realearth_scenarios.py`](../tests/test_realearth_scenarios.py) |
-| RealEarth server scripts | `../7dtd-realworld/scripts/start_dedicated_minimal.sh` |
+| RealEarth server scripts | `../7dtd-realearth/scripts/start_dedicated_minimal.sh` |
 
 The RealEarth dedicated `ServerPort` is **26900** (height-test serverconfig).
 Bots do NOT connect there: LiteNetLib clients speak to the data port **26902**
@@ -49,7 +49,7 @@ make join-realearth
 # Optional pytest live gates (server must already listen on 26900):
 LOADGEN_LIVE_REALEARTH=1 make test
 # Note: the sibling-dependent tests (layout, height-test port, P0/P1, P0-P8
-# module inventory) run only when ../7dtd-realworld is checked out; in a
+# module inventory) run only when ../7dtd-realearth is checked out; in a
 # single-repo CI checkout they skip (see tests/test_realearth_scenarios.py).
 ```
 
@@ -90,7 +90,7 @@ make build && ./src/LoadGen/bin/Release/net8.0/7dtd-loadgen \
   --self-test-join --actions 16 --run-manifest /tmp/run.json --scenario-id re-p1
 ```
 
-Pair manifests with sibling `7dtd-apm` captures for P0-P1 tall-Y soaks.
+Pair manifests with sibling `7dtd-server-apm` captures for P0-P1 tall-Y soaks.
 
 ## Product assumptions (RealEarth)
 
@@ -101,20 +101,20 @@ Pair manifests with sibling `7dtd-apm` captures for P0-P1 tall-Y soaks.
 
 ## APM pairing
 
-Same as other loadgen runs: capture with sibling `7dtd-apm` while bots run; keep
+Same as other loadgen runs: capture with sibling `7dtd-server-apm` while bots run; keep
 scenario id + world name + port in the APM workload notes / loadgen manifest.
 
 ## Related docs
 
 | Doc | Role |
 |---|---|
-| Product hub | [`../../7dtd-realworld/docs/INDEX.md`](../../7dtd-realworld/docs/INDEX.md) |
-| Product status | [`../../7dtd-realworld/docs/MODIFICATIONS.md`](../../7dtd-realworld/docs/MODIFICATIONS.md) |
-| MP origin policy | [`../../7dtd-realworld/docs/MULTIPLAYER_STREAMING.md`](../../7dtd-realworld/docs/MULTIPLAYER_STREAMING.md) |
-| Streamed architecture | [`../../7dtd-realworld/docs/realearth-runtime.md`](../../7dtd-realworld/docs/realearth-runtime.md) |
-| Height expand | [`../../7dtd-realworld/docs/HEIGHT_LIMITS.md`](../../7dtd-realworld/docs/HEIGHT_LIMITS.md) |
-| APM | [`../../7dtd-apm/docs/APM.md`](../../7dtd-apm/docs/APM.md) |
-| Host topology | [`../../7dtd-optimizer/docs/HOST_TUNING.md`](../../7dtd-optimizer/docs/HOST_TUNING.md) |
+| Product hub | [`../../7dtd-realearth/docs/INDEX.md`](../../7dtd-realearth/docs/INDEX.md) |
+| Product status | [`../../7dtd-realearth/docs/MODIFICATIONS.md`](../../7dtd-realearth/docs/MODIFICATIONS.md) |
+| MP origin policy | [`../../7dtd-realearth/docs/MULTIPLAYER_STREAMING.md`](../../7dtd-realearth/docs/MULTIPLAYER_STREAMING.md) |
+| Streamed architecture | [`../../7dtd-realearth/docs/realearth-runtime.md`](../../7dtd-realearth/docs/realearth-runtime.md) |
+| Height expand | [`../../7dtd-realearth/docs/HEIGHT_LIMITS.md`](../../7dtd-realearth/docs/HEIGHT_LIMITS.md) |
+| APM | [`../../7dtd-server-apm/docs/APM.md`](../../7dtd-server-apm/docs/APM.md) |
+| Host topology | [`../../7dtd-server-optimizer/docs/HOST_TUNING.md`](../../7dtd-server-optimizer/docs/HOST_TUNING.md) |
 
 ## Changelog
 

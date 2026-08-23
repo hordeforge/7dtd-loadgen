@@ -24,8 +24,8 @@ STEP = int(os.environ.get("SWEEP_STEP", "40"))
 MAX_Z = int(os.environ.get("SWEEP_MAX", "900"))
 BUDGET = float(os.environ.get("SWEEP_BUDGET_MS", "55"))
 CAPTURE = os.environ.get("CAPTURE_AT_CEILING", "0") == "1"
-# Sibling checkout of 7dtd-apm (repo root's parent dir); RE_APM_DIR overrides.
-APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-apm")
+# Sibling checkout of 7dtd-server-apm (repo root's parent dir); RE_APM_DIR overrides.
+APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-server-apm")
 
 
 def frame_alive():
@@ -70,7 +70,7 @@ def main():
                                   text=True, encoding="utf-8", errors="replace").stdout.split()
             if pids:
                 B.log("=== capture at ceiling (90s, deep sections) ===")
-                subprocess.run(["uv", "run", "7dtd-apm", "capture", "--seconds", "90",
+                subprocess.run(["uv", "run", "7dtd-server-apm", "capture", "--seconds", "90",
                                 "--pid", pids[0], "--telnet-port", "8081", "--reset-bridge"],
                                cwd=str(APM_DIR), check=False)
             else:

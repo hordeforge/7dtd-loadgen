@@ -1,7 +1,7 @@
 # 7dtd-loadgen documentation
 
 **Owns:** doc index for this project.  
-**Not:** product RealEarth design (sibling `7dtd-realworld`).
+**Not:** product RealEarth design (sibling `7dtd-realearth`).
 
 | Doc | Role |
 |---|---|
@@ -15,18 +15,18 @@
 
 | Doc | Role |
 |---|---|
-| APM | [`../../7dtd-apm/docs/APM.md`](../../7dtd-apm/docs/APM.md) |
-| Canonical load profile | [`../../7dtd-apm/docs/LOAD_PROFILE.md`](../../7dtd-apm/docs/LOAD_PROFILE.md) |
-| Host topology | [`../../7dtd-optimizer/docs/HOST_TUNING.md`](../../7dtd-optimizer/docs/HOST_TUNING.md) |
-| RealEarth product hub | [`../../7dtd-realworld/docs/INDEX.md`](../../7dtd-realworld/docs/INDEX.md) |
-| Measured scale laws | [`../../7dtd-optimizer/docs/measured-scaling.md`](../../7dtd-optimizer/docs/measured-scaling.md) |
+| APM | [`../../7dtd-server-apm/docs/APM.md`](../../7dtd-server-apm/docs/APM.md) |
+| Canonical load profile | [`../../7dtd-server-apm/docs/LOAD_PROFILE.md`](../../7dtd-server-apm/docs/LOAD_PROFILE.md) |
+| Host topology | [`../../7dtd-server-optimizer/docs/HOST_TUNING.md`](../../7dtd-server-optimizer/docs/HOST_TUNING.md) |
+| RealEarth product hub | [`../../7dtd-realearth/docs/INDEX.md`](../../7dtd-realearth/docs/INDEX.md) |
+| Measured scale laws | [`../../7dtd-server-optimizer/docs/measured-scaling.md`](../../7dtd-server-optimizer/docs/measured-scaling.md) |
 
 Prefer the root README for day-to-day operators. Canonical **wire RE** for clone work lives in research:
 
 | Doc | Role |
 |---|---|
-| [`../../7dtd-research/docs/protocol.md`](../../7dtd-research/docs/protocol.md) | Envelope, join, golden package bodies |
-| [`../../zdtd/docs/ZIG_CLONE.md`](../../zdtd/docs/ZIG_CLONE.md) | High-perf Zig dedi architecture |
+| [`../../7dtd-engine-research/docs/protocol.md`](../../7dtd-engine-research/docs/protocol.md) | Envelope, join, golden package bodies |
+| [`../../zdtd-server-server/docs/ZIG_CLONE.md`](../../zdtd-server-server/docs/ZIG_CLONE.md) | High-perf Zig dedi architecture |
 
 Source of golden layouts: `src/LoadGen/PackageCodec.cs` (`--golden-wire`).
 

@@ -34,7 +34,7 @@ help:
 	@echo "  make join-realearth      Join bots to RealEarth dedicated"
 	@echo "  make scenarios           List RealEarth loadgen scenario ids"
 	@echo "  make research-save-check Verify every probe save against the research codecs"
-	@echo "                          (7dtd-research make save-roundtrip-all; needs the sibling repo)"
+	@echo "                          (7dtd-engine-research make save-roundtrip-all; needs the sibling repo)"
 	@echo "  make compare-sut         Stock-vs-zdtd comparison: run the same client scenario"
 	@echo "                          against both servers and diff the observable surface"
 	@echo "                          (SCENARIO=join-probe SUT=all|stock|zdtd)"
@@ -112,7 +112,7 @@ join: build
 		LOADGEN_COUNT=$${LOADGEN_COUNT:-6} LOADGEN_TIMEOUT=$${LOADGEN_TIMEOUT:-3600000} \
 		"$(SCRIPTS)/run_loadgen.sh"
 
-# RealEarth: expand/mod/world via sibling 7dtd-realworld; bots here (:26902)
+# RealEarth: expand/mod/world via sibling 7dtd-realearth; bots here (:26902)
 dedicated-realearth:
 	@chmod +x "$(SCRIPTS)/start_dedicated_realearth.sh"
 	@"$(SCRIPTS)/start_dedicated_realearth.sh"
@@ -135,10 +135,10 @@ clean:
 
 # Run the research corpus's round-trip checker over every probe save this rig
 # produced (main.ttw, region files, chunk bodies, decoration/multiblocks/nim)
-# plus the shipped Navezgane world header. Needs the sibling 7dtd-research repo
-# at ../7dtd-research. Exits non-zero on the first broken save.
+# plus the shipped Navezgane world header. Needs the sibling 7dtd-engine-research repo
+# at ../7dtd-engine-research. Exits non-zero on the first broken save.
 research-save-check:
-	@cd "$(ROOT)/../7dtd-research" && make save-roundtrip-all
+	@cd "$(ROOT)/../7dtd-engine-research" && make save-roundtrip-all
 
 # Stock-vs-zdtd comparison harness: run the same client scenario against the
 # stock dedicated server and zdtd, capture the observable surface (log

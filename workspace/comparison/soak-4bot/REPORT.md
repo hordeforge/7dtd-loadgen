@@ -67,7 +67,7 @@ Boot evidence per side:
 - phase_rejects: 0
 - tick mean/p99/max ns: 4385824 / 50331648 / 2940290453
 
-## stock APM (7dtd-apm capture window; no zdtd equivalent format)
+## stock APM (7dtd-server-apm capture window; no zdtd equivalent format)
 
 - session: session_20260812_151127_pid3937388
 - lag verdict: server met its tick deadline this window
@@ -135,4 +135,4 @@ Boot evidence per side:
 - log: EXC (exception) line count differs (stock=12 zdtd=0)
 - telnet: entity count differs (stock=10 zdtd=14)
 
-*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd/docs/PROVENANCE.md (divergence register).*
+*Triage each finding: zdtd bug vs harness artifact vs known divergence. Known divergences are recorded in zdtd-server/docs/PROVENANCE.md (divergence register).*
