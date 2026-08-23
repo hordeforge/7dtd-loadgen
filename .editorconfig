@@ -1,0 +1,28 @@
+# Editor + build-time formatting contract (dotnet format / EnforceCodeStyleInBuild).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# GNU make requires tab indentation in recipes.
+[Makefile]
+indent_style = tab
+
+[*.md]
+trim_trailing_whitespace = false
+
+# XML project files use two-space indent.
+[*.{csproj,props,targets,config}]
+indent_size = 2
+
+[*.cs]
+# Formatting is enforced by the compiler at build time (IDE0055 via
+# EnforceCodeStyleInBuild + TreatWarningsAsErrors in Directory.Build.props).
+# Note: braceless single-statement bodies are the established house style;
+# do not switch csharp_style_prefer_braces on without converting the tree.
+dotnet_diagnostic.IDE0055.severity = warning

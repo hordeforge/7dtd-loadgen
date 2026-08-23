@@ -12,7 +12,8 @@ public static class Program
 {
     /// <summary>No-op logger so game LiteNetLib never calls UnityEngine.Debug under pure .NET.</summary>
     sealed class NullNetLogger : INetLogger
-    {        public void WriteNet(NetLogLevel level, string str, params object[] args) { }
+    {
+        public void WriteNet(NetLogLevel level, string str, params object[] args) { }
     }
 
     /// <summary>
@@ -1255,8 +1256,12 @@ public static class LiteNetProbe
             Log($"STAGE udp_socket_open: fail {ex.GetType().Name}: {ex.Message}");
             return new ProbeResult
             {
-                Pass = false, Stages = new HashSet<string>(), Connected = false, Packets = 0,
-                Lines = lines, ElapsedMs = sw.ElapsedMilliseconds,
+                Pass = false,
+                Stages = new HashSet<string>(),
+                Connected = false,
+                Packets = 0,
+                Lines = lines,
+                ElapsedMs = sw.ElapsedMilliseconds,
             };
         }
 
@@ -1320,8 +1325,13 @@ public static class LiteNetProbe
         Log($"SUMMARY stages=[{string.Join(",", stages.OrderBy(s => s))}] connected={connected} packets={packets}");
         return new ProbeResult
         {
-            Pass = pass, Stages = stages, Connected = connected, Packets = packets,
-            DisconnectReason = disconnectReason, Lines = lines, ElapsedMs = sw.ElapsedMilliseconds,
+            Pass = pass,
+            Stages = stages,
+            Connected = connected,
+            Packets = packets,
+            DisconnectReason = disconnectReason,
+            Lines = lines,
+            ElapsedMs = sw.ElapsedMilliseconds,
         };
     }
 

@@ -365,56 +365,56 @@ public static class ActionLoop
                     break;
 
                 case ActionKind.Dynamite:
-                {
-                    float distance = 8f + (float)rng.NextDouble() * 10f;
-                    float tx = x + MathF.Cos(heading) * distance;
-                    float tz = z + MathF.Sin(heading) * distance;
-                    var pkt = PackageCodec.BuildDynamiteExplosion(
-                        explosionId, entityId, tx, surfaceY, tz);
-                    if (send(pkt))
                     {
-                        stats.Dynamite++;
-                        stats.PackagesSent++;
-                        sm.PackagesSent++;
-                        log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
+                        float distance = 8f + (float)rng.NextDouble() * 10f;
+                        float tx = x + MathF.Cos(heading) * distance;
+                        float tz = z + MathF.Sin(heading) * distance;
+                        var pkt = PackageCodec.BuildDynamiteExplosion(
+                            explosionId, entityId, tx, surfaceY, tz);
+                        if (send(pkt))
+                        {
+                            stats.Dynamite++;
+                            stats.PackagesSent++;
+                            sm.PackagesSent++;
+                            log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
+                        }
+                        Pace(paceMs, opt.Poll);
+                        break;
                     }
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
 
                 case ActionKind.Turn:
-                {
-                    float delta = (float)((rng.NextDouble() - 0.5) * Math.PI);
-                    if (opt.Mode == BotMode.Patrol)
-                        delta = MathF.PI / 2f;
-                    heading += delta;
-                    yaw = heading * (180f / MathF.PI);
-                    stats.Turns++;
-                    sm.TurnActions++;
-                    if (stats.Turns <= 5 || stats.Turns % 20 == 0)
-                        log?.Invoke($"ACTION turn#{stats.Turns} entity={entityId} yaw={yaw:0.#}");
-                    Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
-                        0f, 0f, yaw, crouching, () => { });
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
+                    {
+                        float delta = (float)((rng.NextDouble() - 0.5) * Math.PI);
+                        if (opt.Mode == BotMode.Patrol)
+                            delta = MathF.PI / 2f;
+                        heading += delta;
+                        yaw = heading * (180f / MathF.PI);
+                        stats.Turns++;
+                        sm.TurnActions++;
+                        if (stats.Turns <= 5 || stats.Turns % 20 == 0)
+                            log?.Invoke($"ACTION turn#{stats.Turns} entity={entityId} yaw={yaw:0.#}");
+                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                            0f, 0f, yaw, crouching, () => { });
+                        Pace(paceMs, opt.Poll);
+                        break;
+                    }
 
                 case ActionKind.Strafe:
-                {
-                    float side = rng.Next(0, 2) == 0 ? 1f : -1f;
-                    float dx = MathF.Cos(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
-                    float dz = MathF.Sin(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
-                    Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
-                        dx, dz, yaw, crouching, () =>
-                        {
-                            stats.Strafes++;
-                            sm.StrafeActions++;
-                            if (stats.Strafes <= 3 || stats.Strafes % 25 == 0)
-                                log?.Invoke($"ACTION strafe#{stats.Strafes} entity={entityId}");
-                        });
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
+                    {
+                        float side = rng.Next(0, 2) == 0 ? 1f : -1f;
+                        float dx = MathF.Cos(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
+                        float dz = MathF.Sin(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
+                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                            dx, dz, yaw, crouching, () =>
+                            {
+                                stats.Strafes++;
+                                sm.StrafeActions++;
+                                if (stats.Strafes <= 3 || stats.Strafes % 25 == 0)
+                                    log?.Invoke($"ACTION strafe#{stats.Strafes} entity={entityId}");
+                            });
+                        Pace(paceMs, opt.Poll);
+                        break;
+                    }
 
                 case ActionKind.Look:
                     stats.Looks++;
@@ -423,119 +423,119 @@ public static class ActionLoop
                     break;
 
                 case ActionKind.Chat:
-                {
-                    if (chatId == 0 || stats.Chats >= maxChats)
-                        goto case ActionKind.Walk;
-                    string msg = $"{chatPrefix}: hello #{stats.Chats + 1} @({x:0},{z:0}) mode={opt.Mode}";
-                    var pkt = PackageCodec.BuildSimpleChat(chatId, msg);
-                    if (send(pkt))
                     {
-                        stats.Chats++;
-                        stats.PackagesSent++;
-                        sm.ChatActions++;
-                        sm.PackagesSent++;
-                        log?.Invoke($"ACTION chat#{stats.Chats} entity={entityId} msg={msg}");
+                        if (chatId == 0 || stats.Chats >= maxChats)
+                            goto case ActionKind.Walk;
+                        string msg = $"{chatPrefix}: hello #{stats.Chats + 1} @({x:0},{z:0}) mode={opt.Mode}";
+                        var pkt = PackageCodec.BuildSimpleChat(chatId, msg);
+                        if (send(pkt))
+                        {
+                            stats.Chats++;
+                            stats.PackagesSent++;
+                            sm.ChatActions++;
+                            sm.PackagesSent++;
+                            log?.Invoke($"ACTION chat#{stats.Chats} entity={entityId} msg={msg}");
+                        }
+                        Pace(paceMs, opt.Poll);
+                        break;
                     }
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
 
                 case ActionKind.AttackSelf:
-                {
-                    var pkt = PackageCodec.BuildDamageEntity(
-                        dmgId, entityId,
-                        PackageCodec.DamageSourceExternal,
-                        PackageCodec.DamageTypeBashing,
-                        strength: 5, fatal: false, attackerEntityId: entityId);
-                    if (send(pkt))
                     {
-                        stats.Attacks++;
-                        stats.PackagesSent++;
-                        sm.AttackActions++;
-                        sm.PackagesSent++;
-                        if (stats.Attacks <= 3 || stats.Attacks % 10 == 0)
-                            log?.Invoke($"ACTION attack#{stats.Attacks} entity={entityId}");
+                        var pkt = PackageCodec.BuildDamageEntity(
+                            dmgId, entityId,
+                            PackageCodec.DamageSourceExternal,
+                            PackageCodec.DamageTypeBashing,
+                            strength: 5, fatal: false, attackerEntityId: entityId);
+                        if (send(pkt))
+                        {
+                            stats.Attacks++;
+                            stats.PackagesSent++;
+                            sm.AttackActions++;
+                            sm.PackagesSent++;
+                            if (stats.Attacks <= 3 || stats.Attacks % 10 == 0)
+                                log?.Invoke($"ACTION attack#{stats.Attacks} entity={entityId}");
+                        }
+                        Pace(paceMs, opt.Poll);
+                        break;
                     }
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
 
                 case ActionKind.Walk:
-                {
-                    float step = stepBase;
-                    if (opt.Mode == BotMode.Bait)
                     {
-                        step = 0.15f; // shuffle in place; stay inside one chunk
-                        heading += (float)((rng.NextDouble() - 0.5) * Math.PI);
-                    }
-                    if (opt.Mode == BotMode.Kite)
-                    {
-                        step = 0.6f; // slow steady drift, stays within leash
-                        heading += 0.35f; // constant arc: chasers repath every tick
-                        yaw = heading * (180f / MathF.PI);
-                    }
-                    if (opt.Mode == BotMode.Traverse)
-                    {
-                        // Mostly straight march; occasional small drift so a wall/hill
-                        // does not stall forward progress (and chunk streaming) forever.
-                        if (rng.NextDouble() < 0.06)
+                        float step = stepBase;
+                        if (opt.Mode == BotMode.Bait)
                         {
-                            heading += (float)((rng.NextDouble() - 0.5) * (Math.PI / 3));
+                            step = 0.15f; // shuffle in place; stay inside one chunk
+                            heading += (float)((rng.NextDouble() - 0.5) * Math.PI);
+                        }
+                        if (opt.Mode == BotMode.Kite)
+                        {
+                            step = 0.6f; // slow steady drift, stays within leash
+                            heading += 0.35f; // constant arc: chasers repath every tick
                             yaw = heading * (180f / MathF.PI);
                         }
-                    }
-                    if (opt.Mode == BotMode.Patrol)
-                    {
-                        patrolSteps++;
-                        if (patrolSteps >= patrolLegLen)
+                        if (opt.Mode == BotMode.Traverse)
                         {
-                            patrolSteps = 0;
-                            heading += MathF.PI / 2f;
-                            yaw = heading * (180f / MathF.PI);
-                            patrolLegLen = 6 + rng.Next(0, 6);
+                            // Mostly straight march; occasional small drift so a wall/hill
+                            // does not stall forward progress (and chunk streaming) forever.
+                            if (rng.NextDouble() < 0.06)
+                            {
+                                heading += (float)((rng.NextDouble() - 0.5) * (Math.PI / 3));
+                                yaw = heading * (180f / MathF.PI);
+                            }
                         }
-                    }
-                    if (opt.Mode == BotMode.Chaos && rng.NextDouble() < 0.15)
-                        step *= 1.6f;
-
-                    // Cap per-move distance to a real run speed. A bot moving far
-                    // faster than a player outruns the server's chunk streamer, so
-                    // it travels through not-yet-sent chunks and paradoxically
-                    // measures LOW chunk bandwidth. Realistic speed makes the
-                    // server stream continuously to keep up (faithful client load).
-                    // Only when we have a real per-move interval: at pace<=0 there
-                    // is no think-time to convert to a distance, and a 0 cap would
-                    // freeze the bot.
-                    if (paceMs > 0)
-                    {
-                        float maxStep = MaxRunSpeedMps * (paceMs / 1000f);
-                        if (step > maxStep) step = maxStep;
-                    }
-
-                    // Leash: turn home if we drift too far from spawn (zombie reachability).
-                    float distHome = MathF.Sqrt((x - homeX) * (x - homeX) + (z - homeZ) * (z - homeZ));
-                    if (distHome > leashRadius)
-                    {
-                        heading = MathF.Atan2(homeZ - z, homeX - x);
-                        yaw = heading * (180f / MathF.PI);
-                        stepsUntilTurn = 10 + rng.Next(0, 10);
-                    }
-
-                    float dx = MathF.Cos(heading) * step;
-                    float dz = MathF.Sin(heading) * step;
-                    Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
-                        dx, dz, yaw, crouching, () =>
+                        if (opt.Mode == BotMode.Patrol)
                         {
-                            stats.Walks++;
-                            sm.WalkActions++;
-                            if (stats.Walks <= 5 || stats.Walks % 50 == 0)
-                                log?.Invoke(
-                                    $"ACTION walk#{stats.Walks} entity={entityId} " +
-                                    $"-> ({x:0.##},{y:0.##},{z:0.##}) hdg={yaw:0.#}");
-                        });
-                    Pace(paceMs, opt.Poll);
-                    break;
-                }
+                            patrolSteps++;
+                            if (patrolSteps >= patrolLegLen)
+                            {
+                                patrolSteps = 0;
+                                heading += MathF.PI / 2f;
+                                yaw = heading * (180f / MathF.PI);
+                                patrolLegLen = 6 + rng.Next(0, 6);
+                            }
+                        }
+                        if (opt.Mode == BotMode.Chaos && rng.NextDouble() < 0.15)
+                            step *= 1.6f;
+
+                        // Cap per-move distance to a real run speed. A bot moving far
+                        // faster than a player outruns the server's chunk streamer, so
+                        // it travels through not-yet-sent chunks and paradoxically
+                        // measures LOW chunk bandwidth. Realistic speed makes the
+                        // server stream continuously to keep up (faithful client load).
+                        // Only when we have a real per-move interval: at pace<=0 there
+                        // is no think-time to convert to a distance, and a 0 cap would
+                        // freeze the bot.
+                        if (paceMs > 0)
+                        {
+                            float maxStep = MaxRunSpeedMps * (paceMs / 1000f);
+                            if (step > maxStep) step = maxStep;
+                        }
+
+                        // Leash: turn home if we drift too far from spawn (zombie reachability).
+                        float distHome = MathF.Sqrt((x - homeX) * (x - homeX) + (z - homeZ) * (z - homeZ));
+                        if (distHome > leashRadius)
+                        {
+                            heading = MathF.Atan2(homeZ - z, homeX - x);
+                            yaw = heading * (180f / MathF.PI);
+                            stepsUntilTurn = 10 + rng.Next(0, 10);
+                        }
+
+                        float dx = MathF.Cos(heading) * step;
+                        float dz = MathF.Sin(heading) * step;
+                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                            dx, dz, yaw, crouching, () =>
+                            {
+                                stats.Walks++;
+                                sm.WalkActions++;
+                                if (stats.Walks <= 5 || stats.Walks % 50 == 0)
+                                    log?.Invoke(
+                                        $"ACTION walk#{stats.Walks} entity={entityId} " +
+                                        $"-> ({x:0.##},{y:0.##},{z:0.##}) hdg={yaw:0.#}");
+                            });
+                        Pace(paceMs, opt.Poll);
+                        break;
+                    }
 
                 case ActionKind.Drown:
                     DoDrown(send, sm, stats, posId, dmgId, entityId, ref x, ref y, ref z, yaw, waterY, log);

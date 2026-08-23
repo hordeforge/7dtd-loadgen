@@ -14,5 +14,12 @@
     <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
     <!-- Normalize source paths extra on CI (GitHub Actions sets CI). -->
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <!-- Analyzer posture: SDK analyzers on, code style checked at build time,
+         and every warning fails the compile (CI runs these via make test).
+         Rules the tree does not pass yet stay off: raising AnalysisLevel
+         above the default is a follow-up once its findings are fixed. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>

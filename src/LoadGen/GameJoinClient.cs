@@ -212,320 +212,320 @@ public sealed class GameJoinClient
         var recvBatch = new List<byte[]>();
         try
         {
-        while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
-        {
-            net.PollEvents();
-
-            // Outbound
-            lock (gate)
+            while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
             {
-                while (sendQueue.Count > 0 && peer != null)
-                {
-                    var pkt = sendQueue.Dequeue();
-                    peer.Send(pkt, DeliveryMethod.ReliableOrdered);
-                    State.PackagesSent++;
-                }
-            }
+                net.PollEvents();
 
-            // Inbound
-            lock (gate)
-            {
-                foreach (var item in inbox)
-                    recvBatch.Add(item);
-                inbox.Clear();
-            }
-
-            foreach (var data in recvBatch)
-            {
-                State.PackagesReceived++;
-                // Challenge (raw 17 bytes, no channel game framing)
-                if (PackageCodec.TryParseChallenge(data, out var ch))
+                // Outbound
+                lock (gate)
                 {
-                    State.Advance(JoinStage.ChallengeReceived, ch.ToString());
-                    Log($"STAGE ChallengeReceived: {ch}");
-                    var reply = PackageCodec.BuildChallengeReply(data);
-                    peer?.Send(reply, DeliveryMethod.ReliableOrdered);
-                    State.PackagesSent++;
-                    State.Advance(JoinStage.ChallengeReplied);
-                    Log("STAGE ChallengeReplied");
-                    continue;
-                }
-
-                // Diagnostics for live framing
-                if (State.Stage <= JoinStage.PackageIdsReceived && State.PackagesReceived <= 6)
-                {
-                    int show = Math.Min(data.Length, 48);
-                    Log($"RECV len={data.Length} hex={Convert.ToHexString(data.AsSpan(0, show))}");
-                }
-
-                // Live wire: [channel][size][comp][enc][count][inner packages] (comp may be deflate)
-                var pkgs = PackageCodec.ParseChannelPayload(data);
-                if (pkgs.Count == 0)
-                {
-                    string hint = data.Length >= 9
-                        ? $" ch={data[0]} size={BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(1))} comp={data[5]} enc={data[6]} cnt={BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(7))}"
-                        : "";
-                    Log($"RECV unparsed len={data.Length}{hint}");
-                    continue;
-                }
-
-                foreach (var (id, body) in pkgs)
-                {
-                    if (verboseRecvLeft > 0 && !State.EverJoined)
+                    while (sendQueue.Count > 0 && peer != null)
                     {
-                        verboseRecvLeft--;
-                        Log($"RECV pkg id={id} bodyLen={body.Length}");
+                        var pkt = sendQueue.Dequeue();
+                        peer.Send(pkt, DeliveryMethod.ReliableOrdered);
+                        State.PackagesSent++;
                     }
-                    HandlePackage(id, body, opt, Log, pkt =>
+                }
+
+                // Inbound
+                lock (gate)
+                {
+                    foreach (var item in inbox)
+                        recvBatch.Add(item);
+                    inbox.Clear();
+                }
+
+                foreach (var data in recvBatch)
+                {
+                    State.PackagesReceived++;
+                    // Challenge (raw 17 bytes, no channel game framing)
+                    if (PackageCodec.TryParseChallenge(data, out var ch))
                     {
+                        State.Advance(JoinStage.ChallengeReceived, ch.ToString());
+                        Log($"STAGE ChallengeReceived: {ch}");
+                        var reply = PackageCodec.BuildChallengeReply(data);
+                        peer?.Send(reply, DeliveryMethod.ReliableOrdered);
+                        State.PackagesSent++;
+                        State.Advance(JoinStage.ChallengeReplied);
+                        Log("STAGE ChallengeReplied");
+                        continue;
+                    }
+
+                    // Diagnostics for live framing
+                    if (State.Stage <= JoinStage.PackageIdsReceived && State.PackagesReceived <= 6)
+                    {
+                        int show = Math.Min(data.Length, 48);
+                        Log($"RECV len={data.Length} hex={Convert.ToHexString(data.AsSpan(0, show))}");
+                    }
+
+                    // Live wire: [channel][size][comp][enc][count][inner packages] (comp may be deflate)
+                    var pkgs = PackageCodec.ParseChannelPayload(data);
+                    if (pkgs.Count == 0)
+                    {
+                        string hint = data.Length >= 9
+                            ? $" ch={data[0]} size={BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(1))} comp={data[5]} enc={data[6]} cnt={BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(7))}"
+                            : "";
+                        Log($"RECV unparsed len={data.Length}{hint}");
+                        continue;
+                    }
+
+                    foreach (var (id, body) in pkgs)
+                    {
+                        if (verboseRecvLeft > 0 && !State.EverJoined)
+                        {
+                            verboseRecvLeft--;
+                            Log($"RECV pkg id={id} bodyLen={body.Length}");
+                        }
+                        HandlePackage(id, body, opt, Log, pkt =>
+                        {
+                            lock (gate)
+                            {
+                                while (sendQueue.Count >= MaxInbox)
+                                    sendQueue.Dequeue();
+                                sendQueue.Enqueue(pkt);
+                            }
+                        });
+                    }
+                }
+                recvBatch.Clear();
+
+                // After PackageIds, send PlayerLogin without waiting for another inbound package
+                if (!loginSent
+                    && State.Stage == JoinStage.PackageIdsReceived
+                    && peer != null
+                    && !State.IsTerminal)
+                {
+                    if (State.TryGetPackageId("NetPackagePlayerLogin", out ushort loginId))
+                    {
+                        // EMPIRICAL 2026-08-22: stock V3.1.0 (b14) accepts the display
+                        // form "V 3.1.0" and KICKS "V 3.10" (VersionMismatch=4); the
+                        // LongStringNoBuild theory (b5c3069) is wrong for stock.
+                        string ver = PackageCodec.VersionLongString(State.ServerVersion);
+                        var login = PackageCodec.BuildPlayerLogin(
+                            loginId, opt.PlayerName + opt.ClientId, ver, ver);
+                        peer.Send(login, DeliveryMethod.ReliableOrdered);
+                        State.PackagesSent++;
+                        loginSent = true;
+                        State.Advance(JoinStage.LoginSent, $"pkgId={loginId} name={opt.PlayerName}{opt.ClientId}");
+                        Log($"STAGE LoginSent: pkgId={loginId}");
+                    }
+                    else
+                    {
+                        State.Fail("missing NetPackagePlayerLogin id in mappings");
+                        Log("FAIL: no NetPackagePlayerLogin package id");
+                    }
+                }
+
+                // Life loop: walk until death → log → respawn → walk again, until timeout / max lives.
+                if (State.Stage == JoinStage.Joined && !actionsDone && !opt.SkipActions)
+                {
+                    var mode = opt.Mode;
+                    if (!opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
+                        mode = ActionLoop.BotMode.Mixed;
+                    State.BotModeName = mode.ToString();
+
+                    var pollBatch = new List<byte[]>();
+                    void PollInbox()
+                    {
+                        net.PollEvents();
                         lock (gate)
                         {
-                            while (sendQueue.Count >= MaxInbox)
-                                sendQueue.Dequeue();
-                            sendQueue.Enqueue(pkt);
+                            foreach (var item in inbox)
+                                pollBatch.Add(item);
+                            inbox.Clear();
                         }
-                    });
-                }
-            }
-            recvBatch.Clear();
-
-            // After PackageIds, send PlayerLogin without waiting for another inbound package
-            if (!loginSent
-                && State.Stage == JoinStage.PackageIdsReceived
-                && peer != null
-                && !State.IsTerminal)
-            {
-                if (State.TryGetPackageId("NetPackagePlayerLogin", out ushort loginId))
-                {
-                    // EMPIRICAL 2026-08-22: stock V3.1.0 (b14) accepts the display
-                    // form "V 3.1.0" and KICKS "V 3.10" (VersionMismatch=4); the
-                    // LongStringNoBuild theory (b5c3069) is wrong for stock.
-                    string ver = PackageCodec.VersionLongString(State.ServerVersion);
-                    var login = PackageCodec.BuildPlayerLogin(
-                        loginId, opt.PlayerName + opt.ClientId, ver, ver);
-                    peer.Send(login, DeliveryMethod.ReliableOrdered);
-                    State.PackagesSent++;
-                    loginSent = true;
-                    State.Advance(JoinStage.LoginSent, $"pkgId={loginId} name={opt.PlayerName}{opt.ClientId}");
-                    Log($"STAGE LoginSent: pkgId={loginId}");
-                }
-                else
-                {
-                    State.Fail("missing NetPackagePlayerLogin id in mappings");
-                    Log("FAIL: no NetPackagePlayerLogin package id");
-                }
-            }
-
-            // Life loop: walk until death → log → respawn → walk again, until timeout / max lives.
-            if (State.Stage == JoinStage.Joined && !actionsDone && !opt.SkipActions)
-            {
-                var mode = opt.Mode;
-                if (!opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
-                    mode = ActionLoop.BotMode.Mixed;
-                State.BotModeName = mode.ToString();
-
-                var pollBatch = new List<byte[]>();
-                void PollInbox()
-                {
-                    net.PollEvents();
-                    lock (gate)
-                    {
-                        foreach (var item in inbox)
-                            pollBatch.Add(item);
-                        inbox.Clear();
-                    }
-                    foreach (var data in pollBatch)
-                    {
-                        State.PackagesReceived++;
-                        if (PackageCodec.TryParseChallenge(data, out _))
-                            continue;
-                        var pkgs = PackageCodec.ParseChannelPayload(data);
-                        foreach (var (id, body) in pkgs)
-                            HandlePackage(id, body, opt, Log, pkt =>
-                            {
-                                lock (gate) sendQueue.Enqueue(pkt);
-                            });
-                    }
-                    pollBatch.Clear();
-                    lock (gate)
-                    {
-                        while (sendQueue.Count > 0 && peer != null)
+                        foreach (var data in pollBatch)
                         {
-                            var pkt = sendQueue.Dequeue();
-                            try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
-                            catch { break; }
-                            State.PackagesSent++;
-                        }
-                    }
-                }
-
-                bool SendPkt(byte[] pkt)
-                {
-                    if (peer == null || State.IsTerminal) return false;
-                    try
-                    {
-                        peer.Send(pkt, DeliveryMethod.ReliableOrdered);
-                        return true;
-                    }
-                    catch { return false; }
-                }
-
-                int life = 0;
-                while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
-                {
-                    life++;
-                    long remainingMs = Math.Max(3_000, opt.TimeoutMs - sw.ElapsedMilliseconds);
-                    Log(
-                        $"LIFE start=#{life} entity={State.EntityId} deaths={State.DeathCount} " +
-                        $"respawns={State.RespawnCount} remainingMs={remainingMs}");
-
-                    // Each life gets a fresh death flag (respawn path clears it).
-                    State.Died = false;
-                    if (State.DeathCause is "timeout_alive")
-                        State.DeathCause = "none";
-                    opt.OnLifeStarted?.Invoke(State.EntityId);
-
-                    ActionLoop.Run(
-                        State,
-                        SendPkt,
-                        new ActionLoop.Options
-                        {
-                            ActionCount = opt.ActionCount,
-                            Seed = opt.ActionSeed + opt.ClientId + life * 997,
-                            Mode = mode,
-                            MaxDynamitePerLife = opt.MaxDynamitePerLife,
-                            PingProbe = () => peer?.Ping ?? -1,
-                            Death = opt.Death,
-                            PaceMs = opt.PaceMs,
-                            ChatPrefix = opt.PlayerName + opt.ClientId,
-                            CohortSize = Math.Max(1, opt.CohortSize),
-                            MaxLifetimeMs = (int)Math.Min(remainingMs, int.MaxValue),
-                            Log = Log,
-                            Bench = opt.Bench,
-                            ShouldStop = () =>
-                            {
-                                if (State.IsTerminal || State.Died) return true;
-                                // Telnet kill: server sets health=0 but often omits StatChanged to lite clients.
-                                string myName = opt.PlayerName + opt.ClientId;
-                                if (WorldDeathBus.TryConsumeKill(myName, out _))
+                            State.PackagesReceived++;
+                            if (PackageCodec.TryParseChallenge(data, out _))
+                                continue;
+                            var pkgs = PackageCodec.ParseChannelPayload(data);
+                            foreach (var (id, body) in pkgs)
+                                HandlePackage(id, body, opt, Log, pkt =>
                                 {
-                                    State.Died = true;
-                                    State.DeathCause = "world_killed";
-                                    Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={myName}");
-                                    return true;
-                                }
-                                return false;
-                            },
-                            Poll = PollInbox,
-                        });
+                                    lock (gate) sendQueue.Enqueue(pkt);
+                                });
+                        }
+                        pollBatch.Clear();
+                        lock (gate)
+                        {
+                            while (sendQueue.Count > 0 && peer != null)
+                            {
+                                var pkt = sendQueue.Dequeue();
+                                try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
+                                catch { break; }
+                                State.PackagesSent++;
+                            }
+                        }
+                    }
 
-                    if (State.IsTerminal)
-                        break;
-
-                    if (State.Died)
+                    bool SendPkt(byte[] pkt)
                     {
-                        State.DeathCount++;
-                        opt.Bench?.OnDeath();
+                        if (peer == null || State.IsTerminal) return false;
+                        try
+                        {
+                            peer.Send(pkt, DeliveryMethod.ReliableOrdered);
+                            return true;
+                        }
+                        catch { return false; }
+                    }
+
+                    int life = 0;
+                    while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
+                    {
+                        life++;
+                        long remainingMs = Math.Max(3_000, opt.TimeoutMs - sw.ElapsedMilliseconds);
                         Log(
-                            $"DEATH #{State.DeathCount} entity={State.EntityId} cause={State.DeathCause} " +
-                            $"walks={State.WalkActions} jumps={State.JumpActions} " +
-                            $"pos=({State.PosX:0.#},{State.PosY:0.#},{State.PosZ:0.#}) " +
-                            $"mode={State.BotModeName} life={life}");
+                            $"LIFE start=#{life} entity={State.EntityId} deaths={State.DeathCount} " +
+                            $"respawns={State.RespawnCount} remainingMs={remainingMs}");
 
-                        // Drain late GMSG for a moment
-                        var drainUntil = sw.ElapsedMilliseconds + Math.Min(1500, opt.RespawnDelayMs);
-                        while (sw.ElapsedMilliseconds < drainUntil && !State.IsTerminal)
-                        {
-                            PollInbox();
-                            Thread.Sleep(15);
-                        }
+                        // Each life gets a fresh death flag (respawn path clears it).
+                        State.Died = false;
+                        if (State.DeathCause is "timeout_alive")
+                            State.DeathCause = "none";
+                        opt.OnLifeStarted?.Invoke(State.EntityId);
 
-                        bool hitMaxLives = opt.MaxLives > 0 && State.DeathCount >= opt.MaxLives;
-                        bool timeLeft = sw.ElapsedMilliseconds + 5_000 < opt.TimeoutMs;
-                        if (!opt.Respawn || hitMaxLives || !timeLeft || State.IsTerminal)
-                        {
-                            Log(
-                                $"NO_RESPAWN deaths={State.DeathCount} maxLives={opt.MaxLives} " +
-                                $"respawn={opt.Respawn} timeLeft={timeLeft}");
-                            break;
-                        }
+                        ActionLoop.Run(
+                            State,
+                            SendPkt,
+                            new ActionLoop.Options
+                            {
+                                ActionCount = opt.ActionCount,
+                                Seed = opt.ActionSeed + opt.ClientId + life * 997,
+                                Mode = mode,
+                                MaxDynamitePerLife = opt.MaxDynamitePerLife,
+                                PingProbe = () => peer?.Ping ?? -1,
+                                Death = opt.Death,
+                                PaceMs = opt.PaceMs,
+                                ChatPrefix = opt.PlayerName + opt.ClientId,
+                                CohortSize = Math.Max(1, opt.CohortSize),
+                                MaxLifetimeMs = (int)Math.Min(remainingMs, int.MaxValue),
+                                Log = Log,
+                                Bench = opt.Bench,
+                                ShouldStop = () =>
+                                {
+                                    if (State.IsTerminal || State.Died) return true;
+                                    // Telnet kill: server sets health=0 but often omits StatChanged to lite clients.
+                                    string myName = opt.PlayerName + opt.ClientId;
+                                    if (WorldDeathBus.TryConsumeKill(myName, out _))
+                                    {
+                                        State.Died = true;
+                                        State.DeathCause = "world_killed";
+                                        Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={myName}");
+                                        return true;
+                                    }
+                                    return false;
+                                },
+                                Poll = PollInbox,
+                            });
 
-                        // Respawn delay then request spawn
-                        var waitUntil = sw.ElapsedMilliseconds + Math.Max(200, opt.RespawnDelayMs);
-                        while (sw.ElapsedMilliseconds < waitUntil && !State.IsTerminal)
-                        {
-                            PollInbox();
-                            Thread.Sleep(20);
-                        }
                         if (State.IsTerminal)
                             break;
 
-                        if (!TryRequestRespawn(SendPkt, Log))
+                        if (State.Died)
                         {
-                            Log("RESPAWN fail: could not send RequestToSpawnPlayer");
-                            break;
-                        }
+                            State.DeathCount++;
+                            opt.Bench?.OnDeath();
+                            Log(
+                                $"DEATH #{State.DeathCount} entity={State.EntityId} cause={State.DeathCause} " +
+                                $"walks={State.WalkActions} jumps={State.JumpActions} " +
+                                $"pos=({State.PosX:0.#},{State.PosY:0.#},{State.PosZ:0.#}) " +
+                                $"mode={State.BotModeName} life={life}");
 
-                        State.AwaitingRespawn = true;
-                        bool gotSpawn = false;
-                        var respawnDeadline = sw.ElapsedMilliseconds + Math.Max(1_000, opt.RespawnTimeoutMs);
-                        while (sw.ElapsedMilliseconds < respawnDeadline && !State.IsTerminal)
-                        {
-                            PollInbox();
-                            if (!State.AwaitingRespawn && !State.Died)
+                            // Drain late GMSG for a moment
+                            var drainUntil = sw.ElapsedMilliseconds + Math.Min(1500, opt.RespawnDelayMs);
+                            while (sw.ElapsedMilliseconds < drainUntil && !State.IsTerminal)
                             {
-                                gotSpawn = true;
+                                PollInbox();
+                                Thread.Sleep(15);
+                            }
+
+                            bool hitMaxLives = opt.MaxLives > 0 && State.DeathCount >= opt.MaxLives;
+                            bool timeLeft = sw.ElapsedMilliseconds + 5_000 < opt.TimeoutMs;
+                            if (!opt.Respawn || hitMaxLives || !timeLeft || State.IsTerminal)
+                            {
+                                Log(
+                                    $"NO_RESPAWN deaths={State.DeathCount} maxLives={opt.MaxLives} " +
+                                    $"respawn={opt.Respawn} timeLeft={timeLeft}");
                                 break;
                             }
-                            Thread.Sleep(15);
-                        }
-                        if (!gotSpawn)
-                        {
-                            // Server never confirmed the respawn in time: this is a
-                            // dropout under load, not a successful session. Mark it so
-                            // the final gate does not score it as PASS.
-                            respawnTimedOut = true;
-                            State.DeathCause = "respawn_timeout";
+
+                            // Respawn delay then request spawn
+                            var waitUntil = sw.ElapsedMilliseconds + Math.Max(200, opt.RespawnDelayMs);
+                            while (sw.ElapsedMilliseconds < waitUntil && !State.IsTerminal)
+                            {
+                                PollInbox();
+                                Thread.Sleep(20);
+                            }
+                            if (State.IsTerminal)
+                                break;
+
+                            if (!TryRequestRespawn(SendPkt, Log))
+                            {
+                                Log("RESPAWN fail: could not send RequestToSpawnPlayer");
+                                break;
+                            }
+
+                            State.AwaitingRespawn = true;
+                            bool gotSpawn = false;
+                            var respawnDeadline = sw.ElapsedMilliseconds + Math.Max(1_000, opt.RespawnTimeoutMs);
+                            while (sw.ElapsedMilliseconds < respawnDeadline && !State.IsTerminal)
+                            {
+                                PollInbox();
+                                if (!State.AwaitingRespawn && !State.Died)
+                                {
+                                    gotSpawn = true;
+                                    break;
+                                }
+                                Thread.Sleep(15);
+                            }
+                            if (!gotSpawn)
+                            {
+                                // Server never confirmed the respawn in time: this is a
+                                // dropout under load, not a successful session. Mark it so
+                                // the final gate does not score it as PASS.
+                                respawnTimedOut = true;
+                                State.DeathCause = "respawn_timeout";
+                                Log(
+                                    $"RESPAWN timeout awaiting spawn entity={State.EntityId} " +
+                                    $"awaiting={State.AwaitingRespawn}");
+                                break;
+                            }
                             Log(
-                                $"RESPAWN timeout awaiting spawn entity={State.EntityId} " +
-                                $"awaiting={State.AwaitingRespawn}");
-                            break;
+                                $"RESPAWN ok #{State.RespawnCount} entity={State.EntityId} " +
+                                $"pos=({State.PosX:0.#},{State.PosY:0.#},{State.PosZ:0.#}) → walk again");
+                            continue; // next life
                         }
-                        Log(
-                            $"RESPAWN ok #{State.RespawnCount} entity={State.EntityId} " +
-                            $"pos=({State.PosX:0.#},{State.PosY:0.#},{State.PosZ:0.#}) → walk again");
-                        continue; // next life
+
+                        // No death this life: overall lifetime expired or action count done
+                        if (State.DeathCause is "timeout_alive" || opt.ActionCount > 0)
+                        {
+                            Log(
+                                $"ALIVE_END entity={State.EntityId} cause={State.DeathCause} " +
+                                $"walks={State.WalkActions} life={life}");
+                        }
+                        break;
                     }
 
-                    // No death this life: overall lifetime expired or action count done
-                    if (State.DeathCause is "timeout_alive" || opt.ActionCount > 0)
-                    {
-                        Log(
-                            $"ALIVE_END entity={State.EntityId} cause={State.DeathCause} " +
-                            $"walks={State.WalkActions} life={life}");
-                    }
+                    actionsDone = true;
+                    Log(
+                        $"DISCONNECT entity={State.EntityId} deaths={State.DeathCount} " +
+                        $"respawns={State.RespawnCount} walks={State.WalkActions} " +
+                        $"lastCause={State.DeathCause}");
                     break;
                 }
 
-                actionsDone = true;
-                Log(
-                    $"DISCONNECT entity={State.EntityId} deaths={State.DeathCount} " +
-                    $"respawns={State.RespawnCount} walks={State.WalkActions} " +
-                    $"lastCause={State.DeathCause}");
-                break;
+                if (opt.SkipActions && State.Stage == JoinStage.Joined)
+                    break;
+
+                Thread.Sleep(10);
             }
 
-            if (opt.SkipActions && State.Stage == JoinStage.Joined)
-                break;
-
-            Thread.Sleep(10);
-        }
-
-        // Graceful disconnect so the server frees the player slot immediately
-        // instead of holding a ghost until its own DisconnectTimeout. Ghost
-        // accumulation from hard-killed cohorts causes NetPackagePlayerDenied
-        // (reason=2, world-full) on later joins and corrupts spawn state.
-        try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); } catch { }
+            // Graceful disconnect so the server frees the player slot immediately
+            // instead of holding a ghost until its own DisconnectTimeout. Ghost
+            // accumulation from hard-killed cohorts causes NetPackagePlayerDenied
+            // (reason=2, world-full) on later joins and corrupts spawn state.
+            try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); } catch { }
         }
         finally
         {
