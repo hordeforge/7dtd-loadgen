@@ -149,6 +149,11 @@ for sut in $SUTS; do
         RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
         RE_TELNET_PORT="$TELNET_PORT" \
         bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
+      # Arm the cleanup trap BEFORE the ready wait: the boot script writes the
+      # pidfile seconds in, and a timeout/Ctrl-C during boot must still reap the
+      # half-booted server instead of orphaning it with the ports held.
+      PIDFILE="$USERDATA/dedicated.pid"
+      CURRENT_PIDFILE="$PIDFILE"
       ready=0
       for _ in $(seq 1 150); do
         # The join-ready signal is the server log's "StartGame done", not telnet
@@ -169,8 +174,6 @@ for sut in $SUTS; do
       fi
       echo "  $sut ready (StartGame done in server log)"
       BOT_PORT=$((STOCK_SERVER_PORT + 2))
-      PIDFILE="$USERDATA/dedicated.pid"
-      CURRENT_PIDFILE="$PIDFILE"
       # gettime first and last so the capture can derive the game-clock rate.
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       ;;
@@ -206,6 +209,11 @@ EOF
         RE_SUT_WORLD_NAME="$WORLD_NAME" RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
         RE_SUT_LOGFILE="$run_dir/server.log" \
         bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
+      # Arm the trap before the ready wait (see the stock branch): sut_zdtd.sh
+      # writes the pidfile as soon as the binary launches, and a boot timeout
+      # must tear the server down, not orphan it with 27120/admin held.
+      PIDFILE="$run_dir/world/dedicated.pid"
+      CURRENT_PIDFILE="$PIDFILE"
       ready=0
       for _ in $(seq 1 180); do
         # "config port=" prints mid-init; the network-ready marker is the last
@@ -220,8 +228,6 @@ EOF
       fi
       echo "  zdtd ready (challenge line in server.log)"
       BOT_PORT=$((27120 + 2))  # zdtd binds LiteNetLib on --port + 2
-      PIDFILE="$run_dir/world/dedicated.pid"
-      CURRENT_PIDFILE="$PIDFILE"
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       ;;
   esac
@@ -381,6 +387,9 @@ EOF
   if [[ -f "$PIDFILE" ]]; then
     kill -9 "$(cat "$PIDFILE")" 2>/dev/null || true
   fi
+  # Disarm so a later failure exit cannot re-kill a stale pidfile entry (the
+  # pid may already have been recycled by an unrelated process).
+  CURRENT_PIDFILE=""
   sleep 2
   echo "  torn down"
 done

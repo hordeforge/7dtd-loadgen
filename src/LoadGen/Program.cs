@@ -1298,41 +1298,49 @@ public static class LiteNetProbe
         }
         stages.Add("litenet_start");
         Log("STAGE litenet_start: ok");
-        var data = new NetDataWriter();
-        if (!string.IsNullOrEmpty(key)) data.Put(key);
-        var peer = net.Connect(host, port, data);
-        if (peer == null)
+        // Stop() must run on every exit path: LoadRunner drives up to thousands
+        // of probes in one process, so an exception skipping the stop would
+        // accumulate live UDP sockets + managers until process death.
+        try
         {
-            Log("STAGE litenet_connect_call: fail");
-            net.Stop();
-            return Fail(lines, stages, connected, packets, disconnectReason, sw.ElapsedMilliseconds);
-        }
-        stages.Add("litenet_connect_call");
-        Log("STAGE litenet_connect_call: ok");
-        while (sw.ElapsedMilliseconds < timeoutMs)
-        {
+            var data = new NetDataWriter();
+            if (!string.IsNullOrEmpty(key)) data.Put(key);
+            var peer = net.Connect(host, port, data);
+            if (peer == null)
+            {
+                Log("STAGE litenet_connect_call: fail");
+                return Fail(lines, stages, connected, packets, disconnectReason, sw.ElapsedMilliseconds);
+            }
+            stages.Add("litenet_connect_call");
+            Log("STAGE litenet_connect_call: ok");
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                net.PollEvents();
+                if (connected && (packets > 0 || sw.ElapsedMilliseconds > 1500)) break;
+                if (disconnected && !connected) break;
+                Thread.Sleep(10);
+            }
             net.PollEvents();
-            if (connected && (packets > 0 || sw.ElapsedMilliseconds > 1500)) break;
-            if (disconnected && !connected) break;
-            Thread.Sleep(10);
+            sw.Stop();
+            bool pastSocket = stages.Contains("litenet_peer_connected") || stages.Contains("litenet_receive")
+                || stages.Contains("litenet_peer_disconnected") || stages.Contains("protocol_bytes");
+            bool pass = pastSocket || (stages.Contains("litenet_connect_call") && (connected || disconnectReason != null));
+            Log($"SUMMARY stages=[{string.Join(",", stages.OrderBy(s => s))}] connected={connected} packets={packets}");
+            return new ProbeResult
+            {
+                Pass = pass,
+                Stages = stages,
+                Connected = connected,
+                Packets = packets,
+                DisconnectReason = disconnectReason,
+                Lines = lines,
+                ElapsedMs = sw.ElapsedMilliseconds,
+            };
         }
-        net.PollEvents();
-        net.Stop();
-        sw.Stop();
-        bool pastSocket = stages.Contains("litenet_peer_connected") || stages.Contains("litenet_receive")
-            || stages.Contains("litenet_peer_disconnected") || stages.Contains("protocol_bytes");
-        bool pass = pastSocket || (stages.Contains("litenet_connect_call") && (connected || disconnectReason != null));
-        Log($"SUMMARY stages=[{string.Join(",", stages.OrderBy(s => s))}] connected={connected} packets={packets}");
-        return new ProbeResult
+        finally
         {
-            Pass = pass,
-            Stages = stages,
-            Connected = connected,
-            Packets = packets,
-            DisconnectReason = disconnectReason,
-            Lines = lines,
-            ElapsedMs = sw.ElapsedMilliseconds,
-        };
+            try { net.Stop(); } catch { /* release must not mask the result */ }
+        }
     }
 
     static ProbeResult Fail(List<string> lines, HashSet<string> stages, bool connected, int packets, string? disc, long ms) =>

@@ -245,10 +245,13 @@ def health():
             "lateTicks": u.get("lateTicks"), "stallMs": u.get("tickStallMsTotal")}
 
 
-def teardown(bots):
+def teardown(bots, stop_server=False):
     """Stop the workload on every exit path. A cohort left running keeps loading
     the server (and the host) until its own wall clock expires, poisoning any
-    run that follows; Ctrl-C mid-spawn must tear down exactly like a clean end."""
+    run that follows; Ctrl-C mid-spawn must tear down exactly like a clean end.
+    A server this run started via --start-server is stopped too (same ownership
+    rule as capacity_sweep); one pre-existing under SKIP_SERVER_START is left
+    alone."""
     log("tearing down")
     telnet(["kickall", "kick all"])
     if bots is not None:
@@ -258,11 +261,16 @@ def teardown(bots):
         except subprocess.TimeoutExpired:
             bots.kill()
     subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+    if stop_server:
+        subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
+        log("stopped the dedicated server this run started")
 
 
 def main():
+    started_server = False
     if "--start-server" in sys.argv:
         start_server()
+        started_server = True
     log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies (GS{GAMESTAGE}) ===")
     bots = None
     try:
@@ -298,7 +306,7 @@ def main():
             log(f"holding {HOLD_S}s...")
             time.sleep(HOLD_S)
     finally:
-        teardown(bots)
+        teardown(bots, stop_server=started_server)
     log("=== BLOOD MOON STANDARD COMPLETE ===")
 
 

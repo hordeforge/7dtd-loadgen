@@ -200,6 +200,14 @@ done
 if [[ "$ready" != "1" ]]; then
   echo "ERROR: timeout waiting for StartGame" >&2
   tail -60 "$LOG" || true
+  # A half-booted server still holds the game + telnet ports and loads the
+  # host; this script owns it, so stop it instead of orphaning it.
+  pid="$(cat "$USERDATA/dedicated.pid" 2>/dev/null || true)"
+  if [[ -n "$pid" ]]; then
+    kill "$pid" 2>/dev/null || true
+    sleep 3
+    kill -9 "$pid" 2>/dev/null || true
+  fi
   exit 1
 fi
 ss -uln | rg '2690[0-2]|8081' || true
