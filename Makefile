@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
@@ -99,6 +99,14 @@ test: build selftest unittest
 		echo "       it provisions the locked test env from uv.lock automatically." >&2; \
 		exit 1; \
 	fi
+
+# Line coverage of the unit suite via the XPlat Code Coverage collector
+# (coverlet.collector). Writes TestResults/coverage.cobertura.xml; CI renders
+# it into the README badge with scripts/coverage_badge.py.
+coverage:
+	rm -rf "$(ROOT)/TestResults"
+	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true --collect:"XPlat Code Coverage" --results-directory TestResults
+	cp "$$(find "$(ROOT)/TestResults" -name coverage.cobertura.xml | head -1)" "$(ROOT)/TestResults/coverage.cobertura.xml"
 
 dedicated dedicated-4k:
 	@chmod +x "$(SCRIPTS)/start_dedicated_prefab.sh"
