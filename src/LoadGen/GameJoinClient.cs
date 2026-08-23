@@ -650,7 +650,7 @@ public sealed class GameJoinClient
                 using var ms = new MemoryStream(body);
                 using var r = new BinaryReader(ms, System.Text.Encoding.UTF8);
                 string key = r.ReadString();
-                log($"STAGE AuthState: {key}");
+                log($"STAGE AuthState: {SafeText(key)}");
             }
             catch (Exception ex)
             {
@@ -666,11 +666,11 @@ public sealed class GameJoinClient
             try
             {
                 var (allowed, data) = PackageCodec.ParseLoginAnswerBody(body);
-                State.Advance(JoinStage.LoginAnswered, $"allowed={allowed} data={data}");
+                State.Advance(JoinStage.LoginAnswered, $"allowed={allowed} data={SafeText(data)}");
                 log($"STAGE LoginAnswered: allowed={allowed} dataLen={data?.Length ?? 0}");
                 if (!allowed)
                 {
-                    State.Fail($"login_denied: {data}");
+                    State.Fail($"login_denied: {SafeText(data)}");
                     return;
                 }
                 // Real client continues with RequestToEnterGame after PlayerAllowed

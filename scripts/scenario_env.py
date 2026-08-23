@@ -12,9 +12,15 @@ source. Unknown scenarios exit non-zero with a message on stderr.
 from __future__ import annotations
 
 import json
+import re
 import shlex
 import sys
 from pathlib import Path
+
+# Output is eval'd by run_scenario.sh, so a key is shell syntax, not just a
+# name. Restrict to valid POSIX env identifiers; anything else fails closed
+# here instead of executing inside the caller's shell.
+ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 def load(path: str) -> dict:
@@ -73,6 +79,10 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     if server:
         out.append(f"export LOADGEN_SERVER_SCRIPT={shlex.quote(server.get('script', ''))}")
         for k, v in (server.get("env") or {}).items():
+            if not ENV_KEY_RE.match(k):
+                print(f"ERROR: scenario {scenario_id}: refusing env key {k!r} "
+                      "(not a shell-safe identifier)", file=sys.stderr)
+                return 1
             out.append(f"export {k}={shlex.quote(str(v))}")
     else:
         out.append("export LOADGEN_SERVER_SCRIPT=")
