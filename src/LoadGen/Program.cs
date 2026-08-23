@@ -42,6 +42,14 @@ public static class Program
     /// <summary>Valid UDP/TCP port range for --port/--telnet-port.</summary>
     public static bool IsValidPort(int port) => port >= 1 && port <= 65535;
 
+    /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.1.0".
+    /// Backed by &lt;Version&gt; in LoadGen.csproj (see test_release_contract.py).</summary>
+    public static string VersionLine()
+    {
+        var v = typeof(Program).Assembly.GetName().Version;
+        return $"7dtd-loadgen {(v is null ? "unknown" : v.ToString(3))}";
+    }
+
     /// <summary>--min-pass-rate is a client fraction; outside [0,1] the gate
     /// silently loses meaning (always-fail or always-pass).</summary>
     public static bool IsValidMinPassRate(double rate) => !double.IsNaN(rate) && rate >= 0.0 && rate <= 1.0;
@@ -66,6 +74,12 @@ public static class Program
         if (args.Any(a => a is "-h" or "--help"))
         {
             PrintHelp();
+            return 0;
+        }
+
+        if (args.Any(a => a is "-V" or "--version"))
+        {
+            Console.WriteLine(VersionLine());
             return 0;
         }
 
@@ -1130,6 +1144,7 @@ public static class Program
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions\n" +
             "  --golden-wire       Assert package body layouts vs Assembly-CSharp IL sizes\n" +
+            "  -V / --version      print client version and exit\n" +
             "Notes:\n" +
             "  Walk → world kill → DEATH → respawn → walk again until --timeout. No self-kill.\n" +
             "  Default timeout 1 hour. Rejoins on early disconnect. Telnet zed spawn for empty worlds.\n" +
