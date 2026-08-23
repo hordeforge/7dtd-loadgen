@@ -363,8 +363,8 @@ EOF
   # reader judge whether cost numbers (wall, APM) were taken under contention.
   LOADGEN_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   LOADGEN_DIRTY="$(git -C "$ROOT" status --porcelain 2>/dev/null | wc -l)"
-  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" status --porcelain 2>/dev/null | wc -l)"
+  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server-server}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server-server}" status --porcelain 2>/dev/null | wc -l)"
   HOST_LOAD="$(cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo unknown)"
   cat >"$run_dir/run-meta.json" <<EOF
 {

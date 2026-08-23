@@ -18,10 +18,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ZIG="${ZIG:-zig}"
-ZDTD_ROOT="${ZDTD_ROOT:-$ROOT/../zdtd-server}"
+ZDTD_ROOT="${ZDTD_ROOT:-$ROOT/../zdtd-server-server}"
 PORT="${RE_SUT_PORT:-27120}"
 ADMIN_PORT="${RE_SUT_ADMIN_PORT:-8082}"
-WORLD="${RE_SUT_WORLD:-$ROOT/../zdtd-server/worlds/sut_zdtd}"
+WORLD="${RE_SUT_WORLD:-$ROOT/../zdtd-server-server/worlds/sut_zdtd}"
 WORLD_NAME="${RE_SUT_WORLD_NAME:-Navezgane}"
 GAME_DIR="${RE_SUT_GAME_DIR:-$HOME/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server}"
 SERVERCONFIG="${RE_SUT_SERVERCONFIG:-}"

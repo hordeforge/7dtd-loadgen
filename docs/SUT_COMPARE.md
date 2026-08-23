@@ -20,9 +20,9 @@ run scenario on both servers (compare_sut.sh)
   -> capture surface.json per side (sut_capture.py)
   -> diff into REPORT.md + diff.json (sut_report.py)
   -> triage each finding
-       zdtd bug            -> fix in ../zdtd-server
+       zdtd bug            -> fix in ../zdtd-server-server
        harness artifact    -> fix here
-       known divergence    -> record in ../zdtd-server/docs/PROVENANCE.md (3.9)
+       known divergence    -> record in ../zdtd-server-server/docs/PROVENANCE.md (3.9)
   -> re-run
 ```
 
