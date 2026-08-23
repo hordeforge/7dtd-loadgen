@@ -47,6 +47,32 @@ if [[ "$SELF_TEST" == "1" ]]; then
   MODE="self-test"
 fi
 
+# Overlap guard (rerun safety): two cohorts against the same target carry
+# identical bot names, so every login kicks the other cohort's session into its
+# rejoin loop for the full wall clock, both telnet pressure loops double the
+# world pressure, and both processes clobber the same log/stats/manifest
+# outputs. One advisory lock per target host:port makes an accidental rerun
+# (cron overlap, double launch, retry after a lost shell) fail loudly instead
+# of duplicating all of that. Self-test modes use the in-process mock server,
+# not the target, so they never take the lock. Deliberate overlaps opt out
+# with LOADGEN_ALLOW_OVERLAP=1.
+case "$MODE" in
+  join|probe)
+    if [[ "${LOADGEN_ALLOW_OVERLAP:-0}" != "1" ]] && command -v flock >/dev/null 2>&1; then
+      lock_tag="$(printf '%s' "${HOST}-${PORT}" | tr -c 'A-Za-z0-9._-' '_')"
+      LOCK_FILE="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/7dtd-loadgen-${lock_tag}.lock"
+      exec 9>"$LOCK_FILE"
+      if ! flock -n 9; then
+        echo "ERROR: another loadgen run holds $LOCK_FILE (target $HOST:$PORT)." >&2
+        echo "       A second cohort would kick-rejoin the first (identical bot names)," >&2
+        echo "       double the telnet world pressure, and clobber shared output files." >&2
+        echo "       Wait for it to finish, stop it, or set LOADGEN_ALLOW_OVERLAP=1." >&2
+        exit 4
+      fi
+    fi
+    ;;
+esac
+
 echo "=== 7DTD load generator ==="
 echo "Mode=$MODE Host=$HOST Port=$PORT Count=$COUNT Concurrency=${CONCURRENCY:-auto} Timeout=${TIMEOUT}ms bot=${BOT_MODE:-auto} death=${DEATH:-auto}"
 
