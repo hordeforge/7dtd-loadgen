@@ -970,6 +970,19 @@ public sealed class GameJoinClient
         return false;
     }
 
+    /// <summary>Scrub server-controlled handshake text (auth keys, login-answer
+    /// data) before it reaches State/log lines: control characters would inject
+    /// newlines or terminal escapes into line-parsed logs. Each control char is
+    /// replaced by '?' so scrubbing stays visible; output bounded like chat.</summary>
+    static string SafeText(string? s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        var sb = new System.Text.StringBuilder(Math.Min(s.Length, 160));
+        foreach (char c in s)
+            sb.Append(char.IsControl(c) ? '?' : c);
+        return Snippet(sb.ToString(), 160);
+    }
+
     /// <summary>Truncate for logging without splitting a surrogate pair: chat
     /// text is server-controlled and may end in emoji at the cut point.</summary>
     static string Snippet(string s, int maxChars)
