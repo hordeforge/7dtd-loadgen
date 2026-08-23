@@ -1,16 +1,33 @@
 name: ci
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# One run per ref: a fresh push cancels the superseded in-progress run
+# instead of queueing duplicate parallel jobs.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   loadgen:
     runs-on: ubuntu-latest
+    # A hung self-test must fail the job, not burn the 360-minute default.
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      # Pinned to commit SHAs (mutable tags) for reproducible, tamper-proof CI.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with: { dotnet-version: 8.0.x }
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
       - run: make test

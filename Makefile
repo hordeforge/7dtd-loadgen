@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all
+.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
