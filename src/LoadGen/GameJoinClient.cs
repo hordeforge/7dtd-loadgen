@@ -21,9 +21,23 @@ public sealed class GameJoinClient
     // DisconnectAllActive double-stop already-stopped managers.
     public static readonly System.Collections.Concurrent.ConcurrentDictionary<LiteNetLib.NetManager, byte> ActiveNets = new();
 
+    /// <summary>0 = no shutdown pass yet; 1 = a pass is running or done.</summary>
+    static int _shutdownPassStarted;
+
     public static void DisconnectAllActive()
     {
-        foreach (var n in ActiveNets.Keys) { try { n.DisconnectAll(); n.PollEvents(); } catch { } }
+        // Both Console.CancelKeyPress and ProcessExit land here, and a double
+        // SIGINT can invoke the handler again while the first pass sleeps. Two
+        // passes would drive DisconnectAll/Stop into the same non-thread-safe
+        // NetManagers concurrently, so run the sweep exactly once per process.
+        if (System.Threading.Interlocked.CompareExchange(ref _shutdownPassStarted, 1, 0) != 0)
+            return;
+        // No PollEvents() here: with UnsyncedEvents=false it would dequeue and
+        // dispatch pending LiteNetLib events on THIS thread, running each bot's
+        // listener handlers (peer assignment, State/log mutations) concurrently
+        // with that bot's own poll loop. DisconnectAll sends the BYE packet
+        // synchronously; the sleep just gives it time to drain.
+        foreach (var n in ActiveNets.Keys) { try { n.DisconnectAll(); } catch { } }
         System.Threading.Thread.Sleep(200);
         foreach (var n in ActiveNets.Keys) { try { n.Stop(); } catch { } }
     }
@@ -1030,9 +1044,12 @@ public sealed class GameJoinClient
         });
         sm = client.State;
 
-        // drain (monotonic: immune to wall-clock steps during the window)
+        // Drain (monotonic: immune to wall-clock steps during the window).
+        // Do NOT call server.Poll() here: the background poller below is still
+        // running, and concurrent PollEvents() on one NetManager would dispatch
+        // its receive handlers on both threads at once.
         var drain = Stopwatch.StartNew();
-        while (drain.ElapsedMilliseconds < 300) { server.Poll(); Thread.Sleep(5); }
+        while (drain.ElapsedMilliseconds < 300) { Thread.Sleep(5); }
         cts.Cancel();
         try { poll.Wait(1000); } catch { /* ignore */ }
 

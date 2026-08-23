@@ -31,18 +31,33 @@ public sealed class MockGameServer : IDisposable
     readonly ConcurrentDictionary<int, bool> _authed = new();
     int _nextEntity = 100;
 
+    // Counters are bumped inside LiteNetLib event handlers, which run on
+    // whichever thread calls Poll(); increment them atomically so two pollers
+    // can never lose an update. Reads are plain (atomic) int loads.
+    int _walkPackages;
+    int _jumpPackages;
+    int _drownPackages;
+    int _suicidePackages;
+    int _killPackages;
+    int _chatPackages;
+    int _flagPackages;
+    int _lookPackages;
+    int _loginsAccepted;
+    int _challengesSent;
+    int _challengesOk;
+
     public int Port { get; private set; }
-    public int WalkPackages { get; private set; }
-    public int JumpPackages { get; private set; }
-    public int DrownPackages { get; private set; }
-    public int SuicidePackages { get; private set; }
-    public int KillPackages { get; private set; }
-    public int ChatPackages { get; private set; }
-    public int FlagPackages { get; private set; }
-    public int LookPackages { get; private set; }
-    public int LoginsAccepted { get; private set; }
-    public int ChallengesSent { get; private set; }
-    public int ChallengesOk { get; private set; }
+    public int WalkPackages => _walkPackages;
+    public int JumpPackages => _jumpPackages;
+    public int DrownPackages => _drownPackages;
+    public int SuicidePackages => _suicidePackages;
+    public int KillPackages => _killPackages;
+    public int ChatPackages => _chatPackages;
+    public int FlagPackages => _flagPackages;
+    public int LookPackages => _lookPackages;
+    public int LoginsAccepted => _loginsAccepted;
+    public int ChallengesSent => _challengesSent;
+    public int ChallengesOk => _challengesOk;
 
     public MockGameServer()
     {
@@ -88,7 +103,7 @@ public sealed class MockGameServer : IDisposable
         buf[0] = PackageCodec.ChallengeChannelMarker;
         challenge.ToByteArray().CopyTo(buf, 1);
         peer.Send(buf, DeliveryMethod.ReliableOrdered);
-        ChallengesSent++;
+        Interlocked.Increment(ref _challengesSent);
     }
 
     void OnReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod method)
@@ -108,7 +123,7 @@ public sealed class MockGameServer : IDisposable
                 var got = new Guid(data.AsSpan(1, 16));
                 if (got == expected)
                 {
-                    ChallengesOk++;
+                    Interlocked.Increment(ref _challengesOk);
                     _authed[peer.Id] = true;
                     // PackageIds (id 0) with full LiteNet envelope (channel + size/comp/enc/count)
                     var pkg = PackageCodec.BuildPackageIdsServer(
@@ -129,7 +144,7 @@ public sealed class MockGameServer : IDisposable
             string? name = id < DefaultMappings.Length ? DefaultMappings[id] : null;
             if (name == "NetPackagePlayerLogin")
             {
-                LoginsAccepted++;
+                Interlocked.Increment(ref _loginsAccepted);
                 int entityId = Interlocked.Increment(ref _nextEntity);
                 // LoginAnswer id=2
                 peer.Send(
@@ -150,24 +165,24 @@ public sealed class MockGameServer : IDisposable
             }
             else if (name == "NetPackageEntityPosAndRot" || name == "NetPackageEntityRelPosAndRot")
             {
-                WalkPackages++;
+                Interlocked.Increment(ref _walkPackages);
             }
             else if (name == "NetPackageEntityAliveFlags")
             {
-                FlagPackages++;
+                Interlocked.Increment(ref _flagPackages);
                 var (_, flags) = PackageCodec.ParseAliveFlagsBody(body);
                 if ((flags & PackageCodec.FlagJumping) != 0)
-                    JumpPackages++;
+                    Interlocked.Increment(ref _jumpPackages);
                 else
-                    WalkPackages++;
+                    Interlocked.Increment(ref _walkPackages);
             }
             else if (name == "NetPackageSimpleChat" || name == "NetPackageChat")
             {
-                ChatPackages++;
+                Interlocked.Increment(ref _chatPackages);
             }
             else if (name == "NetPackageEntityLookAt")
             {
-                LookPackages++;
+                Interlocked.Increment(ref _lookPackages);
             }
             else if (name == "NetPackageDamageEntity" && body.Length >= 8)
             {
@@ -175,11 +190,11 @@ public sealed class MockGameServer : IDisposable
                 byte src = body[4];
                 byte typ = body[5];
                 if (typ == PackageCodec.DamageTypeSuicide)
-                    SuicidePackages++;
+                    Interlocked.Increment(ref _suicidePackages);
                 else if (typ == PackageCodec.DamageTypeSuffocation)
-                    DrownPackages++;
+                    Interlocked.Increment(ref _drownPackages);
                 else if (src == PackageCodec.DamageSourceExternal)
-                    KillPackages++;
+                    Interlocked.Increment(ref _killPackages);
             }
         }
     }
