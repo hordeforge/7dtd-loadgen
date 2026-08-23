@@ -1,6 +1,8 @@
-# 7dtd-loadgen
+# 😱 Screamer (7DTD HordeLoadGen)
 
-LiteNetLib load-test clients for **7 Days to Die** dedicated servers.
+> **Part of [HordeForge](https://github.com/hordeforge)** — High-Performance Systems Engineering for 7 Days to Die.
+
+LiteNetLib load-test synthetic clients for **7 Days to Die** dedicated servers.
 
 Not a full game client. Bots join over the real game protocol, walk the world,
 optionally take world damage / admin pressure, log deaths, respawn, and rejoin
@@ -88,10 +90,10 @@ Server userdata defaults to `~/.cache/7dtd-loadgen` (`RE_DEDICATED_USERDATA`).
 Telnet (for scouts / diagnostics): `127.0.0.1:8081`, password `retest` unless
 overridden with `LOADGEN_TELNET_PASSWORD`.
 
-## RealEarth (sibling `7dtd-realworld`)
+## RealEarth (sibling `7dtd-realearth`)
 
 In-game client tests for RealEarth **reuse this loadgen**. Server expand/mod/world
-setup stays in `7dtd-realworld`; bots and scenario gates live here.
+setup stays in `7dtd-realearth`; bots and scenario gates live here.
 
 ```bash
 make scenarios
@@ -112,7 +114,7 @@ telnet listents/listplayers/gettime/getgamestat snapshot, save-file presence,
 zdtd APM cost snapshot),
 and diffs the two runs into a machine-readable report. A difference is a
 finding to triage (zdtd bug vs harness artifact vs known divergence), never a
-pass to fake; known divergences are recorded in `../zdtd/docs/PROVENANCE.md`
+pass to fake; known divergences are recorded in `../zdtd-server/docs/PROVENANCE.md`
 (divergence register).
 
 ```bash
@@ -137,9 +139,9 @@ never silently accepted.
 
 Catalog: join-probe, wander-2bot, join-fast, probe-15s, horde-lite (spawn
 pressure), soak-4bot (sustained multi-bot). Each side carries a cost axis:
-the zdtd run embeds an APM tick snapshot, the stock run gets a 7dtd-apm
+the zdtd run embeds an APM tick snapshot, the stock run gets a 7dtd-server-apm
 capture over the connected window (`COMPARE_APM=0` to skip, the sibling
-`7dtd-apm` repo must have its bridge installed in the stock dedicated
+`7dtd-server-apm` repo must have its bridge installed in the stock dedicated
 server). Both cost snapshots are reported, not diffed - their formats differ
 by design. Cost numbers (wall time, APM counters) are host-relative: compare
 runs under like conditions, and a busy host skews them (the behavioral axes
@@ -161,7 +163,7 @@ against a test server without Steam: [`docs/STOCK_AUTH.md`](docs/STOCK_AUTH.md).
 
 A stock-only benchmark: one stock dedicated server (fixed world, fresh save
 per lap) runs the scenario matrix — including the **bench profile** (ramped
-16-bot cohort with warm-up + measurement window) — with a 7dtd-apm capture
+16-bot cohort with warm-up + measurement window) — with a 7dtd-server-apm capture
 per scenario and per-scenario `stats-json` (the bench block carries
 window-sliced action/death/respawn counts and the active-cohort curve).
 
@@ -210,11 +212,11 @@ Bot modes: `wander`, `mixed`, `chatty`, `combat`, `patrol`, `chaos`,
 real dynamite against terrain (falling-block, block-ticker, and chunk-resend
 pressure); `--max-dynamite` bounds charges per life (demolition default 200,
 others 3). Bait bots stand nearly still (tiny shuffle) so spawned zombies
-pursue a fixed cluster: pair with `7dtd-apm scenario run --rally` to measure
+pursue a fixed cluster: pair with `7dtd-server-apm scenario run --rally` to measure
 AI/pathfinding/combat cost without chunk-streaming noise. Kite bots move in a
 slow continuous arc inside the leash so chasing zombies must repath every tick,
 maximizing A* pathfinding churn (the `AstarVoxelGrid.InitScan` allocation
-hotspot); pair with `7dtd-apm capture --only alloc,app` to measure gross
+hotspot); pair with `7dtd-server-apm capture --only alloc,app` to measure gross
 allocation and name the churn. Traverse bots drop the spawn leash and march in
 a straight line, streaming fresh chunks and tile entities across the map
 (validated: single bot roamed ~1800 m, a 10-bot cohort spread ~3700 m). Bots
@@ -231,7 +233,7 @@ p50/p95/max and spikes over 150 ms (client-perceived lag, distinct from
 server tick stall).
 
 **Stock join flake under churn (root cause closed 2026-08-10 in
-`7dtd-research/docs/network.md` §4.0):** >12-bot cohorts can trigger a stock
+`7dtd-engine-research/docs/network.md` §4.0):** >12-bot cohorts can trigger a stock
 race where `LiteNetLibAuthWrapperServer.ConnectionRequestCheck` enumerates
 `ConnectionManager.Clients.List` on the socket-receive thread
 (`UnsyncedEvents=true`) while the main thread mutates it -> `Collection was
@@ -246,10 +248,10 @@ A second stock bug is pacing-independent and also drops clients: the
 For a heterogeneous cohort (a real population, not one behaviour), `--bot-mix`
 takes a weighted list, e.g. `traverse:35,wander:15,combat:20,bait:15,demolition:10,chatty:5`;
 modes are assigned deterministically by client id so runs are repeatable. It
-overrides `--bot-mode`. The sibling `7dtd-apm` canonical HEAVY load profile
+overrides `--bot-mode`. The sibling `7dtd-server-apm` canonical HEAVY load profile
 (64 players + ~300 zombies, seed-locked) is built on it:
-`../7dtd-apm/plans/profile.canonical.json`, with the tier ladder in
-`../7dtd-apm/plans/profile.tiers.json` (see `../7dtd-apm/docs/LOAD_PROFILE.md`).
+`../7dtd-server-apm/plans/profile.canonical.json`, with the tier ladder in
+`../7dtd-server-apm/plans/profile.tiers.json` (see `../7dtd-server-apm/docs/LOAD_PROFILE.md`).
 
 **Named workload profiles** (`--profile`): `probe` (1 bot, bounded steps, no
 death - join/handshake health), `join-burst` (24 bots, simultaneous joins,
@@ -406,7 +408,7 @@ reported `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
 The post-login package set received by a fresh bot (ConfigFile x42, AuthState,
 IdMapping, WorldSpawnPoints, WorldInfo, WorldAreas, PlayerLoginAnswer,
 PlayerId, Localization, DecoUpdate; no EntitySpawn without other entities)
-matches the documented join path (`7dtd-research/docs/network.md` §3b).
+matches the documented join path (`7dtd-engine-research/docs/network.md` §3b).
 
 ## Reading results
 
@@ -423,7 +425,7 @@ Keep the server build, world and seed, bot count, concurrency, duration, action
 seed, and telnet pressure identical between baseline and candidate. Warm the
 world consistently and avoid comparing initial RWG generation with an already
 generated save. The load generator creates demand; use server-side metrics or
-the sibling `7dtd-apm` project to decide whether a change improved performance.
+the sibling `7dtd-server-apm` project to decide whether a change improved performance.
 
 ## Development and cleanup
 
@@ -436,7 +438,7 @@ make clean     # remove C# bin/ and obj/
 The mock tests validate protocol layouts and state transitions, but a live
 server run is still required to validate compatibility with a particular 7DTD
 release. `--golden-wire` cross-checks package body layouts against the
-independent IL-derived wire docs in `7dtd-research/docs/protocol-packages.md`
+independent IL-derived wire docs in `7dtd-engine-research/docs/protocol-packages.md`
 §6.23 (e.g. `NetPackageEntityPosAndRot`: `rot:Vector3` at byte 17 when
 `bUseQRotation=false`, `qrot:Quaternion` when true - both sources agree).
 
@@ -445,19 +447,19 @@ Current protocol, workload, and operations work is tracked in
 
 ## Relationship to other repos
 
-- **7dtd-realworld** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
+- **7dtd-realearth** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
   Load-test bots used to live under `tools/simulated_client/`; they now live here.
-- **7dtd-apm**: dedicated efficiency / APM toolkit (separate concern).
-- **7dtd-research**: stock-engine RE corpus; wire layouts here are cross-checked
+- **7dtd-server-apm**: dedicated efficiency / APM toolkit (separate concern).
+- **7dtd-engine-research**: stock-engine RE corpus; wire layouts here are cross-checked
   against its IL-derived docs (`protocol-packages.md` §6.23), and the stock
   join-churn race it documents (`network.md` §4.0) is what `--ramp-ms`
   mitigates. This repo's server wrapper is also the **live-verification rig** for
   scheduled stock behavior: the research corpus's live runs (air drop, wandering
   horde, blood-moon start, save-format round-trips, weather state; `settime`-driven,
   bot-joined) boot through `scripts/start_dedicated_*.sh` - see
-  `7dtd-research/docs/re-methodology.md` 5e. Any save these sessions produce is
+  `7dtd-engine-research/docs/re-methodology.md` 5e. Any save these sessions produce is
   machine-checked against the documented on-disk codecs by
-  `7dtd-research/tools/save_roundtrip_check.py` (`make save-roundtrip` there):
+  `7dtd-engine-research/tools/save_roundtrip_check.py` (`make save-roundtrip` there):
   main.ttw, region files, chunk bodies, decoration/multiblocks, id mappings -
   and the stock server itself boots the probe saves back (game-reader round-trip,
   `save-region.md` §1).
