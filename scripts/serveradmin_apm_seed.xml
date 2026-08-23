@@ -55,8 +55,10 @@
   <users>
     <!-- <user platform="Steam" userid="76561198021925107" name="Hint on who this user is" permission_level="0" /> -->
     <!-- <group steamID="103582791434672565" name="Steam Universe" permission_level_default="1000" permission_level_mod="0" /> -->
+    <!-- Placeholder ids only: never commit personal platform identities here.
+         start_dedicated_prefab.sh substitutes your own ids at seed time via
+         RE_ADMIN_STEAM_ID64 / RE_ADMIN_EOS_ID. -->
     <user platform="Steam" userid="76561198000000001" name="APM dashboard administrator" permission_level="0" />
-    <user platform="EOS" userid="00022b9cbf4b4e23ae412f26de6b1640" name="maci" permission_level="0" />
   </users>
   <whitelist>
     <!-- ONLY PUT ITEMS IN WHITELIST IF YOU WANT WHITELIST ONLY ENABLED!!! -->
@@ -107,6 +109,8 @@
   </apitokens>
   <webmodules />
   <webusers>
-    <user name="admin" pass="ISMvKXpXpadDiUoOSoAfww==" platform="Steam" userid="76561198055688007" crossplatform="EOS" crossuserid="00022b9cbf4b4e23ae412f26de6b1640" />
+    <!-- Placeholder ids (well-formed but synthetic); RE_ADMIN_STEAM_ID64 /
+         RE_ADMIN_EOS_ID replace them when the dedicated script seeds this file. -->
+    <user name="admin" pass="ISMvKXpXpadDiUoOSoAfww==" platform="Steam" userid="76561198000000001" crossplatform="EOS" crossuserid="00020000000000000000000000000001" />
   </webusers>
 </adminTools>

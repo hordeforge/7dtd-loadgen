@@ -124,7 +124,19 @@ mkdir -p "$USERDATA/Saves" "$USERDATA/Logs" "$USERDATA/GeneratedWorlds"
 SERVERADMIN="$USERDATA/Saves/serveradmin.xml"
 SERVERADMIN_SEED="$ROOT/scripts/serveradmin_apm_seed.xml"
 if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/dev/null; then
+  # The committed seed carries synthetic placeholder platform ids. Personal
+  # identities stay local: export RE_ADMIN_STEAM_ID64 / RE_ADMIN_EOS_ID to have
+  # your own ids substituted into the seeded copy (never written back to the repo).
   cp "$SERVERADMIN_SEED" "$SERVERADMIN"
+  if [[ "${RE_ADMIN_STEAM_ID64:-}" =~ ^[0-9]{17}$ ]]; then
+    sed -i "s/76561198000000001/${RE_ADMIN_STEAM_ID64}/g" "$SERVERADMIN"
+  fi
+  if [[ "${RE_ADMIN_EOS_ID:-}" =~ ^[0-9a-fA-F]{32}$ ]]; then
+    sed -i "s/00020000000000000000000000000001/${RE_ADMIN_EOS_ID}/g" "$SERVERADMIN"
+  fi
+  if [[ -z "${RE_ADMIN_STEAM_ID64:-}${RE_ADMIN_EOS_ID:-}" ]]; then
+    echo "note: admin seed uses placeholder platform ids; set RE_ADMIN_STEAM_ID64 / RE_ADMIN_EOS_ID to bind your own"
+  fi
   echo "seeded APM dashboard admin (admin/admin webuser) → $SERVERADMIN"
 fi
 
