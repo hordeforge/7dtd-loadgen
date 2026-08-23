@@ -10,7 +10,6 @@ HOST="${LOADGEN_HOST:-127.0.0.1}"
 # ServerPort + 2 (26902 for the stock 26900 server). 26900 itself is the game
 # client's "Connect to IP" port and a bot connect there fails (ConnectionFailed).
 PORT="${LOADGEN_PORT:-26902}"
-KEY="${LOADGEN_KEY:-}"
 TIMEOUT="${LOADGEN_TIMEOUT:-8000}"
 COUNT="${LOADGEN_COUNT:-2}"
 CONCURRENCY="${LOADGEN_CONCURRENCY:-0}"   # 0 = CLI auto
@@ -33,7 +32,6 @@ SPAWN_EVERY_MS="${LOADGEN_SPAWN_EVERY_MS:-}"
 HORDE_EVERY_MS="${LOADGEN_HORDE_EVERY_MS:-}"
 TELNET_HOST="${LOADGEN_TELNET_HOST:-}"
 TELNET_PORT="${LOADGEN_TELNET_PORT:-}"
-TELNET_PASSWORD="${LOADGEN_TELNET_PASSWORD:-}"
 BENCH_WARMUP_MS="${LOADGEN_BENCH_WARMUP_MS:-}"
 BENCH_WINDOW_MS="${LOADGEN_BENCH_WINDOW_MS:-}"
 HORDE_WAVES="${LOADGEN_HORDE_WAVES:-}"
@@ -81,7 +79,9 @@ case "$MODE" in
   join)
     args+=(--join --host "$HOST" --port "$PORT" --count "$COUNT" --timeout "$TIMEOUT"
            --actions "$ACTIONS" --min-pass-rate "$MIN_PASS" --log "$LOG")
-    if [[ -n "$KEY" ]]; then args+=(--key "$KEY"); fi
+    # Secrets are NOT forwarded as argv (ps-visible). The client reads
+    # LOADGEN_KEY / LOADGEN_TELNET_PASSWORD from its inherited environment;
+    # an explicit flag on the CLI still overrides the env.
     if [[ -n "$BOT_MIX" ]]; then args+=(--bot-mix "$BOT_MIX"); fi
     if [[ -n "$BOT_MODE" ]]; then args+=(--mode "$BOT_MODE"); fi
     if [[ -n "$DEATH" ]]; then args+=(--death "$DEATH"); fi
@@ -91,7 +91,6 @@ case "$MODE" in
     if [[ -n "$SPAWN_EVERY_MS" ]]; then args+=(--spawn-every-ms "$SPAWN_EVERY_MS"); fi
     if [[ -n "$TELNET_HOST" ]]; then args+=(--telnet-host "$TELNET_HOST"); fi
     if [[ -n "$TELNET_PORT" ]]; then args+=(--telnet-port "$TELNET_PORT"); fi
-    if [[ -n "$TELNET_PASSWORD" ]]; then args+=(--telnet-password "$TELNET_PASSWORD"); fi
     if [[ -n "$BENCH_WARMUP_MS" ]]; then args+=(--bench-warmup-ms "$BENCH_WARMUP_MS"); fi
     if [[ -n "$BENCH_WINDOW_MS" ]]; then args+=(--bench-window-ms "$BENCH_WINDOW_MS"); fi
     if [[ -n "$HORDE_EVERY_MS" ]]; then args+=(--horde-every-ms "$HORDE_EVERY_MS"); fi
@@ -105,7 +104,6 @@ case "$MODE" in
   *)
     args+=(--host "$HOST" --port "$PORT" --count "$COUNT" --timeout "$TIMEOUT"
            --min-pass-rate "$MIN_PASS" --log "$LOG")
-    if [[ -n "$KEY" ]]; then args+=(--key "$KEY"); fi
     ;;
 esac
 if [[ "$CONCURRENCY" != "0" && -n "$CONCURRENCY" && "$MODE" != "self-test-join" ]]; then

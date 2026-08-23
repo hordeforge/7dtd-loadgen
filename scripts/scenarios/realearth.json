@@ -5,7 +5,7 @@
     "host": "127.0.0.1",
     "port": 26902,
     "telnetPort": 8081,
-    "telnetPasswordEnv": "SEVENDTD_TELNET_PASSWORD",
+    "telnetPasswordEnv": "LOADGEN_TELNET_PASSWORD",
     "telnetPasswordDefault": "retest",
     "userdata": "~/.cache/realearth-dedicated",
     "realearthRoot": "../7dtd-realworld"

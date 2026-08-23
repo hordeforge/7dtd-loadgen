@@ -85,7 +85,8 @@ RE_WORLD_NAME=RWG RE_WORLD_GEN_SIZE=4096 RE_WORLD_GEN_SEED=myseed \
 
 Server userdata defaults to `~/.cache/7dtd-loadgen` (`RE_DEDICATED_USERDATA`).
 
-Telnet (for scouts / diagnostics): `127.0.0.1:8081` password `retest`.
+Telnet (for scouts / diagnostics): `127.0.0.1:8081`, password `retest` unless
+overridden with `LOADGEN_TELNET_PASSWORD`.
 
 ## RealEarth (sibling `7dtd-realworld`)
 
@@ -269,19 +270,83 @@ stream: periodic scout-horde bursts that spawn at distance and path in as a
 group (long-range pathfinding + spawn manager). Treat the telnet password as
 test-only and do not expose the configured port publicly.
 
-Runner scripts expose the common values as environment variables:
+Runner scripts expose the common values as environment variables.
 
-```bash
-LOADGEN_COUNT=24 \
-LOADGEN_PORT=26902 \
-LOADGEN_TIMEOUT=1800000 \
-LOADGEN_BOT_MODE=demolition \
-LOADGEN_MAX_DYNAMITE=200 \
-LOADGEN_SPAWN_ENTITY=zombieBoe \
-LOADGEN_SPAWN_PER_PLAYER=8 \
-LOADGEN_SPAWN_EVERY_MS=15000 \
-./scripts/run_loadgen.sh
-```
+## Configuration reference
+
+Precedence everywhere: **CLI flag > environment variable > built-in default**.
+Out-of-range values are rejected at startup with the offending option named and
+its valid range given (ports outside 1..65535, `--min-pass-rate` outside 0..1,
+non-positive timeouts, negative respawn delays), instead of failing confusingly
+mid-run or silently changing gate semantics.
+
+### Client runner variables (`scripts/run_loadgen.sh`, `make join`)
+
+| Variable | Default | Meaning / valid values |
+|---|---|---|
+| `LOADGEN_MODE` | `probe` | `probe` \| `join` \| `self-test` \| `self-test-join` |
+| `LOADGEN_HOST` | `127.0.0.1` | target server host |
+| `LOADGEN_PORT` | `26902` | LiteNet data port = ServerPort + 2 |
+| `LOADGEN_COUNT` | `2` | cohort size, >= 1 |
+| `LOADGEN_CONCURRENCY` | `0` (auto) | live-bot cap; 0 = count for joins |
+| `LOADGEN_TIMEOUT` | `8000` (`make join`: `3600000`) | per-run wall clock, ms > 0 |
+| `LOADGEN_ACTIONS` | `24` | steps after join; 0 = endless wander until death/timeout |
+| `LOADGEN_MIN_PASS_RATE` | `0.95` | successful-client fraction, 0..1 |
+| `LOADGEN_RAMP_MS` | `0` | join stagger window, clamped 0..3600000 |
+| `LOADGEN_QUIET` | unset | non-empty silences probe/self-test logs |
+| `LOADGEN_SELF_TEST` | `0` | `1` forces self-test mode |
+| `LOADGEN_BOT_MODE` | auto | one of the bot modes listed above |
+| `LOADGEN_BOT_MIX` | empty | weighted mix, e.g. `traverse:35,combat:20` (overrides `LOADGEN_BOT_MODE`) |
+| `LOADGEN_DEATH` | auto | `none` \| `drown` \| `suicide` \| `killed` \| `random` |
+| `LOADGEN_PACE_MS` | mode default | ms between action steps |
+| `LOADGEN_SEED` | `42` | action RNG seed for reproducible runs |
+| `LOADGEN_NO_SPAWN` | unset | non-empty disables telnet zombie spawns |
+| `LOADGEN_SPAWN_ENTITY` | `zombieBoe` | comma-separated entity classes |
+| `LOADGEN_SPAWN_PER_PLAYER` | `4` | entities per player per wave |
+| `LOADGEN_SPAWN_EVERY_MS` | `20000` | spawn wave cadence |
+| `LOADGEN_HORDE_EVERY_MS` | `0` (off) | wandering-horde cadence |
+| `LOADGEN_HORDE_WAVES` | `3` | waves per horde burst |
+| `LOADGEN_MAX_DYNAMITE` | `3` (`demolition`: `200`) | charges per life |
+| `LOADGEN_TELNET_HOST` / `LOADGEN_TELNET_PORT` | `127.0.0.1` / `8081` | dedicated admin telnet endpoint |
+| `LOADGEN_BENCH_WARMUP_MS` / `LOADGEN_BENCH_WINDOW_MS` | profile preset | bench measurement timing |
+| `LOADGEN_STATS_JSON` / `LOADGEN_MANIFEST` | under `src/LoadGen/bin` | evidence output paths |
+| `RE_SCRATCH` | unset | copy logs/evidence here instead of the build tree |
+
+### Secrets: environment over argv
+
+A secret on the command line is visible in `ps` output. Both credentials can be
+supplied via the environment instead; an explicit flag always wins:
+
+| Secret | Environment variable | Flag fallback | Default |
+|---|---|---|---|
+| game server join password | `LOADGEN_KEY` | `--key` / `--password` | empty (open server) |
+| dedicated admin telnet password | `LOADGEN_TELNET_PASSWORD` | `--telnet-password` | `retest` (test-only lab credential) |
+
+Treat both as test-only; do not expose the configured ports publicly
+(`docs/THREAT_MODEL.md` R2).
+
+### Dedicated server start variables
+
+Consumed by `scripts/start_dedicated_*.sh` (also listed in `make help`):
+`SEVENDTD_SERVER_DIR`, `RE_DEDICATED_USERDATA`, `RE_DEDICATED_FOREGROUND`,
+`RE_WORLD_NAME`, `RE_WORLD_GEN_SIZE`, `RE_WORLD_GEN_SEED`, `RE_GAME_NAME`,
+`RE_SERVER_MAX_PLAYERS` (default 64), `RE_MAX_ZOMBIES` (64),
+`RE_ENEMY_DIFFICULTY` (1), `RE_TELNET_PORT` (8081), `RE_DYNAMIC_MESH`
+(false).
+
+### Comparison, bench, and stress lanes
+
+- SUT compare: `COMPARE_COUNT`, `COMPARE_TIMEOUT_MS`, `COMPARE_WORLD`,
+  `COMPARE_HOST`, `COMPARE_ACTIONS`, `COMPARE_APM`, `COMPARE_APM_SECONDS`,
+  `COMPARE_TELNET_PORT_STOCK` / `COMPARE_TELNET_PORT_ZDTD`,
+  `COMPARE_TELNET_PASSWORD` (`SCENARIO` / `SUT` are make variables).
+- Bench lane: `LAP` (make variable), `BENCH_LAPS_ONLY`, `BENCH_ADMIN_PORT`.
+- Blood-moon stress profile: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000),
+  `BM_GAMESTAGE` (250), `BM_HOLD_S` (0); telnet credential honors
+  `LOADGEN_TELNET_PASSWORD` (`SEVENDTD_TELNET_PASSWORD` accepted as legacy alias).
+- Capacity sweep: `SWEEP_STEP`, `SWEEP_MAX`, `SWEEP_BUDGET_MS`.
+- Live RealEarth pytest gates: `LOADGEN_LIVE_REALEARTH=1`, `REALEARTH_ROOT`,
+  `LOADGEN_TEST_SCRATCH`.
 
 Run the executable with `--help` for the complete option list supported by the
 current build.

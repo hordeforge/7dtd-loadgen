@@ -39,6 +39,21 @@ public static class Program
         return rate + 1e-9 >= minPassRate;
     }
 
+    /// <summary>Valid UDP/TCP port range for --port/--telnet-port.</summary>
+    public static bool IsValidPort(int port) => port >= 1 && port <= 65535;
+
+    /// <summary>--min-pass-rate is a client fraction; outside [0,1] the gate
+    /// silently loses meaning (always-fail or always-pass).</summary>
+    public static bool IsValidMinPassRate(double rate) => !double.IsNaN(rate) && rate >= 0.0 && rate <= 1.0;
+
+    /// <summary>Fail fast on an out-of-range configuration value instead of a
+    /// confusing mid-run failure. Exit code 2 matches bad argument values.</summary>
+    internal static int InvalidArg(string flag, string value, string requirement)
+    {
+        Console.Error.WriteLine($"FAIL: invalid {flag} '{value}': {requirement} (see --help)");
+        return 2;
+    }
+
     static int Main(string[] args)
     {
         // Game LiteNetLib logs via UnityEngine.Debug when Logger is null; pure .NET crashes
@@ -235,6 +250,10 @@ public static class Program
     static int RunJoin(string[] args)
     {
         var opt = new GameJoinClient.Options();
+        // Secrets resolve from the environment when the flag is absent, so
+        // operators and runners can keep credentials out of argv (ps-visible).
+        // An explicit --key/--password/--telnet-password always wins.
+        opt.Password = Environment.GetEnvironmentVariable("LOADGEN_KEY") is { Length: > 0 } envKey ? envKey : opt.Password;
         string? logPath = null;
         string? statsJsonPath = null;
         string? runManifestPath = null;
@@ -251,7 +270,12 @@ public static class Program
         bool killFallback = true;
         string telnetHost = "127.0.0.1";
         int telnetPort = 8081;
-        string telnetPassword = "retest";
+        // Test-only lab default; override per environment via the env var or the
+        // flag (AGENTS.md rule 4: prefer env / local config).
+        string telnetPassword =
+            Environment.GetEnvironmentVariable("LOADGEN_TELNET_PASSWORD") is { Length: > 0 } envPw
+                ? envPw
+                : "retest";
         int spawnEveryMs = 20_000;
         int spawnPerPlayer = 4;
         string spawnEntity = "zombieBoe";
@@ -409,6 +433,21 @@ public static class Program
         }
 
         if (count < 1) count = 1;
+        // Startup config gate: reject values that would silently misbehave
+        // mid-run (unroutable port, gate that always fails/passes, instant
+        // timeout, negative sleeps) with a named option and its valid range.
+        if (!IsValidPort(opt.Port))
+            return InvalidArg("--port", opt.Port.ToString(), "an integer 1..65535");
+        if (!IsValidPort(telnetPort))
+            return InvalidArg("--telnet-port", telnetPort.ToString(), "an integer 1..65535");
+        if (!IsValidMinPassRate(minPassRate))
+            return InvalidArg("--min-pass-rate", minPassRate.ToString(), "a fraction between 0 and 1");
+        if (opt.TimeoutMs <= 0)
+            return InvalidArg("--timeout", opt.TimeoutMs.ToString(), "a positive millisecond value");
+        if (opt.RespawnDelayMs < 0)
+            return InvalidArg("--respawn-delay-ms", opt.RespawnDelayMs.ToString(), ">= 0");
+        if (opt.RespawnTimeoutMs <= 0)
+            return InvalidArg("--respawn-timeout-ms", opt.RespawnTimeoutMs.ToString(), "a positive millisecond value");
         // Join bots are long-lived players and never free their slot, so
         // concurrency is the live-player cap. Default it to count (every bot a
         // simultaneous player; --ramp-ms staggers the joins). Warn loudly if the
@@ -989,8 +1028,11 @@ public static class Program
     static int RunProbe(string[] args)
     {
         string host = "127.0.0.1";
-        int port = 26900;
-        string key = "";
+        // Bots (probe included) speak LiteNetLib and must target the data port =
+        // ServerPort + 2 (26902 for the stock 26900 server); a probe on the game
+        // client port gets no protocol response and fails.
+        int port = 26902;
+        string key = Environment.GetEnvironmentVariable("LOADGEN_KEY") is { Length: > 0 } k ? k : "";
         int timeoutMs = 8000;
         string? logPath = null;
         int clientId = 1;
@@ -1011,11 +1053,18 @@ public static class Program
             else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
             else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
-            else if (args[i] == "--ramp-ms" && i + 1 < args.Length) rampMs = int.Parse(args[++i]);
+            // Clamp like the join parser: the ramp delay cast must not overflow.
+            else if (args[i] == "--ramp-ms" && i + 1 < args.Length) rampMs = Math.Clamp(int.Parse(args[++i]), 0, 3_600_000);
             else if (args[i] == "--quiet") quiet = true;
         }
 
         if (count < 1) count = 1;
+        if (!IsValidPort(port))
+            return InvalidArg("--port", port.ToString(), "an integer 1..65535");
+        if (!IsValidMinPassRate(minPassRate))
+            return InvalidArg("--min-pass-rate", minPassRate.ToString(), "a fraction between 0 and 1");
+        if (timeoutMs <= 0)
+            return InvalidArg("--timeout", timeoutMs.ToString(), "a positive millisecond value");
         if (count == 1)
         {
             Action<string>? log = quiet ? null : Console.WriteLine;
@@ -1084,6 +1133,9 @@ public static class Program
             "Notes:\n" +
             "  Walk → world kill → DEATH → respawn → walk again until --timeout. No self-kill.\n" +
             "  Default timeout 1 hour. Rejoins on early disconnect. Telnet zed spawn for empty worlds.\n" +
+            "Secrets via environment (flags override; avoids ps-visible argv):\n" +
+            "  LOADGEN_KEY              server join password (--key/--password fallback)\n" +
+            "  LOADGEN_TELNET_PASSWORD  admin telnet password (--telnet-password fallback)\n" +
             "Examples:\n" +
             "  7dtd-loadgen --join --host 127.0.0.1 --port 26902 --count 8\n" +
             "  7dtd-loadgen --join --count 4 --timeout 1800000 --max-lives 10\n" +
@@ -1376,6 +1428,13 @@ static class SelfTest
             else if (args[i] == "--timeout" && i + 1 < args.Length) timeoutMs = int.Parse(args[++i]);
         }
         if (count < 1) count = 1;
+        // Port 0 = pick an ephemeral port for the in-process host.
+        if (port != 0 && !Program.IsValidPort(port))
+            return Program.InvalidArg("--port", port.ToString(), "0 (ephemeral) or an integer 1..65535");
+        if (!Program.IsValidMinPassRate(minPassRate))
+            return Program.InvalidArg("--min-pass-rate", minPassRate.ToString(), "a fraction between 0 and 1");
+        if (timeoutMs <= 0)
+            return Program.InvalidArg("--timeout", timeoutMs.ToString(), "a positive millisecond value");
         if (concurrency <= 0) concurrency = Math.Clamp(Environment.ProcessorCount * 32, 64, 512);
         concurrency = Math.Min(concurrency, count);
 

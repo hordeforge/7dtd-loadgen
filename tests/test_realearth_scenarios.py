@@ -269,7 +269,7 @@ def _port_open(host: str, port: int, timeout: float = 0.5) -> bool:
 )
 def test_live_realearth_probe_when_server_up():
     host = os.environ.get("LOADGEN_HOST", "127.0.0.1")
-    port = int(os.environ.get("LOADGEN_PORT", "26900"))
+    port = int(os.environ.get("LOADGEN_PORT", "26902"))
     if not _port_open(host, port):
         pytest.skip(f"no listener {host}:{port}; start scripts/start_dedicated_realearth.sh")
     r = _run_cli(
@@ -297,7 +297,7 @@ def test_live_realearth_probe_when_server_up():
 )
 def test_live_realearth_join_wander_when_server_up():
     host = os.environ.get("LOADGEN_HOST", "127.0.0.1")
-    port = int(os.environ.get("LOADGEN_PORT", "26900"))
+    port = int(os.environ.get("LOADGEN_PORT", "26902"))
     if not _port_open(host, port):
         pytest.skip(f"no listener {host}:{port}")
     r = _run_cli(

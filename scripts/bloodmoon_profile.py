@@ -28,7 +28,13 @@ ROOT = Path(__file__).resolve().parent.parent
 HOST = os.environ.get("LOADGEN_HOST", "127.0.0.1")
 GAME_PORT = os.environ.get("LOADGEN_PORT", "26902")
 TELNET_PORT = int(os.environ.get("LOADGEN_TELNET_PORT", "8081"))
-TELNET_PW = os.environ.get("SEVENDTD_TELNET_PASSWORD", "retest")
+# One name for the lab telnet credential across this repo's tools;
+# SEVENDTD_TELNET_PASSWORD stays as a legacy alias.
+TELNET_PW = (
+    os.environ.get("LOADGEN_TELNET_PASSWORD")
+    or os.environ.get("SEVENDTD_TELNET_PASSWORD")
+    or "retest"
+)
 DOTNET = os.environ.get("DOTNET_ROOT", str(Path.home() / ".cache/dotnet-sdk"))
 APM_SNAP = Path(os.environ.get("APM_SNAPSHOT", str(
     Path.home() / ".local/share/Steam/steamapps/common/7 Days to Die Dedicated Server"
