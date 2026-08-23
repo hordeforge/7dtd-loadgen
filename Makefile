@@ -15,7 +15,7 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
@@ -23,6 +23,9 @@ help:
 	@echo "  make build               Build 7dtd-loadgen"
 	@echo "  make selftest            In-process join + respawn CI gate"
 	@echo "  make unittest            C# unit tests (JoinStateMachine, RampDelay, JoinGate)"
+	@echo "  make unittest-one T=Pat  One C# test: class/method name substring"
+	@echo "                           (pytest single test: uv run --locked --extra"
+	@echo "                            dev pytest tests/test_loadgen.py -k name)"
 	@echo "  make test                C# unit tests + Python golden-wire/RealEarth gates"
 	@echo "  make dedicated-4k        Start RWG 4096 dedicated (POI/sleepers, no RealEarth)"
 	@echo "  make dedicated           Alias of dedicated-4k"
@@ -70,12 +73,31 @@ selftest: build
 unittest:
 	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true
 
+# One C# test without the full-suite noise: make unittest-one T=JoinStateMachineTests
+# (T matches any substring of a class or method fully qualified name)
+T ?=
+ifneq ($(T),)
+unittest-one:
+	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q \
+		-p:RestoreLockedMode=true --filter "FullyQualifiedName~$(T)"
+else
+unittest-one:
+	@echo "ERROR: no test given; usage: make unittest-one T=<class-or-method-substring>" >&2
+	@echo "       e.g. make unittest-one T=JoinStateMachineTests" >&2
+	@exit 1
+endif
+
 test: build selftest unittest
 	@if command -v uv >/dev/null; then \
 		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short; \
-	else \
+	elif python3 -c 'import pytest' 2>/dev/null; then \
 		echo "WARN: uv not found; falling back to system python3" >&2; \
 		cd "$(ROOT)" && python3 -m pytest tests -q --tb=short; \
+	else \
+		echo "ERROR: neither uv nor a python3 with pytest is installed." >&2; \
+		echo "       Install uv (https://docs.astral.sh/uv/) and rerun 'make test';" >&2; \
+		echo "       it provisions the locked test env from uv.lock automatically." >&2; \
+		exit 1; \
 	fi
 
 dedicated dedicated-4k:
