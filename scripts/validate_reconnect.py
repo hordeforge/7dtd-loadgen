@@ -63,7 +63,8 @@ def wait_gone(timeout_s: float = 60.0) -> bool:
 def server_pid() -> int | None:
     try:
         out = subprocess.run(
-            ["ss", "-tlnp"], capture_output=True, text=True, check=False
+            ["ss", "-tlnp"], capture_output=True,
+            text=True, encoding="utf-8", errors="replace", check=False
         ).stdout
         # Telnet (8081) binds during boot before the game port (26900) - check
         # both so a kill during startup still finds the server.
@@ -142,7 +143,7 @@ def main() -> int:
     # The cohort must never outlive this script: every exit path (failed kill,
     # failed restart, Ctrl-C) terminates the bots in the finally below, or they
     # keep wandering against a dead server until their wall clock expires.
-    with log_path.open("w") as fh:
+    with log_path.open("w", encoding="utf-8") as fh:
         proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT)
         try:
             time.sleep(args.hold_before_kill)

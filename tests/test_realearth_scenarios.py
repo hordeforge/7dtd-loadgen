@@ -233,6 +233,8 @@ def test_run_scenario_list_includes_realearth_ids():
         cwd=str(ROOT),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=15,
     )
     assert r.returncode == 0, r.stderr
@@ -248,6 +250,8 @@ def test_run_scenario_ci_selftest_via_script():
         cwd=str(ROOT),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=90,
     )
     out = (r.stdout or "") + (r.stderr or "")

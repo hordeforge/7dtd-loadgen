@@ -34,6 +34,8 @@ def build() -> None:
         env=dotnet_env(),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=120,
     )
     assert r.returncode == 0, f"build failed:\n{r.stdout}\n{r.stderr}"
@@ -44,6 +46,9 @@ def run(args: list[str], timeout: float = 60.0) -> subprocess.CompletedProcess[s
     build()
     env = dotnet_env()
     cmd = [str(EXE), *args] if EXE.is_file() else ["dotnet", "exec", str(DLL), *args]
+    # Client logs embed server-controlled chat text (non-ASCII player names);
+    # a locale-default decode would raise on the first non-UTF-8-locale byte.
     return subprocess.run(
-        cmd, cwd=str(ROOT), env=env, capture_output=True, text=True, timeout=timeout
+        cmd, cwd=str(ROOT), env=env, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", timeout=timeout,
     )

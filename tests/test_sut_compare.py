@@ -25,6 +25,8 @@ def _py(args: list[str]) -> subprocess.CompletedProcess[str]:
         cwd=str(ROOT),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=60,
     )
 

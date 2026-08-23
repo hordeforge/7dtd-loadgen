@@ -253,14 +253,24 @@ public sealed class TelnetAdmin : IDisposable
         if (_buf.Length > 8000)
         {
             _buf.Remove(0, _buf.Length - 4000);
-            // The ring cut can land between the halves of a surrogate pair
-            // (chat text with emoji); drop a lone lead so the retained window
-            // stays well-formed.
-            if (_buf.Length > 0 && char.IsHighSurrogate(_buf[0])
-                && (_buf.Length == 1 || !char.IsLowSurrogate(_buf[1])))
-                _buf.Remove(0, 1);
+            DropUnpairedRingHead(_buf);
         }
         return all;
+    }
+
+    /// <summary>After a ring cut the retained window can begin inside a
+    /// surrogate pair (chat text with emoji at the cut point): the cut either
+    /// keeps only a trail half (leading lone low surrogate) or splits before
+    /// the lead. Drop an unpaired half so the window stays well-formed UTF-16.</summary>
+    internal static void DropUnpairedRingHead(StringBuilder buf)
+    {
+        if (buf.Length == 0) return;
+        char c0 = buf[0];
+        bool unpaired = char.IsHighSurrogate(c0)
+            ? buf.Length == 1 || !char.IsLowSurrogate(buf[1])
+            : char.IsLowSurrogate(c0);
+        if (unpaired)
+            buf.Remove(0, 1);
     }
 
     public void Dispose()

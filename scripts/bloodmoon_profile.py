@@ -116,7 +116,7 @@ def start_server():
         r = subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
                            env=env, timeout=400, stdout=fh, stderr=subprocess.STDOUT)
     if r.returncode != 0:
-        tail = log_path.read_text(errors="replace")[-2000:] if log_path.is_file() else ""
+        tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:] if log_path.is_file() else ""
         raise RuntimeError(f"start_dedicated_prefab failed rc={r.returncode}\n{tail}")
     time.sleep(5)
 
