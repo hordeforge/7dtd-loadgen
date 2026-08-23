@@ -81,7 +81,7 @@ public sealed class GameJoinClient
         public int PaceMs { get; set; } = -1;
 
         /// <summary>Dynamite cap per life (Demolition mode raises this).</summary>
-        public int MaxDynamitePerLife { get; set; } = 3;
+        public int MaxDynamitePerLife { get; set; } = ActionLoop.DefaultMaxDynamitePerLife;
         /// <summary>Total bots in this run (chat throttle).</summary>
         public int CohortSize { get; set; } = 1;
         /// <summary>After world death: request spawn and walk again (default true).</summary>

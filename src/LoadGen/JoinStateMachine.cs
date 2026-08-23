@@ -85,6 +85,49 @@ public sealed class JoinStateMachine
     /// <summary>True when the client should stop its main loop (not merely "joined").</summary>
     public bool IsTerminal => Stage is JoinStage.Failed or JoinStage.Disconnected;
 
+    /// <summary>Sum another state's per-session counters into this aggregate
+    /// (the orchestrator folds every rejoin attempt into one report line).</summary>
+    public void AddCounters(JoinStateMachine other)
+    {
+        WalkActions += other.WalkActions;
+        JumpActions += other.JumpActions;
+        CrouchActions += other.CrouchActions;
+        AimActions += other.AimActions;
+        TurnActions += other.TurnActions;
+        StrafeActions += other.StrafeActions;
+        LookActions += other.LookActions;
+        ChatActions += other.ChatActions;
+        BreakBlockActions += other.BreakBlockActions;
+        AttackActions += other.AttackActions;
+        DrownActions += other.DrownActions;
+        SuicideActions += other.SuicideActions;
+        KilledActions += other.KilledActions;
+        DeathCount += other.DeathCount;
+        RespawnCount += other.RespawnCount;
+    }
+
+    /// <summary>Overwrite this state's counters with aggregate totals so the
+    /// final snapshot reports the whole session, not just the last attempt.</summary>
+    public void SetCounters(JoinStateMachine totals)
+    {
+        WalkActions = totals.WalkActions;
+        JumpActions = totals.JumpActions;
+        CrouchActions = totals.CrouchActions;
+        AimActions = totals.AimActions;
+        TurnActions = totals.TurnActions;
+        StrafeActions = totals.StrafeActions;
+        LookActions = totals.LookActions;
+        ChatActions = totals.ChatActions;
+        BreakBlockActions = totals.BreakBlockActions;
+        AttackActions = totals.AttackActions;
+        DrownActions = totals.DrownActions;
+        SuicideActions = totals.SuicideActions;
+        KilledActions = totals.KilledActions;
+        DeathCount = totals.DeathCount;
+        RespawnCount = totals.RespawnCount;
+        RejoinCount = totals.RejoinCount;
+    }
+
     /// <summary>Clear death flags after a successful respawn so the next life can walk.</summary>
     public void ClearDeathForNewLife()
     {

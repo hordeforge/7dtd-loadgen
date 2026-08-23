@@ -261,6 +261,21 @@ public static class Program
         return rc;
     }
 
+    /// <summary>Aggregate action/death counters for stats-json. Longs because the
+    /// sum across up to 1000 bots on a multi-day run exceeds int.MaxValue (int
+    /// Sum wraps silently under unchecked arithmetic).</summary>
+    readonly record struct CohortCounters(
+        long Walks, long Jumps, long Crouches, long Aims, long Turns, long Strafes,
+        long Looks, long Chats, long Breaks, long Attacks, long Drowns, long Suicides,
+        long Killed, int DiedClients, long TotalDeaths, long TotalRespawns, long TotalRejoins)
+    {
+        public static CohortCounters FromState(JoinStateMachine sm) => new(
+            sm.WalkActions, sm.JumpActions, sm.CrouchActions, sm.AimActions, sm.TurnActions,
+            sm.StrafeActions, sm.LookActions, sm.ChatActions, sm.BreakBlockActions,
+            sm.AttackActions, sm.DrownActions, sm.SuicideActions, sm.KilledActions,
+            sm.Died ? 1 : 0, sm.DeathCount, sm.RespawnCount, sm.RejoinCount);
+    }
+
     static int RunJoin(string[] args)
     {
         var opt = new GameJoinClient.Options();
@@ -397,8 +412,9 @@ public static class Program
             {
                 if (ActionLoop.TryParseMode(args[++i], out var mode))
                 {
-                    if (mode == ActionLoop.BotMode.Demolition && opt.MaxDynamitePerLife == 3)
-                        opt.MaxDynamitePerLife = 200;
+                    if (mode == ActionLoop.BotMode.Demolition
+                        && opt.MaxDynamitePerLife == ActionLoop.DefaultMaxDynamitePerLife)
+                        opt.MaxDynamitePerLife = ActionLoop.DemolitionMaxDynamitePerLife;
                     opt.Mode = mode;
                     opt.WanderUntilDeath = mode == ActionLoop.BotMode.Wander;
                     modeSet = true;
@@ -560,17 +576,18 @@ public static class Program
         (int rc, JoinStateMachine s) RunWithRejoin(int clientId, Action<string>? log)
         {
             var sessionSw = Stopwatch.StartNew();
-            int accWalks = 0, accJumps = 0, accCrouch = 0, accAim = 0, accTurn = 0;
-            int accStrafe = 0, accLook = 0, accChat = 0, accBreak = 0, accAtk = 0;
-            int accDrown = 0, accSuicide = 0, accKilled = 0, accDeaths = 0, accRespawns = 0, accRejoins = 0;
+            // Aggregate counters across rejoin attempts; the last attempt's state
+            // snapshot still carries stage/death/entity fields for reporting.
+            var totals = new JoinStateMachine();
             int lastRc = 1;
             JoinStateMachine last = new();
             int attempt = 0;
             var clientMode = ModeForClient(clientId);
             int clientDynamite =
-                clientMode == ActionLoop.BotMode.Demolition && opt.MaxDynamitePerLife <= 3
-                    ? 200
-                    : opt.MaxDynamitePerLife;
+                clientMode == ActionLoop.BotMode.Demolition
+                    && opt.MaxDynamitePerLife <= ActionLoop.DefaultMaxDynamitePerLife
+                        ? ActionLoop.DemolitionMaxDynamitePerLife
+                        : opt.MaxDynamitePerLife;
             while (sessionSw.ElapsedMilliseconds + 5_000 < opt.TimeoutMs)
             {
                 attempt++;
@@ -631,22 +648,8 @@ public static class Program
                         $"[{DateTime.UtcNow:O}] join#{clientId} EX: {ex.GetType().Name}: {ex.Message}");
                 }
                 last = c.State;
-                accWalks += last.WalkActions;
-                accJumps += last.JumpActions;
-                accCrouch += last.CrouchActions;
-                accAim += last.AimActions;
-                accTurn += last.TurnActions;
-                accStrafe += last.StrafeActions;
-                accLook += last.LookActions;
-                accChat += last.ChatActions;
-                accBreak += last.BreakBlockActions;
-                accAtk += last.AttackActions;
-                accDrown += last.DrownActions;
-                accSuicide += last.SuicideActions;
-                accKilled += last.KilledActions;
-                accDeaths += last.DeathCount;
-                accRespawns += last.RespawnCount;
-                accRejoins += attempt > 1 ? 1 : 0; // every retry past the first is a rejoin
+                totals.AddCounters(last);
+                if (attempt > 1) totals.RejoinCount++; // every retry past the first is a rejoin
 
                 // Intentional end of budget (walked until timeout) or hard fail without join.
                 // Recompute remaining fresh: a join attempt can burn most of the
@@ -678,24 +681,56 @@ public static class Program
                 }
                 break;
             }
-            // Fold aggregates into last state snapshot for reporting.
-            last.WalkActions = accWalks;
-            last.JumpActions = accJumps;
-            last.CrouchActions = accCrouch;
-            last.AimActions = accAim;
-            last.TurnActions = accTurn;
-            last.StrafeActions = accStrafe;
-            last.LookActions = accLook;
-            last.ChatActions = accChat;
-            last.BreakBlockActions = accBreak;
-            last.AttackActions = accAtk;
-            last.DrownActions = accDrown;
-            last.SuicideActions = accSuicide;
-            last.KilledActions = accKilled;
-            last.DeathCount = accDeaths;
-            last.RespawnCount = accRespawns;
-            last.RejoinCount = accRejoins;
+            // Fold aggregate counters into the last state snapshot for reporting.
+            last.SetCounters(totals);
             return (lastRc, last);
+        }
+
+        // Shared stats-json body for single- and multi-bot runs so the schema
+        // cannot drift between the two writers (ping evidence included in both).
+        Dictionary<string, object?> BuildStatsPayload(int total, int pass, in CohortCounters c)
+        {
+            double rate = total == 0 ? 0 : (double)pass / total;
+            var ping = PingStats.Summary();
+            return new Dictionary<string, object?>
+            {
+                ["schema"] = "7dtd.loadgen.stats.v1",
+                ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
+                ["host"] = opt.Host,
+                ["port"] = opt.Port,
+                ["utc"] = DateTime.UtcNow.ToString("o"),
+                ["total"] = total,
+                ["pass"] = pass,
+                ["fail"] = total - pass,
+                ["passRate"] = rate,
+                ["mode"] = opt.Mode.ToString(),
+                ["death"] = opt.Death.ToString(),
+                ["walks"] = c.Walks,
+                ["jumps"] = c.Jumps,
+                ["crouches"] = c.Crouches,
+                ["aims"] = c.Aims,
+                ["turns"] = c.Turns,
+                ["strafes"] = c.Strafes,
+                ["looks"] = c.Looks,
+                ["chats"] = c.Chats,
+                ["breaks"] = c.Breaks,
+                ["attacks"] = c.Attacks,
+                ["drowns"] = c.Drowns,
+                ["suicides"] = c.Suicides,
+                ["killed"] = c.Killed,
+                ["diedClients"] = c.DiedClients,
+                ["totalDeaths"] = c.TotalDeaths,
+                ["totalRespawns"] = c.TotalRespawns,
+                ["totalRejoins"] = c.TotalRejoins,
+                ["minPassRate"] = minPassRate,
+                ["gatePass"] = JoinGatePass(pass, total, minPassRate),
+                ["pingSamples"] = ping.count,
+                ["pingAvgMs"] = Math.Round(ping.avg, 1),
+                ["pingP50Ms"] = ping.p50,
+                ["pingP95Ms"] = ping.p95,
+                ["pingMaxMs"] = ping.max,
+                ["pingSpikesOver150Ms"] = ping.spikes,
+            };
         }
 
         if (count == 1)
@@ -712,41 +747,8 @@ public static class Program
             // is uniform (probe-15s/join-fast/join-probe/horde-lite are count=1).
             if (!string.IsNullOrEmpty(statsJsonPath))
             {
-                int pass1 = rc == 0 ? 1 : 0;
                 var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
-                var payload = new Dictionary<string, object?>
-                {
-                    ["schema"] = "7dtd.loadgen.stats.v1",
-                    ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
-                    ["host"] = opt.Host,
-                    ["port"] = opt.Port,
-                    ["utc"] = DateTime.UtcNow.ToString("o"),
-                    ["total"] = 1,
-                    ["pass"] = pass1,
-                    ["fail"] = 1 - pass1,
-                    ["passRate"] = pass1,
-                    ["mode"] = opt.Mode.ToString(),
-                    ["death"] = opt.Death.ToString(),
-                    ["walks"] = sm.WalkActions,
-                    ["jumps"] = sm.JumpActions,
-                    ["crouches"] = sm.CrouchActions,
-                    ["aims"] = sm.AimActions,
-                    ["turns"] = sm.TurnActions,
-                    ["strafes"] = sm.StrafeActions,
-                    ["looks"] = sm.LookActions,
-                    ["chats"] = sm.ChatActions,
-                    ["breaks"] = sm.BreakBlockActions,
-                    ["attacks"] = sm.AttackActions,
-                    ["drowns"] = sm.DrownActions,
-                    ["suicides"] = sm.SuicideActions,
-                    ["killed"] = sm.KilledActions,
-                    ["diedClients"] = sm.Died ? 1 : 0,
-                    ["totalDeaths"] = sm.DeathCount,
-                    ["totalRespawns"] = sm.RespawnCount,
-                    ["totalRejoins"] = sm.RejoinCount,
-                    ["minPassRate"] = minPassRate,
-                    ["gatePass"] = pass1 >= minPassRate - 1e-9,
-                };
+                var payload = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm));
                 WriteArtifact("stats", statsJsonPath, () =>
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
@@ -909,49 +911,12 @@ public static class Program
         Console.WriteLine(report);
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
         {
-            var payload = new Dictionary<string, object?>
-            {
-                ["schema"] = "7dtd.loadgen.stats.v1",
-                ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
-                ["host"] = opt.Host,
-                ["port"] = opt.Port,
-                ["utc"] = DateTime.UtcNow.ToString("o"),
-                ["total"] = count,
-                ["pass"] = pass,
-                ["fail"] = count - pass,
-                ["passRate"] = rate,
-                ["mode"] = opt.Mode.ToString(),
-                ["death"] = opt.Death.ToString(),
-                ["walks"] = walks,
-                ["jumps"] = jumps,
-                ["crouches"] = crouches,
-                ["aims"] = aims,
-                ["turns"] = turns,
-                ["strafes"] = strafes,
-                ["looks"] = looks,
-                ["chats"] = chats,
-                ["breaks"] = breaks,
-                ["attacks"] = attacks,
-                ["drowns"] = drowns,
-                ["suicides"] = suicides,
-                ["killed"] = killed,
-                ["diedClients"] = died,
-                ["totalDeaths"] = totalDeaths,
-                ["totalRespawns"] = totalRespawns,
-                ["totalRejoins"] = totalRejoins,
-                ["world_killed"] = worldKilled,
-                ["timeout_alive"] = timedOut,
-                ["disconnect"] = disc,
-                ["minPassRate"] = minPassRate,
-                ["gatePass"] = JoinGatePass(pass, count, minPassRate),
-            };
-            var ping = PingStats.Summary();
-            payload["pingSamples"] = ping.count;
-            payload["pingAvgMs"] = Math.Round(ping.avg, 1);
-            payload["pingP50Ms"] = ping.p50;
-            payload["pingP95Ms"] = ping.p95;
-            payload["pingMaxMs"] = ping.max;
-            payload["pingSpikesOver150Ms"] = ping.spikes;
+            var payload = BuildStatsPayload(count, pass, new CohortCounters(
+                walks, jumps, crouches, aims, turns, strafes, looks, chats, breaks, attacks,
+                drowns, suicides, killed, died, totalDeaths, totalRespawns, totalRejoins));
+            payload["world_killed"] = worldKilled;
+            payload["timeout_alive"] = timedOut;
+            payload["disconnect"] = disc;
             if (bench is { } b2)
             {
                 var (wStart, wEnd, _) = b2.WindowBounds;

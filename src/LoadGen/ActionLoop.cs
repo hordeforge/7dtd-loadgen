@@ -12,6 +12,13 @@ public static class ActionLoop
     // real client instead of outrunning them.
     const float MaxRunSpeedMps = 6.0f;
 
+    /// <summary>Default per-life dynamite cap; selecting Demolition while the cap
+    /// is still this default auto-raises it to <see cref="DemolitionMaxDynamitePerLife"/>.</summary>
+    public const int DefaultMaxDynamitePerLife = 3;
+
+    /// <summary>Raised dynamite cap for Demolition mode (terrain destruction load).</summary>
+    public const int DemolitionMaxDynamitePerLife = 200;
+
     public enum BotMode
     {
         /// <summary>Walk one heading + occasional jumps until world death.</summary>
@@ -114,7 +121,7 @@ public static class ActionLoop
         /// <summary>Wall-clock cap for the action loop (0 = no extra cap beyond ShouldStop).</summary>
         public int MaxLifetimeMs { get; set; } = 0;
         /// <summary>Dynamite cap per life (Demolition mode raises this).</summary>
-        public int MaxDynamitePerLife { get; set; } = 3;
+        public int MaxDynamitePerLife { get; set; } = DefaultMaxDynamitePerLife;
 
         /// <summary>Returns current LiteNetLib RTT in ms, or -1 when unknown.</summary>
         public Func<int>? PingProbe { get; set; }
