@@ -2,6 +2,12 @@
 
 > **Part of [HordeForge](https://github.com/hordeforge)** — High-Performance Systems Engineering for 7 Days to Die.
 
+![CI](https://github.com/hordeforge/7dtd-loadgen/actions/workflows/ci.yml/badge.svg)
+![license](https://img.shields.io/github/license/hordeforge/7dtd-loadgen)
+![release](https://img.shields.io/github/v/release/hordeforge/7dtd-loadgen)
+![languages](https://img.shields.io/github/languages/count/hordeforge/7dtd-loadgen)
+![top language](https://img.shields.io/github/languages/top/hordeforge/7dtd-loadgen)
+
 LiteNetLib load-test synthetic clients for **7 Days to Die** dedicated servers.
 
 Not a full game client. Bots join over the real game protocol, walk the world,
