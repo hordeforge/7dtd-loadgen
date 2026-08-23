@@ -57,5 +57,5 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/maci0/7dtd-loadgen/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/maci0/7dtd-loadgen/releases/tag/v0.1.0
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.1.0
