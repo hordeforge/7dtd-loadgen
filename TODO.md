@@ -7,6 +7,8 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Next
 
+- [x] Emit explicit inactive state for watched buffs at join. Completed
+  2026-08-24.
 - [x] Add filtered CVar/buff observers with JSON-lines joined/state events for
   headless cross-client replication assertions. Completed 2026-08-24.
 - [x] RealEarth scenario catalog + loadgen scripts/tests.

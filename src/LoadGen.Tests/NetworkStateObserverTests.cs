@@ -21,6 +21,19 @@ public sealed class NetworkStateObserverTests
     }
 
     [Fact]
+    public void Joined_EmitsExplicitStateForInactiveWatchedBuff()
+    {
+        var events = new List<string>();
+        var observer = new NetworkStateObserver(
+            9, Array.Empty<string>(), new[] { "buffAtomicProtected" }, events.Add);
+        observer.Joined(171);
+        Assert.Equal(2, events.Count);
+        Assert.Contains("\"name\":\"buffAtomicProtected\"", events[1]);
+        Assert.Contains("\"active\":false", events[1]);
+        Assert.Contains("\"source\":\"joined-default\"", events[1]);
+    }
+
+    [Fact]
     public void CVarDelta_AppliesOperations_AndFiltersExactNames()
     {
         var events = new List<string>();

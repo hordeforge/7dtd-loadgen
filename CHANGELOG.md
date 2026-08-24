@@ -31,6 +31,8 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- Watched buffs emit explicit joined-state activity, including `false` for an
+  inactive buff absent from later add/remove deltas.
 - `NetPackagePackageIds` rejects impossible or excessive mapping counts before
   allocation, preventing malformed server input from reserving a multi-gigabyte
   array and hanging the decoder/fuzz gate on overcommit hosts.
