@@ -127,6 +127,34 @@ public static class Program
     /// manifest): one instance so the artifact schemas serialize identically.</summary>
     static readonly System.Text.Json.JsonSerializerOptions ArtifactJsonOpts = new() { WriteIndented = true };
 
+    /// <summary>Workload identity recorded in stats-json and the run manifest
+    /// (README: "the run manifest records seed, dynamite cap, and spawn
+    /// configuration for workload comparability").</summary>
+    internal static Dictionary<string, object?> WorkloadBlock(
+        int seed, int actions, int paceMs, int count, int concurrency, int clientIdBase,
+        int rampMs, int maxDynamitePerLife, bool respawn, int maxLives,
+        bool spawnZombies, bool killFallback, string spawnEntity, int spawnPerPlayer,
+        int spawnEveryMs, int hordeEveryMs, int hordeWaves) => new()
+        {
+            ["seed"] = seed,
+            ["actions"] = actions,
+            ["paceMs"] = paceMs,
+            ["count"] = count,
+            ["concurrency"] = concurrency,
+            ["clientIdBase"] = clientIdBase,
+            ["rampMs"] = rampMs,
+            ["maxDynamitePerLife"] = maxDynamitePerLife,
+            ["respawn"] = respawn,
+            ["maxLives"] = maxLives,
+            ["spawnZombies"] = spawnZombies,
+            ["killFallback"] = killFallback,
+            ["spawnEntity"] = spawnEntity,
+            ["spawnPerPlayer"] = spawnPerPlayer,
+            ["spawnEveryMs"] = spawnEveryMs,
+            ["hordeEveryMs"] = hordeEveryMs,
+            ["hordeWaves"] = hordeWaves,
+        };
+
     /// <summary>Write a run artifact (log/stats-json/run manifest) without letting
     /// an IO failure mask the run's exit code: the measurement finished, so its
     /// gate result must still propagate. The artifact's parent directory is
@@ -369,6 +397,9 @@ public static class Program
         // -> whole cohort uses opt.Mode. Assigned deterministically by client id
         // so the profile is repeatable.
         var botMix = new List<(ActionLoop.BotMode mode, int weight)>();
+        // Explicit --max-dynamite must win over the Demolition auto-raise
+        // regardless of flag order on the command line.
+        bool maxDynamiteSet = false;
 
         // Named workload profiles: preset cohort defaults applied before the arg
         // loop so an explicit flag on the same command line always overrides the
@@ -458,14 +489,14 @@ public static class Program
                 modeSet = true;
             }
             else if (args[i] == "--max-dynamite" && i + 1 < args.Length)
+            {
                 opt.MaxDynamitePerLife = int.Parse(args[++i]);
+                maxDynamiteSet = true;
+            }
             else if ((args[i] == "--mode" || args[i] == "--bot-mode") && i + 1 < args.Length)
             {
                 if (ActionLoop.TryParseMode(args[++i], out var mode))
                 {
-                    if (mode == ActionLoop.BotMode.Demolition
-                        && opt.MaxDynamitePerLife == ActionLoop.DefaultMaxDynamitePerLife)
-                        opt.MaxDynamitePerLife = ActionLoop.DemolitionMaxDynamitePerLife;
                     opt.Mode = mode;
                     opt.WanderUntilDeath = mode == ActionLoop.BotMode.Wander;
                     modeSet = true;
@@ -514,6 +545,16 @@ public static class Program
         }
 
         if (count < 1) count = 1;
+
+        // Demolition's raised per-life cap applies only when the caller did not
+        // pin one: an explicit --max-dynamite N bounds charges per life for
+        // every mode ("demolition default 200, others 3"). The per-client mode
+        // (cohort mode or a --bot-mix entry) decides who takes the raised default.
+        int DynamiteCapFor(ActionLoop.BotMode m) =>
+            !maxDynamiteSet && m == ActionLoop.BotMode.Demolition
+                ? ActionLoop.DemolitionMaxDynamitePerLife
+                : opt.MaxDynamitePerLife;
+
         // Startup config gate: reject values that would silently misbehave
         // mid-run (unroutable port, gate that always fails/passes, instant
         // timeout, negative sleeps) with a named option and its valid range.
@@ -655,11 +696,7 @@ public static class Program
             var clientMode = ModeForClient(clientId);
             var stateObserver = eventWriter == null ? null : new NetworkStateObserver(
                 clientId, observedCvars, observedBuffs, eventWriter.Write);
-            int clientDynamite =
-                clientMode == ActionLoop.BotMode.Demolition
-                    && opt.MaxDynamitePerLife <= ActionLoop.DefaultMaxDynamitePerLife
-                        ? ActionLoop.DemolitionMaxDynamitePerLife
-                        : opt.MaxDynamitePerLife;
+            int clientDynamite = DynamiteCapFor(clientMode);
             // ShutdownRequested: DisconnectAllActive owns every live manager and
             // is sweeping; starting another join session would register a fresh
             // NetManager mid-teardown and race it with its own bot thread.
@@ -810,6 +847,11 @@ public static class Program
                 ["totalRejoins"] = c.TotalRejoins,
                 ["minPassRate"] = minPassRate,
                 ["gatePass"] = JoinGatePass(pass, total, minPassRate),
+                ["workload"] = WorkloadBlock(
+                    opt.ActionSeed, opt.ActionCount, opt.PaceMs, count, concurrency, opt.ClientId,
+                    joinRampMs, opt.MaxDynamitePerLife, opt.Respawn, opt.MaxLives,
+                    spawnZombies, killFallback, spawnEntity, spawnPerPlayer,
+                    spawnEveryMs, hordeEveryMs, hordeWaves),
                 ["pingSamples"] = ping.count,
                 ["pingAvgMs"] = Math.Round(ping.avg, 1),
                 ["pingP50Ms"] = ping.p50,
@@ -817,6 +859,45 @@ public static class Program
                 ["pingMaxMs"] = ping.max,
                 ["pingSpikesOver150Ms"] = ping.spikes,
             };
+        }
+
+        /// <summary>One run manifest client row (shared by the single- and
+        /// multi-bot writers so the schema cannot drift).</summary>
+        static Dictionary<string, object?> ManifestClientRow(int id, int rc, JoinStateMachine s) => new()
+        {
+            ["id"] = id,
+            ["rc"] = rc,
+            ["mode"] = s.BotModeName,
+            ["entityId"] = s.EntityId,
+            ["walks"] = s.WalkActions,
+            ["deaths"] = s.DeathCount,
+            ["respawns"] = s.RespawnCount,
+            ["died"] = s.Died,
+            ["deathCause"] = s.DeathCause,
+        };
+
+        /// <summary>Join run manifest (schema 7dtd.loadgen.run.v1): cohort payload
+        /// plus one row per bot. Shared by the single- and multi-bot paths so a
+        /// --run-manifest request is honored at any cohort size.</summary>
+        void WriteJoinManifest(Dictionary<string, object?> payload, IEnumerable<(int id, int rc, JoinStateMachine s)> rows)
+        {
+            var run = new Dictionary<string, object?>
+            {
+                ["schema"] = "7dtd.loadgen.run.v1",
+                ["kind"] = "join",
+                ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
+                ["cohort"] = payload,
+                ["clients"] = rows.OrderBy(r => r.id).Select(r => ManifestClientRow(r.id, r.rc, r.s)).ToList(),
+                ["product"] = new Dictionary<string, object?>
+                {
+                    ["name"] = "RealEarth",
+                    ["priorityFocus"] = "P0-P1",
+                    ["notes"] = "Tall Y + inject soak when dedicated expanded",
+                },
+            };
+            WriteArtifact("run_manifest", runManifestPath, () =>
+                File.WriteAllText(runManifestPath,
+                    System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
         }
 
         if (count == 1)
@@ -829,15 +910,16 @@ public static class Program
             AwaitTeardown("wandering_horde", hordeTask);
             if (!string.IsNullOrEmpty(logPath))
                 WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines));
-            // Single-bot runs still write stats-json so the bench lane evidence
-            // is uniform (probe-15s/join-fast/join-probe/horde-lite are count=1).
+            // Single-bot runs still write stats-json (and the run manifest when
+            // asked) so the bench lane evidence is uniform (probe-15s/join-fast/
+            // join-probe/horde-lite are count=1).
+            var payload1 = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm));
             if (!string.IsNullOrEmpty(statsJsonPath))
-            {
-                var payload = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm));
                 WriteArtifact("stats", statsJsonPath, () =>
                     File.WriteAllText(statsJsonPath,
-                        System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
-            }
+                        System.Text.Json.JsonSerializer.Serialize(payload1, ArtifactJsonOpts) + "\n"));
+            if (!string.IsNullOrEmpty(runManifestPath))
+                WriteJoinManifest(payload1, new[] { (opt.ClientId, rc, sm) });
             return rc;
         }
 
@@ -1013,37 +1095,7 @@ public static class Program
                         System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
             }
             if (!string.IsNullOrEmpty(runManifestPath))
-            {
-                var clients = results.OrderBy(r => r.id).Select(r => new Dictionary<string, object?>
-                {
-                    ["id"] = r.id,
-                    ["rc"] = r.rc,
-                    ["mode"] = r.s.BotModeName,
-                    ["entityId"] = r.s.EntityId,
-                    ["walks"] = r.s.WalkActions,
-                    ["deaths"] = r.s.DeathCount,
-                    ["respawns"] = r.s.RespawnCount,
-                    ["died"] = r.s.Died,
-                    ["deathCause"] = r.s.DeathCause,
-                }).ToList();
-                var run = new Dictionary<string, object?>
-                {
-                    ["schema"] = "7dtd.loadgen.run.v1",
-                    ["kind"] = "join",
-                    ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
-                    ["cohort"] = payload,
-                    ["clients"] = clients,
-                    ["product"] = new Dictionary<string, object?>
-                    {
-                        ["name"] = "RealEarth",
-                        ["priorityFocus"] = "P0-P1",
-                        ["notes"] = "Tall Y + inject soak when dedicated expanded",
-                    },
-                };
-                WriteArtifact("run_manifest", runManifestPath, () =>
-                    File.WriteAllText(runManifestPath,
-                        System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
-            }
+                WriteJoinManifest(payload, results.ToList());
         }
         if (!string.IsNullOrEmpty(logPath))
         {

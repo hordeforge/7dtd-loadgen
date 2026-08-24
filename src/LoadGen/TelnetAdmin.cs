@@ -139,9 +139,12 @@ public sealed partial class TelnetAdmin : IDisposable
             }
         }
 
-        string[] types = entityName.Contains(',')
-            ? entityName.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            : new[] { entityName, "zombieBoe", "zombieSteve", "zombieArlene" };
+        // Exact class selection: --spawn-entity takes a comma list of entity
+        // classes (README) and spawns exactly those. Padding a single name with
+        // default zombies would put zombies into a vehicles-only pressure request.
+        string[] types = string.IsNullOrWhiteSpace(entityName)
+            ? new[] { "zombieBoe", "zombieSteve", "zombieArlene" }
+            : entityName.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (int id in ids)
         {
             // Bounded per round; callers scale rounds via spawn-every-ms for hundreds total.
