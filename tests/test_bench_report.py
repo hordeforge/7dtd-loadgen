@@ -114,3 +114,20 @@ def test_apm_cell_includes_ipc_and_layer_scores(tmp_path):
     assert r.returncode == 0, r.stderr
     md = (out / "bench-stock.md").read_text(encoding="utf-8")
     assert "server met its tick deadline this window; ipc=2.062; scheduler=50; cpu=15" in md
+
+
+def test_corrupt_run_meta_skips_scenario_not_whole_lap(tmp_path):
+    """A truncated run-meta.json (lap killed mid-write) must skip that one
+    scenario with a warning, not crash consolidation of every lap."""
+    good = {"scenario": "join-fast", "summary": {"pass": 1, "fail": 0},
+            "hostLoadStart": "1.0", "hostLoadEnd": "1.1"}
+    _make_lap(tmp_path, "lap1", {"join-fast": good})
+    bad_dir = tmp_path / "lap1" / "wander-2bot"
+    bad_dir.mkdir()
+    (bad_dir / "run-meta.json").write_text('{"scenario": "wander-2bot"', encoding="utf-8")
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    assert "skipping unreadable" in r.stderr
+    payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
+    assert set(payload["laps"]["lap1"]["scenarios"]) == {"join-fast"}

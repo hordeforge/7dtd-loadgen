@@ -158,25 +158,31 @@ run_cli "${args[@]}" "$@"
 rc=$?
 set -e
 
+# Artifact writes are best-effort: a failure must be loud on stderr but can
+# never mask the client's exit code (same contract as the C# WriteArtifact).
 MANIFEST="${LOADGEN_MANIFEST:-${SCRATCH_OUT:-$ROOT/src/LoadGen/bin}/loadgen_manifest.json}"
-mkdir -p "$(dirname "$MANIFEST")"
-LOADGEN_RC="$rc" LOADGEN_MODE="$MODE" LOADGEN_HOST="$HOST" LOADGEN_PORT="$PORT" \
-LOADGEN_COUNT="$COUNT" LOADGEN_CONCURRENCY="$CONCURRENCY" LOADGEN_TIMEOUT="$TIMEOUT" \
-LOADGEN_ACTIONS="$ACTIONS" LOADGEN_RAMP_MS="$RAMP_MS" LOADGEN_BOT_MODE="$BOT_MODE" LOADGEN_BOT_MIX="$BOT_MIX" \
-LOADGEN_DEATH="$DEATH" LOADGEN_MANIFEST_PATH="$MANIFEST" \
-LOADGEN_MAX_DYNAMITE="$MAX_DYNAMITE" LOADGEN_SEED="$SEED" LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" \
-LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
-  python3 "$ROOT/scripts/loadgen_manifest.py"
-echo "manifest: $MANIFEST"
+if mkdir -p "$(dirname "$MANIFEST")" \
+   && LOADGEN_RC="$rc" LOADGEN_MODE="$MODE" LOADGEN_HOST="$HOST" LOADGEN_PORT="$PORT" \
+      LOADGEN_COUNT="$COUNT" LOADGEN_CONCURRENCY="$CONCURRENCY" LOADGEN_TIMEOUT="$TIMEOUT" \
+      LOADGEN_ACTIONS="$ACTIONS" LOADGEN_RAMP_MS="$RAMP_MS" LOADGEN_BOT_MODE="$BOT_MODE" LOADGEN_BOT_MIX="$BOT_MIX" \
+      LOADGEN_DEATH="$DEATH" LOADGEN_MANIFEST_PATH="$MANIFEST" \
+      LOADGEN_MAX_DYNAMITE="$MAX_DYNAMITE" LOADGEN_SEED="$SEED" LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" \
+      LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
+      python3 "$ROOT/scripts/loadgen_manifest.py"; then
+  echo "manifest: $MANIFEST"
+else
+  echo "WARN: manifest write failed for $MANIFEST; client exit code $rc preserved" >&2
+fi
 
 if [[ -n "$SCRATCH_OUT" && -d "$SCRATCH_OUT" && -f "$LOG" ]]; then
   dest="$SCRATCH_OUT/simulated_client.log"
   if [[ "$(readlink -f "$LOG" 2>/dev/null || realpath "$LOG" 2>/dev/null || echo "$LOG")" \
-     != "$(readlink -f "$dest" 2>/dev/null || realpath "$dest" 2>/dev/null || echo "$dest")" ]]; then
-    cp -f "$LOG" "$dest"
+     != "$(readlink -f "$dest" 2>/dev/null || realpath "$dest" 2>/dev/null || echo "$dest")" ]] \
+     && ! cp -f "$LOG" "$dest"; then
+    echo "WARN: could not copy client log to $dest; original at $LOG preserved" >&2
   fi
-  if (( COUNT >= 100 )); then
-    cp -f "$LOG" "$SCRATCH_OUT/simulated_client_n${COUNT}.log"
+  if (( COUNT >= 100 )) && ! cp -f "$LOG" "$SCRATCH_OUT/simulated_client_n${COUNT}.log"; then
+    echo "WARN: could not copy client log to $SCRATCH_OUT/simulated_client_n${COUNT}.log" >&2
   fi
 fi
 

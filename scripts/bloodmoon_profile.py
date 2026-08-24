@@ -112,9 +112,15 @@ def start_server():
                RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5")
     log(f"starting server (MaxSpawnedZombies={max(ZOMBIES,64)}, maxplayers={max(PLAYERS,64)})...")
     log_path = ROOT / "bloodmoon_server_start.log"
-    with log_path.open("wb") as fh:
-        r = subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
-                           env=env, timeout=400, stdout=fh, stderr=subprocess.STDOUT)
+    try:
+        with log_path.open("wb") as fh:
+            r = subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
+                               env=env, timeout=400, stdout=fh, stderr=subprocess.STDOUT)
+    except subprocess.TimeoutExpired as e:
+        # Same surface as a non-zero exit: the operator gets the boot log tail,
+        # not a bare traceback.
+        tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:] if log_path.is_file() else ""
+        raise RuntimeError(f"start_dedicated_prefab timed out after 400s\n{tail}") from e
     if r.returncode != 0:
         tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:] if log_path.is_file() else ""
         raise RuntimeError(f"start_dedicated_prefab failed rc={r.returncode}\n{tail}")

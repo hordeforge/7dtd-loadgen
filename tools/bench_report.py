@@ -76,7 +76,17 @@ def load_lap(lap_dir: Path) -> dict:
     scenarios = {}
     for meta_path in sorted(lap_dir.glob("*/run-meta.json")):
         sc = meta_path.parent.name
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        # One corrupt/truncated run-meta.json (a lap killed mid-write) must skip
+        # that scenario, not abort consolidation of every lap - same policy as
+        # the stats.json load below.
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            print(f"WARN: skipping unreadable {meta_path}", file=sys.stderr)
+            continue
+        if not isinstance(meta, dict):
+            print(f"WARN: skipping non-object {meta_path}", file=sys.stderr)
+            continue
         stats = {}
         stats_path = meta_path.parent / "stats.json"
         if stats_path.is_file():

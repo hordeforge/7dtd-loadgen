@@ -121,16 +121,4 @@ public static class LiteNetProbe
 
     static ProbeResult Fail(List<string> lines, HashSet<string> stages, bool connected, int packets, string? disc, long ms) =>
         new() { Pass = false, Stages = stages, Connected = connected, Packets = packets, DisconnectReason = disc, Lines = lines, ElapsedMs = ms };
-
-    public static void FlushLog(string? path, List<string> lines)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        try
-        {
-            var dir = Path.GetDirectoryName(Path.GetFullPath(path));
-            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-            File.WriteAllLines(path, lines);
-        }
-        catch { /* best effort */ }
-    }
 }

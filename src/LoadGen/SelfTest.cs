@@ -54,7 +54,7 @@ static class SelfTest
                 && Program.JoinGatePass(summary.Connected, summary.Total, Math.Min(minPassRate, 0.90));
         }
         cts.Cancel();
-        try { hostLoop.Wait(1000); } catch { /* ignore */ }
+        Program.AwaitTeardown("self_host", hostLoop);
         server.Stop();
         if (!string.IsNullOrEmpty(logPath))
             Program.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));

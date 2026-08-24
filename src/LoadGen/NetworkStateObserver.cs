@@ -20,6 +20,14 @@ public sealed class NetworkStateObserver
     readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
     long _sequence;
 
+    /// <summary>True once the event sink failed. Emission stops permanently so
+    /// an IO fault on --events-jsonl can neither kill the bot session nor spam
+    /// one error per received package; GameJoinClient reports the latch once.</summary>
+    public bool SinkFaulted { get; private set; }
+
+    /// <summary>First sink failure message (null until <see cref="SinkFaulted"/>).</summary>
+    public string? SinkError { get; private set; }
+
     public NetworkStateObserver(
         int botId, IEnumerable<string> cvarFilters, IEnumerable<string> buffFilters,
         Action<string> emit)
@@ -178,7 +186,35 @@ public sealed class NetworkStateObserver
         elapsedMs = _clock.ElapsedMilliseconds,
     });
 
-    void Emit(object value) => _emit(JsonSerializer.Serialize(value));
+    void Emit(object value)
+    {
+        if (SinkFaulted) return;
+        string json;
+        try
+        {
+            json = JsonSerializer.Serialize(value);
+        }
+        catch (Exception ex)
+        {
+            LatchSinkFault($"serialize {value.GetType().Name}: {ex.Message}");
+            return;
+        }
+        try
+        {
+            _emit(json);
+        }
+        catch (Exception ex)
+        {
+            LatchSinkFault(ex.Message);
+        }
+    }
+
+    void LatchSinkFault(string message)
+    {
+        SinkError = message;
+        SinkFaulted = true;
+    }
+
     long NextSequence() => Interlocked.Increment(ref _sequence);
     Dictionary<string, float> CvarsFor(int entityId) =>
         _cvars.TryGetValue(entityId, out var value) ? value : _cvars[entityId] = new(StringComparer.OrdinalIgnoreCase);

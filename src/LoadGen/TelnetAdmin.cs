@@ -244,8 +244,12 @@ public sealed class TelnetAdmin : IDisposable
                 else
                     Thread.Sleep(50);
             }
-            catch
+            catch (Exception ex)
             {
+                // The read window ends early on an IO fault; leave the same
+                // breadcrumb Exec's failure path leaves so empty responses are
+                // attributable to the dropped session instead of a silent server.
+                _log?.Invoke($"TELNET read fail: {ex.Message}");
                 break;
             }
         }

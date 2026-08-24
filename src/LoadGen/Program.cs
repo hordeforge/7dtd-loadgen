@@ -143,7 +143,7 @@ public static class Program
     /// <summary>Bounded wait for a background task to observe cancellation. A
     /// fault surfaces on stderr instead of vanishing: a dead spawner/sampler
     /// silently degrades the workload while the run still looks normal.</summary>
-    static void AwaitTeardown(string name, Task? task)
+    internal static void AwaitTeardown(string name, Task? task)
     {
         if (task == null) return;
         try
@@ -179,7 +179,10 @@ public static class Program
                     Task.Delay(intervalMs, ct).Wait();
                 }
                 catch (OperationCanceledException) { break; }
-                catch (Exception ex)
+                // Wait() (no token) wraps delay cancellation in AggregateException, so
+                // an OCE-only catch never fires for it. Gate on the token instead: a
+                // fault observed while shutting down is teardown, not a telnet error.
+                catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
                     Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
                     try { Task.Delay(errorBackoffMs, ct).Wait(); } catch { break; }
@@ -639,6 +642,14 @@ public static class Program
                                 string response = admin.Exec($"give {entityId} thrownDynamite 3");
                                 log?.Invoke($"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} count=3 response={response.Trim()}");
                             }
+                            else
+                            {
+                                // Connect() already logged when a bot log exists; most
+                                // cohort members have none, so route to stderr like the
+                                // catch below or the missing dynamite load is invisible.
+                                (log ?? Console.Error.WriteLine)(
+                                    $"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} telnet connect failed {telnetHost}:{telnetPort}");
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -1064,7 +1075,11 @@ public static class Program
             Action<string>? log = quiet ? null : Console.WriteLine;
             var result = LiteNetProbe.Run(host, port, key, timeoutMs, clientId, log);
             if (!string.IsNullOrEmpty(logPath))
-                LiteNetProbe.FlushLog(logPath, result.Lines);
+                WriteArtifact("log", logPath, () =>
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(logPath))!);
+                    File.WriteAllLines(logPath, result.Lines);
+                });
             if (!result.Pass)
             {
                 Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");

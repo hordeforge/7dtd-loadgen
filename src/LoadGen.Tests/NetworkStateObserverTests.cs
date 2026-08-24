@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using SevenDTD.LoadGen;
@@ -80,6 +81,25 @@ public sealed class NetworkStateObserverTests
         var observer = new NetworkStateObserver(3, new[] { "notInSnapshot" }, Array.Empty<string>(), events.Add);
         observer.Observe("NetPackageEntityStatsBuff", Snapshot());
         Assert.Empty(events);
+    }
+
+    [Fact]
+    public void SinkFault_LatchesAndStopsEmitting()
+    {
+        // A dead events sink (disk full, deleted file) must not throw out of
+        // Joined/Observe - that would kill a healthy joined session - and must
+        // stop calling the sink after the first failure.
+        int calls = 0;
+        void Emit(string _) { calls++; throw new IOException("disk full"); }
+        var observer = new NetworkStateObserver(
+            5, new[] { "atomicProtection" }, Array.Empty<string>(), Emit);
+
+        observer.Joined(171);
+        observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", 1f, 0));
+
+        Assert.True(observer.SinkFaulted);
+        Assert.Contains("disk full", observer.SinkError);
+        Assert.Equal(1, calls);
     }
 
     static byte[] CVar(int entityId, string name, float value, short operation) => Body(w =>

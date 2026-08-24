@@ -53,6 +53,7 @@ public sealed class GameJoinClient
     public JoinStateMachine State { get; } = new();
 
     BenchClock? _bench;
+    bool _observerSinkFaultLogged;
 
     public sealed class Options
     {
@@ -596,6 +597,13 @@ public sealed class GameJoinClient
             {
                 log($"OBSERVER parse_error type={typeName} bodyLen={body.Length} error={SafeText(ex.Message)}");
             }
+            // A dead events sink is evidence loss, not a parse problem: report it
+            // once with the real cause (the observer latches and stays quiet).
+            if (opt.StateObserver.SinkFaulted && !_observerSinkFaultLogged)
+            {
+                _observerSinkFaultLogged = true;
+                log($"OBSERVER sink_fault events disabled error={SafeText(opt.StateObserver.SinkError)}");
+            }
         }
         // After join, high-volume entity/chunk packages would flood logs for hour-long runs.
         bool noisy = typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityRelPosAndRot"
@@ -1076,7 +1084,18 @@ public sealed class GameJoinClient
         var drain = Stopwatch.StartNew();
         while (drain.ElapsedMilliseconds < 300) { Thread.Sleep(5); }
         cts.Cancel();
-        try { poll.Wait(1000); } catch { /* ignore */ }
+        try
+        {
+            poll.Wait(1000);
+        }
+        catch (AggregateException ex)
+        {
+            // A dead mock poller stalls the join (no challenge/login answer is
+            // ever serviced); the cause must be visible instead of surfacing as
+            // an unexplained 25s client timeout.
+            var baseEx = ex.GetBaseException();
+            log?.Invoke($"FAIL self-test poller faulted: {baseEx.GetType().Name}: {baseEx.Message}");
+        }
 
         log?.Invoke(
             $"SELFTEST server walksRecv={server.WalkPackages} jumpsRecv={server.JumpPackages} " +
