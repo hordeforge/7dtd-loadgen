@@ -39,3 +39,9 @@ workspace/bench/lap*/userdata/
 workspace/bench/lap*/boot.log
 workspace/bench/lap*/apm/
 *.lock
+
+# Local scratch and one-off repro artifacts.
+.scratch/
+.smoke-stats.json
+repro.out
+repro.err
