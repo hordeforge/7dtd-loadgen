@@ -9,23 +9,25 @@ namespace SevenDTD.LoadGen;
 /// </summary>
 public static class WorldDeathBus
 {
-    static readonly ConcurrentDictionary<string, long> KilledUtcMs = new(StringComparer.OrdinalIgnoreCase);
+    static readonly ConcurrentDictionary<string, long> KilledTickMs = new(StringComparer.OrdinalIgnoreCase);
 
     public static void NotifyKilled(string playerName)
     {
         if (string.IsNullOrWhiteSpace(playerName)) return;
-        KilledUtcMs[playerName.Trim()] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        // Monotonic ms-since-boot (Environment.TickCount64): producer and
+        // consumer share this process, and a wall-clock step (NTP sync, VM
+        // resume) must neither expire a fresh kill early nor keep a stale one.
+        KilledTickMs[playerName.Trim()] = Environment.TickCount64;
     }
 
     /// <summary>True once if this name was killed recently (consumes the event).</summary>
-    public static bool TryConsumeKill(string playerName, out long killedAtUtcMs)
+    public static bool TryConsumeKill(string playerName, out long killedAtTickMs)
     {
-        killedAtUtcMs = 0;
+        killedAtTickMs = 0;
         if (string.IsNullOrWhiteSpace(playerName)) return false;
-        if (!KilledUtcMs.TryRemove(playerName.Trim(), out killedAtUtcMs))
+        if (!KilledTickMs.TryRemove(playerName.Trim(), out killedAtTickMs))
             return false;
         // Ignore stale kills older than 2 minutes
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        return now - killedAtUtcMs < 120_000;
+        return Environment.TickCount64 - killedAtTickMs < 120_000;
     }
 }

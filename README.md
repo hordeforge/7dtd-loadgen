@@ -2,6 +2,13 @@
 
 > **Part of [HordeForge](https://github.com/hordeforge)** — High-Performance Systems Engineering for 7 Days to Die.
 
+![CI](https://github.com/hordeforge/7dtd-loadgen/actions/workflows/ci.yml/badge.svg)
+![coverage](https://raw.githubusercontent.com/hordeforge/7dtd-loadgen/badges/coverage.svg)
+![license](https://img.shields.io/github/license/hordeforge/7dtd-loadgen)
+![release](https://img.shields.io/github/v/release/hordeforge/7dtd-loadgen)
+![languages](https://img.shields.io/github/languages/count/hordeforge/7dtd-loadgen)
+![top language](https://img.shields.io/github/languages/top/hordeforge/7dtd-loadgen)
+
 LiteNetLib load-test synthetic clients for **7 Days to Die** dedicated servers.
 
 Not a full game client. Bots join over the real game protocol, walk the world,
@@ -114,7 +121,7 @@ telnet listents/listplayers/gettime/getgamestat snapshot, save-file presence,
 zdtd APM cost snapshot),
 and diffs the two runs into a machine-readable report. A difference is a
 finding to triage (zdtd bug vs harness artifact vs known divergence), never a
-pass to fake; known divergences are recorded in `../zdtd-server-server/docs/PROVENANCE.md`
+pass to fake; known divergences are recorded in `../zdtd-server/docs/PROVENANCE.md`
 (divergence register).
 
 ```bash
