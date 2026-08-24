@@ -40,6 +40,18 @@ BOOT_KEYS = ("createWorld", "GameState =", "Loading world", "GameStat.", "GamePr
 # run, so they are counted separately as harness noise, not compared ERR/EXC
 # evidence.
 TELNET_CLOSE_RE = re.compile(r"IOException in TelnetClient|Unable to write data to the transport connection")
+# Stock server-log line: "<ts> <ts> SEV rest". Compiled once; this matcher runs
+# on every line of a soak log, which can reach hundreds of MB.
+STOCK_LOG_LINE = re.compile(r"^\S+ \S+ (INF|WRN|ERR|EXC|DBG) (.*)$")
+
+
+def _collect_gamestats(text: str, gamestats: dict) -> None:
+    """Record GameStat.X = value pairs. The substring guard keeps the regex scan
+    off lines that cannot match (the common case for every INF frame line)."""
+    if "GameStat." not in text:
+        return
+    for gm in GAMESTAT_LOG.finditer(text):
+        gamestats.setdefault(gm.group(1), gm.group(2))
 
 
 def log_categories(path, sut):
@@ -55,12 +67,11 @@ def log_categories(path, sut):
         for line in fh:
             line = line.rstrip("\n")
             if sut == "stock":
-                m = re.match(r"^\S+ \S+ (INF|WRN|ERR|EXC|DBG) (.*)$", line)
+                m = STOCK_LOG_LINE.match(line)
                 if not m:
                     # Boot-time + getgamestat dumps print GameStat lines without
                     # a timestamp prefix; still collect them as gamestats.
-                    for gm in GAMESTAT_LOG.finditer(line):
-                        gamestats.setdefault(gm.group(1), gm.group(2))
+                    _collect_gamestats(line, gamestats)
                     continue
                 sev, rest = m.group(1), m.group(2)
                 # [ScriptOrder] frame dumps are tick noise, not behavior; they
@@ -76,8 +87,7 @@ def log_categories(path, sut):
                 for key in BOOT_KEYS:
                     if key in rest and key not in boot_lines:
                         boot_lines[key] = rest[:140]
-                for gm in GAMESTAT_LOG.finditer(rest):
-                    gamestats.setdefault(gm.group(1), gm.group(2))
+                _collect_gamestats(rest, gamestats)
             else:
                 if line.startswith("zdtd:") or line.startswith("  "):
                     if "[WARN]" in line:

@@ -34,7 +34,7 @@ Workspace root guide: [`../MODDING_BEST_PRACTICES.md`](../MODDING_BEST_PRACTICES
 ```bash
 make build
 make selftest          # in-process mock join + respawn; no dedicated required
-make test              # build + Python golden-wire / self-test checks
+make test              # build + selftest + C# unit tests + pytest gates
 make dedicated-4k      # start RWG 4096 dedicated (POI/sleepers)
 make join              # join bots (defaults: port 26902, count 6)
 make dedicated-realearth

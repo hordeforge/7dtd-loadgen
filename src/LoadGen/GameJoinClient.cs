@@ -660,8 +660,8 @@ public sealed class GameJoinClient
         Action<string> log,
         Action<byte[]> enqueue)
     {
-        // PackageIds is always id 0 until remapped; also match by content heuristic
-        bool looksLikePackageIds = body.Length > 16 && !State.PackageIds.ContainsKey("NetPackagePlayerLogin");
+        // PackageIds is always id 0 until remapped; see the content heuristic
+        // gated by the stage check below.
         string? typeName = State.TryGetTypeName(id, out var mappedName) ? mappedName : null;
         if (typeName != null && opt.StateObserver != null)
         {
@@ -678,15 +678,18 @@ public sealed class GameJoinClient
                 log($"OBSERVER sink_fault events disabled error={SafeText(opt.StateObserver.SinkError)}");
             }
         }
-        // After join, high-volume entity/chunk packages would flood logs for hour-long runs.
-        bool noisy = typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityRelPosAndRot"
-            or "NetPackageEntityAliveFlags" or "NetPackageEntityStat" or "NetPackageEntityStats"
-            or "NetPackagePlayerStats" or "NetPackageEntityMotion" or "NetPackageChunk"
-            or "NetPackageChunkClusterInfo" or "NetPackageWaterUpdate" or "NetPackageTileEntity"
-            or "NetPackageEntitySpawn" or "NetPackageEntityRemove" or "NetPackageEntityDespawn"
-            or "NetPackageEntityAnimationData" or "NetPackageEntityLookAt";
         if (!State.EverJoined)
         {
+            // After join, high-volume entity/chunk packages would flood logs for
+            // hour-long runs. The noisy-type scan lives inside this pre-join
+            // branch on purpose: once joined it is dead work, and the receive
+            // path runs per package per bot for the whole session.
+            bool noisy = typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityRelPosAndRot"
+                or "NetPackageEntityAliveFlags" or "NetPackageEntityStat" or "NetPackageEntityStats"
+                or "NetPackagePlayerStats" or "NetPackageEntityMotion" or "NetPackageChunk"
+                or "NetPackageChunkClusterInfo" or "NetPackageWaterUpdate" or "NetPackageTileEntity"
+                or "NetPackageEntitySpawn" or "NetPackageEntityRemove" or "NetPackageEntityDespawn"
+                or "NetPackageEntityAnimationData" or "NetPackageEntityLookAt";
             if (typeName == null && State.PackageIds.Count > 0)
                 log($"RECV unmapped pkg id={id} bodyLen={body.Length}");
             else if (typeName != null && !noisy)
@@ -700,9 +703,13 @@ public sealed class GameJoinClient
 
         // One-time handshake step: guard BOTH recognition paths by stage so a
         // second PackageIds packet cannot re-run ApplyPackageMappings (which
-        // clears the id table) and scramble routing mid-session.
-        if ((typeName == "NetPackagePackageIds" || (id == 0 && looksLikePackageIds))
-            && State.Stage < JoinStage.PackageIdsReceived)
+        // clears the id table) and scramble routing mid-session. Stage gates
+        // first: once mappings are in, this whole check costs one comparison
+        // per package instead of a dictionary lookup on every received frame.
+        if (State.Stage < JoinStage.PackageIdsReceived
+            && (typeName == "NetPackagePackageIds"
+                || (id == 0 && body.Length > 16
+                    && !State.PackageIds.ContainsKey("NetPackagePlayerLogin"))))
         {
             try
             {
@@ -1072,8 +1079,23 @@ public sealed class GameJoinClient
         if (string.IsNullOrEmpty(s)) return "";
         var sb = new System.Text.StringBuilder(Math.Min(s.Length, 160));
         foreach (char c in s)
+        {
+            // Stop at the snippet cap so a hostile oversized string cannot make
+            // the scrub loop itself the cost; Snippet still trims a split
+            // surrogate pair exactly as before.
+            if (sb.Length >= 160) break;
             sb.Append(char.IsControl(c) ? '?' : c);
+        }
         return Snippet(sb.ToString(), 160);
+    }
+
+    // Allocation-free letter probe (LINQ Any allocated an enumerator plus a
+    // delegate per chat/GMSG package on the joined receive path).
+    static bool HasLetter(string s)
+    {
+        foreach (char c in s)
+            if (char.IsLetter(c)) return true;
+        return false;
     }
 
     /// <summary>Truncate for logging without splitting a surrogate pair: chat
@@ -1101,7 +1123,7 @@ public sealed class GameJoinClient
             if (body.Length >= 2)
             {
                 string s = r.ReadString();
-                if (s.Length >= 3 && s.Any(char.IsLetter))
+                if (s.Length >= 3 && HasLetter(s))
                 {
                     var clean = new System.Text.StringBuilder(s.Length);
                     foreach (char c in s)

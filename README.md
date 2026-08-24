@@ -415,8 +415,9 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
   bypass it; if several bots share an IP, slow the cohort with `--ramp-ms` or
   drop `--concurrency`.
 - **Empty world, no zombies spawn:** empty height-test maps often lack AI spawn
-  points. Use a stock pregen or RWG 4k (see `start_dedicated_prefab.sh`), or
-  enable `--spawn-zombies` (telnet) to place zombies explicitly.
+  points. Use a stock pregen or RWG 4k (see `start_dedicated_prefab.sh`); join
+  mode already telnet-spawns zombies near bots by default (`--no-spawn-zombies`
+  disables it), so verify the admin telnet endpoint is reachable.
 - **RWG warm-up is slow:** first RWG generation takes minutes; join after the
   log shows `createWorld() done`. For repeatable loads use a fixed world
   (`RE_WORLD_NAME=pregen06k01` or a saved RWG) instead of regenerating per run.
