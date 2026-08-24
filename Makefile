@@ -70,8 +70,12 @@ build:
 selftest: build
 	@"$(EXE)" --self-test-join --actions 24 --seed 7
 
+# Test lanes pin GameDir empty so LoadGen always restores against the NuGet
+# LiteNetLib fallback. The committed packages.lock.json records that graph;
+# with a game install present the DLL-reference branch would drop the
+# dependency and locked-mode restore (NU1004) would fail on every dev box.
 unittest:
-	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true
+	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir=
 
 # One C# test without the full-suite noise: make unittest-one T=JoinStateMachineTests
 # (T matches any substring of a class or method fully qualified name)
@@ -79,7 +83,7 @@ T ?=
 ifneq ($(T),)
 unittest-one:
 	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q \
-		-p:RestoreLockedMode=true --filter "FullyQualifiedName~$(T)"
+		-p:RestoreLockedMode=true -p:GameDir= --filter "FullyQualifiedName~$(T)"
 else
 unittest-one:
 	@echo "ERROR: no test given; usage: make unittest-one T=<class-or-method-substring>" >&2
@@ -105,7 +109,7 @@ test: build selftest unittest
 # it into the README badge with scripts/coverage_badge.py.
 coverage:
 	rm -rf "$(ROOT)/TestResults"
-	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true --collect:"XPlat Code Coverage" --results-directory TestResults
+	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir= --collect:"XPlat Code Coverage" --results-directory TestResults
 	cp "$$(find "$(ROOT)/TestResults" -name coverage.cobertura.xml | head -1)" "$(ROOT)/TestResults/coverage.cobertura.xml"
 
 dedicated dedicated-4k:
