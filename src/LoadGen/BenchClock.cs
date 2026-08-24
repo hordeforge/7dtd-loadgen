@@ -19,7 +19,9 @@ public sealed class BenchClock
     private int _actionsInWindow;
     private int _deathsInWindow;
     private int _respawnsInWindow;
-    private readonly List<(int Ms, int Active)> _activeCurve = new();
+    // Ms stays long: a multi-day soak process overflows int ms at ~24.9 days,
+    // which would flip curve timestamps negative and break the window-start scan.
+    private readonly List<(long Ms, int Active)> _activeCurve = new();
     private int _activeMin = int.MaxValue;
     private int _activeMax;
 
@@ -47,8 +49,11 @@ public sealed class BenchClock
     /// <summary>Milliseconds since the cohort start.</summary>
     public long ElapsedMs => _elapsedMs();
 
-    /// <summary>True when the current time is inside the measurement window.</summary>
-    public bool InWindow => WindowEnabled && ElapsedMs >= _warmupMs && ElapsedMs < _warmupMs + _windowMs;
+    /// <summary>True when the current time is inside the measurement window.
+    /// End bound widens to long BEFORE adding: an int sum wraps negative once
+    /// warmup+window crosses ~24.9 days, silently disabling the window.</summary>
+    public bool InWindow =>
+        WindowEnabled && ElapsedMs >= _warmupMs && ElapsedMs < (long)_warmupMs + _windowMs;
 
     /// <summary>Window start and end in ms since cohort start (0 when disabled).</summary>
     public (long StartMs, long EndMs) WindowBounds =>
@@ -81,9 +86,9 @@ public sealed class BenchClock
         {
             // Do not duplicate a sample on the same second.
             if (_activeCurve.Count > 0 && now - _activeCurve[_activeCurve.Count - 1].Ms < 500)
-                _activeCurve[_activeCurve.Count - 1] = ((int)now, active);
+                _activeCurve[_activeCurve.Count - 1] = (now, active);
             else
-                _activeCurve.Add(((int)now, active));
+                _activeCurve.Add((now, active));
             if (active < _activeMin) _activeMin = active;
             if (active > _activeMax) _activeMax = active;
         }
@@ -126,9 +131,9 @@ public sealed class BenchClock
     }
 
     /// <summary>Copy of the (ms, active) curve, ms relative to cohort start.</summary>
-    public List<(int Ms, int Active)> ActiveCurve()
+    public List<(long Ms, int Active)> ActiveCurve()
     {
         lock (_activeCurve)
-            return new List<(int, int)>(_activeCurve);
+            return new List<(long, int)>(_activeCurve);
     }
 }

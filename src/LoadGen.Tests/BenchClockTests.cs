@@ -79,8 +79,37 @@ public sealed class BenchClockTests
         Assert.Equal(8, c.ActiveAtWindowEnd);    // last sample overall
         var curve = c.ActiveCurve();
         Assert.Equal(4, curve.Count);            // duplicate same-second replaced
-        Assert.Equal((0, 0), curve[0]);
-        Assert.Equal((2000, 16), curve[2]);
+        Assert.Equal((0L, 0), curve[0]);
+        Assert.Equal((2000L, 16), curve[2]);
+    }
+
+    [Fact]
+    public void ActiveCurve_BeyondIntMaxMs_StaysMonotonic()
+    {
+        // Multi-day soak processes sample past int.MaxValue ms (~24.9 days);
+        // timestamps must keep their magnitude and order, not wrap negative.
+        long late = (long)int.MaxValue + 5_000;
+        long now = 0;
+        var c = new BenchClock(0, 60_000, () => now);
+        c.SampleActive(2);
+        now = late;
+        c.SampleActive(3);
+        var curve = c.ActiveCurve();
+        Assert.Equal(2, curve.Count);            // far apart: no same-second dedup
+        Assert.Equal((0L, 2), curve[0]);
+        Assert.Equal((late, 3), curve[^1]);      // positive and ordered
+    }
+
+    [Fact]
+    public void InWindow_LongEndBound_DoesNotWrapNegative()
+    {
+        // warmup+window exceeds int.MaxValue ms: the end bound must widen to
+        // long before adding (int sum wraps negative and kills the window).
+        long now = (long)int.MaxValue + 60_000;
+        var c = new BenchClock(int.MaxValue - 30_000, 120_000, () => now);
+        Assert.True(c.InWindow);
+        Assert.Equal((long)(int.MaxValue - 30_000), c.WindowBounds.StartMs);
+        Assert.Equal((long)int.MaxValue + 90_000, c.WindowBounds.EndMs);
     }
 
     [Fact]
