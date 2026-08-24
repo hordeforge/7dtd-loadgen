@@ -14,6 +14,17 @@ public static class PingStats
             if (Samples.Count < 200_000) Samples.Add(ms);
     }
 
+    /// <summary>Test seam: clears accumulated samples (same pattern as
+    /// GameJoinClient.ResetShutdownForTests). Only valid while no live client
+    /// loop is recording.</summary>
+    internal static void ResetForTests()
+    {
+        lock (Gate)
+        {
+            Samples.Clear();
+        }
+    }
+
     public static (int count, double avg, int p50, int p95, int max, int spikes) Summary()
     {
         lock (Gate)

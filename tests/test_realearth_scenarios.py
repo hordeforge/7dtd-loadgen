@@ -256,7 +256,9 @@ def test_run_scenario_ci_selftest_via_script():
     )
     out = (r.stdout or "") + (r.stderr or "")
     assert r.returncode == 0, out
-    assert "PASS: self-test-join" in out or "PASS:" in out
+    # Exact gate marker: a generic "PASS:" could come from any stage and hide
+    # a scenario that never reached the join self-test.
+    assert "PASS: self-test-join" in out
 
 
 def _port_open(host: str, port: int, timeout: float = 0.5) -> bool:

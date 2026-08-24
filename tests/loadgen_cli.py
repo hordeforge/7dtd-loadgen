@@ -27,7 +27,16 @@ def dotnet_env() -> dict[str, str]:
     return env
 
 
+_BUILT = False
+
+
 def build() -> None:
+    global _BUILT
+    # One build per pytest session: dotnet no-op builds cost seconds each and
+    # every CLI-driving test used to pay them. Flag is set only on success so
+    # a failed build still surfaces on the next attempt.
+    if _BUILT:
+        return
     r = subprocess.run(
         ["dotnet", "build", str(PROJ), "-c", "Release", "-v", "q"],
         cwd=str(ROOT),
@@ -40,6 +49,7 @@ def build() -> None:
     )
     assert r.returncode == 0, f"build failed:\n{r.stdout}\n{r.stderr}"
     assert EXE.is_file() or DLL.is_file()
+    _BUILT = True
 
 
 def run(args: list[str], timeout: float = 60.0) -> subprocess.CompletedProcess[str]:
