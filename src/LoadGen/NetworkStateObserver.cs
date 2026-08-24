@@ -49,10 +49,12 @@ public sealed class NetworkStateObserver
 
     void BoundEntityState()
     {
-        if (_cvars.Count <= MaxTrackedEntities && _buffs.Count <= MaxTrackedEntities)
+        if (_cvars.Count <= MaxTrackedEntities && _buffs.Count <= MaxTrackedEntities
+            && _joinedEntities.Count <= MaxTrackedEntities)
             return;
         _cvars.Clear();
         _buffs.Clear();
+        _joinedEntities.Clear();
     }
 
     public void Joined(int entityId)

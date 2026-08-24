@@ -147,16 +147,19 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
             for _, lap in laps:
                 s = lap["scenarios"].get(sc, {})
                 walls.append(s.get("wallS"))
-            if any(w is None for w in walls) or walls[0] == 0:
-                verdict = "n/a (missing wall)"
+            if any(w is None for w in walls) or not walls:
+                verdict, delta_cell = "n/a (missing wall)", "n/a"
+            elif walls[0] == 0:
+                verdict, delta_cell = "n/a (zero base wall)", "n/a"
             else:
                 base = walls[0]
                 worst = max(abs((w - base) / base) for w in walls)
-                verdict = f"OK ({worst*100:.1f}%)" if worst <= TOLERANCE else \
-                    f"OVER ({worst*100:.1f}%) - hostLoad check"
-                lines.append(f"| {sc} | " + " | ".join(
-                    f"{w:.1f}" if w is not None else "n/a" for w in walls)
-                    + f" | {worst*100:.1f}% | {verdict} |")
+                delta_cell = f"{worst*100:.1f}%"
+                verdict = f"OK ({delta_cell})" if worst <= TOLERANCE else \
+                    f"OVER ({delta_cell}) - hostLoad check"
+            lines.append(f"| {sc} | " + " | ".join(
+                f"{w:.1f}" if w is not None else "n/a" for w in walls)
+                + f" | {delta_cell} | {verdict} |")
         # Load-sensitive axis (bench profile only): actions/s lap-to-lap.
         aps = []
         for _, lap in laps:

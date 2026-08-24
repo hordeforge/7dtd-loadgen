@@ -66,7 +66,7 @@ if [[ -z "$SCENARIO_ID" || -z "$SUTS" ]]; then
   exit 2
 fi
 
-# The id names the evidence dir ($OUT_ROOT/$SCENARIO_ID, rm -rf'd per run) and
+# The id names the evidence dir (SCENARIO_DIR below, rm -rf'd per run) and
 # lands in run-meta.json / the zdtd serverconfig, so restrict it to a safe
 # charset: no path separators (traversal out of workspace/), no quotes or XML
 # metacharacters (attribute/config injection).
@@ -118,11 +118,20 @@ echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIO
 # This is what keeps the canonical dir (default world) and the per-world
 # matrix dirs distinct without manual renaming.
 WORLD_TAG="${WORLD_NAME,,}"
+# The scenario evidence root holding <scenario>/{stock,zdtd}/ plus REPORT.md +
+# diff.json. Normally <out>/<scenario>; a non-default world retargets it to
+# <out>/<scenario>-<world> directly (NOT nested an extra level deeper), so the
+# documented path holds and consolidated_report's one-level diff.json walk
+# still sees the world-matrix runs.
+SCENARIO_DIR=""
 if [[ -n "$WORLD_TAG" && "$WORLD_TAG" != "navezgane" ]]; then
   if [[ "$SCENARIO_ID" != *"-${WORLD_TAG}" ]]; then
     echo "note: world '$WORLD_NAME' is not the default - evidence goes to ${SCENARIO_ID}-${WORLD_TAG}"
-    OUT_ROOT="$OUT_ROOT/${SCENARIO_ID}-${WORLD_TAG}"
+    SCENARIO_DIR="$OUT_ROOT/${SCENARIO_ID}-${WORLD_TAG}"
   fi
+fi
+if [[ -z "$SCENARIO_DIR" ]]; then
+  SCENARIO_DIR="$OUT_ROOT/$SCENARIO_ID"
 fi
 
 # Sanity: a scenario id that already encodes a world must agree with it.
@@ -133,7 +142,7 @@ for known in navezgane pregen06k01 pregen06k02 pregen08k01 pregen08k02; do
 done
 
 for sut in $SUTS; do
-  run_dir="$OUT_ROOT/$SCENARIO_ID/$sut"
+  run_dir="$SCENARIO_DIR/$sut"
   rm -rf "$run_dir"
   mkdir -p "$run_dir"
   echo "--- SUT: $sut -> $run_dir"
@@ -416,6 +425,6 @@ done
 
 if [[ "$SUTS" == "stock zdtd" ]]; then
   echo "=== diff report ==="
-  python3 "$ROOT/tools/sut_report.py" "$OUT_ROOT/$SCENARIO_ID"
-  echo "report: $OUT_ROOT/$SCENARIO_ID/REPORT.md"
+  python3 "$ROOT/tools/sut_report.py" "$SCENARIO_DIR"
+  echo "report: $SCENARIO_DIR/REPORT.md"
 fi

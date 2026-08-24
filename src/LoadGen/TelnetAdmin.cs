@@ -9,7 +9,7 @@ namespace SevenDTD.LoadGen;
 /// Minimal 7DTD dedicated telnet client (spawn zombies near live players).
 /// Height-test worlds have empty prefabs, so EnemySpawnMode alone still yields Zom:0.
 /// </summary>
-public sealed class TelnetAdmin : IDisposable
+public sealed partial class TelnetAdmin : IDisposable
 {
     readonly string _host;
     readonly int _port;
@@ -27,6 +27,21 @@ public sealed class TelnetAdmin : IDisposable
         _password = password;
         _log = log;
     }
+
+    // listplayers output scales with cohort size (one row per player) and is
+    // re-parsed on every pressure wave; source-generated regexes keep that
+    // scan compiled instead of re-interpreting the pattern per call.
+    [GeneratedRegex(@"id\s*=\s*(\d+),.*?health\s*=\s*(\d+).*?pltfmid\s*=\s*Local_([^,\s]+).*?ip\s*=\s*127\.",
+        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private static partial Regex LivePlayerRowRegex();
+
+    [GeneratedRegex(@"id\s*=\s*(\d+).*?Local_(REFake\d+).*?ip=127",
+        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private static partial Regex FallbackPlayerRowRegex();
+
+    [GeneratedRegex(@"id\s*=\s*(\d+),.*?health\s*=\s*(\d+)",
+        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private static partial Regex PlayerIdHealthRegex();
 
     public bool Connect(int timeoutMs = 5000)
     {
@@ -89,10 +104,7 @@ public sealed class TelnetAdmin : IDisposable
         string outp = Exec("listplayers");
         // Prefer living connected bots only (skip health=0 leftovers from prior kills).
         var live = new List<(int id, string name)>();
-        foreach (Match m in Regex.Matches(
-            outp,
-            @"id\s*=\s*(\d+),.*?health\s*=\s*(\d+).*?pltfmid\s*=\s*Local_([^,\s]+).*?ip\s*=\s*127\.",
-            RegexOptions.IgnoreCase | RegexOptions.Singleline))
+        foreach (Match m in LivePlayerRowRegex().Matches(outp))
         {
             if (!int.TryParse(m.Groups[1].Value, out int id) || id <= 0) continue;
             if (!int.TryParse(m.Groups[2].Value, out int hp) || hp <= 0) continue;
@@ -101,7 +113,7 @@ public sealed class TelnetAdmin : IDisposable
         if (live.Count == 0)
         {
             // Loose fallback
-            foreach (Match m in Regex.Matches(outp, @"id\s*=\s*(\d+).*?Local_(REFake\d+).*?ip=127", RegexOptions.IgnoreCase | RegexOptions.Singleline))
+            foreach (Match m in FallbackPlayerRowRegex().Matches(outp))
             {
                 if (int.TryParse(m.Groups[1].Value, out int id) && id > 0)
                     live.Add((id, m.Groups[2].Value));
@@ -185,9 +197,7 @@ public sealed class TelnetAdmin : IDisposable
     {
         string outp = Exec("listplayers");
         var ids = new List<int>();
-        foreach (Match m in Regex.Matches(
-            outp, @"id\s*=\s*(\d+),.*?health\s*=\s*(\d+)",
-            RegexOptions.IgnoreCase | RegexOptions.Singleline))
+        foreach (Match m in PlayerIdHealthRegex().Matches(outp))
         {
             if (int.TryParse(m.Groups[1].Value, out int id) && id > 0
                 && int.TryParse(m.Groups[2].Value, out int hp) && hp > 0)

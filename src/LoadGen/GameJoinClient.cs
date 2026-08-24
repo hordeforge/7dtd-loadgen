@@ -434,6 +434,10 @@ public sealed class GameJoinClient
                             State.DeathCause = "none";
                         opt.OnLifeStarted?.Invoke(State.EntityId);
 
+                        // Computed once per life: ShouldStop runs on every pace
+                        // slice (~50x/s per bot), so the name must not be
+                        // concatenated inside that closure.
+                        string botName = opt.PlayerName + opt.ClientId;
                         ActionLoop.Run(
                             State,
                             SendPkt,
@@ -446,7 +450,7 @@ public sealed class GameJoinClient
                                 PingProbe = () => peer?.Ping ?? -1,
                                 Death = opt.Death,
                                 PaceMs = opt.PaceMs,
-                                ChatPrefix = opt.PlayerName + opt.ClientId,
+                                ChatPrefix = botName,
                                 CohortSize = Math.Max(1, opt.CohortSize),
                                 MaxLifetimeMs = (int)Math.Min(remainingMs, int.MaxValue),
                                 Log = Log,
@@ -455,12 +459,11 @@ public sealed class GameJoinClient
                                 {
                                     if (State.IsTerminal || State.Died || ShutdownRequested) return true;
                                     // Telnet kill: server sets health=0 but often omits StatChanged to lite clients.
-                                    string myName = opt.PlayerName + opt.ClientId;
-                                    if (WorldDeathBus.TryConsumeKill(myName, out _))
+                                    if (WorldDeathBus.TryConsumeKill(botName, out _))
                                     {
                                         State.Died = true;
                                         State.DeathCause = "world_killed";
-                                        Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={myName}");
+                                        Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={botName}");
                                         return true;
                                     }
                                     return false;

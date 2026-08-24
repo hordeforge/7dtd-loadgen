@@ -106,32 +106,55 @@ public static class PackageCodec
         return true;
     }
 
+    // Scratch builder state, one per thread: the action loop builds one frame
+    // per move/flags/chat/damage packet per bot, so steady-state allocations
+    // must stay at exactly one (the returned array below). The scratch stream
+    // keeps the high-water mark of the largest body built on this thread.
+    [ThreadStatic] static MemoryStream? _scratchBody;
+    [ThreadStatic] static BinaryWriter? _scratchBodyWriter;
+
+    /// <summary>Offset of the first body byte inside a framed single-package
+    /// message: channel(1) + size(4) + comp(1) + enc(1) + count(2) +
+    /// contentLen(4) + pkgId(2).</summary>
+    internal const int InnerBodyOffset = 15;
+
+    /// <summary>Allocate the final frame array and write everything before the
+    /// body. Callers fill the body at <see cref="InnerBodyOffset"/>; LiteNetLib
+    /// retains ReliableOrdered payloads for retransmission, so this array is
+    /// always freshly allocated and never pooled.</summary>
+    static byte[] NewFrame(byte channel, ushort packageId, int bodyLen)
+    {
+        // Inner: contentLen excludes its own 4 bytes (WriteToStream: end - start - 4)
+        int contentLen = 2 + bodyLen;      // pkgId + body
+        int payloadSize = 4 + contentLen;  // contentLen field + content
+        byte[] frame = new byte[ReservedHeaderBytes + OuterEnvelopeAfterChannel + payloadSize];
+        frame[0] = channel;
+        BinaryPrimitives.WriteInt32LittleEndian(frame.AsSpan(1), payloadSize);
+        // bytes 5,6 stay zero: not compressed, not encrypted
+        BinaryPrimitives.WriteUInt16LittleEndian(frame.AsSpan(7), 1); // package count
+        BinaryPrimitives.WriteInt32LittleEndian(frame.AsSpan(9), contentLen);
+        BinaryPrimitives.WriteUInt16LittleEndian(frame.AsSpan(13), packageId);
+        return frame;
+    }
+
     /// <summary>
     /// Build one game package for LiteNetLib.Send matching live NetConnectionSimple + LiteNet.
     /// Always includes channel reserved byte + outer envelope (uncompressed, unencrypted).
+    /// Must not be nested inside another <see cref="FrameChannelPackage"/> body callback:
+    /// the scratch buffer is per-thread and single-slot (no builder nests today).
     /// </summary>
     public static byte[] FrameChannelPackage(byte channel, ushort packageId, Action<BinaryWriter> writeBody)
     {
-        using var bodyMs = new MemoryStream();
-        using (var bodyW = new BinaryWriter(bodyMs, Encoding.UTF8, leaveOpen: true))
-            writeBody(bodyW);
-        byte[] body = bodyMs.ToArray();
+        var bodyMs = _scratchBody ??= new MemoryStream(256);
+        var bodyW = _scratchBodyWriter ??= new BinaryWriter(bodyMs, Encoding.UTF8, leaveOpen: true);
+        bodyMs.SetLength(0);
+        writeBody(bodyW);
+        bodyW.Flush();
 
-        // Inner: contentLen excludes its own 4 bytes (WriteToStream: end - start - 4)
-        int contentLen = 2 + body.Length; // pkgId + body
-        int payloadSize = 4 + contentLen; // contentLen field + content
-
-        using var ms = new MemoryStream();
-        using var bw = new BinaryWriter(ms, Encoding.UTF8, leaveOpen: true);
-        bw.Write(channel);
-        bw.Write(payloadSize);
-        bw.Write((byte)0); // not compressed
-        bw.Write((byte)0); // not encrypted
-        bw.Write((ushort)1); // package count
-        bw.Write(contentLen);
-        bw.Write(packageId);
-        bw.Write(body);
-        return ms.ToArray();
+        byte[] frame = NewFrame(channel, packageId, (int)bodyMs.Length);
+        bodyMs.Position = 0;
+        bodyMs.ReadExactly(frame.AsSpan(frame.Length - (int)bodyMs.Length));
+        return frame;
     }
 
     public static void WriteVersion(BinaryWriter w, VersionInfo v)
@@ -192,26 +215,46 @@ public static class PackageCodec
         bool useQRotation = false,
         float qX = 0f, float qY = 0f, float qZ = 0f, float qW = 1f)
     {
+        // Abs keyframe path (every AbsKeyframeInterval-th move): direct write
+        // like the rel-position hot path above; quaternion variant split out
+        // for the same display-class reason.
+        if (!useQRotation)
+        {
+            const int bodyLen = GoldenBodySize.EntityPosAndRotNoQ; // 30
+            byte[] frame = NewFrame(channel, packageId, bodyLen);
+            int o = InnerBodyOffset;
+            BinaryPrimitives.WriteInt32LittleEndian(frame.AsSpan(o), entityId);
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 4), x);
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 8), y);
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 12), z);
+            frame[o + 16] = 0; // bUseQRotation = false
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 17), rotX);
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 21), rotY);
+            BinaryPrimitives.WriteSingleLittleEndian(frame.AsSpan(o + 25), rotZ);
+            frame[o + 29] = onGround ? (byte)1 : (byte)0;
+            return frame;
+        }
+        return BuildEntityPosAndRotQ(packageId, entityId, x, y, z, qX, qY, qZ, qW, onGround, channel);
+    }
+
+    /// <summary>Cold quaternion variant kept out of the hot builder above.</summary>
+    private static byte[] BuildEntityPosAndRotQ(
+        ushort packageId, int entityId,
+        float x, float y, float z,
+        float qX, float qY, float qZ, float qW,
+        bool onGround, byte channel)
+    {
         return FrameChannelPackage(channel, packageId, w =>
         {
             w.Write(entityId);
             w.Write(x);
             w.Write(y);
             w.Write(z);
-            w.Write(useQRotation);
-            if (!useQRotation)
-            {
-                w.Write(rotX);
-                w.Write(rotY);
-                w.Write(rotZ);
-            }
-            else
-            {
-                w.Write(qX);
-                w.Write(qY);
-                w.Write(qZ);
-                w.Write(qW);
-            }
+            w.Write(true);
+            w.Write(qX);
+            w.Write(qY);
+            w.Write(qZ);
+            w.Write(qW);
             w.Write(onGround);
         });
     }
@@ -235,9 +278,44 @@ public static class PackageCodec
         float qX = 0f, float qY = 0f, float qZ = 0f, float qW = 1f,
         byte channel = 0)
     {
+        // Hottest builder in the tool (one frame per move tick per bot): write
+        // the fixed !useQ body straight into the final array - exactly one
+        // allocation per frame. The rare quaternion variant lives in its own
+        // method: a cold lambda capturing these parameters would force a
+        // display-class allocation on every entry of the hot path.
+        if (!useQRotation)
+        {
+            const int bodyLen = GoldenBodySize.EntityRelPosAndRotNoQ; // 20
+            byte[] frame = NewFrame(channel, packageId, bodyLen);
+            int o = InnerBodyOffset;
+            BinaryPrimitives.WriteInt32LittleEndian(frame.AsSpan(o), entityId);
+            frame[o + 4] = 0; // bUseQRotation = false
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 5), rotX);
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 7), rotY);
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 9), rotZ);
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 11), dx);
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 13), dy);
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 15), dz);
+            frame[o + 17] = onGround ? (byte)1 : (byte)0;
+            BinaryPrimitives.WriteInt16LittleEndian(frame.AsSpan(o + 18), updateSteps);
+            return frame;
+        }
+        return BuildEntityRelPosAndRotQ(packageId, entityId, dx, dy, dz, rotX, rotY, rotZ,
+            onGround, updateSteps, qX, qY, qZ, qW, channel);
+    }
+
+    /// <summary>Cold quaternion variant kept out of the hot builder above.</summary>
+    private static byte[] BuildEntityRelPosAndRotQ(
+        ushort packageId, int entityId,
+        short dx, short dy, short dz,
+        short rotX, short rotY, short rotZ,
+        bool onGround, short updateSteps,
+        float qX, float qY, float qZ, float qW,
+        byte channel)
+    {
         return FrameChannelPackage(channel, packageId, w =>
             WriteEntityRelPosAndRotBody(w, entityId, dx, dy, dz, rotX, rotY, rotZ,
-                onGround, updateSteps, useQRotation, qX, qY, qZ, qW));
+                onGround, updateSteps, useQRotation: true, qX, qY, qZ, qW));
     }
 
     public static void WriteEntityRelPosAndRotBody(
@@ -541,11 +619,13 @@ public static class PackageCodec
         ushort flags,
         byte channel = 0)
     {
-        return FrameChannelPackage(channel, packageId, w =>
-        {
-            w.Write(entityId);
-            w.Write(flags);
-        });
+        // Jump/crouch/aim/break flags fire constantly in combat modes: direct
+        // write, same rationale as the position builders.
+        const int bodyLen = GoldenBodySize.EntityAliveFlags; // 6
+        byte[] frame = NewFrame(channel, packageId, bodyLen);
+        BinaryPrimitives.WriteInt32LittleEndian(frame.AsSpan(InnerBodyOffset), entityId);
+        BinaryPrimitives.WriteUInt16LittleEndian(frame.AsSpan(InnerBodyOffset + 4), flags);
+        return frame;
     }
 
     /// <summary>NetPackageSimpleChat: msg:string + recipientCount:i32 (+ ids). count=0 = broadcast.</summary>
@@ -713,13 +793,22 @@ public static class PackageCodec
         });
     }
 
+    // Reused result list, one per thread: every received datagram parses into
+    // one of these on the receive hot path. Contract: the returned list is
+    // valid until the next ParseChannelPayload call on the same thread (body
+    // arrays are always independent copies). Every caller drains it before the
+    // next parse; none retains the list itself.
+    [ThreadStatic] static List<(ushort id, byte[] body)>? _parsedPackages;
+
     /// <summary>
     /// Parse a LiteNet game message: channel + outer envelope + inner packages.
     /// Decompresses Noemax/raw DEFLATE payloads (DeflateStream). Encrypted not supported.
+    /// The returned list is reused per thread: drain it before the next parse.
     /// </summary>
     public static List<(ushort id, byte[] body)> ParseChannelPayload(ReadOnlySpan<byte> data)
     {
-        var list = new List<(ushort, byte[])>();
+        var list = _parsedPackages ??= new List<(ushort, byte[])>();
+        list.Clear();
         // Need: channel(1) + size(4) + comp(1) + enc(1) + count(2) = 9
         if (data.Length < ReservedHeaderBytes + OuterEnvelopeAfterChannel)
             return list;
