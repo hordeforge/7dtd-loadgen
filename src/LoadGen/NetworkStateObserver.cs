@@ -44,6 +44,9 @@ public sealed class NetworkStateObserver
             seq = NextSequence(),
             elapsedMs = _clock.ElapsedMilliseconds,
         });
+        var buffs = BuffsFor(entityId);
+        foreach (string name in _buffFilters)
+            EmitState("buff", entityId, name, null, buffs.Contains(name), "joined-default");
     }
 
     public void Observe(string packageType, ReadOnlySpan<byte> body)
