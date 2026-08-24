@@ -271,7 +271,13 @@ public sealed class GameJoinClient
                     while (sendQueue.Count > 0 && peer != null)
                     {
                         var pkt = sendQueue.Dequeue();
-                        peer.Send(pkt, DeliveryMethod.ReliableOrdered);
+                        // Same guard as the PollInbox flush below: a send fault
+                        // (peer died mid-session) must end the flush, not escape
+                        // Run() past the PASS/FAIL summary. The next PollEvents
+                        // dispatches PeerDisconnectedEvent, which terminates the
+                        // join through the normal terminal-state path.
+                        try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
+                        catch { break; }
                         State.PackagesSent++;
                     }
                 }
@@ -293,8 +299,14 @@ public sealed class GameJoinClient
                         State.Advance(JoinStage.ChallengeReceived, ch.ToString());
                         Log($"STAGE ChallengeReceived: {ch}");
                         var reply = PackageCodec.BuildChallengeReply(data);
-                        peer?.Send(reply, DeliveryMethod.ReliableOrdered);
-                        State.PackagesSent++;
+                        // Peer died between challenge and echo: the disconnect
+                        // event terminates the join; the fault must not escape.
+                        try
+                        {
+                            peer?.Send(reply, DeliveryMethod.ReliableOrdered);
+                            State.PackagesSent++;
+                        }
+                        catch { }
                         State.Advance(JoinStage.ChallengeReplied);
                         Log("STAGE ChallengeReplied");
                         continue;
@@ -352,8 +364,18 @@ public sealed class GameJoinClient
                         string ver = PackageCodec.VersionLongString(State.ServerVersion);
                         var login = PackageCodec.BuildPlayerLogin(
                             loginId, opt.PlayerName + opt.ClientId, ver, ver);
-                        peer.Send(login, DeliveryMethod.ReliableOrdered);
-                        State.PackagesSent++;
+                        try
+                        {
+                            peer.Send(login, DeliveryMethod.ReliableOrdered);
+                            State.PackagesSent++;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Breadcrumb, not an escape: the disconnect event the
+                            // next poll dispatches fails this join with its real
+                            // reason instead of an EX line from a raw send fault.
+                            Log($"FAIL login_send: {ex.Message}");
+                        }
                         loginSent = true;
                         State.Advance(JoinStage.LoginSent, $"pkgId={loginId} name={opt.PlayerName}{opt.ClientId}");
                         Log($"STAGE LoginSent: pkgId={loginId}");

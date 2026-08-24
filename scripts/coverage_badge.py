@@ -35,7 +35,13 @@ def main(argv: list[str]) -> int:
     if len(argv) != 3:
         print(f"usage: {argv[0]} COBERTURA_XML OUTPUT.svg", file=sys.stderr)
         return 2
-    root = ET.parse(argv[1]).getroot()
+    try:
+        root = ET.parse(argv[1]).getroot()
+    except (OSError, ET.ParseError) as e:
+        # A skipped or truncated coverage step must name the file and cause,
+        # not die with a traceback inside the badge job.
+        print(f"ERROR: cannot read cobertura XML {argv[1]}: {e}", file=sys.stderr)
+        return 2
     pct = round(float(root.get("line-rate", "0")) * 100)
     Path(argv[2]).write_text(badge(pct, colour(pct)))
     return 0

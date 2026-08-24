@@ -66,15 +66,18 @@ def server_pid() -> int | None:
             ["ss", "-tlnp"], capture_output=True,
             text=True, encoding="utf-8", errors="replace", check=False
         ).stdout
-        # Telnet (8081) binds during boot before the game port (26900) - check
-        # both so a kill during startup still finds the server.
-        for port in (TELNET_PORT, GAME_PORT):
-            for line in out.splitlines():
-                if f":{port} " in line and "pid=" in line:
-                    pid = line.split("pid=")[1].split(",")[0]
-                    return int(pid)
-    except Exception:
-        pass
+    except OSError as e:
+        # A missing/failing ss must not masquerade later as "no server pid
+        # (already down)": say why the lookup failed.
+        print(f"[reconnect] server pid lookup failed: {e}", file=sys.stderr)
+        return None
+    # Telnet (8081) binds during boot before the game port (26900) - check
+    # both so a kill during startup still finds the server.
+    for port in (TELNET_PORT, GAME_PORT):
+        for line in out.splitlines():
+            if f":{port} " in line and "pid=" in line:
+                pid = line.split("pid=")[1].split(",")[0]
+                return int(pid)
     return None
 
 

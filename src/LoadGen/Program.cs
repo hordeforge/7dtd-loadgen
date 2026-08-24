@@ -222,7 +222,20 @@ public static class Program
         void Log(string m) { Console.WriteLine(m); lines.Add(m); }
 
         Log($"[{DateTime.UtcNow:O}] self-test-join actions={actions} seed={seed}");
-        int rc = GameJoinClient.RunSelfTestJoin(actions, seed, Log, out var sm);
+        JoinStateMachine sm;
+        int rc;
+        try
+        {
+            rc = GameJoinClient.RunSelfTestJoin(actions, seed, Log, out sm);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // The in-process mock host failed to bind its UDP socket (port
+            // exhaustion, sandboxed CI): report it like every other startup
+            // failure instead of an unhandled-exception stack trace.
+            Log($"FAIL: in-process mock join host could not start: {ex.Message}");
+            return 1;
+        }
         Log($"SUMMARY stage={sm.Stage} joined={sm.IsJoined} mode={sm.BotModeName} " +
             $"walks={sm.WalkActions} jumps={sm.JumpActions} crouch={sm.CrouchActions} aim={sm.AimActions} " +
             $"turn={sm.TurnActions} chat={sm.ChatActions} attack={sm.AttackActions} " +

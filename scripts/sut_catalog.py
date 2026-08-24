@@ -27,7 +27,8 @@ def main() -> int:
     if len(args) == 1 and args[0] == "list":
         try:
             doc = json.loads(CATALOG.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+        except (OSError, ValueError) as e:
+            print(f"ERROR: cannot read catalog {CATALOG}: {e}", file=sys.stderr)
             return 1
         for key in doc:
             print(key)

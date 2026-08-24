@@ -145,6 +145,12 @@ def join_ramped(target):
     deadline = time.monotonic() + target * 1000 / 1000 + 180
     hits = 0
     while time.monotonic() < deadline:
+        # A cohort that already exited (build failure, gate FAIL, crash) cannot
+        # reach the target: waiting out the ramp deadline would stall the profile
+        # for minutes after an instant failure. Report and return what we know.
+        if p.poll() is not None:
+            log(f"  join ramp: client exited early rc={p.returncode}; see {fh_path.name}")
+            break
         time.sleep(10)
         n = len(player_ids())
         log(f"  join ramp: {n}/{target} players")
