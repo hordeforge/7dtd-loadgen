@@ -69,3 +69,20 @@ def test_observer_flags_are_documented_and_require_jsonl_output():
     output = result.stdout + result.stderr
     assert result.returncode == 2
     assert "invalid --events-jsonl 'missing'" in output
+
+
+def test_unwritable_events_jsonl_fails_clean():
+    """An unwritable --events-jsonl path is a usage error (exit 2, named flag),
+    not an unhandled-exception crash after validation."""
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    blocked = SCRATCH / "events_jsonl_blocked"
+    blocked.write_text("", encoding="utf-8")  # a file where a directory is needed
+    r = _run(
+        ["--join", "--observe-cvar", "atomicProtection", "--no-spawn-zombies",
+         "--events-jsonl", str(blocked / "events.jsonl")],
+        timeout=20,
+    )
+    output = r.stdout + r.stderr
+    assert r.returncode == 2, output[-2000:]
+    assert "invalid --events-jsonl" in output
+    assert "Traceback" not in r.stderr

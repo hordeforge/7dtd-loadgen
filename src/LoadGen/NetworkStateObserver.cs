@@ -267,6 +267,18 @@ public sealed class JsonLineEventWriter : IDisposable
 
     public void Dispose()
     {
-        lock (_gate) _writer.Dispose();
+        lock (_gate)
+        {
+            // Dispose runs after the run's exit code is decided; a throw here
+            // (final flush on a full disk) would replace that code with a crash
+            // trace at process exit. The emit path already latches per-line
+            // faults, so this only keeps teardown from masking a finished run.
+            try { _writer.Dispose(); }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(
+                    $"[{DateTime.UtcNow:O}] ERROR closing events sink: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
     }
 }

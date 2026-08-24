@@ -76,10 +76,14 @@ if [[ ! "$SCENARIO_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
 fi
 
 # Scenario knobs: env (if explicitly set) wins, then the catalog, then
-# defaults. The catalog is scripts/scenarios/sut.json.
-read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY < <(
-  python3 "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID"
-)
+# defaults. The catalog is scripts/scenarios/sut.json. Resolution must fail
+# loudly: a typo'd id used to resolve to empty fields and silently ran the
+# default workload against both servers for minutes under the wrong name.
+if ! catalog_row="$(python3 "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID")"; then
+  echo "ERROR: scenario '$SCENARIO_ID' not resolvable from scripts/scenarios/sut.json (try --list)" >&2
+  exit 1
+fi
+read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY <<<"$catalog_row"
 COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
 ACTIONS="${COMPARE_ACTIONS:-${CAT_ACTIONS:-0}}"
 TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-${CAT_TIMEOUT:-60000}}"

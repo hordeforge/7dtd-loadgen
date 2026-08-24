@@ -195,7 +195,7 @@ public static class Program
                 // error: gate on the token so a stop never waits out the backoff.
                 catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
-                    Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
+                    Console.Error.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
                     if (!NappableDelay(errorBackoffMs, ct)) break;
                 }
             }
@@ -491,9 +491,20 @@ public static class Program
         if (observedCvars.Any(string.IsNullOrWhiteSpace) || observedBuffs.Any(string.IsNullOrWhiteSpace))
             return InvalidArg("--observe-cvar/--observe-buff", "empty", "a non-empty exact state name");
 
-        using var eventWriter = string.IsNullOrWhiteSpace(eventsJsonlPath)
-            ? null
-            : new JsonLineEventWriter(eventsJsonlPath);
+        // Fail fast on an unwritable events sink: an unhandled constructor throw
+        // here surfaced as a stack-trace crash instead of a clean usage error
+        // naming the flag (same startup-gate contract as --port/--timeout).
+        JsonLineEventWriter? eventWriter = null;
+        if (!string.IsNullOrWhiteSpace(eventsJsonlPath))
+        {
+            try { eventWriter = new JsonLineEventWriter(eventsJsonlPath); }
+            catch (Exception ex)
+            {
+                return InvalidArg("--events-jsonl", eventsJsonlPath,
+                    $"a writable path ({ex.GetType().Name}: {ex.Message})");
+            }
+        }
+        using var eventWriterOwned = eventWriter;
         if (!IsValidPort(telnetPort))
             return InvalidArg("--telnet-port", telnetPort.ToString(), "an integer 1..65535");
         if (!IsValidMinPassRate(minPassRate))

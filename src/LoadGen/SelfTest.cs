@@ -32,8 +32,22 @@ static class SelfTest
         var serverListener = new EventBasedNetListener();
         var server = new NetManager(serverListener) { AutoRecycle = true, UpdateTime = 15 };
         serverListener.ConnectionRequestEvent += req => req.Accept();
-        if (port <= 0) { if (!server.Start()) return 1; port = server.LocalPort; }
-        else if (!server.Start(port)) return 1;
+        // A bare `return 1` here failed with no output at all: the operator saw a
+        // FAIL exit code and had to guess that the in-process host never listened.
+        if (port <= 0)
+        {
+            if (!server.Start())
+            {
+                Console.Error.WriteLine("FAIL: self-test host could not start on an ephemeral port");
+                return 1;
+            }
+            port = server.LocalPort;
+        }
+        else if (!server.Start(port))
+        {
+            Console.Error.WriteLine($"FAIL: self-test host could not listen on port {port} (already in use?)");
+            return 1;
+        }
         Console.WriteLine($"[{DateTime.UtcNow:O}] [self-test] STAGE self_host_listen: port={port} count={count}");
         using var cts = new CancellationTokenSource();
         var hostLoop = Task.Run(() => { while (!cts.Token.IsCancellationRequested) { server.PollEvents(); Thread.Sleep(2); } });

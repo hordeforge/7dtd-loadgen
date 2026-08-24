@@ -196,6 +196,25 @@ def test_not_compared_when_one_side_missing(tmp_path):
     assert "NOT COMPARED" in (tmp_path / "scenario" / "REPORT.md").read_text(encoding="utf-8")
 
 
+def test_corrupt_surface_json_treated_as_missing(tmp_path):
+    """A truncated surface.json (run killed mid-write) classifies that side as
+    missing (NOT COMPARED) with a WARN, instead of aborting the report with a
+    traceback - same skip policy as bench_report.py's lap consolidation."""
+    stock_dir = tmp_path / "scenario" / "stock"
+    zdtd_dir = tmp_path / "scenario" / "zdtd"
+    _make_run(stock_dir, "stock", stock=True)
+    (stock_dir / "surface.json").write_text('{"sut": "sto', encoding="utf-8")
+    _make_run(zdtd_dir, "zdtd", stock=False)
+    r = _py([str(TOOLS / "sut_report.py"), str(tmp_path / "scenario")])
+    assert r.returncode == 0, r.stderr
+    assert "treating side as missing" in r.stderr
+    report = (tmp_path / "scenario" / "REPORT.md").read_text(encoding="utf-8")
+    assert "NOT COMPARED" in report
+    diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
+    assert diff["compared"] is False
+    assert diff["missing"] == "stock"
+
+
 def test_clock_rate_prefers_monotonic_markers(tmp_path):
     """Rate math uses the markers' monotonic ms (sub-second exact) when present;
     the whole-second ts stamps would truncate the interval by up to +-1s."""

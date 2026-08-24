@@ -45,3 +45,13 @@ def test_missing_args_rejected():
     r = _run("--scenario", "join-probe")
     assert r.returncode == 2
     assert "--scenario and --sut required" in r.stderr
+
+
+def test_unknown_scenario_rejected_before_boot():
+    """A typo'd scenario id must fail loudly at catalog resolution; it used to
+    resolve to empty fields and silently run the default workload on a booted
+    server under the wrong name."""
+    r = _run("--scenario", "no-such-scenario", "--sut", "stock")
+    assert r.returncode != 0
+    assert "no-such-scenario" in (r.stdout + r.stderr)
+    assert "not ready" not in r.stderr  # failed before any boot wait

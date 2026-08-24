@@ -30,7 +30,15 @@ def load(run_dir):
     p = os.path.join(run_dir, "surface.json")
     if not os.path.exists(p):
         return None
-    return json.load(open(p, encoding="utf-8"))
+    # A corrupt/truncated surface.json (run killed mid-write) must classify that
+    # side as missing (NOT COMPARED), not abort the whole report with a
+    # traceback - same policy as bench_report.py's lap consolidation.
+    try:
+        with open(p, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError) as e:
+        print(f"WARN: unreadable {p}; treating side as missing: {e}", file=sys.stderr)
+        return None
 
 
 def save_summary(s):

@@ -89,7 +89,11 @@ if (( COUNT >= 100 )); then
 fi
 
 dotnet build "$PROJ" -c Release -v q
-test -f "$EXE" || test -f "$OUT_DIR/7dtd-loadgen.dll"
+# set -e would exit here silently when neither artifact exists; say what is missing.
+if [[ ! -f "$EXE" && ! -f "$OUT_DIR/7dtd-loadgen.dll" ]]; then
+  echo "ERROR: built client not found at $EXE (build reported success?)" >&2
+  exit 1
+fi
 
 LOG="${SCRATCH_OUT:-$ROOT/src/LoadGen/bin}/simulated_client.log"
 mkdir -p "$(dirname "$LOG")"
