@@ -24,6 +24,29 @@ public sealed class GameJoinClient
     /// <summary>0 = no shutdown pass yet; 1 = a pass is running or done.</summary>
     static int _shutdownPassStarted;
 
+    /// <summary>0 = normal operation; 1 = DisconnectAllActive is sweeping. Live
+    /// client loops observe this and unwind BEFORE the sweep touches any
+    /// manager: a NetManager is single-threaded by contract here (one poll loop
+    /// per client), so DisconnectAll/Stop from the signal-handler thread must
+    /// never overlap that client's own PollEvents/Send on the same manager.</summary>
+    static int _shutdownRequested;
+
+    /// <summary>True once a shutdown sweep started; client loops check it and exit.</summary>
+    public static bool ShutdownRequested => System.Threading.Volatile.Read(ref _shutdownRequested) != 0;
+
+    /// <summary>Test seam: clear the one-shot shutdown state so more than one
+    /// unit test can exercise <see cref="DisconnectAllActive"/> per process.</summary>
+    internal static void ResetShutdownForTests()
+    {
+        System.Threading.Volatile.Write(ref _shutdownRequested, 0);
+        _shutdownPassStarted = 0;
+    }
+
+    /// <summary>Serializes manager teardown: the shutdown sweep and a client's
+    /// own StopNet both drive NetManager.Stop, and concurrent calls corrupt the
+    /// non-thread-safe internals even when each caller holds a valid reference.</summary>
+    static readonly object SweepGate = new();
+
     public static void DisconnectAllActive()
     {
         // Both Console.CancelKeyPress and ProcessExit land here, and a double
@@ -32,14 +55,23 @@ public sealed class GameJoinClient
         // NetManagers concurrently, so run the sweep exactly once per process.
         if (System.Threading.Interlocked.CompareExchange(ref _shutdownPassStarted, 1, 0) != 0)
             return;
+        // Ask every live client loop to unwind first. They observe the flag at
+        // each poll/pace slice (~20ms granularity), exit Run, and release their
+        // manager through StopNet under SweepGate; the grace period covers that
+        // unwind before the sweep starts mutating anything itself.
+        System.Threading.Interlocked.Exchange(ref _shutdownRequested, 1);
+        System.Threading.Thread.Sleep(300);
         // No PollEvents() here: with UnsyncedEvents=false it would dequeue and
         // dispatch pending LiteNetLib events on THIS thread, running each bot's
         // listener handlers (peer assignment, State/log mutations) concurrently
         // with that bot's own poll loop. DisconnectAll sends the BYE packet
         // synchronously; the sleep just gives it time to drain.
-        foreach (var n in ActiveNets.Keys) { try { n.DisconnectAll(); } catch { } }
-        System.Threading.Thread.Sleep(200);
-        foreach (var n in ActiveNets.Keys) { try { n.Stop(); } catch { } }
+        lock (SweepGate)
+        {
+            foreach (var n in ActiveNets.Keys) { try { n.DisconnectAll(); } catch { } }
+            System.Threading.Thread.Sleep(200);
+            foreach (var n in ActiveNets.Keys) { try { n.Stop(); } catch { } }
+        }
     }
 
     /// <summary>Stop a manager and drop it from the live set (idempotent). Every
@@ -47,7 +79,7 @@ public sealed class GameJoinClient
     static void StopNet(LiteNetLib.NetManager net)
     {
         ActiveNets.TryRemove(net, out _);
-        try { net.Stop(); } catch { }
+        lock (SweepGate) { try { net.Stop(); } catch { } }
     }
 
     public JoinStateMachine State { get; } = new();
@@ -229,7 +261,7 @@ public sealed class GameJoinClient
         var recvBatch = new List<byte[]>();
         try
         {
-            while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
+            while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal && !ShutdownRequested)
             {
                 net.PollEvents();
 
@@ -378,7 +410,7 @@ public sealed class GameJoinClient
 
                     bool SendPkt(byte[] pkt)
                     {
-                        if (peer == null || State.IsTerminal) return false;
+                        if (peer == null || State.IsTerminal || ShutdownRequested) return false;
                         try
                         {
                             peer.Send(pkt, DeliveryMethod.ReliableOrdered);
@@ -388,7 +420,7 @@ public sealed class GameJoinClient
                     }
 
                     int life = 0;
-                    while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal)
+                    while (sw.ElapsedMilliseconds < opt.TimeoutMs && !State.IsTerminal && !ShutdownRequested)
                     {
                         life++;
                         long remainingMs = Math.Max(3_000, opt.TimeoutMs - sw.ElapsedMilliseconds);
@@ -421,7 +453,7 @@ public sealed class GameJoinClient
                                 Bench = opt.Bench,
                                 ShouldStop = () =>
                                 {
-                                    if (State.IsTerminal || State.Died) return true;
+                                    if (State.IsTerminal || State.Died || ShutdownRequested) return true;
                                     // Telnet kill: server sets health=0 but often omits StatChanged to lite clients.
                                     string myName = opt.PlayerName + opt.ClientId;
                                     if (WorldDeathBus.TryConsumeKill(myName, out _))
@@ -451,7 +483,7 @@ public sealed class GameJoinClient
 
                             // Drain late GMSG for a moment
                             var drainUntil = sw.ElapsedMilliseconds + Math.Min(1500, opt.RespawnDelayMs);
-                            while (sw.ElapsedMilliseconds < drainUntil && !State.IsTerminal)
+                            while (sw.ElapsedMilliseconds < drainUntil && !State.IsTerminal && !ShutdownRequested)
                             {
                                 PollInbox();
                                 Thread.Sleep(15);
@@ -469,7 +501,7 @@ public sealed class GameJoinClient
 
                             // Respawn delay then request spawn
                             var waitUntil = sw.ElapsedMilliseconds + Math.Max(200, opt.RespawnDelayMs);
-                            while (sw.ElapsedMilliseconds < waitUntil && !State.IsTerminal)
+                            while (sw.ElapsedMilliseconds < waitUntil && !State.IsTerminal && !ShutdownRequested)
                             {
                                 PollInbox();
                                 Thread.Sleep(20);
@@ -486,7 +518,7 @@ public sealed class GameJoinClient
                             State.AwaitingRespawn = true;
                             bool gotSpawn = false;
                             var respawnDeadline = sw.ElapsedMilliseconds + Math.Max(1_000, opt.RespawnTimeoutMs);
-                            while (sw.ElapsedMilliseconds < respawnDeadline && !State.IsTerminal)
+                            while (sw.ElapsedMilliseconds < respawnDeadline && !State.IsTerminal && !ShutdownRequested)
                             {
                                 PollInbox();
                                 if (!State.AwaitingRespawn && !State.Died)
@@ -542,7 +574,11 @@ public sealed class GameJoinClient
             // instead of holding a ghost until its own DisconnectTimeout. Ghost
             // accumulation from hard-killed cohorts causes NetPackagePlayerDenied
             // (reason=2, world-full) on later joins and corrupts spawn state.
-            try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); } catch { }
+            // Skipped once a shutdown sweep started: the sweep owns every live
+            // manager at that point, and two threads mutating one NetManager is
+            // exactly the race this file forbids.
+            if (!ShutdownRequested)
+                try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); } catch { }
         }
         finally
         {

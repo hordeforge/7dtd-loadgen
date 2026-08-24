@@ -321,7 +321,7 @@ public static class ActionLoop
                             if (stats.Jumps <= 5 || stats.Jumps % 25 == 0)
                                 log?.Invoke($"ACTION jump#{stats.Jumps} entity={entityId} y={y:0.##}");
                         });
-                    Pace(paceMs, opt.Poll);
+                    Pace(paceMs, opt.Poll, opt.ShouldStop);
                     y = surfaceY;
                     goto case ActionKind.Walk;
 
@@ -338,7 +338,7 @@ public static class ActionLoop
                             if (stats.Crouches <= 5 || stats.Crouches % 20 == 0)
                                 log?.Invoke($"ACTION crouch#{stats.Crouches} entity={entityId} on={crouching}");
                         });
-                    Pace(paceMs, opt.Poll);
+                    Pace(paceMs, opt.Poll, opt.ShouldStop);
                     break;
 
                 case ActionKind.Aim:
@@ -354,7 +354,7 @@ public static class ActionLoop
                             if (stats.Aims <= 5 || stats.Aims % 20 == 0)
                                 log?.Invoke($"ACTION aim#{stats.Aims} entity={entityId} on={aiming}");
                         });
-                    Pace(paceMs, opt.Poll);
+                    Pace(paceMs, opt.Poll, opt.ShouldStop);
                     break;
 
                 case ActionKind.BreakBlocks:
@@ -368,7 +368,7 @@ public static class ActionLoop
                             if (stats.BreakBlocks <= 3 || stats.BreakBlocks % 10 == 0)
                                 log?.Invoke($"ACTION break#{stats.BreakBlocks} entity={entityId}");
                         });
-                    Pace(paceMs, opt.Poll);
+                    Pace(paceMs, opt.Poll, opt.ShouldStop);
                     break;
 
                 case ActionKind.Dynamite:
@@ -385,7 +385,7 @@ public static class ActionLoop
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
                         }
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
@@ -402,7 +402,7 @@ public static class ActionLoop
                             log?.Invoke($"ACTION turn#{stats.Turns} entity={entityId} yaw={yaw:0.#}");
                         Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
                             0f, 0f, yaw, crouching, () => { });
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
@@ -419,14 +419,14 @@ public static class ActionLoop
                                 if (stats.Strafes <= 3 || stats.Strafes % 25 == 0)
                                     log?.Invoke($"ACTION strafe#{stats.Strafes} entity={entityId}");
                             });
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
                 case ActionKind.Look:
                     stats.Looks++;
                     sm.LookActions++;
-                    Pace(paceMs, opt.Poll);
+                    Pace(paceMs, opt.Poll, opt.ShouldStop);
                     break;
 
                 case ActionKind.Chat:
@@ -443,7 +443,7 @@ public static class ActionLoop
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION chat#{stats.Chats} entity={entityId} msg={msg}");
                         }
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
@@ -463,7 +463,7 @@ public static class ActionLoop
                             if (stats.Attacks <= 3 || stats.Attacks % 10 == 0)
                                 log?.Invoke($"ACTION attack#{stats.Attacks} entity={entityId}");
                         }
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
@@ -540,7 +540,7 @@ public static class ActionLoop
                                         $"ACTION walk#{stats.Walks} entity={entityId} " +
                                         $"-> ({x:0.##},{y:0.##},{z:0.##}) hdg={yaw:0.#}");
                             });
-                        Pace(paceMs, opt.Poll);
+                        Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
                     }
 
@@ -861,7 +861,7 @@ public static class ActionLoop
 
     [ThreadStatic] static Random? _paceRng;
 
-    static void Pace(int paceMs, Action? poll)
+    static void Pace(int paceMs, Action? poll, Func<bool>? shouldStop = null)
     {
         if (paceMs <= 0)
         {
@@ -879,6 +879,10 @@ public static class ActionLoop
             int slice = Math.Min(left, 20);
             Thread.Sleep(slice);
             left -= slice;
+            // Stop before polling: during process shutdown the caller must quit
+            // within one slice instead of driving PollEvents/Send for the rest
+            // of a long pace interval while the sweep tears managers down.
+            if (shouldStop?.Invoke() == true) return;
             poll?.Invoke();
         }
     }

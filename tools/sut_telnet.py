@@ -76,10 +76,14 @@ def main():
     for idx, cmd in enumerate(cmds):
         if args.tail_sleep > 0 and idx == len(cmds) - 1:
             time.sleep(args.tail_sleep)
-        # Marker line so parsers can associate each reply with a wall-clock
-        # timestamp (used to derive the game-clock rate from repeated gettime).
+        # Marker line so parsers can associate each reply with a timestamp.
+        # ts is the UTC wall stamp for audit; mono is the process-local
+        # monotonic ms that rate math prefers: ts is truncated to whole
+        # seconds (up to +-1s of bias on the derived gettime interval) and a
+        # wall-clock step mid-session would corrupt it outright.
         ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        transcript += f"# ts={ts} cmd={cmd}\n".encode()
+        mono = time.monotonic_ns() // 1_000_000
+        transcript += f"# ts={ts} mono={mono} cmd={cmd}\n".encode()
         sock.sendall((cmd + "\n").encode())
         time.sleep(max(0.2, args.settle_ms / 1000.0))
         deadline = time.monotonic() + args.settle_ms / 1000.0 + 2.0

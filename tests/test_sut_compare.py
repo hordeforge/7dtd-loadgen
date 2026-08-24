@@ -196,6 +196,23 @@ def test_not_compared_when_one_side_missing(tmp_path):
     assert "NOT COMPARED" in (tmp_path / "scenario" / "REPORT.md").read_text(encoding="utf-8")
 
 
+def test_clock_rate_prefers_monotonic_markers(tmp_path):
+    """Rate math uses the markers' monotonic ms (sub-second exact) when present;
+    the whole-second ts stamps would truncate the interval by up to +-1s."""
+    (tmp_path / "telnet.txt").write_text(
+        "# ts=2026-08-12T00:00:00Z mono=1000 cmd=gettime\n"
+        "Day 1, 07:00\n"
+        "# ts=2026-08-12T00:00:20Z mono=13500 cmd=gettime\n"
+        "Day 1, 07:08\n",
+        encoding="utf-8",
+    )
+    r = _py([str(TOOLS / "sut_capture.py"), str(tmp_path), "stock"])
+    assert r.returncode == 0, r.stderr
+    telnet = json.loads(r.stdout)["telnet"]
+    # ISO stamps alone would yield 8 game-min / 20 s = 0.4; mono gives 12.5 s.
+    assert telnet["clockRateGameMinPerRealSec"] == 0.64
+
+
 def test_missing_telnet_on_one_side_does_not_crash(tmp_path):
     """A side with no telnet.txt (snapshot failed) still yields a report."""
     stock_dir = tmp_path / "scenario" / "stock"

@@ -605,7 +605,10 @@ public static class Program
                     && opt.MaxDynamitePerLife <= ActionLoop.DefaultMaxDynamitePerLife
                         ? ActionLoop.DemolitionMaxDynamitePerLife
                         : opt.MaxDynamitePerLife;
-            while (sessionSw.ElapsedMilliseconds + 5_000 < opt.TimeoutMs)
+            // ShutdownRequested: DisconnectAllActive owns every live manager and
+            // is sweeping; starting another join session would register a fresh
+            // NetManager mid-teardown and race it with its own bot thread.
+            while (sessionSw.ElapsedMilliseconds + 5_000 < opt.TimeoutMs && !GameJoinClient.ShutdownRequested)
             {
                 attempt++;
                 int remaining = (int)Math.Max(5_000, opt.TimeoutMs - sessionSw.ElapsedMilliseconds);

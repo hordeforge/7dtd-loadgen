@@ -10,6 +10,7 @@ namespace SevenDTD.LoadGen.Tests;
 /// safe: no thrown exceptions, and the full join handshake still completes
 /// (challenge sent once, echoed back, verified; login accepted).
 /// </summary>
+[Collection("process-shutdown-sweep")]
 public sealed class MockGameServerConcurrentPollTests
 {
     [Fact]

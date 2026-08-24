@@ -134,7 +134,9 @@ for sut in $SUTS; do
       # Bots speak LiteNetLib directly, so they hit the LiteNet data port =
       # ServerPort + 2 (26902 for the stock 26900 server). 26900 itself is the
       # game client's "Connect to IP" port; a bot connect there fails.
-      STOCK_SERVER_PORT="$(grep -oP 'name="ServerPort" value="\K[0-9]+' \
+      # POSIX sed, not GNU-grep -oP: busybox/BSD grep have no -P, and losing
+      # this lookup would silently fall back to the stale default port below.
+      STOCK_SERVER_PORT="$(sed -n 's/.*name="ServerPort" value="\([0-9]*\)".*/\1/p' \
         "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
       STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
       # Admin console must actually bind: without it every telnet axis is a

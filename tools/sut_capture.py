@@ -143,24 +143,37 @@ def telnet_snapshot(run_dir):
         gamestats.setdefault(m.group(1), m.group(2))
     # Clock rate: two gettime readings (start/end of the session) give the
     # game-clock speed, the comparable day/time axis across servers with
-    # different boot-to-snapshot offsets.
+    # different boot-to-snapshot offsets. The interval uses the markers'
+    # monotonic component when present (sub-second exact, immune to wall-clock
+    # steps); transcripts from older sut_telnet versions fall back to the
+    # whole-second UTC stamps.
     readings = []
-    for m in re.finditer(r"^# ts=(\S+) cmd=gettime$", text, re.M):
-        ts, tail = m.group(1), text[m.end():]
+    for m in re.finditer(r"^# ts=(\S+)(?: mono=(\d+))? cmd=gettime$", text, re.M):
+        tail = text[m.end():]
         tail = tail.split("# ts=", 1)[0]
         dm = re.search(r"Day (\d+), (\d+):(\d+)", tail)
         if dm:
-            readings.append((ts, dm.groups()))
+            readings.append((m.group(1), m.group(2), dm.groups()))
     rate = None
     if len(readings) >= 2:
-        t0 = datetime.fromisoformat(readings[0][0].replace("Z", "+00:00"))
-        t1 = datetime.fromisoformat(readings[1][0].replace("Z", "+00:00"))
-        dt = (t1 - t0).total_seconds()
+        first, last = readings[0], readings[-1]
+
         def gm(r):
-            d, h, mnt = (int(x) for x in r[1])
+            d, h, mnt = (int(x) for x in r[2])
             return d * 1440 + h * 60 + mnt
-        if dt > 0:
-            rate = round((gm(readings[1]) - gm(readings[0])) / dt, 4)
+
+        dt_s = None
+        if first[1] is not None and last[1] is not None:
+            dt_s = (int(last[1]) - int(first[1])) / 1000.0
+        else:
+            try:
+                t0 = datetime.fromisoformat(first[0].replace("Z", "+00:00"))
+                t1 = datetime.fromisoformat(last[0].replace("Z", "+00:00"))
+                dt_s = (t1 - t0).total_seconds()
+            except ValueError:
+                dt_s = None
+        if dt_s is not None and dt_s > 0:
+            rate = round((gm(last) - gm(first)) / dt_s, 4)
     return {
         "day": list(day.groups()) if day else None,
         "banner": banner,
