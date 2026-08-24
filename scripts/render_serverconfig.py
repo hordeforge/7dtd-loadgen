@@ -16,6 +16,14 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from xml.sax.saxutils import escape
+
+
+def xml_attr(text: str) -> str:
+    """Escape for a double-quoted XML attribute value. A raw quote in a
+    --set KEY=VALUE value would otherwise terminate the attribute and inject
+    arbitrary properties into the rendered serverconfig."""
+    return escape(text, {'"': "&quot;"})
 
 
 def main() -> int:
@@ -40,17 +48,17 @@ def main() -> int:
     if 'name="UserDataFolder"' not in src:
         src = src.replace(
             "<ServerSettings>",
-            f'<ServerSettings>\n\t<property name="UserDataFolder" value="{ud}"/>',
+            f'<ServerSettings>\n\t<property name="UserDataFolder" value="{xml_attr(ud)}"/>',
         )
     else:
         src = re.sub(r'name="UserDataFolder"\s*value="[^"]*"',
-                     f'name="UserDataFolder" value="{ud}"', src)
+                     f'name="UserDataFolder" value="{xml_attr(ud)}"', src)
 
     # Lambda replacement: values are data, never regex-replacement syntax (a
     # backslash or group reference in a world name must survive verbatim).
     for key, value in repls.items():
-        src = re.sub(rf'name="{key}"\s*value="[^"]*"',
-                     lambda m, k=key, v=value: f'name="{k}" value="{v}"', src)
+        src = re.sub(rf'name="{re.escape(key)}"\s*value="[^"]*"',
+                     lambda m, k=key, v=value: f'name="{xml_attr(k)}" value="{xml_attr(v)}"', src)
 
     args.dst.write_text(src, encoding="utf-8")
     print(f"Config → {args.dst}")

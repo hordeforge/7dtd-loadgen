@@ -134,10 +134,20 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
   if [[ "${RE_ADMIN_EOS_ID:-}" =~ ^[0-9a-fA-F]{32}$ ]]; then
     sed -i "s/00020000000000000000000000000001/${RE_ADMIN_EOS_ID}/g" "$SERVERADMIN"
   fi
+  # Web dashboard credential: admin/admin by default (lab-only). Export
+  # RE_ADMIN_WEB_PASSWORD to seed a different one; 7DTD stores webuser passes
+  # as base64(MD5(utf8(pass))). The plaintext is never echoed.
+  WEB_NOTE="admin/admin webuser"
+  if [[ -n "${RE_ADMIN_WEB_PASSWORD:-}" ]]; then
+    WEB_HASH="$(python3 -c 'import base64, hashlib, sys; sys.stdout.write(base64.b64encode(hashlib.md5(sys.argv[1].encode("utf-8")).digest()).decode())' "$RE_ADMIN_WEB_PASSWORD")"
+    sed -i "s|pass=\"ISMvKXpXpadDiUoOSoAfww==\"|pass=\"${WEB_HASH}\"|" "$SERVERADMIN"
+    unset WEB_HASH RE_ADMIN_WEB_PASSWORD
+    WEB_NOTE="webuser pass from RE_ADMIN_WEB_PASSWORD"
+  fi
   if [[ -z "${RE_ADMIN_STEAM_ID64:-}${RE_ADMIN_EOS_ID:-}" ]]; then
     echo "note: admin seed uses placeholder platform ids; set RE_ADMIN_STEAM_ID64 / RE_ADMIN_EOS_ID to bind your own"
   fi
-  echo "seeded APM dashboard admin (admin/admin webuser) → $SERVERADMIN"
+  echo "seeded APM dashboard admin (${WEB_NOTE}) → $SERVERADMIN"
 fi
 
 TMPCFG="$USERDATA/serverconfig_prefab.xml"

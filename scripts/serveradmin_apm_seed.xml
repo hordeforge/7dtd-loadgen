@@ -110,7 +110,9 @@
   <webmodules />
   <webusers>
     <!-- Placeholder ids (well-formed but synthetic); RE_ADMIN_STEAM_ID64 /
-         RE_ADMIN_EOS_ID replace them when the dedicated script seeds this file. -->
+         RE_ADMIN_EOS_ID replace them when the dedicated script seeds this file.
+         pass is base64(MD5("admin")): lab-only default. Export RE_ADMIN_WEB_PASSWORD
+         when starting the dedicated to seed a different webuser password. -->
     <user name="admin" pass="ISMvKXpXpadDiUoOSoAfww==" platform="Steam" userid="76561198000000001" crossplatform="EOS" crossuserid="00020000000000000000000000000001" />
   </webusers>
 </adminTools>
