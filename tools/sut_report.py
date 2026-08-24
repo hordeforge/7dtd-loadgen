@@ -77,7 +77,7 @@ def main():
 
     if stock is None or zdtd is None:
         ran = "stock" if stock else "zdtd"
-        lines.append(f"## Status: NOT COMPARED\n")
+        lines.append("## Status: NOT COMPARED\n")
         lines.append(f"- ran on: **{ran}**")
         lines.append(f"- missing: **{'zdtd' if ran == 'stock' else 'stock'}**")
         lines.append("- A scenario is only reported as compared when both servers"

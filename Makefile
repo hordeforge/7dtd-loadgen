@@ -15,12 +15,14 @@ ifneq ($(DOTNET_ROOT),)
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
 
-.PHONY: help build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help lint build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
 	@echo ""
 	@echo "  make build               Build 7dtd-loadgen"
+	@echo "  make lint                Static gates: shellcheck on scripts/,"
+	@echo "                           ruff check on the Python tree (locked env)"
 	@echo "  make selftest            In-process join + respawn CI gate"
 	@echo "  make unittest            C# unit tests (JoinStateMachine, RampDelay, JoinGate)"
 	@echo "  make unittest-one T=Pat  One C# test: class/method name substring"
@@ -91,7 +93,14 @@ unittest-one:
 	@exit 1
 endif
 
-test: build selftest unittest
+# Static analysis gates. Shellcheck covers scripts/*.sh (preinstalled on the
+# CI runner image); ruff runs inside the locked uv env so every machine lints
+# with the exact pinned analyzer version. Both fail the make test lane.
+lint:
+	shellcheck "$(SCRIPTS)"/*.sh
+	@cd "$(ROOT)" && uv run --locked --extra dev ruff check .
+
+test: lint build selftest unittest
 	@if command -v uv >/dev/null; then \
 		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short; \
 	elif python3 -c 'import pytest' 2>/dev/null; then \

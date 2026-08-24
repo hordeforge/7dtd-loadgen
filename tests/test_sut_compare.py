@@ -28,6 +28,7 @@ def _py(args: list[str]) -> subprocess.CompletedProcess[str]:
         encoding="utf-8",
         errors="replace",
         timeout=60,
+        check=False,
     )
 
 

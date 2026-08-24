@@ -18,7 +18,7 @@ def _run(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["bash", str(SCRIPT), *args], cwd=str(ROOT),
         capture_output=True, text=True, encoding="utf-8",
-        errors="replace", timeout=60,
+        errors="replace", timeout=60, check=False,
     )
 
 

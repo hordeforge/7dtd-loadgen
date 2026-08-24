@@ -23,8 +23,8 @@ TOLERANCE = 0.20  # per-scenario wall repeatability bound
 
 def iso_delta(a: str, b: str) -> float | None:
     try:
-        ta = dt.datetime.fromisoformat(a.replace("Z", "+00:00"))
-        tb = dt.datetime.fromisoformat(b.replace("Z", "+00:00"))
+        ta = dt.datetime.fromisoformat(a)
+        tb = dt.datetime.fromisoformat(b)
         return max(0.0, (tb - ta).total_seconds())
     except (ValueError, TypeError):
         return None

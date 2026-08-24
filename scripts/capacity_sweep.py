@@ -67,7 +67,8 @@ def main():
         if CAPTURE:
             pids = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
                                   capture_output=True,
-                                  text=True, encoding="utf-8", errors="replace").stdout.split()
+                                  text=True, encoding="utf-8", errors="replace",
+                                  check=False).stdout.split()
             if pids:
                 B.log("=== capture at ceiling (90s, deep sections) ===")
                 subprocess.run(["uv", "run", "7dtd-server-apm", "capture", "--seconds", "90",

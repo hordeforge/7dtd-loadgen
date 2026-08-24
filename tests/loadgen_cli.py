@@ -46,6 +46,7 @@ def build() -> None:
         encoding="utf-8",
         errors="replace",
         timeout=120,
+        check=False,
     )
     assert r.returncode == 0, f"build failed:\n{r.stdout}\n{r.stderr}"
     assert EXE.is_file() or DLL.is_file()
@@ -60,5 +61,5 @@ def run(args: list[str], timeout: float = 60.0) -> subprocess.CompletedProcess[s
     # a locale-default decode would raise on the first non-UTF-8-locale byte.
     return subprocess.run(
         cmd, cwd=str(ROOT), env=env, capture_output=True, text=True,
-        encoding="utf-8", errors="replace", timeout=timeout,
+        encoding="utf-8", errors="replace", timeout=timeout, check=False,
     )

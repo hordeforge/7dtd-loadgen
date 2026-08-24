@@ -110,11 +110,11 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
 
 def render(rows: list[dict]) -> str:
     lines = ["# Consolidated stock-vs-zdtd comparison\n",
-             "Regenerated from committed per-run evidence (loadgen diff.json, "
-             "playtest playtest-compare.json). CLEAN = both sides ran with no "
-             "differences; DELTAS = differences recorded as findings (triage, "
-             "never faked); ONE-SIDE = only one server ran (never counted as "
-             "compared).\n"]
+             ("Regenerated from committed per-run evidence (loadgen diff.json, "
+              "playtest playtest-compare.json). CLEAN = both sides ran with no "
+              "differences; DELTAS = differences recorded as findings (triage, "
+              "never faked); ONE-SIDE = only one server ran (never counted as "
+              "compared).\n")]
     lines.append("| tool | id | verdict | stock | zdtd | wall s | findings |")
     lines.append("|---|---|---|---|---|---|---|")
     for r in rows:

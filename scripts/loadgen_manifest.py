@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -22,7 +22,7 @@ def integer(name: str) -> int:
 
 manifest = {
     "schema": "7dtd.loadgen.run.v1",
-    "endedAt": datetime.now(timezone.utc).isoformat(),
+    "endedAt": datetime.now(UTC).isoformat(),
     "mode": os.environ["LOADGEN_MODE"],
     "target": {"host": os.environ["LOADGEN_HOST"], "port": integer("LOADGEN_PORT")},
     "workload": {

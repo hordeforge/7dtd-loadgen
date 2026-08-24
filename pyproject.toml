@@ -6,7 +6,12 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.16"]
+
+[tool.ruff]
+# Same 100-column cap as .editorconfig; the default lint rule set runs via
+# `uv run --locked --extra dev ruff check` in the make lint / test lanes.
+line-length = 100
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

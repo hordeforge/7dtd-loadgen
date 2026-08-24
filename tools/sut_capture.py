@@ -89,7 +89,7 @@ def log_categories(path, sut):
                         boot_lines[key] = rest[:140]
                 _collect_gamestats(rest, gamestats)
             else:
-                if line.startswith("zdtd:") or line.startswith("  "):
+                if line.startswith(("zdtd:", "  ")):
                     if "[WARN]" in line:
                         severity["WRN"] = severity.get("WRN", 0) + 1
                     elif "[ERROR]" in line or "error:" in line.lower():
@@ -117,12 +117,13 @@ def telnet_snapshot(run_dir):
     p = os.path.join(run_dir, "telnet.txt")
     if not os.path.exists(p):
         return None
-    text = open(p, encoding="utf-8", errors="replace").read()
+    with open(p, encoding="utf-8", errors="replace") as fh:
+        text = fh.read()
     day = re.search(r"Day (\d+), (\d+):(\d+)", text)
     banner = {}
     for key in ("Server IP", "Server port", "Max players", "Game mode", "World",
                 "Game name", "Difficulty", "Server version"):
-        m = re.search(re.escape(key) + r":?\s+(\S.*)$", text, re.M)
+        m = re.search(re.escape(key) + r":?\s+(\S.*)$", text, re.MULTILINE)
         if m:
             banner[key] = m.group(1).strip()
     entities = []
@@ -158,7 +159,7 @@ def telnet_snapshot(run_dir):
     # steps); transcripts from older sut_telnet versions fall back to the
     # whole-second UTC stamps.
     readings = []
-    for m in re.finditer(r"^# ts=(\S+)(?: mono=(\d+))? cmd=gettime$", text, re.M):
+    for m in re.finditer(r"^# ts=(\S+)(?: mono=(\d+))? cmd=gettime$", text, re.MULTILINE):
         tail = text[m.end():]
         tail = tail.split("# ts=", 1)[0]
         dm = re.search(r"Day (\d+), (\d+):(\d+)", tail)
@@ -177,8 +178,8 @@ def telnet_snapshot(run_dir):
             dt_s = (int(last[1]) - int(first[1])) / 1000.0
         else:
             try:
-                t0 = datetime.fromisoformat(first[0].replace("Z", "+00:00"))
-                t1 = datetime.fromisoformat(last[0].replace("Z", "+00:00"))
+                t0 = datetime.fromisoformat(first[0])
+                t1 = datetime.fromisoformat(last[0])
                 dt_s = (t1 - t0).total_seconds()
             except ValueError:
                 dt_s = None

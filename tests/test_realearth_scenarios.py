@@ -14,7 +14,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from loadgen_cli import run as _run_cli
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -236,6 +235,7 @@ def test_run_scenario_list_includes_realearth_ids():
         encoding="utf-8",
         errors="replace",
         timeout=15,
+        check=False,
     )
     assert r.returncode == 0, r.stderr
     out = r.stdout
@@ -253,6 +253,7 @@ def test_run_scenario_ci_selftest_via_script():
         encoding="utf-8",
         errors="replace",
         timeout=90,
+        check=False,
     )
     out = (r.stdout or "") + (r.stderr or "")
     assert r.returncode == 0, out

@@ -76,7 +76,7 @@ def telnet(cmds, settle=1.0):
                         b = s.recv(65536)
                         if b:
                             out.append(b.decode("utf-8", "replace"))
-                    except socket.timeout:
+                    except TimeoutError:
                         break
             drain(0.5)
             s.sendall((TELNET_PW + "\n").encode())
@@ -115,7 +115,8 @@ def start_server():
     try:
         with log_path.open("wb") as fh:
             r = subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
-                               env=env, timeout=400, stdout=fh, stderr=subprocess.STDOUT)
+                               env=env, timeout=400, stdout=fh, stderr=subprocess.STDOUT,
+                               check=False)
     except subprocess.TimeoutExpired as e:
         # Same surface as a non-zero exit: the operator gets the boot log tail,
         # not a bare traceback.
