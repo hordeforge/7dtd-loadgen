@@ -99,6 +99,8 @@ public sealed class GameJoinClient
         /// <summary>Optional server-side provisioning hook invoked at the start of each life.</summary>
         public Action<int>? OnLifeStarted { get; set; }
         public Action<string>? Log { get; set; }
+        /// <summary>Optional filtered replicated-state observer. Null keeps ordinary load runs quiet.</summary>
+        public NetworkStateObserver? StateObserver { get; set; }
         /// <summary>Optional cohort bench clock; counts deaths/respawns inside the window.</summary>
         public BenchClock? Bench { get; set; }
     }
@@ -587,6 +589,14 @@ public sealed class GameJoinClient
         // PackageIds is always id 0 until remapped; also match by content heuristic
         bool looksLikePackageIds = body.Length > 16 && !State.PackageIds.ContainsKey("NetPackagePlayerLogin");
         string? typeName = State.TryGetTypeName(id, out var mappedName) ? mappedName : null;
+        if (typeName != null && opt.StateObserver != null)
+        {
+            try { opt.StateObserver.Observe(typeName, body); }
+            catch (Exception ex)
+            {
+                log($"OBSERVER parse_error type={typeName} bodyLen={body.Length} error={SafeText(ex.Message)}");
+            }
+        }
         // After join, high-volume entity/chunk packages would flood logs for hour-long runs.
         bool noisy = typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityRelPosAndRot"
             or "NetPackageEntityAliveFlags" or "NetPackageEntityStat" or "NetPackageEntityStats"
@@ -715,6 +725,7 @@ public sealed class GameJoinClient
             {
                 var (entityId, x, y, z) = PackageCodec.ParseSpawnedBody(body);
                 ApplySpawn(entityId, x, y, z, log, via: "PlayerSpawnedInWorld");
+                opt.StateObserver?.Joined(entityId);
             }
             catch (Exception ex)
             {
@@ -736,6 +747,7 @@ public sealed class GameJoinClient
                 // this): unlike the session-end "PASS joined" summary, this line
                 // is written the instant the bot is in the game world.
                 log($"JOINED entity={entityId}");
+                opt.StateObserver?.Joined(entityId);
                 if (entityId > 0 && (State.AwaitingRespawn || (State.SpawnRequested && !State.IsJoined)))
                 {
                     float x = State.PosX, y = State.PosY, z = State.PosZ;

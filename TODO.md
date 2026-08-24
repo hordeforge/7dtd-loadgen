@@ -7,6 +7,8 @@ demand and honest client outcomes, not emulation of the complete game client.
 
 ## Next
 
+- [x] Add filtered CVar/buff observers with JSON-lines joined/state events for
+  headless cross-client replication assertions. Completed 2026-08-24.
 - [x] RealEarth scenario catalog + loadgen scripts/tests.
 - [ ] Live-validate H500 join/demolition against expanded dedicated.
   (Blocked on realworld product lane: needs the YDim=16384 expanded dedi -

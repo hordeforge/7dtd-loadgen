@@ -239,6 +239,29 @@ its LiteNetLib RTT during the action loop; the cohort stats JSON reports ping
 p50/p95/max and spikes over 150 ms (client-perceived lag, distinct from
 server tick stall).
 
+### Filtered replicated-state observation
+
+Loadgen can act as a headless second-session observer for exact CVar and buff
+names. This is opt-in: ordinary load runs do not decode or print state events.
+When enabled, the output file is JSON Lines with schema
+`7dtd.loadgen.event.v1`. A `joined` event identifies the bot and assigned game
+entity immediately; `state` events identify the bot, target entity, exact
+name, value or active state, packet source (`delta` or `snapshot`), monotonic
+sequence, and elapsed milliseconds.
+
+Observe a protection CVar and both mutually exclusive fallout buffs:
+
+```bash
+./src/LoadGen/bin/Release/net8.0/7dtd-loadgen --join --count 1 --no-actions --no-spawn-zombies --observe-cvar atomicDoomsdayFalloutProtection --observe-buff buffAtomicDoomsdayFallout --observe-buff buffAtomicDoomsdayFalloutProtected --events-jsonl observer.jsonl
+```
+
+`--observe-cvar` and `--observe-buff` are repeatable exact-name filters and
+require `--events-jsonl`. The observer applies `NetPackageModifyCVar`
+operations to a per-entity map, maintains buff membership from
+`NetPackageAddRemoveBuff`, and replaces both filtered views when a full
+`NetPackageEntityStatsBuff` snapshot arrives. This covers peers that join
+before state changes and peers that join after the state already exists.
+
 **Stock join flake under churn (root cause closed 2026-08-10 in
 `7dtd-engine-research/docs/network.md` §4.0):** >12-bot cohorts can trigger a stock
 race where `LiteNetLibAuthWrapperServer.ConnectionRequestCheck` enumerates

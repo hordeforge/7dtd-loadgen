@@ -111,9 +111,7 @@ public sealed class PackageCodecFuzzTests
         typeof(FormatException),        // 7-bit string length prefix with too many bytes
         typeof(IOException),            // ReadString decoded a negative string length
         typeof(OverflowException),      // negative mapping count -> negative array size
-        typeof(OutOfMemoryException),   // huge mapping count allocated before any bound exists
-                                        // (known gap: untrusted int drives the allocation;
-                                        // flagged for sec-review, not blessed here)
+        typeof(InvalidDataException),   // bounded mapping count or malformed package body
     };
 
     static void InvokeAllBodyParsers(byte[] body, int iter)
@@ -195,11 +193,12 @@ public sealed class PackageCodecFuzzTests
             // which is the documented unbounded-allocation gap below. Keeping
             // the loop under that ceiling keeps the suite fast; the extreme is
             // exercised once, deliberately, by the targeted test that follows.
-            if (len >= 4)
+            const int mappingCountOffset = 13;
+            if (len >= mappingCountOffset + 4)
             {
-                int candidate = BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(0));
+                int candidate = BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(mappingCountOffset));
                 if (candidate > 65535)
-                    BinaryPrimitives.WriteInt32LittleEndian(data.AsSpan(0), rng.Next(0, 512));
+                    BinaryPrimitives.WriteInt32LittleEndian(data.AsSpan(mappingCountOffset), rng.Next(0, 512));
             }
 
             var ex = Record.Exception(() => InvokeAllBodyParsers(data, iter));
@@ -211,18 +210,17 @@ public sealed class PackageCodecFuzzTests
     [Fact]
     public void ParsePackageIds_HugeMappingCount_TerminatesWithoutProcessCrash()
     {
-        // Pins the known gap: the mapping count is trusted before any bound,
-        // so int.MaxValue attempts a >16GB string[]. Outcome is platform
-        // dependent: Windows rejects the object size outright (OutOfMemory),
-        // Linux overcommit reserves lazily and parsing hits end-of-stream.
-        // Both are caught by the join client's package_ids_parse handler; the
-        // contract under test is only that the call terminates with one of
-        // them. If a future change bounds the count, assert that instead.
-        var body = new byte[16];
-        BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(0), int.MaxValue);
+        // A hostile mapping count must fail before allocating a multi-gigabyte
+        // string array. This also keeps the fuzz gate deterministic on Linux
+        // hosts where overcommit otherwise turns the test into a hang.
+        var body = new byte[17];
+        body[0] = 1;
+        BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(1), 3);
+        BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(5), 10);
+        BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(9), 14);
+        BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(13), int.MaxValue);
         var ex = Record.Exception(() => PackageCodec.ParsePackageIdsBody(body));
-        Assert.True(ex is OutOfMemoryException or EndOfStreamException,
-            $"unexpected exception type: {ex?.GetType().Name ?? "none"}");
+        Assert.IsType<InvalidDataException>(ex);
     }
 
     [Fact]

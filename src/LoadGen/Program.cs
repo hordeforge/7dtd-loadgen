@@ -286,6 +286,9 @@ public static class Program
         string? logPath = null;
         string? statsJsonPath = null;
         string? runManifestPath = null;
+        string? eventsJsonlPath = null;
+        var observedCvars = new List<string>();
+        var observedBuffs = new List<string>();
         string scenarioId = Environment.GetEnvironmentVariable("LOADGEN_SCENARIO_ID") ?? "";
         int joinRampMs = 0;
         int count = 1;
@@ -387,6 +390,9 @@ public static class Program
             }
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];
             else if (args[i] == "--stats-json" && i + 1 < args.Length) statsJsonPath = args[++i];
+            else if (args[i] == "--events-jsonl" && i + 1 < args.Length) eventsJsonlPath = args[++i];
+            else if (args[i] == "--observe-cvar" && i + 1 < args.Length) observedCvars.Add(args[++i]);
+            else if (args[i] == "--observe-buff" && i + 1 < args.Length) observedBuffs.Add(args[++i]);
             else if (args[i] == "--run-manifest" && i + 1 < args.Length) runManifestPath = args[++i];
             else if (args[i] == "--scenario-id" && i + 1 < args.Length) scenarioId = args[++i];
             else if (args[i] == "--ramp-ms" && i + 1 < args.Length)
@@ -468,6 +474,14 @@ public static class Program
         // timeout, negative sleeps) with a named option and its valid range.
         if (!IsValidPort(opt.Port))
             return InvalidArg("--port", opt.Port.ToString(), "an integer 1..65535");
+        if ((observedCvars.Count > 0 || observedBuffs.Count > 0) && string.IsNullOrWhiteSpace(eventsJsonlPath))
+            return InvalidArg("--events-jsonl", "missing", "a path when --observe-cvar or --observe-buff is used");
+        if (observedCvars.Any(string.IsNullOrWhiteSpace) || observedBuffs.Any(string.IsNullOrWhiteSpace))
+            return InvalidArg("--observe-cvar/--observe-buff", "empty", "a non-empty exact state name");
+
+        using var eventWriter = string.IsNullOrWhiteSpace(eventsJsonlPath)
+            ? null
+            : new JsonLineEventWriter(eventsJsonlPath);
         if (!IsValidPort(telnetPort))
             return InvalidArg("--telnet-port", telnetPort.ToString(), "an integer 1..65535");
         if (!IsValidMinPassRate(minPassRate))
@@ -583,6 +597,8 @@ public static class Program
             JoinStateMachine last = new();
             int attempt = 0;
             var clientMode = ModeForClient(clientId);
+            var stateObserver = eventWriter == null ? null : new NetworkStateObserver(
+                clientId, observedCvars, observedBuffs, eventWriter.Write);
             int clientDynamite =
                 clientMode == ActionLoop.BotMode.Demolition
                     && opt.MaxDynamitePerLife <= ActionLoop.DefaultMaxDynamitePerLife
@@ -633,6 +649,7 @@ public static class Program
                         }
                     },
                     Log = log,
+                    StateObserver = stateObserver,
                 };
                 var c = new GameJoinClient();
                 try
@@ -1108,6 +1125,9 @@ public static class Program
             "  --telnet-host/port/password  dedicated telnet (default 127.0.0.1:8081 retest)\n" +
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions\n" +
+            "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +
+            "  --observe-buff NAME  observe one exact replicated buff (repeatable)\n" +
+            "  --events-jsonl PATH  write filtered joined/state events as JSON lines\n" +
             "  --golden-wire       Assert package body layouts vs Assembly-CSharp IL sizes\n" +
             "  -V / --version      print client version and exit\n" +
             "Notes:\n" +

@@ -53,3 +53,19 @@ def test_help_mentions_respawn_and_join():
     assert "--join" in out
     assert "--self-test-join" in out
     assert "respawn" in out.lower() or "walk again" in out
+
+
+def test_observer_flags_are_documented_and_require_jsonl_output():
+    help_result = _run(["--help"], timeout=15)
+    help_text = help_result.stdout + help_result.stderr
+    assert "--observe-cvar NAME" in help_text
+    assert "--observe-buff NAME" in help_text
+    assert "--events-jsonl PATH" in help_text
+
+    result = _run(
+        ["--join", "--observe-cvar", "atomicProtection", "--no-spawn-zombies"],
+        timeout=15,
+    )
+    output = result.stdout + result.stderr
+    assert result.returncode == 2
+    assert "invalid --events-jsonl 'missing'" in output

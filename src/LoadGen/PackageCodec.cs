@@ -24,6 +24,7 @@ namespace SevenDTD.LoadGen;
 /// </summary>
 public static class PackageCodec
 {
+    public const int MaxPackageMappings = 4096;
     public const byte ChallengeChannelMarker = 202;
     public const int ChallengeSize = 17;
     /// <summary>LiteNetLib reserved header size (channel byte at Items[0]).</summary>
@@ -837,6 +838,10 @@ public static class PackageCodec
         using var r = new BinaryReader(ms, Encoding.UTF8);
         var ver = ReadVersion(r);
         int n = r.ReadInt32();
+        // The server currently advertises 189 entries. A hostile count used to
+        // allocate a multi-gigabyte string array before the body was validated.
+        if (n < 0 || n > MaxPackageMappings || n > ms.Length - ms.Position - 2)
+            throw new InvalidDataException($"PackageIds mapping count {n} exceeds body or limit {MaxPackageMappings}");
         var maps = new string[n];
         for (int i = 0; i < n; i++)
             maps[i] = r.ReadString();
