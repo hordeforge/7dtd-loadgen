@@ -7,7 +7,10 @@ arrive as repeated --set KEY=VALUE arguments so no shell variable is ever
 interpolated into this program's source.
 
 Usage:
-  render_serverconfig.py SRC DST --userdata PATH [--set KEY=VALUE ...]
+  render_serverconfig.py SRC DST [--userdata PATH] [--set KEY=VALUE ...]
+
+--userdata is optional: when given, UserDataFolder is injected/repointed at
+that path; when omitted the property is left exactly as the source has it.
 """
 
 from __future__ import annotations
@@ -30,7 +33,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("src", type=Path)
     ap.add_argument("dst", type=Path)
-    ap.add_argument("--userdata", type=Path, required=True)
+    ap.add_argument("--userdata", type=Path, default=None,
+                    help="inject/replace UserDataFolder with this path")
     ap.add_argument("--set", dest="sets", action="append", default=[],
                     metavar="KEY=VALUE")
     args = ap.parse_args()
@@ -44,15 +48,16 @@ def main() -> int:
         repls[key] = value
 
     src = args.src.read_text(encoding="utf-8")
-    ud = str(args.userdata.resolve())
-    if 'name="UserDataFolder"' not in src:
-        src = src.replace(
-            "<ServerSettings>",
-            f'<ServerSettings>\n\t<property name="UserDataFolder" value="{xml_attr(ud)}"/>',
-        )
-    else:
-        src = re.sub(r'name="UserDataFolder"\s*value="[^"]*"',
-                     f'name="UserDataFolder" value="{xml_attr(ud)}"', src)
+    if args.userdata is not None:
+        ud = str(args.userdata.resolve())
+        if 'name="UserDataFolder"' not in src:
+            src = src.replace(
+                "<ServerSettings>",
+                f'<ServerSettings>\n\t<property name="UserDataFolder" value="{xml_attr(ud)}"/>',
+            )
+        else:
+            src = re.sub(r'name="UserDataFolder"\s*value="[^"]*"',
+                         f'name="UserDataFolder" value="{xml_attr(ud)}"', src)
 
     # Lambda replacement: values are data, never regex-replacement syntax (a
     # backslash or group reference in a world name must survive verbatim).

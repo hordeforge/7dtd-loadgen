@@ -66,6 +66,15 @@ if [[ -z "$SCENARIO_ID" || -z "$SUTS" ]]; then
   exit 2
 fi
 
+# The id names the evidence dir ($OUT_ROOT/$SCENARIO_ID, rm -rf'd per run) and
+# lands in run-meta.json / the zdtd serverconfig, so restrict it to a safe
+# charset: no path separators (traversal out of workspace/), no quotes or XML
+# metacharacters (attribute/config injection).
+if [[ ! "$SCENARIO_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+  echo "ERROR: --scenario must match [A-Za-z0-9][A-Za-z0-9._-]* (got '$SCENARIO_ID')" >&2
+  exit 2
+fi
+
 # Scenario knobs: env (if explicitly set) wins, then the catalog, then
 # defaults. The catalog is scripts/scenarios/sut.json.
 read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY < <(
@@ -183,11 +192,16 @@ for sut in $SUTS; do
       # Same game options stock runs with (live values from the stock run's
       # getgamestat/getgamepref: day 60/18, max zombies 16, difficulty 1, move
       # 2/3). Written per scenario so both servers get one config each.
+      # Values go through render_serverconfig.py (argv data + XML-escaped), the
+      # same tested path start_dedicated_prefab.sh uses: a quote in
+      # --world/COMPARE_WORLD must never terminate an attribute and inject
+      # properties into the SUT config.
       ZDTD_CFG="$run_dir/serverconfig.xml"
-      cat >"$ZDTD_CFG" <<EOF
+      ZDTD_TEMPLATE="$run_dir/serverconfig.template.xml"
+      cat >"$ZDTD_TEMPLATE" <<'EOF'
 <ServerSettings>
-  <property name="GameWorld" value="$WORLD_NAME"/>
-  <property name="GameName" value="${SCENARIO_ID}_zdtd"/>
+  <property name="GameWorld" value=""/>
+  <property name="GameName" value=""/>
   <property name="ServerMaxPlayerCount" value="64"/>
   <property name="MaxSpawnedZombies" value="16"/>
   <property name="EnemyDifficulty" value="1"/>
@@ -202,6 +216,10 @@ for sut in $SUTS; do
   <property name="EACEnabled" value="false"/>
 </ServerSettings>
 EOF
+      python3 "$ROOT/scripts/render_serverconfig.py" \
+        "$ZDTD_TEMPLATE" "$ZDTD_CFG" \
+        --set "GameWorld=$WORLD_NAME" \
+        --set "GameName=${SCENARIO_ID}_zdtd"
       TELNET_PORT="$TELNET_PORT_ZDTD"
       if grep -q ":$TELNET_PORT " <<<"$(ss -tln 2>/dev/null || true)"; then
         echo "  ERROR: admin telnet port $TELNET_PORT already in use (unrelated service?); pick free ports via COMPARE_TELNET_PORT_STOCK/COMPARE_TELNET_PORT_ZDTD" >&2

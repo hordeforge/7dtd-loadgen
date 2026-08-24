@@ -83,3 +83,25 @@ def test_existing_userdata_property_is_replaced(tmp_path):
     assert r.returncode == 0
     props = _props(dst.read_text(encoding="utf-8"))
     assert props["UserDataFolder"] == "/new/ud"
+
+
+def test_userdata_omitted_leaves_property_untouched(tmp_path):
+    # compare_sut.sh renders the zdtd config without --userdata: no property
+    # may be injected or rewritten when the flag is absent.
+    src = SRC.replace(
+        '<property name="ServerName" value="seed"/>',
+        '<property name="ServerName" value="seed"/>\n'
+        '\t<property name="UserDataFolder" value="/keep/me"/>',
+    )
+    path = tmp_path / "src3.xml"
+    path.write_text(src, encoding="utf-8")
+    dst = tmp_path / "out3.xml"
+    r = subprocess.run(
+        [sys.executable, str(TOOL), str(path), str(dst), "--set", "GameName=zdtd"],
+        capture_output=True, text=True, check=False,
+    )
+    assert r.returncode == 0
+    xml = dst.read_text(encoding="utf-8")
+    assert _props(xml)["UserDataFolder"] == "/keep/me"
+    assert _props(xml)["GameName"] == "zdtd"
+    assert "ud" not in xml.replace("UserDataFolder", "")

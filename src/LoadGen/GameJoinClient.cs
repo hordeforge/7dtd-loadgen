@@ -1050,7 +1050,11 @@ public sealed class GameJoinClient
         return s[..len];
     }
 
-    static string ExtractPrintable(byte[] body)
+    /// <summary>Server-controlled chat/GMSG text for logging and death-word
+    /// matching. Both paths neutralize control characters: a hostile server must
+    /// not inject newlines or terminal escapes into line-parsed logs (the
+    /// harness greps PASS/FAIL lines), while letters survive for matching.</summary>
+    internal static string ExtractPrintable(byte[] body)
     {
         if (body.Length == 0) return "";
         try
@@ -1061,7 +1065,12 @@ public sealed class GameJoinClient
             {
                 string s = r.ReadString();
                 if (s.Length >= 3 && s.Any(char.IsLetter))
-                    return s;
+                {
+                    var clean = new System.Text.StringBuilder(s.Length);
+                    foreach (char c in s)
+                        clean.Append(char.IsControl(c) ? '?' : c);
+                    return clean.ToString();
+                }
             }
         }
         catch { /* fall through */ }

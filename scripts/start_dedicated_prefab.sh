@@ -139,7 +139,10 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
   # as base64(MD5(utf8(pass))). The plaintext is never echoed.
   WEB_NOTE="admin/admin webuser"
   if [[ -n "${RE_ADMIN_WEB_PASSWORD:-}" ]]; then
-    WEB_HASH="$(python3 -c 'import base64, hashlib, sys; sys.stdout.write(base64.b64encode(hashlib.md5(sys.argv[1].encode("utf-8")).digest()).decode())' "$RE_ADMIN_WEB_PASSWORD")"
+    # Hash via env passthrough, never argv: a password argument would be
+    # ps-visible for the lifetime of the short-lived python3 process (same
+    # rule that keeps LOADGEN_KEY / LOADGEN_TELNET_PASSWORD out of argv).
+    WEB_HASH="$(RE_ADMIN_WEB_PASSWORD="$RE_ADMIN_WEB_PASSWORD" python3 -c 'import base64, hashlib, os, sys; sys.stdout.write(base64.b64encode(hashlib.md5(os.environ["RE_ADMIN_WEB_PASSWORD"].encode("utf-8")).digest()).decode())')"
     sed -i "s|pass=\"ISMvKXpXpadDiUoOSoAfww==\"|pass=\"${WEB_HASH}\"|" "$SERVERADMIN"
     unset WEB_HASH RE_ADMIN_WEB_PASSWORD
     WEB_NOTE="webuser pass from RE_ADMIN_WEB_PASSWORD"
