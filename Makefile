@@ -107,9 +107,12 @@ test: build selftest unittest
 # Line coverage of the unit suite via the XPlat Code Coverage collector
 # (coverlet.collector). Writes TestResults/coverage.cobertura.xml; CI renders
 # it into the README badge with scripts/coverage_badge.py.
+# Directory.Build.props maps source paths to /_/ for reproducible builds;
+# coverlet cannot map sequence points recorded under that prefix back to
+# files and emits an empty report, so this lane clears PathMap.
 coverage:
 	rm -rf "$(ROOT)/TestResults"
-	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir= --collect:"XPlat Code Coverage" --results-directory TestResults
+	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir= -p:PathMap= --collect:"XPlat Code Coverage" --results-directory TestResults
 	cp "$$(find "$(ROOT)/TestResults" -name coverage.cobertura.xml | head -1)" "$(ROOT)/TestResults/coverage.cobertura.xml"
 
 dedicated dedicated-4k:
