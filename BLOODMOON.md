@@ -72,7 +72,9 @@ exploding cops/demolishers are a top-3 cost, unique to the endgame composition),
 **Measured capacity:** with a static replication stride 2 (2026-07-20), 64 players
 sustain **~147 endgame zombies at 20 TPS** (break by ~245). Under the **v1.13.0
 shipping defaults** (2026-07-21, adaptive governor managing the throttles), the same
-load sustains **~232 zombies (+58%)**, breaking at ~279-378. At the ceiling
+load sustains **~232 zombies (+58%)**, breaking at ~279-378. Raw sweep curves:
+`workspace/capacity/capacity_curve.json` (+ section captures `capacity_sections_*.json`).
+At the ceiling
 the tick is fully attributed: TickEntities 63%, OnUpdateEntities 30%
 (stride-halved), chunk send 5% (see `7dtd-server-optimizer/docs/RESULTS.md` 3h).
 

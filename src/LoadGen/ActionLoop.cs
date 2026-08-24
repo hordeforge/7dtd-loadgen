@@ -903,30 +903,3 @@ public static class ActionLoop
         return Enum.TryParse(s, ignoreCase: true, out death);
     }
 }
-
-/// <summary>Cohort-wide client-perceived latency samples (LiteNetLib RTT).
-/// "Laggy server" from the player's seat is RTT + sim stall; this captures
-/// the wire half so APM can separate network lag from tick stall.</summary>
-public static class PingStats
-{
-    static readonly object Gate = new();
-    static readonly List<int> Samples = new(8192);
-
-    public static void Record(int ms)
-    {
-        lock (Gate)
-            if (Samples.Count < 200_000) Samples.Add(ms);
-    }
-
-    public static (int count, double avg, int p50, int p95, int max, int spikes) Summary()
-    {
-        lock (Gate)
-        {
-            if (Samples.Count == 0) return (0, 0, 0, 0, 0, 0);
-            var sorted = Samples.OrderBy(x => x).ToList();
-            int Pct(double p) => sorted[Math.Min(sorted.Count - 1, (int)(p * (sorted.Count - 1)))];
-            return (sorted.Count, sorted.Average(), Pct(0.5), Pct(0.95),
-                sorted[^1], sorted.Count(s => s >= 150));
-        }
-    }
-}
