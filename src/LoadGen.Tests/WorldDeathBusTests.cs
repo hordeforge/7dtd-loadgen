@@ -15,14 +15,16 @@ public sealed class WorldDeathBusTests
     static string UniqueName(string tag) => $"wdt-{tag}-{Guid.NewGuid():N}";
 
     [Fact]
-    public void NotifyThenConsume_TrueOnce_WithTimestamp()
+    public void NotifyThenConsume_TrueOnce_WithMonotonicStamp()
     {
         var name = UniqueName("once");
+        long before = Environment.TickCount64;
         WorldDeathBus.NotifyKilled(name);
 
-        long before = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        Assert.True(WorldDeathBus.TryConsumeKill(name, out var killedAtUtcMs));
-        Assert.InRange(killedAtUtcMs, before - 5000, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + 1);
+        // Staleness is measured on the monotonic clock (TickCount64), not the
+        // wall clock, so a host time step cannot expire or extend a kill.
+        Assert.True(WorldDeathBus.TryConsumeKill(name, out var killedAtTickMs));
+        Assert.InRange(killedAtTickMs, before, Environment.TickCount64);
 
         // Consumed events must not re-trigger respawn on the next poll.
         Assert.False(WorldDeathBus.TryConsumeKill(name, out _));
