@@ -49,6 +49,15 @@ public sealed class GameJoinClient
 
     public static void DisconnectAllActive()
     {
+        // Normal exits reach ProcessExit after every Run() already called
+        // StopNet (which removes its manager), so there is nothing to sweep;
+        // skip the grace sleeps instead of taxing every invocation, including
+        // --version/--help and clean single-bot runs, ~500 ms of pure delay.
+        // A sweep that raced a just-started client is impossible here: bot
+        // tasks are joined before Main returns, and Ctrl+C goes through the
+        // CancelKeyPress handler with a live registry.
+        if (ActiveNets.IsEmpty)
+            return;
         // Both Console.CancelKeyPress and ProcessExit land here, and a double
         // SIGINT can invoke the handler again while the first pass sleeps. Two
         // passes would drive DisconnectAll/Stop into the same non-thread-safe
@@ -150,11 +159,17 @@ public sealed class GameJoinClient
         _bench = opt.Bench;
 
         string bindIp = string.IsNullOrWhiteSpace(opt.LocalBindIp) ? "0.0.0.0" : opt.LocalBindIp!;
+        // Preflight only: prove the loopback bind and hostname resolve before
+        // LiteNetLib starts, then release the socket. Holding it for the whole
+        // Run() cost one idle fd per bot for the session (a 1000-bot soak held
+        // 1000 sockets LiteNetLib never used; the real traffic rides the
+        // NetManager's own socket).
         try
         {
-            using var udp = new UdpClient(new IPEndPoint(IPAddress.Parse(bindIp == "0.0.0.0" ? "127.0.0.1" : bindIp), 0));
-            udp.Client.ReceiveTimeout = 500;
-            udp.Connect(opt.Host, opt.Port);
+            using (var udp = new UdpClient(new IPEndPoint(IPAddress.Parse(bindIp == "0.0.0.0" ? "127.0.0.1" : bindIp), 0)))
+            {
+                udp.Connect(opt.Host, opt.Port);
+            }
             State.Advance(JoinStage.UdpOpen, $"{opt.Host}:{opt.Port} bind={bindIp}");
             Log($"STAGE UdpOpen: ok bind={bindIp}");
         }

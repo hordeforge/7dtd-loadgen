@@ -109,6 +109,70 @@ public sealed class JoinStateMachineTests
         Assert.Contains("line 8999", sm.Log[^1]);
         Assert.Equal("line 8999", sm.Log[^1]);
     }
+
+    [Fact]
+    public void AddCounters_FoldsEveryCounter_IncludingRejoins()
+    {
+        // Attempt states carry RejoinCount 0 (only the session total increments
+        // it directly), so folding it must be a no-op there - and the fold must
+        // never silently skip a counter the state exposes.
+        var totals = new JoinStateMachine { RejoinCount = 4 };
+        var attempt = new JoinStateMachine
+        {
+            WalkActions = 10,
+            JumpActions = 2,
+            CrouchActions = 1,
+            AimActions = 3,
+            TurnActions = 5,
+            StrafeActions = 2,
+            LookActions = 1,
+            ChatActions = 4,
+            BreakBlockActions = 6,
+            AttackActions = 7,
+            DrownActions = 8,
+            SuicideActions = 9,
+            KilledActions = 1,
+            DeathCount = 2,
+            RespawnCount = 1,
+            RejoinCount = 0,
+        };
+
+        totals.AddCounters(attempt);
+
+        Assert.Equal(10, totals.WalkActions);
+        Assert.Equal(2, totals.JumpActions);
+        Assert.Equal(1, totals.CrouchActions);
+        Assert.Equal(3, totals.AimActions);
+        Assert.Equal(5, totals.TurnActions);
+        Assert.Equal(2, totals.StrafeActions);
+        Assert.Equal(1, totals.LookActions);
+        Assert.Equal(4, totals.ChatActions);
+        Assert.Equal(6, totals.BreakBlockActions);
+        Assert.Equal(7, totals.AttackActions);
+        Assert.Equal(8, totals.DrownActions);
+        Assert.Equal(9, totals.SuicideActions);
+        Assert.Equal(1, totals.KilledActions);
+        Assert.Equal(2, totals.DeathCount);
+        Assert.Equal(1, totals.RespawnCount);
+        Assert.Equal(4, totals.RejoinCount); // unchanged by an attempt with 0
+    }
+
+    [Fact]
+    public void SetCounters_CopiesWholeSessionSnapshot()
+    {
+        // RunWithRejoin's final fold: the last attempt snapshot reports the
+        // whole session. The copy must be a value copy: later mutations of the
+        // aggregate must not leak into an already-published snapshot.
+        var totals = new JoinStateMachine { WalkActions = 42, RejoinCount = 3 };
+        var last = new JoinStateMachine();
+
+        last.SetCounters(totals);
+        Assert.Equal(42, last.WalkActions);
+        Assert.Equal(3, last.RejoinCount);
+
+        totals.WalkActions += 1;
+        Assert.Equal(42, last.WalkActions);
+    }
 }
 
 /// <summary>
