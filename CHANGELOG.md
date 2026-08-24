@@ -31,6 +31,9 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- `NetPackagePackageIds` rejects impossible or excessive mapping counts before
+  allocation, preventing malformed server input from reserving a multi-gigabyte
+  array and hanging the decoder/fuzz gate on overcommit hosts.
 - Timeout and settle windows use monotonic clocks; wall-clock steps no longer
   cut runs short or stretch them when the system clock jumps.
 - Telnet reads decode UTF-8 across chunk boundaries and log cuts are
@@ -48,6 +51,10 @@ under **Changed** with their migration path.
 
 ### Added
 
+- Opt-in, exact-name CVar and buff observation for headless cross-client
+  assertions. `--events-jsonl` records structured joined/state events decoded
+  from `NetPackageModifyCVar`, `NetPackageAddRemoveBuff`, and the join-time
+  `NetPackageEntityStatsBuff` snapshot; ordinary load runs remain quiet.
 - `make unittest-one T=<filter>` runs one C# test without full-suite noise.
 
 ## [0.1.0] - 2026-08-22
