@@ -52,7 +52,9 @@ def test_help_mentions_respawn_and_join():
     assert r.returncode == 0
     assert "--join" in out
     assert "--self-test-join" in out
-    assert "respawn" in out.lower() or "walk again" in out
+    # Death/respawn is a documented workload knob; either phrasing alone is not
+    # enough, the flag family must actually be listed.
+    assert "--respawn" in out
 
 
 def test_observer_flags_are_documented_and_require_jsonl_output():

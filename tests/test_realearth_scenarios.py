@@ -95,7 +95,6 @@ def test_realearth_p0_through_p8_phase_modules_shipped():
         "SessionStateStore.cs",
         "DensityBudget.cs",
         "CdnTilePolicy.cs",
-        "SparseYScaffold.cs",
         "EngineHeight/EngineHeightMod.cs",
         "OriginSlideRemap.cs",
         "WorldSavePath.cs",

@@ -983,7 +983,7 @@ public sealed class GameJoinClient
     /// NetPackageEntityStatChanged body (from Assembly-CSharp write IL):
     /// entityId:i32, instigatorId:i32, enumStat:u8 (0=Health), value:f32, max:f32, maxMod:f32.
     /// </summary>
-    void TryDetectWorldDeath(string? typeName, byte[] body, Options opt, Action<string> log)
+    internal void TryDetectWorldDeath(string? typeName, byte[] body, Options opt, Action<string> log)
     {
         if (typeName == "NetPackageEntityStatChanged" && body.Length >= 21 && State.EntityId > 0)
         {
@@ -1055,7 +1055,7 @@ public sealed class GameJoinClient
 
     // Whole-word substring match (allocation-free): "refake3" matches "refake3 died"
     // but not "refake33", so one bot's death GMSG never flips a differently-numbered bot.
-    static bool ContainsWord(string haystack, string word)
+    internal static bool ContainsWord(string haystack, string word)
     {
         if (string.IsNullOrEmpty(word)) return false;
         int i = 0;
