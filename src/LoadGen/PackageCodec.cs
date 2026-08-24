@@ -33,15 +33,10 @@ public static class PackageCodec
     public const int OuterEnvelopeAfterChannel = 8;
 
     // NetPackageEntityAliveFlags constants (from live Assembly-CSharp literals)
-    public const ushort FlagApproachingEnemy = 1;
-    public const ushort FlagApproachingPlayer = 2;
     public const ushort FlagAimingGun = 4;
     public const ushort FlagSpawned = 8;
     public const ushort FlagJumping = 16;
     public const ushort FlagBreakingBlocks = 32;
-    public const ushort FlagIsAlert = 64;
-    public const ushort FlagFlashlightOn = 128;
-    public const ushort FlagGodMode = 256;
     public const ushort FlagCrouching = 512;
 
     // EnumDamageSource / EnumDamageTypes from Assembly-CSharp

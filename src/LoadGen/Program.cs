@@ -623,7 +623,9 @@ public static class Program
                     ActionSeed = opt.ActionSeed,
                     ClientId = clientId,
                     SkipActions = opt.SkipActions,
-                    WanderUntilDeath = clientMode == ActionLoop.BotMode.Wander && opt.WanderUntilDeath,
+                    // GameJoinClient converts Wander+!WanderUntilDeath to Mixed;
+                    // Mode is always clientMode here, so pass the flag through.
+                    WanderUntilDeath = opt.WanderUntilDeath,
                     Mode = clientMode,
                     MaxDynamitePerLife = clientDynamite,
                     Death = opt.Death,

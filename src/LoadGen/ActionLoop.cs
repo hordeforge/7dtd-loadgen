@@ -101,10 +101,8 @@ public static class ActionLoop
         public int Drowns { get; set; }
         public int Suicides { get; set; }
         public int Killed { get; set; }
-        public int PackagesSent { get; set; }
         public bool Died { get; set; }
         public DeathCause Cause { get; set; } = DeathCause.None;
-        public long ElapsedMs { get; set; }
     }
 
     public sealed class Options
@@ -208,6 +206,9 @@ public static class ActionLoop
 
         int maxChats = DefaultMaxChats(opt.Mode, opt.CohortSize);
         string chatPrefix = opt.ChatPrefix ?? $"bot{entityId}";
+        // Per-life packages-sent delta: sm.PackagesSent is the session total, so
+        // capture the entry value and report the difference in ACTION_SUMMARY.
+        int sentBefore = sm.PackagesSent;
         var sw = System.Diagnostics.Stopwatch.StartNew();
 
         log?.Invoke(
@@ -310,7 +311,7 @@ public static class ActionLoop
             {
                 case ActionKind.Jump:
                     y = surfaceY + 1.1f;
-                    SendFlags(send, sm, stats, flagsId, entityId,
+                    SendFlags(send, sm, flagsId, entityId,
                         (ushort)(PackageCodec.FlagJumping | PackageCodec.FlagSpawned
                             | (crouching ? PackageCodec.FlagCrouching : 0)
                             | (aiming ? PackageCodec.FlagAimingGun : 0)),
@@ -328,7 +329,7 @@ public static class ActionLoop
                 case ActionKind.Crouch:
                     crouching = !crouching;
                     aiming = false;
-                    SendFlags(send, sm, stats, flagsId, entityId,
+                    SendFlags(send, sm, flagsId, entityId,
                         (ushort)(PackageCodec.FlagSpawned
                             | (crouching ? PackageCodec.FlagCrouching : 0)),
                         () =>
@@ -343,7 +344,7 @@ public static class ActionLoop
 
                 case ActionKind.Aim:
                     aiming = !aiming;
-                    SendFlags(send, sm, stats, flagsId, entityId,
+                    SendFlags(send, sm, flagsId, entityId,
                         (ushort)(PackageCodec.FlagSpawned
                             | (aiming ? PackageCodec.FlagAimingGun : 0)
                             | (crouching ? PackageCodec.FlagCrouching : 0)),
@@ -358,7 +359,7 @@ public static class ActionLoop
                     break;
 
                 case ActionKind.BreakBlocks:
-                    SendFlags(send, sm, stats, flagsId, entityId,
+                    SendFlags(send, sm, flagsId, entityId,
                         (ushort)(PackageCodec.FlagSpawned | PackageCodec.FlagBreakingBlocks
                             | (crouching ? PackageCodec.FlagCrouching : 0)),
                         () =>
@@ -381,7 +382,6 @@ public static class ActionLoop
                         if (send(pkt))
                         {
                             stats.Dynamite++;
-                            stats.PackagesSent++;
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
                         }
@@ -400,7 +400,7 @@ public static class ActionLoop
                         sm.TurnActions++;
                         if (stats.Turns <= 5 || stats.Turns % 20 == 0)
                             log?.Invoke($"ACTION turn#{stats.Turns} entity={entityId} yaw={yaw:0.#}");
-                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                        Move(send, sm, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
                             0f, 0f, yaw, crouching, () => { });
                         Pace(paceMs, opt.Poll, opt.ShouldStop);
                         break;
@@ -411,7 +411,7 @@ public static class ActionLoop
                         float side = rng.Next(0, 2) == 0 ? 1f : -1f;
                         float dx = MathF.Cos(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
                         float dz = MathF.Sin(heading + MathF.PI / 2f) * stepBase * 0.7f * side;
-                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                        Move(send, sm, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
                             dx, dz, yaw, crouching, () =>
                             {
                                 stats.Strafes++;
@@ -438,7 +438,6 @@ public static class ActionLoop
                         if (send(pkt))
                         {
                             stats.Chats++;
-                            stats.PackagesSent++;
                             sm.ChatActions++;
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION chat#{stats.Chats} entity={entityId} msg={msg}");
@@ -457,7 +456,6 @@ public static class ActionLoop
                         if (send(pkt))
                         {
                             stats.Attacks++;
-                            stats.PackagesSent++;
                             sm.AttackActions++;
                             sm.PackagesSent++;
                             if (stats.Attacks <= 3 || stats.Attacks % 10 == 0)
@@ -530,7 +528,7 @@ public static class ActionLoop
 
                         float dx = MathF.Cos(heading) * step;
                         float dz = MathF.Sin(heading) * step;
-                        Move(send, sm, stats, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
+                        Move(send, sm, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
                             dx, dz, yaw, crouching, () =>
                             {
                                 stats.Walks++;
@@ -563,13 +561,12 @@ public static class ActionLoop
         if (!stats.Died && sm.Died)
             SyncDeathFromState(sm, stats);
 
-        stats.ElapsedMs = sw.ElapsedMilliseconds;
         log?.Invoke(
             $"ACTION_SUMMARY mode={opt.Mode} walks={stats.Walks} jumps={stats.Jumps} crouch={stats.Crouches} " +
             $"aim={stats.Aims} turn={stats.Turns} strafe={stats.Strafes} look={stats.Looks} chat={stats.Chats} " +
             $"break={stats.BreakBlocks} dynamite={stats.Dynamite} attack={stats.Attacks} drowns={stats.Drowns} suicides={stats.Suicides} " +
             $"killed={stats.Killed} died={stats.Died} cause={stats.Cause} " +
-            $"deathCause={sm.DeathCause} elapsedMs={stats.ElapsedMs} sent={stats.PackagesSent}");
+            $"deathCause={sm.DeathCause} elapsedMs={sw.ElapsedMilliseconds} sent={sm.PackagesSent - sentBefore}");
         return stats;
     }
 
@@ -721,7 +718,7 @@ public static class ActionLoop
     const long AbsKeyframeInterval = 4;
 
     static void Move(
-        Func<byte[], bool> send, JoinStateMachine sm, Stats stats,
+        Func<byte[], bool> send, JoinStateMachine sm,
         ushort posId, ushort relId, int entityId,
         ref float x, ref float y, ref float z, float surfaceY,
         float dx, float dz, float yaw, bool crouching, Action onOk)
@@ -746,7 +743,7 @@ public static class ActionLoop
             onGround: !crouching, updateSteps: 1);
 
         bool relOk = send(rel);
-        if (relOk) { stats.PackagesSent++; sm.PackagesSent++; }
+        if (relOk) { sm.PackagesSent++; }
 
         // Absolute keyframe: periodically resync the authoritative position so
         // any drift in the accumulated relative deltas is corrected.
@@ -756,7 +753,7 @@ public static class ActionLoop
             var abs = PackageCodec.BuildEntityPosAndRot(
                 posId, entityId, x, y, z, 0f, yaw, 0f, onGround: !crouching);
             absOk = send(abs);
-            if (absOk) { stats.PackagesSent++; sm.PackagesSent++; }
+            if (absOk) { sm.PackagesSent++; }
         }
 
         // Advance local state whenever a position package actually went out
@@ -773,14 +770,13 @@ public static class ActionLoop
     }
 
     static void SendFlags(
-        Func<byte[], bool> send, JoinStateMachine sm, Stats stats,
+        Func<byte[], bool> send, JoinStateMachine sm,
         ushort flagsId, int entityId, ushort flags, Action onOk)
     {
         if (flagsId == 0) return;  // unmapped: skip rather than send id=0
         var pkt = PackageCodec.BuildEntityAliveFlags(flagsId, entityId, flags);
         if (send(pkt))
         {
-            stats.PackagesSent++;
             sm.PackagesSent++;
             onOk();
         }
@@ -796,11 +792,10 @@ public static class ActionLoop
         var abs = PackageCodec.BuildEntityPosAndRot(
             posId, entityId, x, y, z, 0f, yaw, 0f, onGround: false);
         var dmg = PackageCodec.BuildDrown(dmgId, entityId);
-        if (send(abs)) { stats.PackagesSent++; sm.PackagesSent++; }
+        if (send(abs)) { sm.PackagesSent++; }
         if (send(dmg))
         {
             stats.Drowns++;
-            stats.PackagesSent++;
             sm.DrownActions++;
             sm.PackagesSent++;
             sm.PosY = y;
@@ -813,7 +808,6 @@ public static class ActionLoop
             9999, fatal: true);
         if (send(fatal))
         {
-            stats.PackagesSent++;
             sm.PackagesSent++;
             stats.Died = true;
             sm.Died = true;
@@ -831,7 +825,6 @@ public static class ActionLoop
         var pkt = PackageCodec.BuildSuicide(dmgId, entityId);
         if (!send(pkt)) return;
         stats.Suicides++;
-        stats.PackagesSent++;
         sm.SuicideActions++;
         sm.PackagesSent++;
         stats.Died = true;
@@ -849,7 +842,6 @@ public static class ActionLoop
         var pkt = PackageCodec.BuildExternalKill(dmgId, entityId, attackerId: -2);
         if (!send(pkt)) return;
         stats.Killed++;
-        stats.PackagesSent++;
         sm.KilledActions++;
         sm.PackagesSent++;
         stats.Died = true;
