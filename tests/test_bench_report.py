@@ -48,12 +48,15 @@ def test_report_repeatability_ok(tmp_path):
     t0 = time.time()
     meta = {"scenario": "bench", "summary": {"pass": 16, "fail": 0},
             "hostLoadStart": "1.0", "hostLoadEnd": "1.2",
-            "startUtc": time.strftime("2026-08-22T%H:%M:%SZ", time.gmtime(t0)),
-            "endUtc": time.strftime("2026-08-22T%H:%M:%SZ", time.gmtime(t0 + 100)),
+            # Format the whole stamp from gmtime (not a pinned date + live
+            # time-of-day): a run just before UTC midnight would otherwise wrap
+            # endUtc behind startUtc on the same pinned date and clamp wall to 0.
+            "startUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0)),
+            "endUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 100)),
             "bench": {"windowStartMs": 30000, "windowEndMs": 90000,
                       "actionsPerSec": 280.0, "activeMin": 0, "activeMax": 16}}
     m2 = dict(meta, endUtc=time.strftime(
-        "2026-08-22T%H:%M:%SZ", time.gmtime(t0 + 110)))  # +10% wall
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 110)))  # +10% wall
     _make_lap(tmp_path, "lap1", {"bench": meta})
     _make_lap(tmp_path, "lap2", {"bench": m2})
     out = tmp_path / "out"
@@ -70,10 +73,10 @@ def test_report_over_tolerance_flagged(tmp_path):
     t0 = time.time()
     meta = {"scenario": "soak-4bot", "summary": {"pass": 4, "fail": 0},
             "hostLoadStart": "1.0", "hostLoadEnd": "8.5",
-            "startUtc": time.strftime("2026-08-22T%H:%M:%SZ", time.gmtime(t0)),
-            "endUtc": time.strftime("2026-08-22T%H:%M:%SZ", time.gmtime(t0 + 300))}
+            "startUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0)),
+            "endUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 300))}
     m2 = dict(meta, endUtc=time.strftime(
-        "2026-08-22T%H:%M:%SZ", time.gmtime(t0 + 420)),  # +40% wall
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 420)),  # +40% wall
         hostLoadEnd="9.0")
     _make_lap(tmp_path, "lap1", {"soak-4bot": meta})
     _make_lap(tmp_path, "lap2", {"soak-4bot": m2})
