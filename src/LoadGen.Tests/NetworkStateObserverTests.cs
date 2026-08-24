@@ -102,6 +102,28 @@ public sealed class NetworkStateObserverTests
         Assert.Equal(1, calls);
     }
 
+    [Fact]
+    public void EntityState_StaysBoundedUnderEntityChurn()
+    {
+        // Zombie churn hands the observer fresh entity ids forever; past the
+        // cap the tables must drop instead of growing for the whole soak.
+        var events = new List<string>();
+        var observer = new NetworkStateObserver(
+            1, new[] { "atomicProtection" }, Array.Empty<string>(), events.Add);
+        const int churn = NetworkStateObserver.MaxTrackedEntities + 64;
+        for (int id = 1; id <= churn; id++)
+            observer.Observe("NetPackageModifyCVar", CVar(id, "atomicProtection", 1f, 0));
+
+        Assert.True(observer.TrackedCvarEntitiesForTests <= churn,
+            "tracked entities exceeded the observed count");
+        Assert.True(observer.TrackedCvarEntitiesForTests < churn / 2,
+            "per-entity tables were never bounded");
+        // State stays live after a bound: a fresh observation still emits.
+        int before = events.Count;
+        observer.Observe("NetPackageModifyCVar", CVar(churn + 1, "atomicProtection", 0.5f, 0));
+        Assert.Equal(before + 1, events.Count);
+    }
+
     static byte[] CVar(int entityId, string name, float value, short operation) => Body(w =>
     {
         w.Write(entityId); w.Write(name); w.Write(value); w.Write(operation);

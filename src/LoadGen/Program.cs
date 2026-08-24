@@ -159,16 +159,28 @@ public static class Program
         catch (OperationCanceledException) { }
     }
 
+    /// <summary>Cancellable sleep that reports whether to keep looping.
+    /// .Wait() wraps delay cancellation in AggregateException, which neither an
+    /// OperationCanceledException catch nor the token-gated fault catch sees:
+    /// letting it propagate would fault the pressure task on every clean
+    /// teardown and make AwaitTeardown log a spurious ERROR into the run log.</summary>
+    static bool NappableDelay(int ms, CancellationToken ct)
+    {
+        try { Task.Delay(ms, ct).Wait(); }
+        catch { /* cancellation (or a rare race); the token decides */ }
+        return !ct.IsCancellationRequested;
+    }
+
     /// <summary>Periodic telnet pressure loop shared by the zombie trickle and
     /// wandering hordes: one fresh telnet session per wave (long sessions drop
     /// half-open sockets), fixed backoff on faults, ends with cancellation.</summary>
-    static Task RunTelnetPressureLoop(
+    internal static Task RunTelnetPressureLoop(
         string label, CancellationToken ct,
         int startDelayMs, int intervalMs, int errorBackoffMs,
         Func<TelnetAdmin> createAdmin, Action<TelnetAdmin> wave)
         => Task.Run(() =>
         {
-            try { Task.Delay(startDelayMs, ct).Wait(); } catch { return; }
+            if (!NappableDelay(startDelayMs, ct)) return;
             while (!ct.IsCancellationRequested)
             {
                 try
@@ -176,16 +188,15 @@ public static class Program
                     using var admin = createAdmin();
                     if (admin.Connect())
                         wave(admin);
-                    Task.Delay(intervalMs, ct).Wait();
+                    if (!NappableDelay(intervalMs, ct)) break;
                 }
                 catch (OperationCanceledException) { break; }
-                // Wait() (no token) wraps delay cancellation in AggregateException, so
-                // an OCE-only catch never fires for it. Gate on the token instead: a
-                // fault observed while shutting down is teardown, not a telnet error.
+                // A fault observed while shutting down is teardown, not a telnet
+                // error: gate on the token so a stop never waits out the backoff.
                 catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
                     Console.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
-                    try { Task.Delay(errorBackoffMs, ct).Wait(); } catch { break; }
+                    if (!NappableDelay(errorBackoffMs, ct)) break;
                 }
             }
         });

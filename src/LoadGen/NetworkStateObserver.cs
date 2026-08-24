@@ -40,6 +40,21 @@ public sealed class NetworkStateObserver
 
     public bool Enabled => _cvarFilters.Count > 0 || _buffFilters.Count > 0;
 
+    // Every observed stats/cvar/buff package can introduce a fresh entity id,
+    // and despawned zombies never remove theirs: on a multi-day soak with heavy
+    // spawn pressure the two tables only ever grew. Past the cap drop both
+    // wholesale; the next snapshot or delta repopulates exactly what is still
+    // live, so assertions over recent state are unaffected.
+    internal const int MaxTrackedEntities = 4096;
+
+    void BoundEntityState()
+    {
+        if (_cvars.Count <= MaxTrackedEntities && _buffs.Count <= MaxTrackedEntities)
+            return;
+        _cvars.Clear();
+        _buffs.Clear();
+    }
+
     public void Joined(int entityId)
     {
         if (!_joinedEntities.Add(entityId)) return;
@@ -60,6 +75,7 @@ public sealed class NetworkStateObserver
     public void Observe(string packageType, ReadOnlySpan<byte> body)
     {
         if (!Enabled) return;
+        BoundEntityState();
         if (packageType == "NetPackageModifyCVar") ObserveCVar(body);
         else if (packageType == "NetPackageAddRemoveBuff") ObserveBuffDelta(body);
         else if (packageType == "NetPackageEntityStatsBuff") ObserveFullState(body);
@@ -216,6 +232,9 @@ public sealed class NetworkStateObserver
     }
 
     long NextSequence() => Interlocked.Increment(ref _sequence);
+
+    /// <summary>Test seam: distinct entity ids currently holding cvar state.</summary>
+    internal int TrackedCvarEntitiesForTests => _cvars.Count;
     Dictionary<string, float> CvarsFor(int entityId) =>
         _cvars.TryGetValue(entityId, out var value) ? value : _cvars[entityId] = new(StringComparer.OrdinalIgnoreCase);
     HashSet<string> BuffsFor(int entityId) =>
