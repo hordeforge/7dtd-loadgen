@@ -85,7 +85,8 @@ public static class ActionLoop
         TimeoutAlive,
     }
 
-    public sealed class Stats
+    /// <summary>Per-run action counters; loop control + ACTION_SUMMARY evidence.</summary>
+    sealed class Stats
     {
         public int Walks { get; set; }
         public int Jumps { get; set; }
@@ -132,7 +133,7 @@ public static class ActionLoop
         public BenchClock? Bench { get; set; }
     }
 
-    public static Stats Run(
+    public static void Run(
         JoinStateMachine sm,
         Func<byte[], bool> send,
         Options opt)
@@ -142,7 +143,7 @@ public static class ActionLoop
         if (!sm.IsJoined && sm.Stage != JoinStage.SpawnedInWorld && sm.Stage != JoinStage.Joined)
         {
             log?.Invoke("ACTION skip: not joined");
-            return stats;
+            return;
         }
 
         ResolveIds(sm, out ushort posId, out ushort relId, out ushort flagsId,
@@ -567,7 +568,6 @@ public static class ActionLoop
             $"break={stats.BreakBlocks} dynamite={stats.Dynamite} attack={stats.Attacks} drowns={stats.Drowns} suicides={stats.Suicides} " +
             $"killed={stats.Killed} died={stats.Died} cause={stats.Cause} " +
             $"deathCause={sm.DeathCause} elapsedMs={sw.ElapsedMilliseconds} sent={sm.PackagesSent - sentBefore}");
-        return stats;
     }
 
     static void SyncDeathFromState(JoinStateMachine sm, Stats stats)

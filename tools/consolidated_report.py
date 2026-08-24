@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -32,7 +31,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _load_json(p: Path) -> dict | None:
     try:
-        return json.load(open(p, encoding="utf-8"))
+        with open(p, encoding="utf-8") as fh:
+            return json.load(fh)
     except (OSError, ValueError):
         return None
 

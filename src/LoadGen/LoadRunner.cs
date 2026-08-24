@@ -5,6 +5,16 @@ namespace SevenDTD.LoadGen;
 
 public static class LoadRunner
 {
+    /// <summary>Probe-cohort concurrency: default to a wide pool-derived cap so
+    /// short-lived probes overlap, always clamped to the cohort size. Shared by
+    /// the probe and self-test lanes so both scale identically.</summary>
+    public static int ResolveConcurrency(int requested, int count)
+    {
+        if (requested <= 0)
+            requested = Math.Clamp(Environment.ProcessorCount * 32, 64, 512);
+        return Math.Min(requested, count);
+    }
+
     public static LoadSummary Run(
         string host, int port, string key, int timeoutMs, int count, int concurrency,
         int rampMs, bool quiet, int idBase = 1)
@@ -45,7 +55,6 @@ public static class LoadRunner
                             Pass = false,
                             Stages = new HashSet<string>(),
                             Connected = false,
-                            Packets = 0,
                             Lines = new List<string>(),
                             ElapsedMs = 0,
                         };

@@ -286,7 +286,8 @@ def stock_apm_summary(run_dir):
     if not os.path.exists(p):
         return None
     try:
-        s = json.load(open(p, encoding="utf-8"))
+        with open(p, encoding="utf-8") as fh:
+            s = json.load(fh)
     except (ValueError, OSError):
         return None
     out = {"session": sessions[-1]}
@@ -320,7 +321,8 @@ def run_meta(run_dir):
     if not os.path.exists(p):
         return None
     try:
-        return json.load(open(p, encoding="utf-8"))
+        with open(p, encoding="utf-8") as fh:
+            return json.load(fh)
     except (ValueError, OSError):
         return None
 

@@ -123,13 +123,20 @@ public static class Program
         }
     }
 
+    /// <summary>Shared JSON options for every run artifact (stats-json, run
+    /// manifest): one instance so the artifact schemas serialize identically.</summary>
+    static readonly System.Text.Json.JsonSerializerOptions ArtifactJsonOpts = new() { WriteIndented = true };
+
     /// <summary>Write a run artifact (log/stats-json/run manifest) without letting
     /// an IO failure mask the run's exit code: the measurement finished, so its
-    /// gate result must still propagate. Evidence loss goes to stderr, loudly.</summary>
+    /// gate result must still propagate. The artifact's parent directory is
+    /// created first, so every sink accepts a nested path uniformly. Evidence
+    /// loss goes to stderr, loudly.</summary>
     internal static void WriteArtifact(string label, string path, Action write)
     {
         try
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
             write();
             Console.WriteLine($"{label}: {path}");
         }
@@ -274,14 +281,9 @@ public static class Program
                 },
             };
             WriteArtifact("run_manifest", runManifestPath, () =>
-            {
-                var dir = Path.GetDirectoryName(Path.GetFullPath(runManifestPath));
-                if (!string.IsNullOrEmpty(dir))
-                    Directory.CreateDirectory(dir);
                 File.WriteAllText(
                     runManifestPath,
-                    System.Text.Json.JsonSerializer.Serialize(run, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }) + "\n");
-            });
+                    System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
         }
         return rc;
     }
@@ -289,7 +291,7 @@ public static class Program
     /// <summary>Aggregate action/death counters for stats-json. Longs because the
     /// sum across up to 1000 bots on a multi-day run exceeds int.MaxValue (int
     /// Sum wraps silently under unchecked arithmetic).</summary>
-    readonly record struct CohortCounters(
+    internal readonly record struct CohortCounters(
         long Walks, long Jumps, long Crouches, long Aims, long Turns, long Strafes,
         long Looks, long Chats, long Breaks, long Attacks, long Drowns, long Suicides,
         long Killed, int DiedClients, long TotalDeaths, long TotalRespawns, long TotalRejoins)
@@ -299,6 +301,24 @@ public static class Program
             sm.StrafeActions, sm.LookActions, sm.ChatActions, sm.BreakBlockActions,
             sm.AttackActions, sm.DrownActions, sm.SuicideActions, sm.KilledActions,
             sm.Died ? 1 : 0, sm.DeathCount, sm.RespawnCount, sm.RejoinCount);
+
+        public static CohortCounters operator +(CohortCounters a, CohortCounters b) => new(
+            a.Walks + b.Walks, a.Jumps + b.Jumps, a.Crouches + b.Crouches, a.Aims + b.Aims,
+            a.Turns + b.Turns, a.Strafes + b.Strafes, a.Looks + b.Looks, a.Chats + b.Chats,
+            a.Breaks + b.Breaks, a.Attacks + b.Attacks, a.Drowns + b.Drowns,
+            a.Suicides + b.Suicides, a.Killed + b.Killed, a.DiedClients + b.DiedClients,
+            a.TotalDeaths + b.TotalDeaths, a.TotalRespawns + b.TotalRespawns,
+            a.TotalRejoins + b.TotalRejoins);
+
+        /// <summary>Cohort-wide fold of every bot's final state snapshot in one
+        /// pass; every counter accumulates as long so the totals cannot wrap.</summary>
+        public static CohortCounters Sum(IEnumerable<JoinStateMachine> states)
+        {
+            CohortCounters total = default;
+            foreach (var sm in states)
+                total += FromState(sm);
+            return total;
+        }
     }
 
     static int RunJoin(string[] args)
@@ -813,14 +833,10 @@ public static class Program
             // is uniform (probe-15s/join-fast/join-probe/horde-lite are count=1).
             if (!string.IsNullOrEmpty(statsJsonPath))
             {
-                var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
                 var payload = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm));
                 WriteArtifact("stats", statsJsonPath, () =>
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
                     File.WriteAllText(statsJsonPath,
-                        System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
-                });
+                        System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
             }
             return rc;
         }
@@ -850,11 +866,11 @@ public static class Program
                 (killFallback ? " and admin kill fallback" : "") +
                 ". These modify the world and raise server load; use --no-spawn-zombies " +
                 "and/or --no-kill-fallback for a pure join/action measurement.");
-        var results = new System.Collections.Concurrent.ConcurrentBag<(
-            int id, int rc, JoinStage stage, int walks, int jumps, int crouches, int aims, int turns,
-            int strafes, int looks, int chats, int breaks, int attacks,
-            int drowns, int suicides, int killed, bool died, string deathCause, int entityId, string mode,
-            int deathCount, int respawnCount, int rejoinCount)>();
+        // Per-bot outcome: the session's final state snapshot already carries the
+        // aggregate counters (RunWithRejoin folds every rejoin attempt into it),
+        // so storing the object keeps one source of truth for the summary,
+        // stats-json, run manifest, and deaths CSV.
+        var results = new System.Collections.Concurrent.ConcurrentBag<(int id, int rc, JoinStateMachine s)>();
         var gate = new SemaphoreSlim(concurrency);
         // Bench clock: window-sliced counts + per-second active-cohort curve.
         var running = new System.Collections.Concurrent.ConcurrentDictionary<int, byte>();
@@ -886,11 +902,7 @@ public static class Program
                 try
                 {
                     var (rc, s) = RunWithRejoin(id, log);
-                    results.Add((id, rc, s.Stage, s.WalkActions, s.JumpActions, s.CrouchActions, s.AimActions,
-                        s.TurnActions, s.StrafeActions, s.LookActions, s.ChatActions, s.BreakBlockActions,
-                        s.AttackActions, s.DrownActions, s.SuicideActions, s.KilledActions, s.Died,
-                        s.DeathCause, s.EntityId, s.BotModeName, s.DeathCount, s.RespawnCount,
-                        s.RejoinCount));
+                    results.Add((id, rc, s));
                 }
                 catch (Exception ex)
                 {
@@ -898,7 +910,14 @@ public static class Program
                     // just because the bot's console log was throttled off.
                     Console.Error.WriteLine(
                         $"[{DateTime.UtcNow:O}] join#{id} EX: {ex.GetType().Name}: {ex.Message}");
-                    results.Add((id, 1, JoinStage.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, "exception", -1, opt.Mode.ToString(), 0, 0, 0));
+                    var failState = new JoinStateMachine
+                    {
+                        EntityId = -1,
+                        DeathCause = "exception",
+                        BotModeName = opt.Mode.ToString(),
+                    };
+                    failState.Fail("exception");
+                    results.Add((id, 1, failState));
                 }
             }
             finally { running.TryRemove(id, out _); gate.Release(); }
@@ -912,55 +931,39 @@ public static class Program
         AwaitTeardown("wandering_horde", hordeTask);
 
         int pass = results.Count(r => r.rc == 0);
-        // Cast to long before summing: per-bot counts are int, but the total
-        // across up to 1000 bots on a multi-day run exceeds int.MaxValue and
-        // Sum(int) wraps silently (unchecked) to a negative total.
-        long walks = results.Sum(r => (long)r.walks);
-        long jumps = results.Sum(r => (long)r.jumps);
-        long crouches = results.Sum(r => (long)r.crouches);
-        long aims = results.Sum(r => (long)r.aims);
-        long turns = results.Sum(r => (long)r.turns);
-        long strafes = results.Sum(r => (long)r.strafes);
-        long looks = results.Sum(r => (long)r.looks);
-        long chats = results.Sum(r => (long)r.chats);
-        long breaks = results.Sum(r => (long)r.breaks);
-        long attacks = results.Sum(r => (long)r.attacks);
-        long drowns = results.Sum(r => (long)r.drowns);
-        long suicides = results.Sum(r => (long)r.suicides);
-        long killed = results.Sum(r => (long)r.killed);
-        int died = results.Count(r => r.died);
+        // One pass folds every bot's final snapshot (RunWithRejoin already
+        // aggregated rejoin attempts into it); all sums are long so the totals
+        // across 1000 bots on a multi-day run cannot wrap int.MaxValue.
+        CohortCounters cohort = CohortCounters.Sum(results.Select(r => r.s));
         double rate = count == 0 ? 0 : (double)pass / count;
 
         var byCause = results
-            .GroupBy(r => string.IsNullOrEmpty(r.deathCause) ? "none" : r.deathCause)
+            .GroupBy(r => string.IsNullOrEmpty(r.s.DeathCause) ? "none" : r.s.DeathCause)
             .OrderByDescending(g => g.Count())
             .Select(g => $"{g.Key}={g.Count()}")
             .ToList();
-        int worldKilled = results.Count(r => r.deathCause is "world_killed" or "world_death");
-        int worldDrown = results.Count(r => r.deathCause is "world_drown");
-        int worldRad = results.Count(r => r.deathCause is "world_radiation");
-        int timedOut = results.Count(r => r.deathCause is "timeout_alive");
-        int disc = results.Count(r => r.deathCause is "server_disconnect");
-        int selfKill = results.Count(r => r.deathCause is "drown_fatal" or "suicide" or "suicide_fallback" or "killed_external");
-        int diedEx = results.Count(r => r.deathCause == "exception");
-        int totalDeaths = results.Sum(r => r.deathCount);
-        int totalRespawns = results.Sum(r => r.respawnCount);
-        int totalRejoins = results.Sum(r => r.rejoinCount);
+        int worldKilled = results.Count(r => r.s.DeathCause is "world_killed" or "world_death");
+        int worldDrown = results.Count(r => r.s.DeathCause is "world_drown");
+        int worldRad = results.Count(r => r.s.DeathCause is "world_radiation");
+        int timedOut = results.Count(r => r.s.DeathCause is "timeout_alive");
+        int disc = results.Count(r => r.s.DeathCause is "server_disconnect");
+        int selfKill = results.Count(r => r.s.DeathCause is "drown_fatal" or "suicide" or "suicide_fallback" or "killed_external");
+        int diedEx = results.Count(r => r.s.DeathCause == "exception");
 
         var report =
             $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
-            $"JOIN_ACTIONS walks={walks} jumps={jumps} crouch={crouches} aim={aims} turn={turns} " +
-            $"strafe={strafes} look={looks} chat={chats} break={breaks} attack={attacks} " +
-            $"diedClients={died} totalDeaths={totalDeaths} totalRespawns={totalRespawns} " +
-            $"totalRejoins={totalRejoins}\n" +
-            $"DEATH_STATS total={count} died={died} alive={count - died} " +
+            $"JOIN_ACTIONS walks={cohort.Walks} jumps={cohort.Jumps} crouch={cohort.Crouches} aim={cohort.Aims} turn={cohort.Turns} " +
+            $"strafe={cohort.Strafes} look={cohort.Looks} chat={cohort.Chats} break={cohort.Breaks} attack={cohort.Attacks} " +
+            $"diedClients={cohort.DiedClients} totalDeaths={cohort.TotalDeaths} totalRespawns={cohort.TotalRespawns} " +
+            $"totalRejoins={cohort.TotalRejoins}\n" +
+            $"DEATH_STATS total={count} died={cohort.DiedClients} alive={count - cohort.DiedClients} " +
             $"world_killed={worldKilled} world_drown={worldDrown} world_radiation={worldRad} " +
             $"timeout_alive={timedOut} disconnect={disc} self_kill={selfKill} exception={diedEx}\n" +
             $"DEATH_HISTOGRAM {string.Join(" ", byCause)}\n" +
             string.Join("\n", results.OrderBy(r => r.id).Take(30).Select(r =>
-                $"  id={r.id} rc={r.rc} mode={r.mode} entity={r.entityId} w={r.walks} j={r.jumps} " +
-                $"deaths={r.deathCount} respawns={r.respawnCount} rejoins={r.rejoinCount} " +
-                $"lastDied={r.died} cause={r.deathCause}"));
+                $"  id={r.id} rc={r.rc} mode={r.s.BotModeName} entity={r.s.EntityId} w={r.s.WalkActions} j={r.s.JumpActions} " +
+                $"deaths={r.s.DeathCount} respawns={r.s.RespawnCount} rejoins={r.s.RejoinCount} " +
+                $"lastDied={r.s.Died} cause={r.s.DeathCause}"));
         if (bench is { } b)
         {
             var (wStart, wEnd) = b.WindowBounds;
@@ -977,9 +980,7 @@ public static class Program
         Console.WriteLine(report);
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
         {
-            var payload = BuildStatsPayload(count, pass, new CohortCounters(
-                walks, jumps, crouches, aims, turns, strafes, looks, chats, breaks, attacks,
-                drowns, suicides, killed, died, totalDeaths, totalRespawns, totalRejoins));
+            var payload = BuildStatsPayload(count, pass, cohort);
             payload["world_killed"] = worldKilled;
             payload["timeout_alive"] = timedOut;
             payload["disconnect"] = disc;
@@ -1005,14 +1006,11 @@ public static class Program
                     ["activeCurve"] = b2.ActiveCurve().Select(s => new[] { s.Ms, s.Active }).ToList(),
                 };
             }
-            var jsonOpts = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
             if (!string.IsNullOrEmpty(statsJsonPath))
             {
                 WriteArtifact("stats", statsJsonPath, () =>
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(statsJsonPath))!);
-                    File.WriteAllText(statsJsonPath, System.Text.Json.JsonSerializer.Serialize(payload, jsonOpts) + "\n");
-                });
+                    File.WriteAllText(statsJsonPath,
+                        System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
             }
             if (!string.IsNullOrEmpty(runManifestPath))
             {
@@ -1020,13 +1018,13 @@ public static class Program
                 {
                     ["id"] = r.id,
                     ["rc"] = r.rc,
-                    ["mode"] = r.mode,
-                    ["entityId"] = r.entityId,
-                    ["walks"] = r.walks,
-                    ["deaths"] = r.deathCount,
-                    ["respawns"] = r.respawnCount,
-                    ["died"] = r.died,
-                    ["deathCause"] = r.deathCause,
+                    ["mode"] = r.s.BotModeName,
+                    ["entityId"] = r.s.EntityId,
+                    ["walks"] = r.s.WalkActions,
+                    ["deaths"] = r.s.DeathCount,
+                    ["respawns"] = r.s.RespawnCount,
+                    ["died"] = r.s.Died,
+                    ["deathCause"] = r.s.DeathCause,
                 }).ToList();
                 var run = new Dictionary<string, object?>
                 {
@@ -1043,10 +1041,8 @@ public static class Program
                     },
                 };
                 WriteArtifact("run_manifest", runManifestPath, () =>
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(runManifestPath))!);
-                    File.WriteAllText(runManifestPath, System.Text.Json.JsonSerializer.Serialize(run, jsonOpts) + "\n");
-                });
+                    File.WriteAllText(runManifestPath,
+                        System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
             }
         }
         if (!string.IsNullOrEmpty(logPath))
@@ -1060,10 +1056,10 @@ public static class Program
             foreach (var r in results.OrderBy(x => x.id))
             {
                 csv.AppendLine(
-                    $"{r.id},{r.rc},{r.mode},{r.stage},{r.entityId},{r.walks},{r.jumps}," +
-                    $"{r.crouches},{r.aims},{r.turns},{r.strafes},{r.looks},{r.chats}," +
-                    $"{r.breaks},{r.attacks},{r.drowns},{r.suicides},{r.killed},{r.died}," +
-                    $"{r.deathCause},{r.deathCount},{r.respawnCount},{r.rejoinCount}");
+                    $"{r.id},{r.rc},{r.s.BotModeName},{r.s.Stage},{r.s.EntityId},{r.s.WalkActions},{r.s.JumpActions}," +
+                    $"{r.s.CrouchActions},{r.s.AimActions},{r.s.TurnActions},{r.s.StrafeActions},{r.s.LookActions},{r.s.ChatActions}," +
+                    $"{r.s.BreakBlockActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions},{r.s.KilledActions},{r.s.Died}," +
+                    $"{r.s.DeathCause},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}");
             }
             WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }
@@ -1115,11 +1111,7 @@ public static class Program
             Action<string>? log = quiet ? null : Console.WriteLine;
             var result = LiteNetProbe.Run(host, port, key, timeoutMs, clientId, log);
             if (!string.IsNullOrEmpty(logPath))
-                WriteArtifact("log", logPath, () =>
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(logPath))!);
-                    File.WriteAllLines(logPath, result.Lines);
-                });
+                WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, result.Lines));
             if (!result.Pass)
             {
                 Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
@@ -1129,9 +1121,7 @@ public static class Program
             return 0;
         }
 
-        if (concurrency <= 0)
-            concurrency = Math.Clamp(Environment.ProcessorCount * 32, 64, 512);
-        concurrency = Math.Min(concurrency, count);
+        concurrency = LoadRunner.ResolveConcurrency(concurrency, count);
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] LOAD start host={host} port={port} count={count} " +
             $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={minPassRate:P0}");

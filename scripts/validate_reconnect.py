@@ -129,7 +129,6 @@ def main() -> int:
     # Join cohort (ramped to avoid the join-churn race; long timeout so the
     # bots keep retrying through the kill + restart).
     print(f"[reconnect] joining {args.players} bots (ramp 2.5 s)...")
-    dotnet = os.environ.get("DOTNET_ROOT", "")
     exe = ROOT / "src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll"
     log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%d_%H%M%S')}.out"
     log_path.parent.mkdir(parents=True, exist_ok=True)

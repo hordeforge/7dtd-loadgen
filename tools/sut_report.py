@@ -45,10 +45,6 @@ def save_summary(s):
     return f"{s.get('count', 0)} file(s), {s.get('totalBytes', 0) / 1024:.0f} KiB"
 
 
-def fmt_finding(f):
-    return f"- {f}"
-
-
 def main():
     if len(sys.argv) != 2:
         print(__doc__, file=sys.stderr)
@@ -289,7 +285,7 @@ def main():
     lines.append("\n## Findings\n")
     if findings:
         for f in findings:
-            lines.append(fmt_finding(f))
+            lines.append(f"- {f}")
     else:
         lines.append("- no axis-level differences on the compared surface")
     lines.append("\n*Triage each finding: zdtd bug vs harness artifact vs known "

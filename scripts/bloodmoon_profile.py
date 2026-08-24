@@ -95,11 +95,11 @@ def player_ids():
 
 
 def alive():
-    telnet(["apm dump"])
-    time.sleep(1.5)
+    """Live entity count from a fresh APM snapshot; -1 when unreadable."""
     try:
-        return int((json.loads(APM_SNAP.read_text(encoding="utf-8")).get("world") or {}).get("entityAlives") or 0)
-    except (OSError, json.JSONDecodeError, ValueError):
+        value = (snapshot().get("world") or {}).get("entityAlives")
+        return int(value) if value is not None else -1
+    except (TypeError, ValueError):
         return -1
 
 
@@ -174,7 +174,6 @@ def set_gamestage(stage):
         telnet([f"givexp {pid} 5000000"], settle=0.6)
     log(f"  gamestage boosted via givexp -> ~{stage} target")
     time.sleep(3)
-    return "givexp"
 
 
 def spawn_endgame(target):

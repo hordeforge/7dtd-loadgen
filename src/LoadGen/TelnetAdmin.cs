@@ -142,7 +142,7 @@ public sealed partial class TelnetAdmin : IDisposable
         string[] types = entityName.Contains(',')
             ? entityName.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             : new[] { entityName, "zombieBoe", "zombieSteve", "zombieArlene" };
-        foreach (int id in ids.Distinct())
+        foreach (int id in ids)
         {
             // Bounded per round; callers scale rounds via spawn-every-ms for hundreds total.
             for (int i = 0; i < Math.Min(perPlayer, 25); i++)

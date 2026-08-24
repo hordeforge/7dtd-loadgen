@@ -26,8 +26,7 @@ static class SelfTest
             return Program.InvalidArg("--min-pass-rate", minPassRate.ToString(), "a fraction between 0 and 1");
         if (timeoutMs <= 0)
             return Program.InvalidArg("--timeout", timeoutMs.ToString(), "a positive millisecond value");
-        if (concurrency <= 0) concurrency = Math.Clamp(Environment.ProcessorCount * 32, 64, 512);
-        concurrency = Math.Min(concurrency, count);
+        concurrency = LoadRunner.ResolveConcurrency(concurrency, count);
 
         var serverListener = new EventBasedNetListener();
         var server = new NetManager(serverListener) { AutoRecycle = true, UpdateTime = 15 };
@@ -63,7 +62,6 @@ static class SelfTest
             var summary = LoadRunner.Run("127.0.0.1", port, "", Math.Max(timeoutMs, 6000), count, concurrency,
                 rampMs: Math.Min(2000, count), quiet: true);
             Console.WriteLine(summary.ToReport());
-            double connectRate = summary.Total == 0 ? 0 : (double)summary.Connected / summary.Total;
             pass = Program.JoinGatePass(summary.Pass, summary.Total, minPassRate)
                 && Program.JoinGatePass(summary.Connected, summary.Total, Math.Min(minPassRate, 0.90));
         }

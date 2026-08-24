@@ -141,7 +141,6 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
         lines.append("| scenario | " + " | ".join(n for n, _ in laps)
                      + " | delta% | verdict |")
         lines.append("|---|---|---|---|---|")
-        names = [n for n, _ in laps]
         for sc in sorted(first):
             walls = []
             for _, lap in laps:

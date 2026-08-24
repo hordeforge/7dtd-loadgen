@@ -184,8 +184,51 @@ public sealed class GameJoinClient
         var sendQueue = new Queue<byte[]>();
         var inbox = new Queue<byte[]>();
         object gate = new();
-        const int MaxInbox = 2_000;
+        const int MaxQueued = 2_000;
         int verboseRecvLeft = 40; // throttle wire logs after join
+
+        // Shared queue plumbing for the join-phase main loop and the post-join
+        // PollInbox: one enqueue cap, one drain, one flush, so the two phases
+        // cannot drift into different bounds or send semantics.
+        void EnqueueSend(byte[] pkt)
+        {
+            lock (gate)
+            {
+                // Cap mirrors the inbox: a stalled peer must not retain every
+                // frame the action loop produces for the rest of the session.
+                while (sendQueue.Count >= MaxQueued)
+                    sendQueue.Dequeue();
+                sendQueue.Enqueue(pkt);
+            }
+        }
+
+        void FlushSends()
+        {
+            lock (gate)
+            {
+                while (sendQueue.Count > 0 && peer != null)
+                {
+                    var pkt = sendQueue.Dequeue();
+                    // A send fault (peer died mid-session) must end the flush,
+                    // not escape past the PASS/FAIL summary. The next
+                    // PollEvents dispatches PeerDisconnectedEvent, which
+                    // terminates the join through the normal terminal path.
+                    try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
+                    catch { break; }
+                    State.PackagesSent++;
+                }
+            }
+        }
+
+        void DrainInbox(List<byte[]> batch)
+        {
+            lock (gate)
+            {
+                foreach (var item in inbox)
+                    batch.Add(item);
+                inbox.Clear();
+            }
+        }
 
         listener.PeerConnectedEvent += p =>
         {
@@ -215,7 +258,7 @@ public sealed class GameJoinClient
             lock (gate)
             {
                 // Cap queue so long sessions / bursty chunk spam cannot OOM or stall pace loop.
-                while (inbox.Count >= MaxInbox)
+                while (inbox.Count >= MaxQueued)
                     inbox.Dequeue();
                 inbox.Enqueue(buf);
             }
@@ -265,30 +308,9 @@ public sealed class GameJoinClient
             {
                 net.PollEvents();
 
-                // Outbound
-                lock (gate)
-                {
-                    while (sendQueue.Count > 0 && peer != null)
-                    {
-                        var pkt = sendQueue.Dequeue();
-                        // Same guard as the PollInbox flush below: a send fault
-                        // (peer died mid-session) must end the flush, not escape
-                        // Run() past the PASS/FAIL summary. The next PollEvents
-                        // dispatches PeerDisconnectedEvent, which terminates the
-                        // join through the normal terminal-state path.
-                        try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
-                        catch { break; }
-                        State.PackagesSent++;
-                    }
-                }
-
-                // Inbound
-                lock (gate)
-                {
-                    foreach (var item in inbox)
-                        recvBatch.Add(item);
-                    inbox.Clear();
-                }
+                // Outbound, then inbound
+                FlushSends();
+                DrainInbox(recvBatch);
 
                 foreach (var data in recvBatch)
                 {
@@ -337,15 +359,7 @@ public sealed class GameJoinClient
                             verboseRecvLeft--;
                             Log($"RECV pkg id={id} bodyLen={body.Length}");
                         }
-                        HandlePackage(id, body, opt, Log, pkt =>
-                        {
-                            lock (gate)
-                            {
-                                while (sendQueue.Count >= MaxInbox)
-                                    sendQueue.Dequeue();
-                                sendQueue.Enqueue(pkt);
-                            }
-                        });
+                        HandlePackage(id, body, opt, Log, EnqueueSend);
                     }
                 }
                 recvBatch.Clear();
@@ -399,12 +413,7 @@ public sealed class GameJoinClient
                     void PollInbox()
                     {
                         net.PollEvents();
-                        lock (gate)
-                        {
-                            foreach (var item in inbox)
-                                pollBatch.Add(item);
-                            inbox.Clear();
-                        }
+                        DrainInbox(pollBatch);
                         foreach (var data in pollBatch)
                         {
                             State.PackagesReceived++;
@@ -412,22 +421,10 @@ public sealed class GameJoinClient
                                 continue;
                             var pkgs = PackageCodec.ParseChannelPayload(data);
                             foreach (var (id, body) in pkgs)
-                                HandlePackage(id, body, opt, Log, pkt =>
-                                {
-                                    lock (gate) sendQueue.Enqueue(pkt);
-                                });
+                                HandlePackage(id, body, opt, Log, EnqueueSend);
                         }
                         pollBatch.Clear();
-                        lock (gate)
-                        {
-                            while (sendQueue.Count > 0 && peer != null)
-                            {
-                                var pkt = sendQueue.Dequeue();
-                                try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
-                                catch { break; }
-                                State.PackagesSent++;
-                            }
-                        }
+                        FlushSends();
                     }
 
                     bool SendPkt(byte[] pkt)

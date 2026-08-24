@@ -35,7 +35,6 @@ public static class LiteNetProbe
                 Pass = false,
                 Stages = new HashSet<string>(),
                 Connected = false,
-                Packets = 0,
                 Lines = lines,
                 ElapsedMs = sw.ElapsedMilliseconds,
             };
@@ -70,7 +69,7 @@ public static class LiteNetProbe
         if (!net.Start())
         {
             Log("STAGE litenet_start: fail");
-            return Fail(lines, stages, connected, packets, disconnectReason, sw.ElapsedMilliseconds);
+            return Fail(lines, stages, connected, disconnectReason, sw.ElapsedMilliseconds);
         }
         stages.Add("litenet_start");
         Log("STAGE litenet_start: ok");
@@ -85,7 +84,7 @@ public static class LiteNetProbe
             if (peer == null)
             {
                 Log("STAGE litenet_connect_call: fail");
-                return Fail(lines, stages, connected, packets, disconnectReason, sw.ElapsedMilliseconds);
+                return Fail(lines, stages, connected, disconnectReason, sw.ElapsedMilliseconds);
             }
             stages.Add("litenet_connect_call");
             Log("STAGE litenet_connect_call: ok");
@@ -107,7 +106,6 @@ public static class LiteNetProbe
                 Pass = pass,
                 Stages = stages,
                 Connected = connected,
-                Packets = packets,
                 DisconnectReason = disconnectReason,
                 Lines = lines,
                 ElapsedMs = sw.ElapsedMilliseconds,
@@ -119,6 +117,6 @@ public static class LiteNetProbe
         }
     }
 
-    static ProbeResult Fail(List<string> lines, HashSet<string> stages, bool connected, int packets, string? disc, long ms) =>
-        new() { Pass = false, Stages = stages, Connected = connected, Packets = packets, DisconnectReason = disc, Lines = lines, ElapsedMs = ms };
+    static ProbeResult Fail(List<string> lines, HashSet<string> stages, bool connected, string? disc, long ms) =>
+        new() { Pass = false, Stages = stages, Connected = connected, DisconnectReason = disc, Lines = lines, ElapsedMs = ms };
 }
