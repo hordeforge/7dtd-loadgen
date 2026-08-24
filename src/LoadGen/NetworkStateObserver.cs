@@ -167,7 +167,7 @@ public sealed class NetworkStateObserver
         _ = reader.ReadUInt32();
         _ = reader.ReadInt32();
         _ = reader.ReadByte();
-        if (version == 0) _ = reader.ReadByte(); else _ = reader.ReadUInt16();
+        _ = reader.ReadUInt16();
         if (version >= 3)
         {
             _ = reader.ReadInt32();
