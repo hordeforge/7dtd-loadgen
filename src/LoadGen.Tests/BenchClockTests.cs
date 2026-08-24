@@ -58,9 +58,9 @@ public sealed class BenchClockTests
     public void WindowBounds_ReflectConfig()
     {
         var c = Clock(30000, 60000, 0);
-        Assert.Equal((30000, 90000, 60000), c.WindowBounds);
+        Assert.Equal((30000L, 90000L), c.WindowBounds);
         var disabled = Clock(0, 0, 0);
-        Assert.Equal((0, 0, 0), disabled.WindowBounds);
+        Assert.Equal((0L, 0L), disabled.WindowBounds);
     }
 
     [Fact]

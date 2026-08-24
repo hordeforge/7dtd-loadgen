@@ -50,10 +50,9 @@ public sealed class BenchClock
     /// <summary>True when the current time is inside the measurement window.</summary>
     public bool InWindow => WindowEnabled && ElapsedMs >= _warmupMs && ElapsedMs < _warmupMs + _windowMs;
 
-    /// <summary>Window start, end and midpoint in ms since cohort start (0 when disabled).</summary>
-    public (long StartMs, long EndMs, long MidMs) WindowBounds =>
-        WindowEnabled ? (_warmupMs, (long)_warmupMs + _windowMs, _warmupMs + _windowMs / 2L)
-                      : (0, 0, 0);
+    /// <summary>Window start and end in ms since cohort start (0 when disabled).</summary>
+    public (long StartMs, long EndMs) WindowBounds =>
+        WindowEnabled ? (_warmupMs, (long)_warmupMs + _windowMs) : (0, 0);
 
     public void OnAction()
     {

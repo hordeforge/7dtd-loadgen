@@ -912,7 +912,7 @@ public static class Program
                 $"lastDied={r.died} cause={r.deathCause}"));
         if (bench is { } b)
         {
-            var (wStart, wEnd, _) = b.WindowBounds;
+            var (wStart, wEnd) = b.WindowBounds;
             var (wActions, wDeaths, wRespawns) = b.WindowCounts;
             double aps = b.WindowMs > 0 ? wActions * 1000.0 / b.WindowMs : 0;
             double jps = wStart > 0 ? pass * 1000.0 / wStart : 0;
@@ -934,7 +934,7 @@ public static class Program
             payload["disconnect"] = disc;
             if (bench is { } b2)
             {
-                var (wStart, wEnd, _) = b2.WindowBounds;
+                var (wStart, wEnd) = b2.WindowBounds;
                 var (wActions, wDeaths, wRespawns) = b2.WindowCounts;
                 payload["bench"] = new Dictionary<string, object?>
                 {
