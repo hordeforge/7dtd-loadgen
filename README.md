@@ -121,7 +121,7 @@ telnet listents/listplayers/gettime/getgamestat snapshot, save-file presence,
 zdtd APM cost snapshot),
 and diffs the two runs into a machine-readable report. A difference is a
 finding to triage (zdtd bug vs harness artifact vs known divergence), never a
-pass to fake; known divergences are recorded in `../zdtd-server-server/docs/PROVENANCE.md`
+pass to fake; known divergences are recorded in `../zdtd-server/docs/PROVENANCE.md`
 (divergence register).
 
 ```bash

@@ -26,7 +26,7 @@ Prefer the root README for day-to-day operators. Canonical **wire RE** for clone
 | Doc | Role |
 |---|---|
 | [`../../7dtd-engine-research/docs/protocol.md`](../../7dtd-engine-research/docs/protocol.md) | Envelope, join, golden package bodies |
-| [`../../zdtd-server-server-server-server/docs/ZIG_CLONE.md`](../../zdtd-server-server-server-server/docs/ZIG_CLONE.md) | High-perf Zig dedi architecture |
+| [`../../zdtd-server/docs/ZIG_CLONE.md`](../../zdtd-server/docs/ZIG_CLONE.md) | High-perf Zig dedi architecture |
 
 Source of golden layouts: `src/LoadGen/PackageCodec.cs` (`--golden-wire`).
 
