@@ -187,9 +187,7 @@ public static class ActionLoop
         int n = endless
             ? int.MaxValue
             : Math.Max(opt.ActionCount, opt.Mode == BotMode.Wander ? 24 : 12);
-        int deathAt = clientDeath && !endless
-            ? Math.Max(n - 2, (n * 4) / 5)
-            : int.MaxValue;
+        int deathAt = clientDeath && !endless ? DeathAtStep(n) : int.MaxValue;
 
         int paceMs = opt.PaceMs >= 0 ? opt.PaceMs : opt.Mode switch
         {
@@ -852,6 +850,16 @@ public static class ActionLoop
     }
 
     [ThreadStatic] static Random? _paceRng;
+
+    /// <summary>Step where a client-forced death lands: 80% into the planned
+    /// steps, but never before step n-2 (for n >= 10 the n-2 bound wins, so
+    /// realistic runs die two steps from the end). The multiply widens to long
+    /// first: --actions parses up to int.MaxValue unclamped, and above
+    /// 536870911 the int product n*4 wraps negative. Today the Max masks that
+    /// wrap; keeping the term correct on its own means an edit to either bound
+    /// cannot silently resurrect it.</summary>
+    internal static int DeathAtStep(int plannedSteps) =>
+        Math.Max(plannedSteps - 2, (int)((long)plannedSteps * 4 / 5));
 
     /// <summary>Apply the ±20% think-time jitter. Saturates instead of wrapping:
     /// a huge --pace-ms makes the double product exceed int range, and .NET's

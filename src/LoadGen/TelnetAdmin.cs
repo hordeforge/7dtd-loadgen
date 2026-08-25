@@ -137,6 +137,21 @@ public sealed partial class TelnetAdmin : IDisposable
     /// <summary>When true, if se fails (no spawn point), fall back to server kill.</summary>
     public bool KillFallback { get; set; } = true;
 
+    static readonly string[] DefaultSpawnEntityTypes =
+        { "zombieBoe", "zombieSteve", "zombieArlene" };
+
+    /// <summary>Comma list from --spawn-entity to concrete entity classes. A
+    /// comma-only list (" , ") splits to zero entries under RemoveEmptyEntries,
+    /// and the spawn loop then divides by zero on types.Length every wave; an
+    /// empty selection means the default mix, same as an unset value.</summary>
+    internal static string[] ResolveSpawnEntityTypes(string? entityName)
+    {
+        if (string.IsNullOrWhiteSpace(entityName)) return DefaultSpawnEntityTypes;
+        string[] parts = entityName.Split(',',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length > 0 ? parts : DefaultSpawnEntityTypes;
+    }
+
     /// <summary>
     /// Apply world pressure: try zombie se first; optional kill fallback for worlds
     /// without AI spawn points (empty height-test maps).
@@ -191,9 +206,7 @@ public sealed partial class TelnetAdmin : IDisposable
         // Exact class selection: --spawn-entity takes a comma list of entity
         // classes (README) and spawns exactly those. Padding a single name with
         // default zombies would put zombies into a vehicles-only pressure request.
-        string[] types = string.IsNullOrWhiteSpace(entityName)
-            ? new[] { "zombieBoe", "zombieSteve", "zombieArlene" }
-            : entityName.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string[] types = ResolveSpawnEntityTypes(entityName);
         foreach (int id in ids)
         {
             // Bounded per round; callers scale rounds via spawn-every-ms for hundreds total.
