@@ -385,7 +385,7 @@ public static partial class Program
                     MaxLives = opt.MaxLives,
                     RespawnDelayMs = opt.RespawnDelayMs,
                     RespawnTimeoutMs = opt.RespawnTimeoutMs,
-                    LocalBindIp = GameJoinClient.LoopbackBindForIndex(clientId + attempt * 17),
+                    LocalBindIp = GameJoinClient.LoopbackBindIndex(clientId, attempt),
                     Bench = bench,
                     OnLifeStarted = entityId =>
                     {

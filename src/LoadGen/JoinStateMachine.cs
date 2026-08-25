@@ -116,7 +116,8 @@ public sealed class JoinStateMachine
     /// <summary>
     /// drown_fatal | suicide | killed_external | suicide_fallback |
     /// world_death | world_killed | world_drown | world_radiation |
-    /// server_disconnect | timeout_alive | none
+    /// server_disconnect | timeout_alive | respawn_timeout |
+    /// exception | none
     /// </summary>
     public string DeathCause { get; set; } = "none";
     /// <summary>False while the bot is alive in its current life.</summary>

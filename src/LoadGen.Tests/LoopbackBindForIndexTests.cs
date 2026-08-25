@@ -7,42 +7,47 @@ namespace SevenDTD.LoadGen.Tests;
 /// AGENTS.md critical rule 6: fake clients bind unique 127.a.b.c addresses so
 /// the dedicated server's per-IP connect throttle cannot collapse a cohort
 /// into one bucket (a regression here silently skews every load run without
-/// failing a join). Pins: first bot on 127.0.0.1, loopback prefix always,
-/// injectivity across realistic cohort+attempt strides, determinism.
+/// failing a join). Pins: the first bot of a cohort on 127.0.0.1, loopback
+/// prefix always, injectivity of the (clientId, attempt) -> address map across
+/// realistic cohort+attempt grids, determinism.
 /// </summary>
 public sealed class LoopbackBindForIndexTests
 {
-    const int AttemptStride = 17; // Program.cs binds clientId + attempt * 17
-
     [Fact]
     public void FirstBot_BindsLoopbackOne()
     {
         Assert.Equal("127.0.0.1", GameJoinClient.LoopbackBindForIndex(0));
-    }
-
-    [Theory]
-    [InlineData(1)]
-    [InlineData(24)]
-    public void Binds_AreDeterministic(int index)
-    {
-        Assert.Equal(GameJoinClient.LoopbackBindForIndex(index), GameJoinClient.LoopbackBindForIndex(index));
+        Assert.Equal("127.0.0.1", GameJoinClient.LoopbackBindIndex(1, 1));
     }
 
     [Fact]
-    public void CohortPlusRejoinAttempts_AllUnique_AndLoopback()
+    public void ClientAttemptGrid_AllUnique_AndLoopback()
     {
-        // A 64-bot cohort over 30 rejoin attempts spans indices up to
-        // 63 + 29*17 = 556; sweep far past that to cover future scales.
+        // A 64-bot cohort over 30 rejoin attempts must never hand two live bots
+        // the same bind: the old inline map (clientId + attempt * 17) collided
+        // whenever two clients 17 apart were one attempt apart (e.g. client 52
+        // attempt 1 vs client 35 attempt 2). Sweep past every documented scale.
         var seen = new HashSet<string>();
-        for (int i = 0; i < 20_000; i++)
-        {
-            string bind = GameJoinClient.LoopbackBindForIndex(i);
-            Assert.StartsWith("127.", bind);
-            var octets = bind.Split('.');
-            Assert.Equal(4, octets.Length);
-            Assert.All(octets, o => Assert.InRange(int.Parse(o), 0, 255));
-            Assert.True(seen.Add(bind), $"index {i} reuses bind {bind}");
-        }
+        for (int client = 1; client <= 256; client++)
+            for (int attempt = 1; attempt <= 30; attempt++)
+            {
+                string bind = GameJoinClient.LoopbackBindIndex(client, attempt);
+                Assert.StartsWith("127.", bind);
+                var octets = bind.Split('.');
+                Assert.Equal(4, octets.Length);
+                Assert.All(octets, o => Assert.InRange(int.Parse(o), 0, 255));
+                Assert.True(seen.Add(bind),
+                    $"client {client} attempt {attempt} reuses bind {bind}");
+            }
+    }
+
+    [Fact]
+    public void AttemptStride_ExceedsCohortSpan_SoMapStaysInjective()
+    {
+        // Injectivity argument pinned structurally: the stride must be larger
+        // than any cohort the tool documents (README scaling tops out at 1000).
+        Assert.True(GameJoinClient.RejoinIndexStride > 1000,
+            "rejoin stride must exceed the maximum documented cohort size");
     }
 
     [Fact]

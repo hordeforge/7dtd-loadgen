@@ -653,6 +653,24 @@ public sealed class GameJoinClient
         return $"127.{a}.{b}.{c}";
     }
 
+    /// <summary>Index-space stride between one client's rejoin attempts. The
+    /// identity is two-dimensional (client, attempt) but addresses are one
+    /// dimensional, so the linear map collides exactly when two live bots'
+    /// client-id difference equals stride * attempt difference. A stride of 17
+    /// collided for any cohort above 17 bots (client N+17 on its first join vs
+    /// client N one rejoin later shared a bind IP, re-arming the per-IP
+    /// connect throttle these binds exist to bypass). 7919 exceeds every
+    /// documented cohort scale, making the map injective in practice.</summary>
+    internal const int RejoinIndexStride = 7919;
+
+    /// <summary>(clientId, attempt) → <see cref="LoopbackBindForIndex"/> space.
+    /// Zero-based so the first bot of a cohort takes 127.0.0.1; injective while
+    /// the cohort spans fewer than <see cref="RejoinIndexStride"/> consecutive
+    /// client ids. Single source of truth: call sites must not re-derive the
+    /// arithmetic (the old inline stride drifted away from its test).</summary>
+    public static int LoopbackBindIndex(int clientId, int attempt) =>
+        Math.Max(0, clientId - 1) + Math.Max(0, attempt - 1) * RejoinIndexStride;
+
     void HandlePackage(
         ushort id,
         byte[] body,
