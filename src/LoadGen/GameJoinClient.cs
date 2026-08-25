@@ -299,7 +299,7 @@ public sealed class GameJoinClient
         State.Advance(JoinStage.LiteNetStarted);
         Log($"STAGE LiteNetStarted bind={bindIp}");
 
-        // Always put password string (even empty) — server GetString() vs serverPassword.
+        // Always put password string (even empty): server GetString() vs serverPassword.
         var writer = new NetDataWriter();
         writer.Put(opt.Password ?? "");
         peer = net.Connect(opt.Host, opt.Port, writer);
@@ -719,7 +719,7 @@ public sealed class GameJoinClient
                 log($"STAGE PackageIdsReceived: ver={PackageCodec.VersionLongString(ver)} " +
                     $"({ver.ReleaseType}.{ver.Major}.{ver.Minor}.{ver.Build}) maps={maps.Length} eac={eac}");
                 if (eac)
-                    log("NOTE: serverUseEAC=true — login may be denied without EAC");
+                    log("NOTE: serverUseEAC=true; login may be denied without EAC");
             }
             catch (Exception ex)
             {

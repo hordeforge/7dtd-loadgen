@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # LiteNetLib simulated-client probe (1..1000+ in one process).
-# Not a full game client — connectivity + handshake progress for CI / load.
+# Not a full game client: connectivity + handshake progress for CI / load.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.cache/dotnet-sdk}"

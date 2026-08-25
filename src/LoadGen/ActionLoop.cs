@@ -853,6 +853,17 @@ public static class ActionLoop
 
     [ThreadStatic] static Random? _paceRng;
 
+    /// <summary>Apply the ±20% think-time jitter. Saturates instead of wrapping:
+    /// a huge --pace-ms makes the double product exceed int range, and .NET's
+    /// out-of-range double→int cast yields int.MinValue - a negative pace that
+    /// would skip the sleep loop below and silently turn the most-paced bot into
+    /// an unpaced spammer.</summary>
+    internal static int JitteredPaceMs(int paceMs, Random rng)
+    {
+        long jittered = (long)(paceMs * (0.8 + rng.NextDouble() * 0.4));
+        return (int)Math.Min(jittered, int.MaxValue);
+    }
+
     static void Pace(int paceMs, Action? poll, Func<bool>? shouldStop = null)
     {
         if (paceMs <= 0)
@@ -863,7 +874,7 @@ public static class ActionLoop
         // +/-20% think-time jitter so a cohort does not act in lockstep and
         // create synthetic synchronized load spikes (real players are async).
         _paceRng ??= new Random(0x5f3759df);  // deterministic fallback if Run() did not seed
-        paceMs = (int)(paceMs * (0.8 + _paceRng.NextDouble() * 0.4));
+        paceMs = JitteredPaceMs(paceMs, _paceRng);
         // Slice sleep so LiteNet keeps ticking on long-lived sessions.
         int left = paceMs;
         while (left > 0)

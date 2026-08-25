@@ -1,4 +1,4 @@
-# 7dtd-loadgen — LiteNetLib join bots for 7 Days to Die dedicated
+# 7dtd-loadgen: LiteNetLib join bots for 7 Days to Die dedicated
 .DEFAULT_GOAL := help
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PROJ := $(ROOT)/src/LoadGen/LoadGen.csproj

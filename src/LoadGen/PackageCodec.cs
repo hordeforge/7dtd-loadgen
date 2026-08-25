@@ -18,9 +18,12 @@ namespace SevenDTD.LoadGen;
 ///     where contentLen = size of (pkgId+body), EXCLUDING the contentLen field itself
 ///     (see NetConnectionSimple.WriteToStream: length = end - start - 4).
 ///
-/// All multi-byte integers are little-endian on the wire; reads/writes use
-/// BinaryPrimitives/BinaryReader-BinaryWriter so the codec is host-endian
-/// independent.
+/// All multi-byte integers on the wire are little-endian. BinaryPrimitives
+/// reads/writes are explicitly LE; the BinaryReader/BinaryWriter paths emit
+/// host order, which equals wire order only while every supported .NET 8
+/// runtime is little-endian (big-endian targets were dropped in .NET 5).
+/// WireEndiannessTests pins that assumption so a future host-order mismatch
+/// fails loudly instead of silently corrupting frames.
 /// </summary>
 public static class PackageCodec
 {
@@ -420,7 +423,7 @@ public static class PackageCodec
         if (posQBody[33] != 1)
             return "PosAndRot qrot tail onGround mismatch (want 1 at 33)";
 
-        // RelPosAndRot — !bUseQ: rot Int16 only (NO qrot). Live server contentLen=22.
+        // RelPosAndRot (!bUseQ): rot Int16 only (NO qrot). Live server contentLen=22.
         var relFrame = BuildEntityRelPosAndRot(
             99, 7, dx: 10, dy: 0, dz: -5,
             rotX: 100, rotY: 200, rotZ: 50,
@@ -443,7 +446,7 @@ public static class PackageCodec
             return "RelPos rot.y want Int16 200";
         if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(9)) != 50)
             return "RelPos rot.z want Int16 50";
-        // dPos immediately after rot (offset 11) — NOT after 16-byte qrot
+        // dPos immediately after rot (offset 11), NOT after 16-byte qrot
         if (BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(11)) != 10
             || BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(13)) != 0
             || BinaryPrimitives.ReadInt16LittleEndian(relBody.AsSpan(15)) != -5)

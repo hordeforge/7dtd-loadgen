@@ -1,6 +1,6 @@
 # 😱 Screamer (7DTD HordeLoadGen)
 
-> **Part of [HordeForge](https://github.com/hordeforge)** — High-Performance Systems Engineering for 7 Days to Die.
+> **Part of [HordeForge](https://github.com/hordeforge)**: High-Performance Systems Engineering for 7 Days to Die.
 
 ![CI](https://github.com/hordeforge/7dtd-loadgen/actions/workflows/ci.yml/badge.svg)
 ![coverage](https://raw.githubusercontent.com/hordeforge/7dtd-loadgen/badges/coverage.svg)
@@ -169,8 +169,8 @@ against a test server without Steam: [`docs/STOCK_AUTH.md`](docs/STOCK_AUTH.md).
 ## Stock benchmark lane (bench-stock)
 
 A stock-only benchmark: one stock dedicated server (fixed world, fresh save
-per lap) runs the scenario matrix — including the **bench profile** (ramped
-16-bot cohort with warm-up + measurement window) — with a 7dtd-server-apm capture
+per lap) runs the scenario matrix, including the **bench profile** (ramped
+16-bot cohort with warm-up + measurement window), with a 7dtd-server-apm capture
 per scenario and per-scenario `stats-json` (the bench block carries
 window-sliced action/death/respawn counts and the active-cohort curve).
 

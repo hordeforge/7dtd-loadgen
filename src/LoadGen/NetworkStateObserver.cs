@@ -189,6 +189,14 @@ public sealed class NetworkStateObserver
         _ => throw new InvalidDataException($"unknown CVar operation {operation}"),
     };
 
+    /// <summary>JSON has no representation for NaN/Infinity: System.Text.Json
+    /// throws on them, and Emit would latch SinkFaulted on the spot, killing all
+    /// further evidence for the run. A server-side non-finite CVar value (or one
+    /// produced by a later delta op) is emitted as null instead; internal state
+    /// keeps the raw float so delta math still mirrors the game.</summary>
+    static float? JsonSafe(float? value) =>
+        value is { } v && float.IsFinite(v) ? v : null;
+
     void EmitState(string kind, int entityId, string name, float? value, bool? active, string source) => Emit(new
     {
         schema = "7dtd.loadgen.event.v1",
@@ -197,7 +205,7 @@ public sealed class NetworkStateObserver
         entityId,
         kind,
         name,
-        value,
+        value = JsonSafe(value),
         active,
         source,
         seq = NextSequence(),

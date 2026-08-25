@@ -84,6 +84,27 @@ public sealed class NetworkStateObserverTests
     }
 
     [Fact]
+    public void NonFiniteCVarValue_EmitsNull_AndKeepsSinkLive()
+    {
+        // JSON cannot represent NaN/Infinity; serializing one used to latch
+        // SinkFaulted and silently end all evidence capture for the run. A
+        // server-side non-finite value must emit as null instead.
+        var events = new List<string>();
+        var observer = new NetworkStateObserver(6, new[] { "atomicProtection" }, Array.Empty<string>(), events.Add);
+
+        observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", float.NaN, 0));
+        observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", float.PositiveInfinity, 2));
+        observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", 0.5f, 0));
+
+        Assert.False(observer.SinkFaulted);
+        Assert.Equal(3, events.Count);
+        Assert.Contains("\"value\":null", events[0]);
+        Assert.Contains("\"value\":null", events[1]);
+        using var doc = JsonDocument.Parse(events[2]);
+        Assert.Equal(0.5f, doc.RootElement.GetProperty("value").GetSingle());
+    }
+
+    [Fact]
     public void SinkFault_LatchesAndStopsEmitting()
     {
         // A dead events sink (disk full, deleted file) must not throw out of

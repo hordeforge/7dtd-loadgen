@@ -25,6 +25,19 @@ import re
 import sys
 from datetime import datetime
 
+
+def _file_size(path: str) -> int | None:
+    """Size of a listed file, or None when it vanished before the stat.
+
+    The dedicated server autosaves on a timer while the capture runs, rotating
+    .7rg/.bak entries between os.walk's listing and getsize. One vanished file
+    must shrink the inventory, not crash the whole surface capture after a
+    finished scenario (the harness loses every comparison axis then)."""
+    try:
+        return os.path.getsize(path)
+    except OSError:
+        return None
+
 ENTITY_ROW = re.compile(r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\blifetime=\S+, remote=\S+, dead=(True|False)")
 # Stock listents names come as "[type=EntityPlayer, name=EntityPlayer, id=171]";
 # zdtd's mirror prints a bare class name ("zombie"). Pull the type out of the
@@ -227,7 +240,9 @@ def save_inventory(run_dir, sut):
             for f in sorted(names):
                 if f.endswith((".7rg", ".7rr", ".ttw", ".7dt", ".nim", ".bak")):
                     p = os.path.join(base, f)
-                    files[os.path.relpath(p, root)] = os.path.getsize(p)
+                    size = _file_size(p)
+                    if size is not None:
+                        files[os.path.relpath(p, root)] = size
     else:
         world = os.path.join(run_dir, "world")
         if not os.path.isdir(world):
@@ -238,8 +253,11 @@ def save_inventory(run_dir, sut):
                 if f in ("dedicated.pid", "server.log"):
                     continue
                 p = os.path.join(world, f)
-                if os.path.isfile(p):
-                    files[f] = os.path.getsize(p)
+                # A save rotated away mid-walk (autosave rename) drops out of
+                # the inventory instead of killing the capture.
+                size = _file_size(p) if os.path.isfile(p) else None
+                if size is not None:
+                    files[f] = size
             region = os.path.join(world, "Region")
             if os.path.isdir(region):
                 names = sorted(os.listdir(region))

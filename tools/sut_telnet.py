@@ -112,8 +112,15 @@ def main():
     if args.out == "-":
         sys.stdout.write(out)
     else:
-        with open(args.out, "w", encoding="utf-8") as fh:
-            fh.write(out)
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(out)
+        except OSError as e:
+            # The session evidence is captured; losing only its file write must
+            # surface as a clean named error (matching the connect/drop paths),
+            # not a traceback that discards the exit-code contract.
+            print(f"sut_telnet: cannot write transcript {args.out}: {e}", file=sys.stderr)
+            return 2
     return rc
 
 

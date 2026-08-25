@@ -616,15 +616,18 @@ public static class Program
         {
             if (opt.ActionCount <= 0)
             {
-                // Endless until world death — default 1 hour.
+                // Endless until world death: default 1 hour.
                 opt.TimeoutMs = Math.Max(opt.TimeoutMs, 3_600_000);
             }
             else
             {
                 int pace = opt.PaceMs > 0 ? opt.PaceMs : 50;
-                int estimate = 30_000 + opt.ActionCount * pace + 10_000;
+                // Long math before the multiply: ActionCount * pace wraps int at
+                // e.g. --actions 50000000 --pace-ms 60 (3e9 ms), and the wrapped
+                // negative would silently shrink this run's wall-clock budget.
+                long estimate = 30_000L + (long)opt.ActionCount * pace + 10_000;
                 if (count >= 50) estimate += 30_000;
-                opt.TimeoutMs = Math.Max(opt.TimeoutMs, Math.Min(estimate, 3_600_000));
+                opt.TimeoutMs = (int)Math.Max(opt.TimeoutMs, Math.Min(estimate, 3_600_000));
             }
         }
 
@@ -933,7 +936,7 @@ public static class Program
         ThreadPool.GetMinThreads(out _, out int minIocp);
         ThreadPool.SetMinThreads(concurrency + 16, Math.Max(minIocp, concurrency + 16));
 
-        // Multi join — unique 127.x.x.x binds + bounded concurrency (dedicated rate-limit is per IP)
+        // Multi join: unique 127.x.x.x binds + bounded concurrency (dedicated rate-limit is per IP)
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] JOIN_LOAD count={count} concurrency={concurrency} " +
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
@@ -1193,7 +1196,7 @@ public static class Program
     static void PrintHelp()
     {
         Console.WriteLine(
-            "7dtd-loadgen — LiteNetLib probe + full join + bot actions\n" +
+            "7dtd-loadgen: LiteNetLib probe + full join + bot actions\n" +
             "Modes:\n" +
             "  (default) probe     LiteNetLib connectivity only\n" +
             "  --join              Full join path + bot action loop\n" +
