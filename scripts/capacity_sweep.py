@@ -12,6 +12,7 @@ endgame spawn mix (scripts/bloodmoon_profile.py).
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -65,17 +66,25 @@ def main():
         B.log(f"  curve: {json.dumps(curve)}")
 
         if CAPTURE:
-            pids = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
-                                  capture_output=True,
-                                  text=True, encoding="utf-8", errors="replace",
-                                  check=False).stdout.split()
-            if pids:
-                B.log("=== capture at ceiling (90s, deep sections) ===")
-                subprocess.run(["uv", "run", "7dtd-server-apm", "capture", "--seconds", "90",
-                                "--pid", pids[0], "--telnet-port", "8081", "--reset-bridge"],
-                               cwd=str(APM_DIR), check=False)
+            # Feature-test the capture toolchain (same guard bench_stock.sh /
+            # compare_sut.sh apply): a host without uv or without the sibling
+            # checkout must skip the optional capture, not crash the sweep
+            # after the ceiling was already measured.
+            if not (shutil.which("uv") and APM_DIR.is_dir()):
+                B.log("apm capture skipped: need uv on PATH and the sibling "
+                      "7dtd-server-apm checkout (RE_APM_DIR)")
             else:
-                B.log("server process not found; skipping ceiling capture")
+                pids = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
+                                      capture_output=True,
+                                      text=True, encoding="utf-8", errors="replace",
+                                      check=False).stdout.split()
+                if pids:
+                    B.log("=== capture at ceiling (90s, deep sections) ===")
+                    subprocess.run(["uv", "run", "7dtd-server-apm", "capture", "--seconds", "90",
+                                    "--pid", pids[0], "--telnet-port", "8081", "--reset-bridge"],
+                                   cwd=str(APM_DIR), check=False)
+                else:
+                    B.log("server process not found; skipping ceiling capture")
     finally:
         # Every exit path stops the cohort and the server this sweep owns;
         # a leaked workload keeps loading the host until its wall clock expires.

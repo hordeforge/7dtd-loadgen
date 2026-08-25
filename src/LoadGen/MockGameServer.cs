@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net;
 using LiteNetLib;
 
 namespace SevenDTD.LoadGen;
@@ -79,18 +80,14 @@ public sealed class MockGameServer : IDisposable
 
     public void Start(int port = 0)
     {
-        if (port <= 0)
-        {
-            if (!_net.Start())
-                throw new InvalidOperationException("MockGameServer Start(0) failed");
-            Port = _net.LocalPort;
-        }
-        else
-        {
-            if (!_net.Start(port))
-                throw new InvalidOperationException($"MockGameServer Start({port}) failed");
-            Port = port;
-        }
+        // Loopback-only bind (threat model section 1): the mock accepts every
+        // connection unconditionally, so a wildcard bind would hand the local
+        // network an unauthenticated game-protocol echo service for the test's
+        // duration. Clients connect to 127.0.0.1, which both families serve.
+        if (!_net.Start(IPAddress.Loopback, IPAddress.IPv6Loopback, port < 0 ? 0 : port))
+            throw new InvalidOperationException(
+                $"MockGameServer Start({port}) failed on loopback");
+        Port = port > 0 ? port : _net.LocalPort;
     }
 
     public void Poll() => _net.PollEvents();

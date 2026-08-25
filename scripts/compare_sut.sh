@@ -288,10 +288,11 @@ EOF
     exit 1
   fi
   PROBE_ARGS=(--commands gettime --out /dev/null)
-  if [[ "$sut" == "stock" ]]; then
-    PROBE_ARGS+=(--password "$TELNET_PASSWORD")
-  fi
-  if ! python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${PROBE_ARGS[@]}"; then
+  # Password rides the env (argv is ps-visible: the one channel this repo
+  # refuses for credentials); sut_telnet.py resolves LOADGEN_TELNET_PASSWORD.
+  # Setting it is harmless on zdtd, whose console has no password.
+  if ! LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD" \
+     python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${PROBE_ARGS[@]}"; then
     echo "  ERROR: $sut admin console not answering after ready" >&2
     exit 1
   fi
@@ -356,10 +357,8 @@ EOF
   fi
 
   TELNET_ARGS=(--out "$run_dir/telnet.txt" --commands "$TELNET_CMD" --tail-sleep 12)
-  if [[ "$sut" == "stock" ]]; then
-    TELNET_ARGS+=(--password "$TELNET_PASSWORD")
-  fi
-  python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${TELNET_ARGS[@]}" \
+  LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD" \
+    python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${TELNET_ARGS[@]}" \
     || echo "  (telnet snapshot failed)"
 
   # Wait for the client to finish, then summarize the join outcome.

@@ -31,22 +31,18 @@ static class SelfTest
         var serverListener = new EventBasedNetListener();
         var server = new NetManager(serverListener) { AutoRecycle = true, UpdateTime = 15 };
         serverListener.ConnectionRequestEvent += req => req.Accept();
-        // A bare `return 1` here failed with no output at all: the operator saw a
-        // FAIL exit code and had to guess that the in-process host never listened.
-        if (port <= 0)
+        // Loopback-only bind: the host accepts every connection unconditionally,
+        // so a wildcard bind would expose an unauthenticated game-protocol echo
+        // service to the local network for the test's duration. The probe and
+        // cohort both target 127.0.0.1, which the loopback bind serves.
+        if (!server.Start(System.Net.IPAddress.Loopback, System.Net.IPAddress.IPv6Loopback, port < 0 ? 0 : port))
         {
-            if (!server.Start())
-            {
-                Console.Error.WriteLine("FAIL: self-test host could not start on an ephemeral port");
-                return 1;
-            }
-            port = server.LocalPort;
-        }
-        else if (!server.Start(port))
-        {
-            Console.Error.WriteLine($"FAIL: self-test host could not listen on port {port} (already in use?)");
+            Console.Error.WriteLine(
+                "FAIL: self-test host could not listen on loopback"
+                + (port > 0 ? $" port {port} (already in use?)" : " (ephemeral port)"));
             return 1;
         }
+        port = port > 0 ? port : server.LocalPort;
         Console.WriteLine($"[{DateTime.UtcNow:O}] [self-test] STAGE self_host_listen: port={port} count={count}");
         using var cts = new CancellationTokenSource();
         var hostLoop = Task.Run(() => { while (!cts.Token.IsCancellationRequested) { server.PollEvents(); Thread.Sleep(2); } });

@@ -70,7 +70,10 @@ if [[ "$WORLD_NAME" != "RWG" ]]; then
     exit 1
   fi
   if [[ -f "$WORLD_DIR/prefabs.xml" ]]; then
-    pref_count=$(rg -c "<decoration" "$WORLD_DIR/prefabs.xml" 2>/dev/null || echo 0)
+    # grep, not rg: dedicated hosts ship coreutils but not ripgrep. grep -c
+    # exits nonzero on zero matches (after printing 0), so normalize to 0.
+    pref_count=$(grep -c "<decoration" "$WORLD_DIR/prefabs.xml" 2>/dev/null) || pref_count=0
+    [[ "$pref_count" =~ ^[0-9]+$ ]] || pref_count=0
   fi
 fi
 
@@ -205,9 +208,12 @@ echo "started pid=$(cat "$USERDATA/dedicated.pid")"
 # RWG gen can take a while; allow up to ~10 min
 ready=0
 for i in $(seq 1 300); do
-  if rg -q "StartGame done" "$LOG" 2>/dev/null; then
+  # grep, not rg: on hosts without ripgrep an rg-based ready probe never
+  # matches (false "timeout waiting for StartGame", then kills a healthy
+  # server) and the progress rg -n below aborts under pipefail.
+  if grep -q "StartGame done" "$LOG" 2>/dev/null; then
     echo "Server ready ($i * 2s)"
-    rg -n "GameWorld|GameName|WorldGen|EnemySpawnMode|StartGame done|createWorld|Generating|RWG" "$LOG" | head -40
+    grep -En "GameWorld|GameName|WorldGen|EnemySpawnMode|StartGame done|createWorld|Generating|RWG" "$LOG" 2>/dev/null | head -40 || true
     ready=1
     break
   fi
@@ -236,6 +242,6 @@ if [[ "$ready" != "1" ]]; then
   fi
   exit 1
 fi
-ss -uln | rg '2690[0-2]|8081' || true
+ss -uln | grep -E '2690[0-2]|8081' || true
 echo "OK dedicated up: world=$WORLD_NAME size=$WORLD_GEN_SIZE seed=$WORLD_GEN_SEED"
 echo "LiteNet join port typically 26902. Stop: kill \$(cat $USERDATA/dedicated.pid)"

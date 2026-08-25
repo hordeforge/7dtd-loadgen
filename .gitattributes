@@ -1,8 +1,12 @@
 # Normalize text files to LF in the repository. Line-ending-sensitive files
 # (shell scripts, Python entry points, Makefiles) must never be checked out
 # with CRLF: bash and GNU make reject \r in shebangs, commands, and recipes.
+# Compiled C# is pinned too: .editorconfig sets end_of_line=lf and the build
+# enforces it (EnforceCodeStyleInBuild + TreatWarningsAsErrors), so an
+# autocrlf checkout would fail the compile with IDE0055 formatting errors.
 * text=auto
 
 *.sh text eol=lf
 *.py text eol=lf
+*.cs text eol=lf
 Makefile text eol=lf

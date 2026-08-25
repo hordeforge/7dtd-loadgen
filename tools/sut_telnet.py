@@ -6,11 +6,16 @@ Both servers expose a stock-shaped console (stock: TelnetPort; zdtd:
 both sides of a comparison. Authenticates when the banner asks for a password,
 then runs the requested commands and writes the raw transcript to a file.
 
+The password resolves from LOADGEN_TELNET_PASSWORD (SEVENDTD_TELNET_PASSWORD
+accepted as legacy alias) so it never has to sit in argv, where `ps` exposes
+it; an explicit --password still wins.
+
 Usage:
   sut_telnet.py <host> <port> [--password PW] [--commands gettime,listents,listplayers] [--out PATH]
 """
 
 import argparse
+import os
 import select
 import socket
 import sys
@@ -40,11 +45,24 @@ def drain(sock, deadline):
     return b"".join(chunks)
 
 
+def resolve_password(explicit: str | None) -> str | None:
+    """--password wins; otherwise the lab credential env names. Keeps the
+    secret out of argv, where `ps` exposes it (same rule that keeps
+    LOADGEN_KEY / LOADGEN_TELNET_PASSWORD out of run_loadgen.sh argv)."""
+    if explicit is not None:
+        return explicit
+    return (
+        os.environ.get("LOADGEN_TELNET_PASSWORD")
+        or os.environ.get("SEVENDTD_TELNET_PASSWORD")
+    )
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("host")
     ap.add_argument("port", type=int)
-    ap.add_argument("--password", default=None, help="send as first line if the banner asks for a password")
+    ap.add_argument("--password", default=None, help="send as first line if the banner asks for a password "
+                    "(default: LOADGEN_TELNET_PASSWORD / SEVENDTD_TELNET_PASSWORD env)")
     ap.add_argument("--commands", default="gettime,listents,listplayers",
                     help="comma-separated commands to run after connect")
     ap.add_argument("--out", default="-", help="transcript path ('-' = stdout)")
@@ -54,6 +72,8 @@ def main():
                          "between two repeated commands, e.g. gettime, so rate "
                          "measurements are not quantized to whole game-minutes)")
     args = ap.parse_args()
+
+    password = resolve_password(args.password)
 
     try:
         sock = socket.create_connection((args.host, args.port), timeout=10)
@@ -73,10 +93,10 @@ def main():
         transcript += banner
         text = banner.decode("utf-8", errors="replace").lower()
         if "password" in text:
-            if args.password is None:
+            if password is None:
                 print("sut_telnet: server asks for a password but none was given", file=sys.stderr)
                 return 2
-            sock.sendall((args.password + "\n").encode())
+            sock.sendall((password + "\n").encode())
             deadline = time.monotonic() + 10
             transcript += drain(sock, deadline)
 

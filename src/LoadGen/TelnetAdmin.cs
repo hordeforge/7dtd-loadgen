@@ -43,6 +43,33 @@ public sealed partial class TelnetAdmin : IDisposable
         RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private static partial Regex PlayerIdHealthRegex();
 
+    // Allowlist for tokens replayed into admin commands. The kill targets come
+    // from listplayers output (server-controlled text), so a crafted row must
+    // never become a crafted command: only lab bot/platform id shapes pass.
+    [GeneratedRegex("^[A-Za-z0-9._-]+$")]
+    private static partial Regex CommandTokenRegex();
+
+    /// <summary>True when <paramref name="value"/> is a safe single token for
+    /// interpolation into an admin command (no whitespace, quotes, separators,
+    /// or control characters).</summary>
+    internal static bool IsSafeCommandToken(string value) => CommandTokenRegex().IsMatch(value);
+
+    /// <summary>
+    /// The console is line-oriented: a CR/LF/NUL smuggled inside any
+    /// interpolated string would terminate the command and let the remainder
+    /// run as a separate admin command (threat model R3). Every outbound
+    /// command passes through here, so one guard covers all current and future
+    /// call sites; no legitimate command contains control characters.
+    /// </summary>
+    internal static bool IsSingleLineCommand(string cmd)
+    {
+        foreach (char c in cmd)
+        {
+            if (c < ' ' || c == '\x7f') return false;
+        }
+        return true;
+    }
+
     public bool Connect(int timeoutMs = 5000)
     {
         Dispose();
@@ -63,6 +90,14 @@ public sealed partial class TelnetAdmin : IDisposable
             string banner = ReadAvailable(800);
             if (banner.Contains("password", StringComparison.OrdinalIgnoreCase))
             {
+                // A multi-line password is broken configuration; sending it
+                // would leak the tail as unauthenticated console commands.
+                if (!IsSingleLineCommand(_password))
+                {
+                    _log?.Invoke("TELNET rejected password with control characters");
+                    Dispose();
+                    return false;
+                }
                 WriteLine(_password);
                 _ = ReadAvailable(600);
             }
@@ -80,6 +115,13 @@ public sealed partial class TelnetAdmin : IDisposable
     public string Exec(string cmd)
     {
         if (_stream == null || _tcp is not { Connected: true }) return "";
+        if (!IsSingleLineCommand(cmd))
+        {
+            // Server-derived text (listplayers tokens) must never split into a
+            // second admin command; drop the whole command instead.
+            _log?.Invoke($"TELNET rejected non-single-line command (len={cmd.Length})");
+            return "";
+        }
         try
         {
             WriteLine(cmd);
@@ -108,7 +150,14 @@ public sealed partial class TelnetAdmin : IDisposable
         {
             if (!int.TryParse(m.Groups[1].Value, out int id) || id <= 0) continue;
             if (!int.TryParse(m.Groups[2].Value, out int hp) || hp <= 0) continue;
-            live.Add((id, m.Groups[3].Value));
+            string token = m.Groups[3].Value;
+            if (!IsSafeCommandToken(token))
+            {
+                // Crafted/malformed row: never feed it back into kill/give.
+                _log?.Invoke($"TELNET skipped unsafe player token (len={token.Length})");
+                continue;
+            }
+            live.Add((id, token));
         }
         if (live.Count == 0)
         {
