@@ -26,7 +26,8 @@ bots against EAC-off test servers only.
 ## Requirements
 
 - .NET 8 SDK
-- 7DTD dedicated server (for live joins; ships `LiteNetLib.dll`)
+- 7DTD dedicated server (live joins only; `make build` always uses the pinned
+  NuGet LiteNetLib so binaries do not depend on a local install)
 - Optional: `uv` for Python tests
 
 Default dedicated install path:
@@ -35,7 +36,9 @@ Default dedicated install path:
 ~/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server
 ```
 
-Override with `-p:GameDir=...` or `SEVENDTD_SERVER_DIR`.
+Override with `-p:GameDir=...` or `SEVENDTD_SERVER_DIR`. To build against a
+game install's LiteNetLib instead of the pinned NuGet package:
+`make build GAME_DIR=/path/to/dedicated`.
 
 ## Quick start
 

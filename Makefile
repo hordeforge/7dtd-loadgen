@@ -5,22 +5,32 @@ PROJ := $(ROOT)/src/LoadGen/LoadGen.csproj
 EXE  := $(ROOT)/src/LoadGen/bin/Release/net8.0/7dtd-loadgen
 SCRIPTS := $(ROOT)/scripts
 
-# Prefer a local SDK if present (cache or ~/.dotnet)
-DOTNET_ROOT ?= $(firstword \
-	$(wildcard $(HOME)/.cache/dotnet-sdk) \
-	$(wildcard $(HOME)/.dotnet) \
-	)
+# Prefer a local SDK if present. Only roots that actually ship a dotnet host
+# qualify (same check as tests/loadgen_cli.py): a stale ~/.dotnet with only
+# telemetry sentinels must not shadow PATH resolution and mask the real error.
+SDK_CANDIDATES := $(foreach d,$(HOME)/.cache/dotnet-sdk $(HOME)/.dotnet,\
+	$(if $(wildcard $(d)/dotnet),$(d),))
+DOTNET_ROOT ?= $(firstword $(SDK_CANDIDATES))
 ifneq ($(DOTNET_ROOT),)
   export DOTNET_ROOT
   export PATH := $(DOTNET_ROOT):$(PATH)
 endif
+
+# Hermetic artifact lane: build against the pinned NuGet LiteNetLib (the graph
+# CI builds) regardless of whether this host has a game install at the default
+# path. Otherwise the same source produces different binaries per machine:
+# GameDir hits copy the game's own LiteNetLib.dll into bin/ next to whatever
+# version the dedicated ships. Opt back in explicitly with
+#   make build GAME_DIR=/path/to/7 Days to Die Dedicated Server
+GAME_DIR ?=
 
 .PHONY: help lint build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
 	@echo ""
-	@echo "  make build               Build 7dtd-loadgen"
+	@echo "  make build               Build 7dtd-loadgen (GAME_DIR=<path> builds"
+	@echo "                           against a game install's LiteNetLib instead)"
 	@echo "  make lint                Static gates: shellcheck on scripts/,"
 	@echo "                           ruff check on the Python tree (locked env)"
 	@echo "  make selftest            In-process join + respawn CI gate"
@@ -67,16 +77,17 @@ help:
 	@echo "              RE_SCENARIO_PACK=h500|everest  LOADGEN_LIVE_REALEARTH=1 (live pytest)"
 
 build:
-	dotnet build "$(PROJ)" -c Release -v q
+	dotnet build "$(PROJ)" -c Release -v q -p:GameDir="$(GAME_DIR)"
 	@echo "OK → $(EXE)"
 
 selftest: build
 	@"$(EXE)" --self-test-join --actions 24 --seed 7
 
 # Test lanes pin GameDir empty so LoadGen always restores against the NuGet
-# LiteNetLib fallback. The committed packages.lock.json records that graph;
-# with a game install present the DLL-reference branch would drop the
-# dependency and locked-mode restore (NU1004) would fail on every dev box.
+# LiteNetLib fallback (same as the build lane's default GAME_DIR). The
+# committed packages.lock.json records that graph; with a game install present
+# the DLL-reference branch would drop the dependency and locked-mode restore
+# (NU1004) would fail on every dev box.
 unittest:
 	@cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir=
 
@@ -104,13 +115,10 @@ lint:
 test: lint build selftest unittest
 	@if command -v uv >/dev/null; then \
 		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short; \
-	elif python3 -c 'import pytest' 2>/dev/null; then \
-		echo "WARN: uv not found; falling back to system python3" >&2; \
-		cd "$(ROOT)" && python3 -m pytest tests -q --tb=short; \
 	else \
-		echo "ERROR: neither uv nor a python3 with pytest is installed." >&2; \
-		echo "       Install uv (https://docs.astral.sh/uv/) and rerun 'make test';" >&2; \
-		echo "       it provisions the locked test env from uv.lock automatically." >&2; \
+		echo "ERROR: uv is not installed; the Python gates must run inside the" >&2; \
+		echo "       locked env from uv.lock (a system python3 with pytest would" >&2; \
+		echo "       bypass the pin). Install uv (https://docs.astral.sh/uv/) and rerun." >&2; \
 		exit 1; \
 	fi
 
