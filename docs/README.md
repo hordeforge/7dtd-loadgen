@@ -12,6 +12,7 @@
 | [`STOCK_AUTH.md`](STOCK_AUTH.md) | Join-auth model; operational decision for Steamless client runs |
 | [`SUT_COMPARE.md`](SUT_COMPARE.md) | Stock-vs-zdtd comparison harness, axes, triage record |
 | [`../TODO.md`](../TODO.md) | Protocol and workload backlog |
+| [`../CHANGELOG.md`](../CHANGELOG.md) | Release history (Keep a Changelog) |
 | [`../AGENTS.md`](../AGENTS.md) | Agent / project rules |
 
 ## Sibling docs (evidence loop)
@@ -35,5 +36,6 @@ Source of golden layouts: `src/LoadGen/PackageCodec.cs` (`--golden-wire`).
 
 ## Changelog
 
+- **2026-08-26:** Added the root CHANGELOG to the index.
 - **2026-08-24:** Index caught up with docs added since 2026-08-06 (STOCK_AUTH, SUT_COMPARE) and the canonical BLOODMOON profile.
 - **2026-07-19:** Expanded hub with sibling evidence-loop links.
