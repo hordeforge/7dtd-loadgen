@@ -1025,8 +1025,11 @@ public sealed class GameJoinClient
 
         log($"CHAT {Snippet(text, 160)}");
 
-        string lower = text.ToLowerInvariant();
-        string ourName = (opt.PlayerName + opt.ClientId).ToLowerInvariant();
+        // Fold normalization forms before matching: an NFD name from argv
+        // ("Zoe" + combining acute) and its NFC echo from the server relay are
+        // byte-different strings; ordinal matching would miss our own death.
+        string lower = WorldDeathBus.NormalizeIdentity(text).ToLowerInvariant();
+        string ourName = WorldDeathBus.NormalizeIdentity(opt.PlayerName + opt.ClientId).ToLowerInvariant();
         // Match ONLY our own unique name, word-bounded. The old code also matched
         // the bare "refake" prefix (every bot is REFake<N>, so one bot's death GMSG
         // flipped Died on the whole cohort) and fell back to any GMSG containing

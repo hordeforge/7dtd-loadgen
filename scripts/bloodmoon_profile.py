@@ -62,6 +62,18 @@ def log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
+def decode_stream(chunks):
+    """Decode accumulated socket chunks as one UTF-8 stream.
+
+    TCP splits multi-byte sequences (player names in listplayers rows) at
+    arbitrary byte offsets; decoding each chunk independently turns every
+    split into U+FFFD mojibake. The C# side fixes the same defect with
+    Utf8ChunkDecoder, and tools/sut_telnet.py accumulates raw bytes for one
+    final decode - this is that convention.
+    """
+    return b"".join(chunks).decode("utf-8", errors="replace")
+
+
 def telnet(cmds, settle=1.0):
     out = []
     try:
@@ -75,7 +87,9 @@ def telnet(cmds, settle=1.0):
                     try:
                         b = s.recv(65536)
                         if b:
-                            out.append(b.decode("utf-8", "replace"))
+                            # Raw bytes only; decode_stream folds them once
+                            # below so chunk boundaries stay invisible.
+                            out.append(b)
                     except TimeoutError:
                         break
             drain(0.5)
@@ -87,7 +101,7 @@ def telnet(cmds, settle=1.0):
             drain(settle)
     except OSError as e:
         log(f"telnet error: {e}")
-    return "".join(out)
+    return decode_stream(out)
 
 
 def player_ids():

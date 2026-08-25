@@ -43,7 +43,8 @@ def main(argv: list[str]) -> int:
         print(f"ERROR: cannot read cobertura XML {argv[1]}: {e}", file=sys.stderr)
         return 2
     pct = round(float(root.get("line-rate", "0")) * 100)
-    Path(argv[2]).write_text(badge(pct, colour(pct)))
+    # Explicit UTF-8: a C-locale runner must not get a platform-default codec.
+    Path(argv[2]).write_text(badge(pct, colour(pct)), encoding="utf-8")
     return 0
 
 

@@ -157,6 +157,32 @@ public sealed class WorldDeathDetectionTests
     }
 
     [Theory]
+    [InlineData(true)]   // NFD argv name, NFC server echo
+    [InlineData(false)]  // NFC argv name, NFD server echo
+    public void AccentedName_OtherNormalizationEcho_StillDetects(bool nfdConfig)
+    {
+        // "Zoe" + combining acute vs the precomposed form are byte-different
+        // strings; an operator shell commonly supplies NFD while the game
+        // relays NFC. Death detection must fold both sides to NFC or the bot
+        // never respawns and cohort metrics corrupt.
+        string nfdName = "Zoe\u0301";
+        string nfcName = nfdName.Normalize(NormalizationForm.FormC);
+        var opt = new GameJoinClient.Options
+        {
+            PlayerName = nfdConfig ? nfdName : nfcName,
+            ClientId = 7,
+        };
+        var client = new GameJoinClient();
+        client.State.EntityId = 707;
+        string echo = (nfdConfig ? nfcName : nfdName) + " died";
+
+        client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(echo), opt, _ => { });
+
+        Assert.True(client.State.Died);
+        Assert.Equal("world_death", client.State.DeathCause);
+    }
+
+    [Theory]
     [InlineData("refake3 died", "refake3", true)]
     [InlineData("refake33 died", "refake3", false)]
     [InlineData("poor refake3!", "refake3", true)]   // punctuation-bounded counts

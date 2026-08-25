@@ -1,3 +1,4 @@
+using System.Text;
 using SevenDTD.LoadGen;
 using Xunit;
 
@@ -40,6 +41,23 @@ public sealed class WorldDeathBusTests
         // must canonicalize both sides.
         Assert.True(WorldDeathBus.TryConsumeKill(name.ToUpperInvariant(), out _));
         Assert.False(WorldDeathBus.TryConsumeKill(name, out _)); // already consumed above
+    }
+
+    [Fact]
+    public void MixedNormalizationForms_MatchAsOneIdentity()
+    {
+        // Telnet listplayers may hand back the name in a different Unicode
+        // normalization form than the bot's argv-configured one (NFD vs NFC).
+        // Ordinal lookup on raw forms would drop the kill event; both sides
+        // fold to NFC first.
+        string tag = Guid.NewGuid().ToString("N");
+        string nfd = $"wdt-{tag}-Zoe\u0301";          // decomposed acute
+        string nfc = nfd.Normalize(NormalizationForm.FormC); // composed
+        Assert.NotEqual(nfc, nfd);
+
+        WorldDeathBus.NotifyKilled(nfd);
+        Assert.True(WorldDeathBus.TryConsumeKill(nfc, out _));
+        Assert.False(WorldDeathBus.TryConsumeKill(nfd, out _)); // consumed above
     }
 
     [Fact]
