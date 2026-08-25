@@ -393,9 +393,10 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
   comment in `Program.cs`). 1000 bots = ~1 GB of thread stacks before game
   cost. Prefer fewer bots + server-side zombie spawn for load, not more bots.
 - **Loopback IPs:** unique `127.x.x.x` binds bypass the server's per-IP 500 ms
-  connect throttle, but the usable space is one /8 (~254 addresses on
-  `127.0.0.0/8` if the host does not reserve subnets). Above that, bots share
-  IPs and the throttle re-engages (slower join, not an error).
+  connect throttle. On stock Linux `lo` is configured as `127.0.0.1/8`, so the
+  whole /8 is bindable (~16.7M addresses; `LoopbackBindForIndex` walks exactly
+  that space). Past it, bots share IPs and the throttle re-engages (slower
+  join, not an error).
 - **Server-side caps:** the dedicated server has its own limits that bound a
   bot cohort - MaxPlayers (join denial past it, `NetPackagePlayerDenied`
   reason 2), the LiteNetLib join-churn race under >12 simultaneous joins
@@ -478,7 +479,7 @@ Current protocol, workload, and operations work is tracked in
 
 ## Relationship to other repos
 
-- **7dtd-realearth** (sibling under `~/Desktop/7dtd/`): RealEarth terrain mod.
+- **7dtd-realearth** (sibling under `~/Desktop/hordeforge/`): RealEarth terrain mod.
   Load-test bots used to live under `tools/simulated_client/`; they now live here.
 - **7dtd-server-apm**: dedicated efficiency / APM toolkit (separate concern).
 - **7dtd-engine-research**: stock-engine RE corpus; wire layouts here are cross-checked
@@ -501,8 +502,9 @@ Current protocol, workload, and operations work is tracked in
   throttles.
 - Empty height-test style maps often lack AI spawn points; use a stock pregen
   or RWG 4k for real POI/sleeper activity.
-- Admin `kill` fallback can be enabled for death/respawn soak when scouts/`se`
-  cannot place zombies (`--kill-fallback`, default on for empty maps).
+- Admin `kill` fallback fires when scouts/`se` cannot place zombies, keeping
+  death/respawn soak working on such maps (`--no-kill-fallback` disables it;
+  default on).
 - Fake clients are test actors, not gameplay-compatible replacements for the
   official client. Run them only against servers you administer or have
   permission to test.

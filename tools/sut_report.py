@@ -11,8 +11,8 @@ Diff axes (the comparable observable surface):
   - game day/time (gettime)
   - save-file inventory (presence + sizes; formats differ by design, so this
     is a presence/growth comparison, not a byte diff)
-  - telnet gamestats: stock-only (no zdtd equivalent today); reported, not
-    compared
+  - telnet gamestats: compared on shared names; one-side-only stats are
+    reported, never invented for the other side
 
 A difference is a FINDING to triage (zdtd bug vs harness artifact vs known
 divergence), never a pass to fake. If only one side ran, the scenario is

@@ -20,7 +20,7 @@ public static class WorldDeathBus
         KilledTickMs[playerName.Trim()] = Environment.TickCount64;
     }
 
-    /// <summary>True once if this name was killed recently (consumes the event).</summary>
+    /// <summary>True if this name was killed recently (consumes the event).</summary>
     public static bool TryConsumeKill(string playerName, out long killedAtTickMs)
     {
         killedAtTickMs = 0;

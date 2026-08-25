@@ -37,10 +37,11 @@ make compare-all                      # every catalog scenario
 COMPARE_COUNT=2 COMPARE_TIMEOUT_MS=120000 make compare-sut   # env overrides
 ```
 
-Catalog: `join-probe`, `wander-2bot`, `join-fast`, `probe-15s`, `horde-lite`
-(the last carries spawn-pressure knobs `spawnEntity`/`spawnPerPlayer`/
-`spawnEveryMs`, resolved from the catalog or `COMPARE_SPAWN_*` envs; the
-loadgen `LOADGEN_*` spawn envs pass through when unset).
+Catalog: `join-probe`, `wander-2bot`, `join-fast`, `probe-15s`, `soak-4bot`
+(sustained multi-bot), `horde-lite` (the last carries spawn-pressure knobs
+`spawnEntity`/`spawnPerPlayer`/`spawnEveryMs`, resolved from the catalog or
+`COMPARE_SPAWN_*` envs; the loadgen `LOADGEN_*` spawn envs pass through when
+unset).
 
 The loadgen client's telnet admin target (used by the spawn-pressure and
 wandering-horde loops) is pinned to the per-side admin port:

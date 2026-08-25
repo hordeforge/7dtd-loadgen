@@ -75,8 +75,9 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] Verify that unique loopback bindings behave correctly at high bot counts
   and report platform/network limitations. (2026-08-10 live, stock V3.1.0:
   16 bots on unique 127.x.x.x binds + --ramp-ms 2500 -> 17 unique IPs seen,
-  0 RemoteConnectionClose, 0 join-churn race exceptions over 100 s. The /8
-  bound (~254 usable) and per-IP throttle are documented in README scaling.)
+   0 RemoteConnectionClose, 0 join-churn race exceptions over 100 s. The
+   127.0.0.0/8 space (~16.7M usable addresses on stock Linux) and per-IP
+   throttle are documented in README scaling.)
 - [x] Add a warm-up option and mark warm-up separately from the measurement
   interval. (Boundary: loadgen has no measurement window - it runs to
   --timeout; warm-up/settle belongs to the harness sampling window. Optimizer

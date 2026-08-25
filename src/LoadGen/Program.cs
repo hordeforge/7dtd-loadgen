@@ -1212,7 +1212,8 @@ public static class Program
             "      summary (stats-json bench block + BENCH_SUMMARY line)\n" +
             "  --mode wander|mixed|chatty|combat|patrol|chaos|demolition|bait|kite|traverse\n" +
             "      default: wander (walk until world death)\n" +
-            "  --death none|...   default none: never self-kill; wait for world death\n" +
+            "  --death none|drown|suicide|killed|random\n" +
+            "      default none: never self-kill; wait for world death\n" +
             "  --actions N         live steps (0 or omit = endless until death/timeout)\n" +
             "  --respawn / --no-respawn   after death request spawn and walk again (default on)\n" +
             "  --max-lives N       stop after N deaths (0 = unlimited until --timeout)\n" +
@@ -1222,7 +1223,18 @@ public static class Program
             "  --no-spawn-zombies  disable telnet spawns\n" +
             "  --telnet-host/port/password  dedicated telnet (default 127.0.0.1:8081 retest)\n" +
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
-            "  --host --port --timeout --log --min-pass-rate --no-actions\n" +
+            "  --mixed-actions     mixed walk/jump/turn/crouch steps instead of pure wander\n" +
+            "  --bot-mix m1:w1,m2:w2  weighted per-bot modes; overrides --mode\n" +
+            "  --max-dynamite N    dynamite charges per life (default 3, demolition 200)\n" +
+            "  --spawn-entity LIST --spawn-per-player N --spawn-every-ms N\n" +
+            "      comma entity classes spawned near bots via telnet (default zombieBoe)\n" +
+            "  --horde-every-ms N --horde-waves N  wandering-horde bursts (0 = off)\n" +
+            "  --kill-fallback / --no-kill-fallback\n" +
+            "      admin kill when se finds no spawn point (default on)\n" +
+            "  --stats-json PATH   cohort summary (schema 7dtd.loadgen.stats.v1)\n" +
+            "  --run-manifest PATH run manifest (schema 7dtd.loadgen.run.v1)\n" +
+            "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +
+            "  --host --port --timeout --log --min-pass-rate --no-actions --ramp-ms --quiet\n" +
             "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +
             "  --observe-buff NAME  observe one exact replicated buff (repeatable)\n" +
             "  --events-jsonl PATH  write filtered joined/state events as JSON lines\n" +
