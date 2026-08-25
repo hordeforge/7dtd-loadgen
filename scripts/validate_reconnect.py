@@ -110,6 +110,25 @@ def start_server(players: int) -> None:
     )
 
 
+def stop_server() -> None:
+    """Stop the dedicated server this run started (same ownership rule as
+    bloodmoon_profile/capacity_sweep): a server left behind keeps holding the
+    game + telnet ports and loading the host until someone notices. A
+    half-booted one holds them too, so every exit path stops it."""
+    pid = server_pid()
+    if pid is None:
+        print("[reconnect] teardown: server already down")
+        return
+    print(f"[reconnect] teardown: stopping server pid={pid}")
+    os.kill(pid, signal.SIGTERM)
+    if not wait_gone(timeout_s=30):
+        print("[reconnect] teardown: SIGTERM timed out, sending SIGKILL")
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except OSError:
+            pass
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--players", type=int, default=8)
@@ -118,42 +137,43 @@ def main() -> int:
     args = ap.parse_args()
 
     skip_start = os.environ.get("SKIP_SERVER_START", "0") == "1"
-    if not skip_start:
-        print(f"[reconnect] starting dedicated (Navezgane, {args.players} players)...")
-        start_server(args.players)
-        if not telnet_ready():
-            print("[reconnect] FAIL: server did not come up")
-            return 1
-        print("[reconnect] server up")
+    # proc is set inside try so a fault or Ctrl-C on ANY step reaches the
+    # teardown below: an orphaned cohort keeps wandering against the server
+    # until its wall clock expires.
+    proc = None
+    try:
+        if not skip_start:
+            print(f"[reconnect] starting dedicated (Navezgane, {args.players} players)...")
+            start_server(args.players)
+            if not telnet_ready():
+                print("[reconnect] FAIL: server did not come up")
+                return 1
+            print("[reconnect] server up")
 
-    # Join cohort (ramped to avoid the join-churn race; long timeout so the
-    # bots keep retrying through the kill + restart).
-    print(f"[reconnect] joining {args.players} bots (ramp 2.5 s)...")
-    exe = ROOT / "src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll"
-    log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%d_%H%M%S')}.out"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [
-        "dotnet", str(exe),
-        "--join", "--count", str(args.players), "--concurrency", str(args.players),
-        "--mode", "wander", "--respawn", "--max-lives", "0",
-        "--timeout", str(int(args.hold_before_kill + args.hold_after_restart + 120) * 1000),
-        "--pace-ms", "40", "--no-spawn-zombies", "--ramp-ms", "2500",
-        "--min-pass-rate", "0.5",  # tolerate the kill gap; rejoins count as passes
-        "--log", str(log_path),
-        "--host", "127.0.0.1", "--port", str(GAME_PORT + 2),
-    ]
-    # The cohort must never outlive this script: every exit path (failed kill,
-    # failed restart, Ctrl-C) terminates the bots in the finally below, or they
-    # keep wandering against a dead server until their wall clock expires.
-    with log_path.open("w", encoding="utf-8") as fh:
-        proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT)
-        try:
+        # Join cohort (ramped to avoid the join-churn race; long timeout so the
+        # bots keep retrying through the kill + restart).
+        print(f"[reconnect] joining {args.players} bots (ramp 2.5 s)...")
+        exe = ROOT / "src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll"
+        log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%d_%H%M%S')}.out"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        cmd = [
+            "dotnet", str(exe),
+            "--join", "--count", str(args.players), "--concurrency", str(args.players),
+            "--mode", "wander", "--respawn", "--max-lives", "0",
+            "--timeout", str(int(args.hold_before_kill + args.hold_after_restart + 120) * 1000),
+            "--pace-ms", "40", "--no-spawn-zombies", "--ramp-ms", "2500",
+            "--min-pass-rate", "0.5",  # tolerate the kill gap; rejoins count as passes
+            "--log", str(log_path),
+            "--host", "127.0.0.1", "--port", str(GAME_PORT + 2),
+        ]
+        with log_path.open("w", encoding="utf-8") as fh:
+            proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT)
             time.sleep(args.hold_before_kill)
 
             # Kill and restart mid-cohort.
             print("[reconnect] killing server mid-cohort...")
             if not kill_server():
-                print("[reconnect] FAIL: aborting with the cohort still up")
+                print("[reconnect] FAIL: aborting")
                 return 1
             print("[reconnect] restarting server...")
             start_server(args.players)
@@ -164,25 +184,30 @@ def main() -> int:
 
             # Observe rejoins for the hold window.
             time.sleep(args.hold_after_restart)
-        finally:
+        out = (log_path.read_text(encoding="utf-8", errors="replace")
+               if log_path.exists() else "")
+        joins = out.count("STAGE Joined")
+        rejoin_lines = [l for l in out.splitlines() if "REJOIN" in l]
+        joined_lines = [l for l in out.splitlines() if "PASS joined" in l]
+        # A rejoin is any retry past the first join attempt per bot. Success = at
+        # least one bot logged a REJOIN after the server came back, and at least
+        # one PASS joined overall.
+        ok = joins >= 1 and len(rejoin_lines) >= 1 and len(joined_lines) >= 1
+        print(f"[reconnect] joins={joins} rejoin events={len(rejoin_lines)} joined={len(joined_lines)} "
+              f"log={log_path.name}")
+        print(f"[reconnect] {'PASS' if ok else 'FAIL'}: bots rejoined after server restart")
+        return 0 if ok else 1
+    finally:
+        if proc is not None:
             proc.terminate()
             try:
                 proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 proc.kill()
-    out = (log_path.read_text(encoding="utf-8", errors="replace")
-           if log_path.exists() else "")
-    joins = out.count("STAGE Joined")
-    rejoin_lines = [l for l in out.splitlines() if "REJOIN" in l]
-    joined_lines = [l for l in out.splitlines() if "PASS joined" in l]
-    # A rejoin is any retry past the first join attempt per bot. Success = at
-    # least one bot logged a REJOIN after the server came back, and at least
-    # one PASS joined overall.
-    ok = joins >= 1 and len(rejoin_lines) >= 1 and len(joined_lines) >= 1
-    print(f"[reconnect] joins={joins} rejoin events={len(rejoin_lines)} joined={len(joined_lines)} "
-          f"log={log_path.name}")
-    print(f"[reconnect] {'PASS' if ok else 'FAIL'}: bots rejoined after server restart")
-    return 0 if ok else 1
+        # A pre-existing server (SKIP_SERVER_START=1) belongs to its operator
+        # and is left alone; anything this run booted, it stops.
+        if not skip_start:
+            stop_server()
 
 
 if __name__ == "__main__":

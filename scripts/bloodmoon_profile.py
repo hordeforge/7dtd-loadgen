@@ -263,13 +263,15 @@ def teardown(bots, stop_server=False):
 
 
 def main():
+    # Both flags are set inside try so every exit path reaches teardown: a fault
+    # during server boot must stop the half-booted server, not orphan it.
     started_server = False
-    if "--start-server" in sys.argv:
-        start_server()
-        started_server = True
-    log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies (GS{GAMESTAGE}) ===")
     bots = None
     try:
+        if "--start-server" in sys.argv:
+            start_server()
+            started_server = True
+        log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies (GS{GAMESTAGE}) ===")
         bots, joined = join_ramped(PLAYERS)
         log(f"players stable: {joined}/{PLAYERS}")
         set_gamestage(GAMESTAGE)
