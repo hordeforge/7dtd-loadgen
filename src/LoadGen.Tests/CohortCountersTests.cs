@@ -5,7 +5,7 @@ namespace SevenDTD.LoadGen.Tests;
 
 /// <summary>
 /// Cohort aggregation contract: the multi-bot summary folds every bot's final
-/// state snapshot through Program.CohortCounters.Sum, so the totals must match a manual
+/// state snapshot through CohortCounters.Sum, so the totals must match a manual
 /// per-field sum, count died clients exactly once each, and accumulate as long.
 /// </summary>
 public sealed class CohortCountersTests
@@ -26,7 +26,7 @@ public sealed class CohortCountersTests
     [Fact]
     public void Sum_FoldsEveryCounter_AcrossBots()
     {
-        var cohort = Program.CohortCounters.Sum(new[]
+        var cohort = CohortCounters.Sum(new[]
         {
             Bot(10, 2, 1, 0, died: true),
             Bot(5, 0, 0, 3, died: false),
@@ -44,7 +44,7 @@ public sealed class CohortCountersTests
     [Fact]
     public void Sum_EmptyCohort_IsZero()
     {
-        var cohort = Program.CohortCounters.Sum([]);
+        var cohort = CohortCounters.Sum([]);
         Assert.Equal(0, cohort.Walks);
         Assert.Equal(0, cohort.DiedClients);
         Assert.Equal(0, cohort.TotalDeaths);
@@ -54,8 +54,8 @@ public sealed class CohortCountersTests
     public void Sum_FromStateMatchesPerBotSnapshot()
     {
         var sm = Bot(7, 1, 1, 2, died: true);
-        var single = Program.CohortCounters.Sum([sm]);
-        var direct = Program.CohortCounters.FromState(sm);
+        var single = CohortCounters.Sum([sm]);
+        var direct = CohortCounters.FromState(sm);
         Assert.Equal(direct, single);
     }
 }
