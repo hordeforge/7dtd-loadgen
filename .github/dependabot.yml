@@ -1,0 +1,24 @@
+# Three dependency surfaces: the Python tooling (uv.lock), the .NET projects
+# (packages.lock.json), and the SHA-pinned CI actions.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python-packages:
+        patterns:
+          - "*"
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dotnet-packages:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
