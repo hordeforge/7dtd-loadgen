@@ -40,7 +40,7 @@ public static partial class Program
     /// <summary>Valid UDP/TCP port range for --port/--telnet-port.</summary>
     public static bool IsValidPort(int port) => port >= 1 && port <= 65535;
 
-    /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.1.0".
+    /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.1.1".
     /// Backed by &lt;Version&gt; in LoadGen.csproj (see test_release_contract.py).</summary>
     public static string VersionLine()
     {

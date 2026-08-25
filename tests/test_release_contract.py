@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 import tomllib
+from itertools import pairwise
 from pathlib import Path
 
 from loadgen_cli import run as _run
@@ -48,8 +49,15 @@ def test_changelog_has_current_release_and_unreleased():
     )
     releases = changelog_releases()
     assert releases, "CHANGELOG.md has no released sections"
-    assert releases[-1] == declared_version(), (
-        f"newest CHANGELOG release {releases[-1]} != pyproject version {declared_version()}"
+    # Keep a Changelog orders sections newest first; the declared version is
+    # the last one cut and every released tag must appear exactly once.
+    assert releases[0] == declared_version(), (
+        f"newest CHANGELOG release {releases[0]} != pyproject version {declared_version()}"
+    )
+    keys = [tuple(int(p) for p in r.split(".")) for r in releases]
+    assert len(set(keys)) == len(keys), f"duplicate CHANGELOG release sections: {releases}"
+    assert all(a > b for a, b in pairwise(keys)), (
+        f"CHANGELOG release sections must be strictly newest-first: {releases}"
     )
 
 
