@@ -338,12 +338,17 @@ public sealed class GameJoinClient
                         var reply = PackageCodec.BuildChallengeReply(data);
                         // Peer died between challenge and echo: the disconnect
                         // event terminates the join; the fault must not escape.
+                        // Like the login send below, leave a breadcrumb so a
+                        // stalled join shows where the last send failed.
                         try
                         {
                             peer?.Send(reply, DeliveryMethod.ReliableOrdered);
                             State.PackagesSent++;
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            Log($"FAIL challenge_send: {ex.Message}");
+                        }
                         State.Advance(JoinStage.ChallengeReplied);
                         Log("STAGE ChallengeReplied");
                         continue;

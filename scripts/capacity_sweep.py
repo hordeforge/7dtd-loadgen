@@ -30,9 +30,17 @@ APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[
 
 
 def frame_alive():
+    """One (frame_ms, entity_alives) reading, or None when the APM snapshot is
+    unreadable. Mapping lost telemetry to 0 read as a perfect frame: every sweep
+    round reported 'ok', the over-budget stop never fired, and the final
+    CAPACITY number was fabricated from data that was never received."""
     d = B.snapshot()
     w = d.get("world") or {}
-    return (w.get("unityDeltaMs") or 0), (w.get("entityAlives") or 0)
+    frame_ms = w.get("unityDeltaMs")
+    if frame_ms is None:
+        return None
+    alives = w.get("entityAlives")
+    return float(frame_ms), int(alives) if alives is not None else 0
 
 
 def main():
@@ -50,19 +58,33 @@ def main():
             target += STEP
             B.spawn_endgame(target)
             time.sleep(15)
-            f1, a1 = frame_alive()
+            s1 = frame_alive()
             time.sleep(5)
-            f2, a2 = frame_alive()
-            f = (f1 + f2) / 2 if f1 and f2 else (f1 or f2)
-            curve.append({"zombies": a2 or a1, "frame_ms": round(f, 1)})
-            B.log(f"  zombies={a2 or a1} frame={f:.1f}ms {'OVER' if f > BUDGET else 'ok'}")
+            s2 = frame_alive()
+            samples = [s for s in (s1, s2) if s is not None]
+            if not samples:
+                # Unreadable telemetry must stop the sweep: judging frames on a
+                # fabricated 0.0ms reading would report every remaining round
+                # as 'ok' and invent a capacity ceiling.
+                B.log("  apm snapshot unreadable (unityDeltaMs missing); stopping "
+                      "the sweep instead of recording an unfounded 'ok' row")
+                break
+            if len(samples) == 1:
+                B.log("  WARN: one of two apm samples unreadable; judging on the survivor")
+                f, a = samples[0]
+            else:
+                f = (samples[0][0] + samples[1][0]) / 2
+                a = samples[1][1]
+            curve.append({"zombies": a, "frame_ms": round(f, 1)})
+            B.log(f"  zombies={a} frame={f:.1f}ms {'OVER' if f > BUDGET else 'ok'}")
             over = over + 1 if f > BUDGET else 0
 
         B.log("=== CEILING REACHED ===")
         ok = [p for p in curve if p["frame_ms"] <= BUDGET]
         ceiling = ok[-1]["zombies"] if ok else 0
+        last_z = curve[-1]["zombies"] if curve else 0
         B.log(f"  CAPACITY: {joined} players sustain ~{ceiling} endgame zombies at 20 TPS "
-              f"(first sustained break at ~{curve[-1]['zombies']})")
+              f"(first sustained break at ~{last_z})")
         B.log(f"  curve: {json.dumps(curve)}")
 
         if CAPTURE:
