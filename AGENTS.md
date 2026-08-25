@@ -6,7 +6,7 @@ pressure, die, respawn, and rejoin until a wall-clock timeout.
 
 Not a full game client. Not a profiler. Not an optimizer.
 
-Workspace root guide: [`../MODDING_BEST_PRACTICES.md`](../MODDING_BEST_PRACTICES.md)
+Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://github.com/hordeforge/.github/blob/main/MODDING_BEST_PRACTICES.md)
 
 ## Scope
 
@@ -103,7 +103,7 @@ with server config and APM session IDs when comparing runs.
 | `README.md` | Operator guide |
 | `TODO.md` | Protocol, workload, ops backlog |
 | `BLOODMOON.md` | Canonical worst-case load profile |
-| `../MODDING_BEST_PRACTICES.md` | Workspace boundaries and EAC notes |
+| [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://github.com/hordeforge/.github/blob/main/MODDING_BEST_PRACTICES.md) | Workspace boundaries and EAC notes |
 
 ## Sibling projects
 
