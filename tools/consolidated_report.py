@@ -109,6 +109,9 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
 
 
 def render(rows: list[dict]) -> str:
+    def fmt_wall(v: float | None) -> str:
+        return f"{v:.1f}" if v is not None else "n/a"
+
     lines = ["# Consolidated stock-vs-zdtd comparison\n",
              ("Regenerated from committed per-run evidence (loadgen diff.json, "
               "playtest playtest-compare.json). CLEAN = both sides ran with no "
