@@ -60,6 +60,18 @@ public static partial class Program
         return 2;
     }
 
+    /// <summary>Reject a credential passed on the command line. Deliberately
+    /// never echoes the value, and fails instead of ignoring the flag: silently
+    /// dropping it would connect with no password at all. Credentials arrive
+    /// through the environment, which `ps` does not expose to other users.</summary>
+    internal static int SecretFlagRemoved(string flag, string envVar)
+    {
+        Console.Error.WriteLine(
+            $"FAIL: {flag} is not accepted: argv is world-readable in the process table. " +
+            $"Pass the credential in {envVar} instead (see --help).");
+        return 2;
+    }
+
     static int Main(string[] args)
     {
         // Game LiteNetLib logs via UnityEngine.Debug when Logger is null; pure .NET crashes
@@ -173,9 +185,9 @@ public static partial class Program
             "Notes:\n" +
             "  Walk → world kill → DEATH → respawn → walk again until --timeout. No self-kill.\n" +
             "  Default timeout 1 hour. Rejoins on early disconnect. Telnet zed spawn for empty worlds.\n" +
-            "Secrets via environment (flags override; avoids ps-visible argv):\n" +
-            "  LOADGEN_KEY              server join password (--key/--password fallback)\n" +
-            "  LOADGEN_TELNET_PASSWORD  admin telnet password (--telnet-password fallback)\n" +
+            "Secrets via environment only (argv is ps-visible; there is no flag):\n" +
+            "  LOADGEN_KEY              server join password\n" +
+            "  LOADGEN_TELNET_PASSWORD  admin telnet password\n" +
             "Examples:\n" +
             "  7dtd-loadgen --join --host 127.0.0.1 --port 26902 --count 8\n" +
             "  7dtd-loadgen --join --count 4 --timeout 1800000 --max-lives 10\n" +

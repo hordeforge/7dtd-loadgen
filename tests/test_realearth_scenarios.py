@@ -225,7 +225,6 @@ def test_ci_scenario_selftest_join_path():
 
 
 def test_run_scenario_list_includes_realearth_ids():
-    subprocess.run(["chmod", "+x", str(RUN_SCENARIO)], check=False)
     r = subprocess.run(
         ["bash", str(RUN_SCENARIO), "--list"],
         cwd=str(ROOT),
@@ -243,7 +242,6 @@ def test_run_scenario_list_includes_realearth_ids():
 
 
 def test_run_scenario_ci_selftest_via_script():
-    subprocess.run(["chmod", "+x", str(RUN_SCENARIO)], check=False)
     r = subprocess.run(
         ["bash", str(RUN_SCENARIO), "re-selftest-client-path"],
         cwd=str(ROOT),

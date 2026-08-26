@@ -17,7 +17,7 @@ public sealed class LoopbackBindForIndexTests
     public void FirstBot_BindsLoopbackOne()
     {
         Assert.Equal("127.0.0.1", GameJoinClient.LoopbackBindForIndex(0));
-        Assert.Equal("127.0.0.1", GameJoinClient.LoopbackBindIndex(1, 1));
+        Assert.Equal("127.0.0.1", GameJoinClient.LoopbackBindFor(1, 1));
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public sealed class LoopbackBindForIndexTests
         for (int client = 1; client <= 256; client++)
             for (int attempt = 1; attempt <= 30; attempt++)
             {
-                string bind = GameJoinClient.LoopbackBindIndex(client, attempt);
+                string bind = GameJoinClient.LoopbackBindFor(client, attempt);
                 Assert.StartsWith("127.", bind);
                 var octets = bind.Split('.');
                 Assert.Equal(4, octets.Length);

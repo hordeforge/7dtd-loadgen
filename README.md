@@ -295,8 +295,8 @@ same command line overrides the profile; unknown names exit 3 with the valid
 list.
 
 Live tests can create world pressure through server telnet. Relevant options
-include `--no-spawn-zombies`, `--telnet-host`, `--telnet-port`,
-`--telnet-password`, `--spawn-every-ms`, `--spawn-per-player`,
+include `--no-spawn-zombies`, `--telnet-host`, `--telnet-port`
+(the password comes from `LOADGEN_TELNET_PASSWORD`), `--spawn-every-ms`, `--spawn-per-player`,
 `--spawn-entity`, `--horde-every-ms`, and `--horde-waves`. `--spawn-entity`
 takes a comma list of any entity classes (`zombieBoe`, `animalDireWolf`,
 `vehicleTruck4x4`, `zombieDemolition`, `entityJunkDrone`, ...), spawned near
@@ -349,13 +349,15 @@ mid-run or silently changing gate semantics.
 
 ### Secrets: environment over argv
 
-A secret on the command line is visible in `ps` output. Both credentials can be
-supplied via the environment instead; an explicit flag always wins:
+A secret on the command line is visible in `ps` output to every user on the
+host, so both credentials come from the environment and there is no flag for
+either. Passing `--key`, `--password`, or `--telnet-password` exits 2 naming the
+environment variable to use; the refusal never echoes the value.
 
-| Secret | Environment variable | Flag fallback | Default |
-|---|---|---|---|
-| game server join password | `LOADGEN_KEY` | `--key` / `--password` | empty (open server) |
-| dedicated admin telnet password | `LOADGEN_TELNET_PASSWORD` | `--telnet-password` | `retest` (test-only lab credential) |
+| Secret | Environment variable | Default |
+|---|---|---|
+| game server join password | `LOADGEN_KEY` | empty (open server) |
+| dedicated admin telnet password | `LOADGEN_TELNET_PASSWORD` | `retest` (test-only lab credential) |
 
 Treat both as test-only; do not expose the configured ports publicly
 (`docs/THREAT_MODEL.md` R2).

@@ -354,9 +354,12 @@ public sealed partial class TelnetAdmin : IDisposable
 
     public void Dispose()
     {
-        try { _stream?.Dispose(); } catch { /* ignore */ }
-        try { _tcp?.Close(); } catch { /* ignore */ }
-        try { _tcp?.Dispose(); } catch { /* ignore */ }
+        // Closing an already-reset socket throws IOException/SocketException.
+        // Dispose runs from `using` on both the success and failure paths, so a
+        // throw here would replace the caller's result with a teardown error.
+        try { _stream?.Dispose(); } catch (Exception) { }
+        try { _tcp?.Close(); } catch (Exception) { }
+        try { _tcp?.Dispose(); } catch (Exception) { }
         _stream = null;
         _tcp = null;
         _buf.Clear();

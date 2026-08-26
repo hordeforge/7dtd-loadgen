@@ -20,6 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bloodmoon_profile as B
+import procs
 
 STEP = int(os.environ.get("SWEEP_STEP", "40"))
 MAX_Z = int(os.environ.get("SWEEP_MAX", "900"))
@@ -96,14 +97,12 @@ def main():
                 B.log("apm capture skipped: need uv on PATH and the sibling "
                       "7dtd-server-apm checkout (RE_APM_DIR)")
             else:
-                pids = subprocess.run(["pgrep", "-f", "7DaysToDieServer.x86_6[4]"],
-                                      capture_output=True,
-                                      text=True, encoding="utf-8", errors="replace",
-                                      check=False).stdout.split()
+                pids = procs.find(B.SERVER_PROC)
                 if pids:
                     B.log("=== capture at ceiling (90s, deep sections) ===")
                     subprocess.run(["uv", "run", "7dtd-server-apm", "capture", "--seconds", "90",
-                                    "--pid", pids[0], "--telnet-port", "8081", "--reset-bridge"],
+                                    "--pid", str(pids[0]), "--telnet-port", "8081",
+                                    "--reset-bridge"],
                                    cwd=str(APM_DIR), check=False)
                 else:
                     B.log("server process not found; skipping ceiling capture")
@@ -111,7 +110,7 @@ def main():
         # Every exit path stops the cohort and the server this sweep owns;
         # a leaked workload keeps loading the host until its wall clock expires.
         B.teardown(bots)
-        subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
+        procs.kill(B.SERVER_PROC)
     B.log("=== CAPACITY SWEEP COMPLETE ===")
 
 

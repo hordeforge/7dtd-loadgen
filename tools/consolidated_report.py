@@ -39,7 +39,7 @@ def _load_json(p: Path) -> dict | None:
 
 def collect_loadgen(compare_root: Path) -> list[dict]:
     """Per-scenario rows from workspace/comparison/<scenario>/diff.json."""
-    rows = []
+    rows: list[dict] = []
     if not compare_root.is_dir():
         return rows
     for scenario_dir in sorted(p for p in compare_root.iterdir() if p.is_dir()):
@@ -64,7 +64,7 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
 
 def collect_playtest(playtest_root: Path) -> list[dict]:
     """Per-suite rows from comparison-playtest/<suite>/playtest-compare.json."""
-    rows = []
+    rows: list[dict] = []
     if not playtest_root.is_dir():
         return rows
     for suite_dir in sorted(p for p in playtest_root.iterdir() if p.is_dir()):

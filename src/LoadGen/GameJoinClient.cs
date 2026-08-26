@@ -77,9 +77,21 @@ public sealed class GameJoinClient
         // synchronously; the sleep just gives it time to drain.
         lock (SweepGate)
         {
-            foreach (var n in ActiveNets.Keys) { try { n.DisconnectAll(); } catch { } }
+            // A manager whose socket already died throws from DisconnectAll/Stop.
+            // This is the last teardown pass on the way out of the process, so
+            // one dead manager must not stop the sweep reaching the rest; there
+            // is no later stage that could observe the fault anyway.
+            foreach (var n in ActiveNets.Keys)
+            {
+                try { n.DisconnectAll(); }
+                catch (Exception ex) { Console.Error.WriteLine($"shutdown disconnect: {ex.Message}"); }
+            }
             System.Threading.Thread.Sleep(200);
-            foreach (var n in ActiveNets.Keys) { try { n.Stop(); } catch { } }
+            foreach (var n in ActiveNets.Keys)
+            {
+                try { n.Stop(); }
+                catch (Exception ex) { Console.Error.WriteLine($"shutdown stop: {ex.Message}"); }
+            }
         }
     }
 
@@ -88,7 +100,13 @@ public sealed class GameJoinClient
     static void StopNet(LiteNetLib.NetManager net)
     {
         ActiveNets.TryRemove(net, out _);
-        lock (SweepGate) { try { net.Stop(); } catch { } }
+        // Releasing a socket must never mask the run's own result: this runs on
+        // every Run() exit path, including the one carrying a gate failure.
+        lock (SweepGate)
+        {
+            try { net.Stop(); }
+            catch (Exception ex) { Console.Error.WriteLine($"net stop: {ex.Message}"); }
+        }
     }
 
     public JoinStateMachine State { get; } = new();
@@ -619,8 +637,11 @@ public sealed class GameJoinClient
             // Skipped once a shutdown sweep started: the sweep owns every live
             // manager at that point, and two threads mutating one NetManager is
             // exactly the race this file forbids.
+            // A dead socket throws here; the finally below still releases the
+            // manager, and this courtesy BYE has no result to report.
             if (!ShutdownRequested)
-                try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); } catch { }
+                try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); }
+                catch (Exception) { }
         }
         finally
         {
@@ -668,13 +689,15 @@ public sealed class GameJoinClient
     /// documented cohort scale, making the map injective in practice.</summary>
     internal const int RejoinIndexStride = 7919;
 
-    /// <summary>(clientId, attempt) → <see cref="LoopbackBindForIndex"/> space.
-    /// Zero-based so the first bot of a cohort takes 127.0.0.1; injective while
-    /// the cohort spans fewer than <see cref="RejoinIndexStride"/> consecutive
-    /// client ids. Single source of truth: call sites must not re-derive the
-    /// arithmetic (the old inline stride drifted away from its test).</summary>
-    public static int LoopbackBindIndex(int clientId, int attempt) =>
-        Math.Max(0, clientId - 1) + Math.Max(0, attempt - 1) * RejoinIndexStride;
+    /// <summary>Bind address for one (clientId, attempt) pair, one-based on both
+    /// axes so the first bot of a cohort takes 127.0.0.1. Injective while the
+    /// cohort spans fewer than <see cref="RejoinIndexStride"/> consecutive
+    /// client ids. Single source of truth: call sites take the address from
+    /// here and must not re-derive the arithmetic (the old inline stride
+    /// drifted away from its test).</summary>
+    public static string LoopbackBindFor(int clientId, int attempt) =>
+        LoopbackBindForIndex(
+            Math.Max(0, clientId - 1) + Math.Max(0, attempt - 1) * RejoinIndexStride);
 
     void HandlePackage(
         ushort id,

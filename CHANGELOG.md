@@ -8,24 +8,57 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-26
+
+Credentials leave the command line for good, the repository stops carrying
+regenerable profiler captures, and the static gate grows a type checker.
+
 ### Changed
 
+- **Breaking:** `--key`, `--password`, and `--telnet-password` are gone from the
+  client, and `--password` from `tools/sut_telnet.py`. Argv is world-readable in
+  the process table. Migration: export `LOADGEN_KEY` and
+  `LOADGEN_TELNET_PASSWORD` instead. Passing a removed flag exits 2 naming the
+  variable to use rather than being ignored, since a dropped `--key` would
+  connect with no password and read as a server-side fault. The refusal never
+  echoes the value.
+- `scripts/run_scenario.sh` reads scenario settings as `KEY=VALUE` data instead
+  of `eval`-ing generated shell. A catalog value now reaches the environment
+  without ever being parsed as shell.
+- Teardown finds and stops lab processes through `/proc` (`scripts/procs.py`)
+  instead of `pgrep`/`pkill`, and sends SIGTERM before SIGKILL so the dedicated
+  server flushes its save.
+- `scripts/bloodmoon_profile.py` writes its run logs under `.scratch/` instead
+  of the project root.
+- `make lint` (and so `make test`) runs `mypy` over `scripts/`, `tools/`, and
+  `tests/` alongside shellcheck and ruff.
 - Telnet and scenario tooling resolve the admin password from
   `LOADGEN_TELNET_PASSWORD` (`SEVENDTD_TELNET_PASSWORD` remains accepted as a
-  legacy alias); explicit `--key` / `--telnet-password` flags still win.
+  legacy alias).
 - Runners fail fast with named causes on bad scenario ids, dead consoles, and
   unwritable sinks instead of writing partial evidence.
 
-### Security
-
-- Fallback LiteNetLib package bumped to 1.3.5 (used only when the game's own
-  `LiteNetLib.dll` is absent), picking up the incoming-fragments limit applied
-  while parsing untrusted server packets.
-- Injection paths blocked in compare configs, argv passwords, and bot logs;
-  rendered serverconfig values are escaped; webuser password override added.
-
 ### Fixed
 
+- The client did not compile: `LoopbackBindIndex` returned the bind index where
+  every caller, including its own tests, needed the address. It is now
+  `LoopbackBindFor(clientId, attempt)` and returns the `127.x.x.x` string.
+- `tools/bench_report.py` emitted a fixed five-cell separator under the
+  repeatability header, so the table only rendered at exactly two laps, and its
+  actions/s delta compared lap 2 against lap 1 while ignoring lap 3 and beyond.
+  Both now scale with the lap count and report the worst lap, matching the
+  per-scenario wall rows.
+- The accented-name death-detection test echoed a bare player name where the
+  in-game identity is name plus client id, so it had never passed.
+- The runner overlap-guard test asserted on a missing .NET SDK but let the
+  runner fall back to `$HOME/.cache/dotnet-sdk`, silently passing on any host
+  that installed one there. It now points both lookups at empty directories.
+- `.gitignore` patterns for bench APM output were one directory level short of
+  the real layout, which is how about 150MB of `perf.script` and `*.bt.out`
+  captures reached the history. The patterns now match, the captures are
+  untracked, and the per-session `summary.json` files stay so
+  `make bench-report` still reproduces the committed report from a clean
+  checkout.
 - Watched buffs emit explicit joined-state activity, including `false` for an
   inactive buff absent from later add/remove deltas.
 - `NetPackagePackageIds` rejects impossible or excessive mapping counts before
@@ -37,6 +70,14 @@ under **Changed** with their migration path.
   send faults are contained instead of killing the cohort, and swallowed errors
   surface while artifact writes stay non-fatal.
 
+### Security
+
+- Fallback LiteNetLib package bumped to 1.3.5 (used only when the game's own
+  `LiteNetLib.dll` is absent), picking up the incoming-fragments limit applied
+  while parsing untrusted server packets.
+- Injection paths blocked in compare configs, argv passwords, and bot logs;
+  rendered serverconfig values are escaped; webuser password override added.
+
 ### Performance
 
 - Steady-state allocations trimmed across codec, telnet, action loop, and the
@@ -46,8 +87,10 @@ under **Changed** with their migration path.
 ### Removed
 
 - Duplicate send counters, unused action-loop constants, and an unused
-  blood-moon spawner/window midpoint. The CLI flag surface is unchanged from
-  0.1.1.
+  blood-moon spawner/window midpoint.
+- About 150MB of regenerable APM captures (`perf.script`, `perf.data`,
+  `*.bt.out`, scheduler traces) untracked from `workspace/bench/lap*`. The
+  small per-scenario evidence and the per-session `summary.json` files remain.
 
 ### Added
 

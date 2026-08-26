@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -27,6 +28,13 @@ def xml_attr(text: str) -> str:
     --set KEY=VALUE value would otherwise terminate the attribute and inject
     arbitrary properties into the rendered serverconfig."""
     return escape(text, {'"': "&quot;"})
+
+
+def verbatim(text: str) -> Callable[[re.Match[str]], str]:
+    """re.sub replacement that yields `text` unchanged. Values are data, never
+    replacement syntax: a backslash or a \\g group reference in a world name
+    must reach the config as typed."""
+    return lambda _match: text
 
 
 def main() -> int:
@@ -59,11 +67,9 @@ def main() -> int:
             src = re.sub(r'name="UserDataFolder"\s*value="[^"]*"',
                          f'name="UserDataFolder" value="{xml_attr(ud)}"', src)
 
-    # Lambda replacement: values are data, never regex-replacement syntax (a
-    # backslash or group reference in a world name must survive verbatim).
     for key, value in repls.items():
         src = re.sub(rf'name="{re.escape(key)}"\s*value="[^"]*"',
-                     lambda m, k=key, v=value: f'name="{xml_attr(k)}" value="{xml_attr(v)}"', src)
+                     verbatim(f'name="{xml_attr(key)}" value="{xml_attr(value)}"'), src)
 
     args.dst.write_text(src, encoding="utf-8")
     print(f"Config → {args.dst}")

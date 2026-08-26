@@ -23,7 +23,7 @@ public static partial class Program
         {
             if (args[i] == "--host" && i + 1 < args.Length) host = args[++i];
             else if (args[i] == "--port" && i + 1 < args.Length) port = int.Parse(args[++i]);
-            else if (args[i] == "--key" && i + 1 < args.Length) key = args[++i];
+            else if (args[i] == "--key") return SecretFlagRemoved(args[i], "LOADGEN_KEY");
             else if (args[i] == "--timeout" && i + 1 < args.Length) timeoutMs = int.Parse(args[++i]);
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];
             else if (args[i] == "--id" && i + 1 < args.Length) clientId = int.Parse(args[++i]);

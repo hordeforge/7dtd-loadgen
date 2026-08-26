@@ -7,11 +7,11 @@ both sides of a comparison. Authenticates when the banner asks for a password,
 then runs the requested commands and writes the raw transcript to a file.
 
 The password resolves from LOADGEN_TELNET_PASSWORD (SEVENDTD_TELNET_PASSWORD
-accepted as legacy alias) so it never has to sit in argv, where `ps` exposes
-it; an explicit --password still wins.
+accepted as legacy alias). There is no flag for it: argv is world-readable in
+the process table.
 
 Usage:
-  sut_telnet.py <host> <port> [--password PW] [--commands gettime,listents,listplayers] [--out PATH]
+  sut_telnet.py <host> <port> [--commands gettime,listents,listplayers] [--out PATH]
 """
 
 import argparse
@@ -45,12 +45,11 @@ def drain(sock, deadline):
     return b"".join(chunks)
 
 
-def resolve_password(explicit: str | None) -> str | None:
-    """--password wins; otherwise the lab credential env names. Keeps the
-    secret out of argv, where `ps` exposes it (same rule that keeps
-    LOADGEN_KEY / LOADGEN_TELNET_PASSWORD out of run_loadgen.sh argv)."""
-    if explicit is not None:
-        return explicit
+def resolve_password() -> str | None:
+    """The lab credential, from the environment only. There is deliberately no
+    --password flag: argv is world-readable in the process table, which is the
+    same rule that keeps LOADGEN_KEY / LOADGEN_TELNET_PASSWORD out of
+    run_loadgen.sh argv."""
     return (
         os.environ.get("LOADGEN_TELNET_PASSWORD")
         or os.environ.get("SEVENDTD_TELNET_PASSWORD")
@@ -61,8 +60,6 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("host")
     ap.add_argument("port", type=int)
-    ap.add_argument("--password", default=None, help="send as first line if the banner asks for a password "
-                    "(default: LOADGEN_TELNET_PASSWORD / SEVENDTD_TELNET_PASSWORD env)")
     ap.add_argument("--commands", default="gettime,listents,listplayers",
                     help="comma-separated commands to run after connect")
     ap.add_argument("--out", default="-", help="transcript path ('-' = stdout)")
@@ -73,7 +70,7 @@ def main():
                          "measurements are not quantized to whole game-minutes)")
     args = ap.parse_args()
 
-    password = resolve_password(args.password)
+    password = resolve_password()
 
     try:
         sock = socket.create_connection((args.host, args.port), timeout=10)

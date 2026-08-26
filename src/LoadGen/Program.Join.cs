@@ -7,9 +7,9 @@ public static partial class Program
     static int RunJoin(string[] args)
     {
         var opt = new GameJoinClient.Options();
-        // Secrets resolve from the environment when the flag is absent, so
-        // operators and runners can keep credentials out of argv (ps-visible).
-        // An explicit --key/--password/--telnet-password always wins.
+        // Credentials come from the environment only. There is no flag for
+        // them: argv is world-readable in the process table, and a flag that
+        // exists gets used. Passing one is rejected, never ignored.
         opt.Password = Environment.GetEnvironmentVariable("LOADGEN_KEY") is { Length: > 0 } envKey ? envKey : opt.Password;
         string? logPath = null;
         string? statsJsonPath = null;
@@ -30,8 +30,8 @@ public static partial class Program
         bool killFallback = true;
         string telnetHost = "127.0.0.1";
         int telnetPort = 8081;
-        // Test-only lab default; override per environment via the env var or the
-        // flag (AGENTS.md rule 4: prefer env / local config).
+        // Test-only lab default; override per environment via the env var
+        // (AGENTS.md rule 4: prefer env / local config).
         string telnetPassword =
             Environment.GetEnvironmentVariable("LOADGEN_TELNET_PASSWORD") is { Length: > 0 } envPw
                 ? envPw
@@ -112,8 +112,7 @@ public static partial class Program
         {
             if (args[i] == "--host" && i + 1 < args.Length) opt.Host = args[++i];
             else if (args[i] == "--port" && i + 1 < args.Length) opt.Port = int.Parse(args[++i]);
-            else if (args[i] == "--key" && i + 1 < args.Length) opt.Password = args[++i];
-            else if (args[i] == "--password" && i + 1 < args.Length) opt.Password = args[++i];
+            else if (args[i] is "--key" or "--password") return SecretFlagRemoved(args[i], "LOADGEN_KEY");
             else if (args[i] == "--timeout" && i + 1 < args.Length)
             {
                 opt.TimeoutMs = int.Parse(args[++i]);
@@ -183,7 +182,7 @@ public static partial class Program
             else if (args[i] == "--no-kill-fallback") killFallback = false;
             else if (args[i] == "--kill-fallback") killFallback = true;
             else if (args[i] == "--telnet-port" && i + 1 < args.Length) telnetPort = int.Parse(args[++i]);
-            else if (args[i] == "--telnet-password" && i + 1 < args.Length) telnetPassword = args[++i];
+            else if (args[i] == "--telnet-password") return SecretFlagRemoved(args[i], "LOADGEN_TELNET_PASSWORD");
             else if (args[i] == "--telnet-host" && i + 1 < args.Length) telnetHost = args[++i];
             else if (args[i] == "--horde-every-ms" && i + 1 < args.Length) hordeEveryMs = int.Parse(args[++i]);
             else if (args[i] == "--horde-waves" && i + 1 < args.Length) hordeWaves = int.Parse(args[++i]);
@@ -385,7 +384,7 @@ public static partial class Program
                     MaxLives = opt.MaxLives,
                     RespawnDelayMs = opt.RespawnDelayMs,
                     RespawnTimeoutMs = opt.RespawnTimeoutMs,
-                    LocalBindIp = GameJoinClient.LoopbackBindIndex(clientId, attempt),
+                    LocalBindIp = GameJoinClient.LoopbackBindFor(clientId, attempt),
                     Bench = bench,
                     OnLifeStarted = entityId =>
                     {

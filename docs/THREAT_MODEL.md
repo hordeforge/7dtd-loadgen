@@ -43,7 +43,7 @@ Inbound entry points (data arriving at this code):
 
 | Entry point | Kind | Trust treatment | Reference |
 |---|---|---|---|
-| CLI arguments (~50 flags incl. `--host/--port/--key/--telnet-password`) | operator input | treated as fully trusted; `int.Parse`/`double.Parse` without validation crashes on malformed values | `src/LoadGen/Program.cs:41-330`, probe parser `Program.cs:940-953` |
+| CLI arguments (~50 flags incl. `--host/--port/--timeout`; credential flags are rejected) | operator input | treated as fully trusted; `int.Parse`/`double.Parse` without validation crashes on malformed values | `src/LoadGen/Program.cs:41-330`, probe parser `Program.cs:940-953` |
 | Environment variables (`LOADGEN_SCENARIO_ID` in-process; `LOADGEN_*`, `RE_*` across scripts) | host env | trusted | `src/LoadGen/Program.cs:92,162`; `scripts/run_loadgen.sh:94`; `scripts/start_dedicated_prefab.sh:20-48` |
 | UDP LiteNetLib wire from game server (join handshake, packages, position corrections) | **untrusted network data** | parsed by hand-written codec; queue capped | `src/LoadGen/GameJoinClient.cs:158-172`, `src/LoadGen/PackageCodec.cs` |
 | TCP telnet banner/responses from server (`listplayers` output, command echoes) | **untrusted network data** | regex-parsed; results feed new admin commands (see R3) | `src/LoadGen/TelnetAdmin.cs:47-53,87-108,186-195` |
@@ -86,13 +86,15 @@ secrets (telnet pw, game key, webuser hash) ──▶ argv/env/config/log eviden
 - **Server telnet (TCP):** password sent cleartext after a banner check
   (`src/LoadGen/TelnetAdmin.cs:48-52`); any network observer between bot and
   server sees it.
-- **Secrets flow:** enter via argv (`--key`, `--telnet-password`,
-  `Program.cs:249-250,316`), defaults in source/config (`retest`), and the
-  base64(MD5) webuser hash in `scripts/serveradmin_apm_seed.xml`; they live in
-  process argv (visible in `ps`), generated XML configs under userdata, and
-  leave into client logs/evidence dirs under `workspace/` only as host/port,
-  not passwords (verified: stats payload fields, `Program.cs:800-842`). Rotation
-  points: none defined; the default password has never rotated.
+- **Secrets flow:** enter via the environment only (`LOADGEN_KEY`,
+  `LOADGEN_TELNET_PASSWORD`); the corresponding flags are rejected with exit 2
+  so nothing lands in `ps`-visible argv. Also present: defaults in
+  source/config (`retest`) and the base64(MD5) webuser hash in
+  `scripts/serveradmin_apm_seed.xml`. They live in generated XML configs under
+  userdata, and leave into client logs/evidence dirs under `workspace/` only as
+  host/port, not passwords (verified: stats payload fields,
+  `Program.cs:800-842`). Rotation points: none defined; the default password
+  has never rotated.
 
 ## 3. Assets and impact
 

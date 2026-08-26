@@ -33,13 +33,15 @@ def iso_delta(a: str, b: str) -> float | None:
 def apm_summary(run_dir: Path) -> dict:
     """Best-effort APM capture summary: lag verdict from apm.log, plus IPC and
     per-layer scores from the session summary.json when present."""
-    out = {"verdict": "n/a", "ipc": None, "layers": {}}
+    verdict = "n/a"
+    ipc: float | None = None
+    layers: dict[str, float] = {}
     log = run_dir / "apm.log"
     if log.is_file():
         try:
             for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
                 if "lag diagnosis" in line or "lagVerdict" in line:
-                    out["verdict"] = line.strip().split(":", 1)[-1].strip()[:80]
+                    verdict = line.strip().split(":", 1)[-1].strip()[:80]
                     break
         except OSError:
             pass
@@ -51,13 +53,13 @@ def apm_summary(run_dir: Path) -> dict:
                 name = layer.get("layer")
                 score = layer.get("score")
                 if name and score is not None:
-                    out["layers"][name] = float(score)
+                    layers[name] = float(score)
                 sig = layer.get("signals") or {}
                 if name == "cpu" and sig.get("ipc") is not None:
-                    out["ipc"] = round(float(sig["ipc"]), 3)
+                    ipc = round(float(sig["ipc"]), 3)
         except (ValueError, OSError, TypeError):
             pass
-    return out
+    return {"verdict": verdict, "ipc": ipc, "layers": layers}
 
 
 def apm_cell(run_dir: Path) -> str:
@@ -140,7 +142,9 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
         lines.append("\n## Repeatability (per-scenario wall, +-20% bound)\n")
         lines.append("| scenario | " + " | ".join(n for n, _ in laps)
                      + " | delta% | verdict |")
-        lines.append("|---|---|---|---|---|")
+        # scenario + one column per lap + delta% + verdict. A fixed separator
+        # would only be right at two laps and would break the table at three.
+        lines.append("|" + "---|" * (len(laps) + 3))
         for sc in sorted(first):
             walls = []
             for _, lap in laps:
@@ -159,15 +163,19 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
             lines.append(f"| {sc} | " + " | ".join(
                 f"{w:.1f}" if w is not None else "n/a" for w in walls)
                 + f" | {delta_cell} | {verdict} |")
-        # Load-sensitive axis (bench profile only): actions/s lap-to-lap.
-        aps = []
-        for _, lap in laps:
-            b = lap["scenarios"].get("bench", {}).get("bench") or {}
-            aps.append(b.get("actionsPerSec"))
-        if all(a is not None for a in aps) and len(aps) >= 2 and aps[0]:
-            aps_delta = abs(aps[1] - aps[0]) / aps[0]
+        # Load-sensitive axis (bench profile only): actions/s lap-to-lap. Every
+        # lap must have the reading; a partial series would compare laps that
+        # did not measure the same thing.
+        raw_aps = [(lap["scenarios"].get("bench", {}).get("bench") or {}).get("actionsPerSec")
+                   for _, lap in laps]
+        bench_aps = [float(a) for a in raw_aps if a is not None]
+        if len(bench_aps) == len(raw_aps) >= 2 and bench_aps[0]:
+            # Worst deviation from lap 1 across every lap, same as the wall rows
+            # above: comparing only the first two silently drops lap 3+.
+            aps_base = bench_aps[0]
+            aps_delta = max(abs((a - aps_base) / aps_base) for a in bench_aps)
             aps_ok = "OK" if aps_delta <= TOLERANCE else "OVER"
-            lines.append(f"\n- bench actions/s: {' -> '.join(f'{a:.2f}' for a in aps)} "
+            lines.append(f"\n- bench actions/s: {' -> '.join(f'{a:.2f}' for a in bench_aps)} "
                          f"(delta {aps_delta*100:.1f}% {aps_ok}, +-{TOLERANCE*100:.0f}% bound)")
         lines.append(f"\n- tolerance: +-{TOLERANCE*100:.0f}% per scenario; "
                      "over-tolerance rows are a finding (host contention), "

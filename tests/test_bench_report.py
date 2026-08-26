@@ -87,6 +87,37 @@ def test_report_over_tolerance_flagged(tmp_path):
     assert "OVER (40.0%) - hostLoad check" in md
 
 
+def test_three_laps_table_and_worst_case_delta(tmp_path):
+    """Three laps: the repeatability table must stay well-formed and both delta
+    axes must report the worst lap, not just lap 2. A fixed 5-cell separator
+    row and a lap[1]-vs-lap[0] actions/s delta each hid lap 3 entirely."""
+    t0 = time.time()
+
+    def at(offset: int) -> str:
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + offset))
+
+    base = {"scenario": "bench", "summary": {"pass": 16, "fail": 0},
+            "hostLoadStart": "1.0", "hostLoadEnd": "1.2", "startUtc": at(0)}
+    # Lap 2 is within tolerance, lap 3 is not: a two-lap comparison says OK.
+    _make_lap(tmp_path, "lap1", {"bench": dict(
+        base, endUtc=at(100), bench={"actionsPerSec": 100.0})})
+    _make_lap(tmp_path, "lap2", {"bench": dict(
+        base, endUtc=at(105), bench={"actionsPerSec": 105.0})})
+    _make_lap(tmp_path, "lap3", {"bench": dict(
+        base, endUtc=at(150), bench={"actionsPerSec": 150.0})})
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+
+    header = next(ln for ln in md.splitlines() if ln.startswith("| scenario |"))
+    separator = md.splitlines()[md.splitlines().index(header) + 1]
+    assert header.count("|") == separator.count("|"), (header, separator)
+
+    assert "| bench | 100.0 | 105.0 | 150.0 | 50.0% | OVER (50.0%) - hostLoad check |" in md
+    assert "delta 50.0% OVER" in md
+
+
 def test_require_laps_gate(tmp_path):
     _make_lap(tmp_path, "lap1", {"bench": {"scenario": "bench",
                                            "summary": {"pass": 1, "fail": 0}}})

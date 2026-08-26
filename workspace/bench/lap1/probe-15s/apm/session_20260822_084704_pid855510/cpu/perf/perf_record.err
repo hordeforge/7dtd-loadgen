@@ -1,2 +1,0 @@
-[ perf record: Woken up 243673 times to write data ]
-[ perf record: Captured and wrote 0.938 MB /home/maci/Desktop/7dtd/7dtd-loadgen/workspace/bench/lap1/probe-15s/apm/session_20260822_084704_pid855510/cpu/perf/perf.data (8801 samples) ]

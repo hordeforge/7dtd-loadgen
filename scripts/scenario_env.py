@@ -3,7 +3,13 @@
 
 Subcommands:
   --list [FILE]          print one "<id> <title>" line per scenario
-  export FILE ID         print shell exports for the scenario (eval'd by caller)
+  export FILE ID         print one KEY=VALUE line per env var for the scenario
+
+The export format is data, not shell source: the caller reads it line by line
+and assigns with `export "$k=$v"`, so no value is ever parsed as shell. A key
+must be a POSIX env identifier and a value must be a single line; either check
+failing exits non-zero rather than emitting something the reader would
+misframe.
 
 The file path and scenario id arrive as argv, never interpolated into this
 source. Unknown scenarios exit non-zero with a message on stderr.
@@ -13,13 +19,9 @@ from __future__ import annotations
 
 import json
 import re
-import shlex
 import sys
 from pathlib import Path
 
-# Output is eval'd by run_scenario.sh, so a key is shell syntax, not just a
-# name. Restrict to valid POSIX env identifiers; anything else fails closed
-# here instead of executing inside the caller's shell.
 ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
@@ -47,48 +49,56 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     port = int(client.get("port", defs.get("port", 26902)))  # bot data port = ServerPort+2
     host = client.get("host", defs.get("host", "127.0.0.1"))
 
-    out = [
-        f"export LOADGEN_SCENARIO_ID={shlex.quote(sc['id'])}",
-        f"export LOADGEN_MODE={shlex.quote(mode)}",
-        f"export LOADGEN_HOST={shlex.quote(str(host))}",
-        f"export LOADGEN_PORT={port}",
-        f"export LOADGEN_TELNET_PORT={int(client.get('telnetPort', defs.get('telnetPort', 8081)))}",
-        f"export LOADGEN_COUNT={int(client.get('count', 1))}",
-        f"export LOADGEN_TIMEOUT={int(client.get('timeoutMs', 8000))}",
-        f"export LOADGEN_ACTIONS={int(client.get('actions', 24))}",
-        f"export LOADGEN_MIN_PASS_RATE={float(client.get('minPassRate', 0.95))}",
+    out: list[tuple[str, str]] = [
+        ("LOADGEN_SCENARIO_ID", sc["id"]),
+        ("LOADGEN_MODE", mode),
+        ("LOADGEN_HOST", str(host)),
+        ("LOADGEN_PORT", str(port)),
+        ("LOADGEN_TELNET_PORT", str(int(client.get("telnetPort", defs.get("telnetPort", 8081))))),
+        ("LOADGEN_COUNT", str(int(client.get("count", 1)))),
+        ("LOADGEN_TIMEOUT", str(int(client.get("timeoutMs", 8000)))),
+        ("LOADGEN_ACTIONS", str(int(client.get("actions", 24)))),
+        ("LOADGEN_MIN_PASS_RATE", str(float(client.get("minPassRate", 0.95)))),
     ]
     if mode == "self-test-join":
-        out.append("export LOADGEN_SELF_TEST=0")
+        out.append(("LOADGEN_SELF_TEST", "0"))
     if client.get("botMode"):
-        out.append(f"export LOADGEN_BOT_MODE={shlex.quote(client['botMode'])}")
+        out.append(("LOADGEN_BOT_MODE", client["botMode"]))
     if client.get("death"):
-        out.append(f"export LOADGEN_DEATH={shlex.quote(client['death'])}")
+        out.append(("LOADGEN_DEATH", client["death"]))
     if client.get("rampMs"):
-        out.append(f"export LOADGEN_RAMP_MS={int(client['rampMs'])}")
+        out.append(("LOADGEN_RAMP_MS", str(int(client["rampMs"]))))
     if client.get("maxDynamite") is not None:
-        out.append(f"export LOADGEN_MAX_DYNAMITE={int(client['maxDynamite'])}")
+        out.append(("LOADGEN_MAX_DYNAMITE", str(int(client["maxDynamite"]))))
     if client.get("noSpawnZombies"):
-        out.append("export LOADGEN_NO_SPAWN=1")
+        out.append(("LOADGEN_NO_SPAWN", "1"))
     if client.get("seed") is not None:
-        out.append(f"export LOADGEN_SEED={int(client['seed'])}")
+        out.append(("LOADGEN_SEED", str(int(client["seed"]))))
     if client.get("writeRunManifest"):
-        out.append("export LOADGEN_WRITE_RUN_MANIFEST=1")
+        out.append(("LOADGEN_WRITE_RUN_MANIFEST", "1"))
     if sc.get("priority"):
-        out.append(f"export LOADGEN_PRIORITY={shlex.quote(str(sc['priority']))}")
+        out.append(("LOADGEN_PRIORITY", str(sc["priority"])))
     if server:
-        out.append(f"export LOADGEN_SERVER_SCRIPT={shlex.quote(server.get('script', ''))}")
+        out.append(("LOADGEN_SERVER_SCRIPT", server.get("script", "")))
         for k, v in (server.get("env") or {}).items():
-            if not ENV_KEY_RE.match(k):
-                print(f"ERROR: scenario {scenario_id}: refusing env key {k!r} "
-                      "(not a shell-safe identifier)", file=sys.stderr)
-                return 1
-            out.append(f"export {k}={shlex.quote(str(v))}")
+            out.append((k, str(v)))
     else:
-        out.append("export LOADGEN_SERVER_SCRIPT=")
-    out.append(f"export LOADGEN_SCENARIO_CI={1 if sc.get('ci') else 0}")
-    out.append(f"export LOADGEN_SCENARIO_OPTIONAL={1 if sc.get('optional') else 0}")
-    print("\n".join(out))
+        out.append(("LOADGEN_SERVER_SCRIPT", ""))
+    out.append(("LOADGEN_SCENARIO_CI", "1" if sc.get("ci") else "0"))
+    out.append(("LOADGEN_SCENARIO_OPTIONAL", "1" if sc.get("optional") else "0"))
+
+    lines = []
+    for key, value in out:
+        if not ENV_KEY_RE.match(key):
+            print(f"ERROR: scenario {scenario_id}: refusing env key {key!r} "
+                  "(not a POSIX env identifier)", file=sys.stderr)
+            return 1
+        # One assignment per line is the whole framing the reader relies on.
+        if "\n" in value or "\r" in value:
+            print(f"ERROR: scenario {scenario_id}: value for {key} spans lines", file=sys.stderr)
+            return 1
+        lines.append(f"{key}={value}")
+    print("\n".join(lines))
     return 0
 
 

@@ -1,17 +1,29 @@
 [project]
 name = "7dtd-loadgen"
-version = "0.1.1"
+version = "0.2.0"
 description = "Controlled LiteNetLib load generation for 7 Days to Die dedicated servers"
 requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.16"]
+dev = ["pytest>=8.0", "ruff>=0.16", "mypy>=1.15"]
 
 [tool.ruff]
 # Same 100-column cap as .editorconfig; the default lint rule set runs via
 # `uv run --locked --extra dev ruff check` in the make lint / test lanes.
 line-length = 100
+
+[tool.mypy]
+python_version = "3.11"
+files = ["scripts", "tools", "tests"]
+# tools/ and scripts/ are entry-point directories, not packages, and two of
+# them define same-named helpers; without this mypy stops at the first
+# duplicate module name instead of checking the tree.
+explicit_package_bases = true
+mypy_path = "tools:scripts:tests"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

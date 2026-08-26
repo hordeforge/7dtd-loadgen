@@ -174,7 +174,9 @@ public sealed class WorldDeathDetectionTests
         };
         var client = new GameJoinClient();
         client.State.EntityId = 707;
-        string echo = (nfdConfig ? nfcName : nfdName) + " died";
+        // The in-game identity is PlayerName + ClientId, so the server echoes
+        // "Zoé 7"; an echo of the bare name is a different player.
+        string echo = (nfdConfig ? nfcName : nfdName) + "7 died";
 
         client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(echo), opt, _ => { });
 

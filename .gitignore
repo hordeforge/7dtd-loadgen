@@ -30,18 +30,24 @@ workspace/comparison/*/*/serverconfig.xml
 workspace/comparison/*/*/apm/
 workspace/comparison/run.log
 
-# bench-stock lane: keep the small reports + per-scenario run evidence, ignore
-# the server runtime (userdata, logs, APM session internals are regenerable).
+# bench-stock lane: keep the small reports (run-meta.json / stats.json /
+# bench-stock.md|json), ignore the server runtime. Runs are laid out as
+# workspace/bench/<lap>/{userdata,boot.log} plus
+# workspace/bench/<lap>/<scenario>/apm/, so the APM pattern needs the scenario
+# level: a one-level-short pattern silently let ~150MB of regenerable
+# perf.script / *.bt.out into the history once already.
 workspace/bench/*/userdata/
 workspace/bench/*/boot.log
 workspace/bench/*/apm/
-workspace/bench/lap*/userdata/
-workspace/bench/lap*/boot.log
-workspace/bench/lap*/apm/
+workspace/bench/*/*/apm/**
+# ...except the per-session summary.json, the only APM file bench_report.py
+# reads (ipc + layer scores). ~9KB each against multi-MB perf/bt captures, so
+# `make bench-report` still reproduces the committed report from a clean
+# checkout. Re-including under an ignored dir needs the dir itself unignored.
+!workspace/bench/*/*/apm/
+!workspace/bench/*/*/apm/session_*/
+!workspace/bench/*/*/apm/session_*/summary.json
 *.lock
 
 # Local scratch and one-off repro artifacts.
 .scratch/
-.smoke-stats.json
-repro.out
-repro.err

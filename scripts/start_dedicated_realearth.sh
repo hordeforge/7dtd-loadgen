@@ -33,7 +33,6 @@ case "$PACK" in
     fi
     # Install pack + mod into dedicated Mods (expand + SharedFixed config)
     if [[ -x "$RE_ROOT/scripts/install_height_pack.sh" ]]; then
-      chmod +x "$RE_ROOT/scripts/install_height_pack.sh"
       RE_WORLD_NAME="$WORLD_NAME" "$RE_ROOT/scripts/install_height_pack.sh" h500 || true
     fi
     ;;
@@ -44,7 +43,6 @@ case "$PACK" in
       echo "NOTE: height_test pack missing; run: make -C $RE_ROOT install-height" >&2
     fi
     if [[ -x "$RE_ROOT/scripts/install_height_pack.sh" ]]; then
-      chmod +x "$RE_ROOT/scripts/install_height_pack.sh"
       RE_WORLD_NAME="$WORLD_NAME" "$RE_ROOT/scripts/install_height_pack.sh" everest || true
     fi
     ;;

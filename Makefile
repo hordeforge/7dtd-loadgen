@@ -31,8 +31,8 @@ help:
 	@echo ""
 	@echo "  make build               Build 7dtd-loadgen (GAME_DIR=<path> builds"
 	@echo "                           against a game install's LiteNetLib instead)"
-	@echo "  make lint                Static gates: shellcheck on scripts/,"
-	@echo "                           ruff check on the Python tree (locked env)"
+	@echo "  make lint                Static gates: shellcheck on scripts/, ruff +"
+	@echo "                           mypy on the Python tree (locked env)"
 	@echo "  make selftest            In-process join + respawn CI gate"
 	@echo "  make unittest            C# unit tests (JoinStateMachine, RampDelay, JoinGate)"
 	@echo "  make unittest-one T=Pat  One C# test: class/method name substring"
@@ -106,11 +106,12 @@ unittest-one:
 endif
 
 # Static analysis gates. Shellcheck covers scripts/*.sh (preinstalled on the
-# CI runner image); ruff runs inside the locked uv env so every machine lints
-# with the exact pinned analyzer version. Both fail the make test lane.
+# CI runner image); ruff and mypy run inside the locked uv env so every machine
+# analyses with the exact pinned versions. All three fail the make test lane.
 lint:
 	shellcheck "$(SCRIPTS)"/*.sh
 	@cd "$(ROOT)" && uv run --locked --extra dev ruff check .
+	@cd "$(ROOT)" && uv run --locked --extra dev mypy
 
 test: lint build selftest unittest
 	@if command -v uv >/dev/null; then \

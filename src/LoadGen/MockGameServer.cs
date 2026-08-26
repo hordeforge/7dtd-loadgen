@@ -201,6 +201,6 @@ public sealed class MockGameServer : IDisposable
         // Same guard as every other stop site: release must never mask the
         // caller's result (a throw inside using-dispose would overwrite rc).
         try { _net.Stop(); }
-        catch { /* ignore */ }
+        catch (Exception) { }
     }
 }

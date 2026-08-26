@@ -154,7 +154,14 @@ def _runner_env(tmp_path: Path) -> tuple[dict[str, str], Path]:
     env = os.environ.copy()
     env["XDG_RUNTIME_DIR"] = str(xdg)
     env["PATH"] = str(fake_bin)
-    env.pop("DOTNET_ROOT", None)
+    # Point both SDK lookups at empty dirs. Unsetting DOTNET_ROOT is not enough:
+    # the runner defaults it to $HOME/.cache/dotnet-sdk, so on any host that
+    # actually installed an SDK there (what the Makefile recommends) the runner
+    # would sail past the check this test asserts on.
+    env["HOME"] = str(tmp_path / "home")
+    env["DOTNET_ROOT"] = str(tmp_path / "no-sdk")
+    Path(env["HOME"]).mkdir()
+    Path(env["DOTNET_ROOT"]).mkdir()
     env["LOADGEN_MODE"] = "join"
     env["LOADGEN_HOST"] = "127.0.0.1"
     env["LOADGEN_PORT"] = "26902"

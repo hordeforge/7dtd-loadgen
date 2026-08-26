@@ -24,7 +24,17 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import procs
+
+# Teardown targets, matched as a cmdline substring by scripts/procs.py.
+BOT_PROC = "net8.0/7dtd-loadgen"
+SERVER_PROC = "7DaysToDieServer.x86_64"
+
 ROOT = Path(__file__).resolve().parent.parent
+# Run logs are regenerable one-off captures, so they land in the gitignored
+# scratch dir instead of the project root.
+SCRATCH = ROOT / ".scratch"
 HOST = os.environ.get("LOADGEN_HOST", "127.0.0.1")
 GAME_PORT = os.environ.get("LOADGEN_PORT", "26902")
 TELNET_PORT = int(os.environ.get("LOADGEN_TELNET_PORT", "8081"))
@@ -125,7 +135,8 @@ def start_server():
                RE_GAME_NAME=game_name, RE_SERVER_MAX_PLAYERS=str(max(PLAYERS, 64)),
                RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5")
     log(f"starting server (MaxSpawnedZombies={max(ZOMBIES,64)}, maxplayers={max(PLAYERS,64)})...")
-    log_path = ROOT / "bloodmoon_server_start.log"
+    SCRATCH.mkdir(exist_ok=True)
+    log_path = SCRATCH / "bloodmoon_server_start.log"
     try:
         with log_path.open("wb") as fh:
             r = subprocess.run(["bash", str(ROOT / "scripts/start_dedicated_prefab.sh")], cwd=ROOT,
@@ -151,7 +162,8 @@ def join_ramped(target):
                LOADGEN_RAMP_MS=ramp_ms, LOADGEN_TIMEOUT="3600000", LOADGEN_BOT_MODE="wander",
                LOADGEN_ACTIONS="100000000", LOADGEN_NO_SPAWN="1", LOADGEN_SEED="7777",
                LOADGEN_QUIET="1")
-    fh_path = ROOT / "bloodmoon_bots.log"
+    SCRATCH.mkdir(exist_ok=True)
+    fh_path = SCRATCH / "bloodmoon_bots.log"
     with fh_path.open("wb") as fh:
         p = subprocess.Popen(["bash", str(ROOT / "scripts/run_loadgen.sh")], cwd=ROOT, env=env,
                              stdout=fh, stderr=fh)
@@ -270,9 +282,9 @@ def teardown(bots, stop_server=False):
             bots.wait(timeout=15)
         except subprocess.TimeoutExpired:
             bots.kill()
-    subprocess.run(["pkill", "-9", "-f", "net8.0/7dtd-loadge[n]"], check=False)
+    procs.kill(BOT_PROC)
     if stop_server:
-        subprocess.run(["pkill", "-9", "-f", "7DaysToDieServer.x86_6[4]"], check=False)
+        procs.kill(SERVER_PROC)
         log("stopped the dedicated server this run started")
 
 

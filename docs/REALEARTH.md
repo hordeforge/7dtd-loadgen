@@ -87,7 +87,7 @@ List: `./scripts/run_scenario.sh --list`
 ./scripts/run_scenario.sh re-p1-inject-selftest-manifest
 # or:
 make build && ./src/LoadGen/bin/Release/net8.0/7dtd-loadgen \
-  --self-test-join --actions 16 --run-manifest /tmp/run.json --scenario-id re-p1
+  --self-test-join --actions 16 --run-manifest .scratch/run.json --scenario-id re-p1
 ```
 
 Pair manifests with sibling `7dtd-server-apm` captures for P0-P1 tall-Y soaks.

@@ -88,3 +88,30 @@ def test_unwritable_events_jsonl_fails_clean():
     assert r.returncode == 2, output[-2000:]
     assert "invalid --events-jsonl" in output
     assert "Traceback" not in r.stderr
+
+
+def test_credential_flags_are_rejected_without_echoing_the_secret():
+    """argv is world-readable in the process table, so the client takes
+    credentials from the environment only. A credential flag must fail loudly
+    (exit 2, naming the env var) rather than be ignored: silently dropping
+    --key would connect with no password and look like a server-side fault.
+    The refusal must not print the value it just refused."""
+    secret = "hunter2-should-never-appear"
+    for flag, env_var in (
+        ("--key", "LOADGEN_KEY"),
+        ("--password", "LOADGEN_KEY"),
+        ("--telnet-password", "LOADGEN_TELNET_PASSWORD"),
+    ):
+        r = _run(["--join", flag, secret], timeout=20)
+        output = r.stdout + r.stderr
+        assert r.returncode == 2, (flag, output[-2000:])
+        assert flag in output
+        assert env_var in output
+        assert secret not in output, f"{flag} echoed the credential"
+
+
+def test_help_documents_env_only_credentials():
+    output = _run(["--help"], timeout=15).stdout
+    assert "LOADGEN_KEY" in output
+    assert "LOADGEN_TELNET_PASSWORD" in output
+    assert "--key" not in output

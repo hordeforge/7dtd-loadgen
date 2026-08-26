@@ -40,16 +40,20 @@ if [[ -z "$ID" ]]; then
   exit 2
 fi
 
-# Export client env from JSON scenario (argv-passed; fail loudly on an unknown id)
+# Export client env from JSON scenario (argv-passed; fail loudly on an unknown id).
+# Read as KEY=VALUE data, never eval'd: a scenario value reaches the environment
+# without ever being parsed as shell, so no quoting in the generator stands
+# between a catalog entry and command execution here.
 scenario_exports="$(python3 "$ROOT/scripts/scenario_env.py" export "$SCENARIO_FILE" "$ID")" || exit 1
-eval "$scenario_exports"
+while IFS='=' read -r key value; do
+  [[ -n "$key" ]] && export "$key=$value"
+done <<< "$scenario_exports"
 
 echo "=== scenario $LOADGEN_SCENARIO_ID ==="
 echo "mode=$LOADGEN_MODE port=${LOADGEN_PORT:-} count=${LOADGEN_COUNT:-}"
 
 if [[ -n "${LOADGEN_SERVER_SCRIPT:-}" && "$START_SERVER" == "1" ]]; then
   echo "Starting server via $LOADGEN_SERVER_SCRIPT (background)..."
-  chmod +x "$ROOT/scripts/$LOADGEN_SERVER_SCRIPT"
   # Server script often exec's and blocks; run in background
   bash "$ROOT/scripts/$LOADGEN_SERVER_SCRIPT" &
   SPID=$!
