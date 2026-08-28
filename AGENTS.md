@@ -1,7 +1,7 @@
 # AGENTS.md - 7dtd-loadgen
 
 LiteNetLib **load-test clients** for **7 Days to Die** dedicated servers
-(target **V3.1.0**). Bots join the real game protocol, wander, optionally take
+(target **V3.2.0**). Bots join the real game protocol, wander, optionally take
 pressure, die, respawn, and rejoin until a wall-clock timeout.
 
 Not a full game client. Not a profiler. Not an optimizer.

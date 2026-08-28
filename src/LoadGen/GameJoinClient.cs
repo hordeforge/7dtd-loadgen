@@ -412,7 +412,10 @@ public sealed class GameJoinClient
                     {
                         // EMPIRICAL 2026-08-22: stock V3.1.0 (b14) accepts the display
                         // form "V 3.1.0" and KICKS "V 3.10" (VersionMismatch=4); the
-                        // LongStringNoBuild theory (b5c3069) is wrong for stock.
+                        // LongStringNoBuild theory (b5c3069) is wrong for stock. The
+                        // 3.2.0 pin follows the same display form (V3.2.0 -> "V 3.2.0",
+                        // changelog-3.2.0 §1); the live 3.2.0 gate is inferred, not
+                        // re-probed.
                         string ver = PackageCodec.VersionLongString(State.ServerVersion);
                         var login = PackageCodec.BuildPlayerLogin(
                             loginId, opt.PlayerName + opt.ClientId, ver, ver);

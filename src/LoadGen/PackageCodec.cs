@@ -87,7 +87,7 @@ public static class PackageCodec
     }
 
     /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.</summary>
-    public static readonly VersionInfo GameVersion = new(1, 3, 10, 14); // EGameReleaseType.V=1; V3.1.0 (b14)
+    public static readonly VersionInfo GameVersion = new(1, 3, 20, 9); // EGameReleaseType.V=1; V3.2.0 (b9)
 
     public readonly record struct VersionInfo(byte ReleaseType, int Major, int Minor, int Build);
 
@@ -493,7 +493,7 @@ public static class PackageCodec
         // PlayerLogin body: 8 fields (name, platform user+token, crossplatform
         // user+token, version, compVersion, discordId). Parse the body back and
         // verify the sequence (string fields: 4-byte length + UTF8; u64 at tail).
-        var login = BuildPlayerLogin(1, "golden", "V 3.1.0", "V 3.1.0", discordUserId: 0xDEADBEEF);
+        var login = BuildPlayerLogin(1, "golden", "V 3.2.0", "V 3.2.0", discordUserId: 0xDEADBEEF);
         var loginBody = ExtractBody(login);
         int off = 0;
         string ReadStr()
@@ -529,8 +529,8 @@ public static class PackageCodec
         if (ReadStr() != "") return "Login platform token want empty";
         ReadUserPair("Local");   // crossplatformUserAndToken
         if (ReadStr() != "") return "Login crossplatform token want empty";
-        if (ReadStr() != "V 3.1.0") return "Login version mismatch";
-        if (ReadStr() != "V 3.1.0") return "Login compVersion mismatch";
+        if (ReadStr() != "V 3.2.0") return "Login version mismatch";
+        if (ReadStr() != "V 3.2.0") return "Login compVersion mismatch";
         if (off + 8 != loginBody.Length) return $"Login tail want 8-byte u64 at {off}, body {loginBody.Length}";
         if (BinaryPrimitives.ReadUInt64LittleEndian(loginBody.AsSpan(off)) != 0xDEADBEEF) return "Login discordUserId mismatch";
 
@@ -575,8 +575,8 @@ public static class PackageCodec
 
         // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
         string ver = VersionLongString(GameVersion);
-        if (ver != "V 3.1.0")
-            return $"VersionLongString want 'V 3.1.0' got '{ver}' (Minor packed)";
+        if (ver != "V 3.2.0")
+            return $"VersionLongString want 'V 3.2.0' got '{ver}' (Minor packed)";
 
         // Dual live PackageIds head fixtures (channel0, uncompressed, pkgId 0, maps=189).
         // Envelope fields are identical across 3.0.1 and 3.1.0; only VersionInformation
@@ -642,9 +642,11 @@ public static class PackageCodec
     }
 
     /// <summary>
-    /// NetPackageDamageEntity write order from Assembly-CSharp IL.
-    /// Used for suicide (Internal+Suicide+fatal), drown (Internal+Suffocation),
-    /// and external "killed" hits (External+Bashing+fatal).
+    /// NetPackageDamageEntity write order from Assembly-CSharp IL (V3.2.0:
+    /// packed u32 flags + KillXPScale, changelog-3.2.0 §3.1 / protocol.md
+    /// §6.5). Used for suicide (Internal+Suicide+fatal), drown
+    /// (Internal+Suffocation), and external "killed" hits
+    /// (External+Bashing+fatal).
     /// </summary>
     public static byte[] BuildDamageEntity(
         ushort packageId,
@@ -654,37 +656,36 @@ public static class PackageCodec
         ushort strength,
         bool fatal,
         int attackerEntityId = -1,
-        byte channel = 0)
+        byte channel = 0,
+        bool trapKillXp = false,
+        float killXpScale = 1f)
     {
+        const uint fPainHit = 0x100;
+        const uint fFatal = 0x010;
+        const uint fTrapKillXp = 0x400;
+        uint flags = fPainHit | (fatal ? fFatal : 0u) | (trapKillXp ? fTrapKillXp : 0u);
         return FrameChannelPackage(channel, packageId, w =>
         {
             w.Write(entityId);
+            w.Write(flags);
             w.Write(damageSource);
             w.Write(damageType);
             w.Write(strength);
             w.Write((byte)0); // hitDirection
             w.Write((short)0); // hitBodyPart
             w.Write((byte)0); // movementState
-            w.Write(true); // bPainHit
-            w.Write(fatal); // bFatal
-            w.Write(false); // bCritical
             w.Write(attackerEntityId);
             w.Write(0f); w.Write(-1f); w.Write(0f); // dirV
             w.Write(0); w.Write(0); w.Write(0); // blockPos Vector3i as 3×Int32
             w.Write(""); // hitTransformName
             w.Write(0f); w.Write(0f); w.Write(0f); // hitTransformPosition
             w.Write(0f); w.Write(0f); // uvHit
+            w.Write(killXpScale); // KillXPScale (V3.2.0)
             w.Write(1f); // damageMultiplier
             w.Write(0f); // random
-            w.Write(true); // bIgnoreConsecutiveDamages
-            w.Write(false); // bIsDamageTransfer
-            w.Write(false); // bDismember
-            w.Write(false); // bCrippleLegs
-            w.Write(false); // bTurnIntoCrawler
             w.Write((byte)0); // bonusDamageType
             w.Write((byte)0); // StunType
             w.Write(0f); // StunDuration
-            w.Write(false); // bFromBuff
             w.Write((byte)0); // ArmorSlot
             w.Write((byte)0); // ArmorSlotGroup
             w.Write((ushort)0); // ArmorDamage as UInt16
