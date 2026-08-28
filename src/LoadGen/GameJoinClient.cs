@@ -414,8 +414,11 @@ public sealed class GameJoinClient
                         // form "V 3.1.0" and KICKS "V 3.10" (VersionMismatch=4); the
                         // LongStringNoBuild theory (b5c3069) is wrong for stock. The
                         // 3.2.0 pin follows the same display form (V3.2.0 -> "V 3.2.0",
-                        // changelog-3.2.0 §1); the live 3.2.0 gate is inferred, not
-                        // re-probed.
+                        // changelog-3.2.0 §1). LIVE-VERIFIED 2026-08-29 against zdtd: the
+                        // server advertises PackageIds Minor=20, the client echoes the
+                        // display form, and the gate accepts it (a zdtd bug where the
+                        // server advertised Minor=10 was kicked with VersionMismatch=4,
+                        // proving the gate is the display form, not the raw Minor).
                         string ver = PackageCodec.VersionLongString(State.ServerVersion);
                         var login = PackageCodec.BuildPlayerLogin(
                             loginId, opt.PlayerName + opt.ClientId, ver, ver);
