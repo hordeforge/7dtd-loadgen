@@ -16,6 +16,7 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
 | Dedicated start helpers and workload runners | Runtime optim patches (use `7dtd-server-optimizer`) |
 | Protocol self-tests and golden-wire gates | In-game `Mods/` install |
 | Controlled multiplayer demand for A/B runs | RealEarth terrain generation |
+| Demand for playtest/APM A/B (barriers, peers) | Playtest world-under-test / suite scoring (`7dtd-playtest`; prefer sandbox/attach over loadgen dedi as default target) |
 
 ## Critical rules
 
