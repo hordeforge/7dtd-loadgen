@@ -47,6 +47,14 @@ case "${DYNAMIC_MESH,,}" in
   *)             DYNAMIC_MESH="false" ;;
 esac
 CONFIG_SRC="$ROOT/scripts/serverconfig_loadgen.xml"
+# Safehouse owns the serverconfig renderer for the whole workspace. Point
+# SANDBOX_ROOT at the checkout when it does not sit beside this repo.
+SANDBOX_ROOT="${SANDBOX_ROOT:-$ROOT/../7dtd-sandbox}"
+SBCONFIG="$SANDBOX_ROOT/scripts/sbconfig.py"
+if [[ ! -f "$SBCONFIG" ]]; then
+  echo "ERROR: serverconfig renderer not found: $SBCONFIG (set SANDBOX_ROOT)" >&2
+  exit 1
+fi
 
 # Publish Mono JIT method address ranges for Linux perf. Without this, managed
 # frames appear as [unknown] even though sampling itself succeeds.
@@ -158,9 +166,10 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
 fi
 
 TMPCFG="$USERDATA/serverconfig_prefab.xml"
-# Config rendering lives in render_serverconfig.py; every value passes as
-# argv data, never interpolated into the program's source.
-python3 "$ROOT/scripts/render_serverconfig.py" \
+# Config rendering lives in the sibling Safehouse renderer (7dtd-sandbox), the
+# workspace's one serverconfig writer; every value passes as argv data, never
+# interpolated into the program's source.
+python3 "$SBCONFIG" render \
   "$CONFIG_SRC" "$TMPCFG" --userdata "$USERDATA" \
   --set "GameWorld=$WORLD_NAME" \
   --set "GameName=$GAME_NAME" \
