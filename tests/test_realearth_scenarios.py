@@ -25,6 +25,12 @@ RUN_SCENARIO = ROOT / "scripts" / "run_scenario.sh"
 # Tests that assert on the 7dtd-realearth sibling (product assumptions, layout,
 # height-test serverconfig) only run when the sibling is present; a single-repo
 # CI checkout does not have it. Same guard pattern as the live-server tests.
+#
+# A skipped cross-repo gate is a gate nobody is running, so keep what it asserts
+# to what loadgen actually depends on (the scripts it invokes, the ports its
+# bots target) and leave the other repo's product constants to that repo. The
+# suite runs with -rs so these skips are named in CI output rather than hiding
+# in a count.
 REALEARTH_PRESENT = REALEARTH_ROOT.is_dir()
 needs_realearth_sibling = pytest.mark.skipif(
     not REALEARTH_PRESENT,
@@ -75,7 +81,12 @@ def test_realearth_p0_p1_offline_product_assumptions():
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
     assert cfg.get("EngineHeightStockSafe") is False
     assert cfg.get("FailClosedMissingTiles") is True
-    assert int(cfg.get("SeaLevelGameY", 0)) == 100
+    # SeaLevelGameY is deliberately not pinned here. It is a RealEarth product
+    # constant (raised 100 -> 16000 with the YDim=32768 expand), owned by that
+    # repo's own tools/tests/test_height_inject_math.py, and nothing loadgen
+    # does depends on it. Pinning it here only meant this gate went red on a
+    # dev box every time RealEarth shipped a deliberate change.
+    assert isinstance(cfg.get("SeaLevelGameY"), int), "SeaLevelGameY must be an int"
     # C# pure inject math present
     assert (REALEARTH_ROOT / "Source" / "RealEarth" / "HeightInjectMath.cs").is_file()
     assert (REALEARTH_ROOT / "Source" / "RealEarth" / "TileSamplePolicy.cs").is_file()
@@ -173,7 +184,14 @@ def test_realearth_sibling_project_layout():
     mp = json.loads((REALEARTH_ROOT / "Config" / "realearth.mp.json").read_text(encoding="utf-8"))
     assert mp.get("MultiplayerOriginMode") == "SharedFixed"
     assert mp.get("EngineHeightStockSafe") is False
-    assert int(mp.get("SeaLevelGameY", 0)) == 100
+    # The multiplayer profile must agree with the single-player one on the sea
+    # anchor (a mismatch would put two clients on different terrain), but which
+    # value that is stays RealEarth's call.
+    sp = json.loads((REALEARTH_ROOT / "Config" / "realearth.json").read_text(encoding="utf-8"))
+    assert mp.get("SeaLevelGameY") == sp.get("SeaLevelGameY"), (
+        f"mp profile sea anchor {mp.get('SeaLevelGameY')} disagrees with "
+        f"the default profile's {sp.get('SeaLevelGameY')}"
+    )
 
 
 @needs_realearth_sibling
