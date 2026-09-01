@@ -9,7 +9,7 @@
     <!-- Release version of the shipped client. Keep in sync with
          pyproject.toml and CHANGELOG.md; tests/test_release_contract.py fails
          when these drift apart. Bump on tag. -->
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <!-- Build flags (LangVersion, PathMap, CI normalization) live in
          Directory.Build.props at the repo root. -->
     <!-- Prefer game LiteNetLib (protocol-compatible with dedicated) when

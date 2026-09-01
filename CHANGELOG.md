@@ -8,6 +8,27 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-01
+
+The serverconfig renderer leaves this repository.
+
+### Changed
+
+- **Breaking (dedicated-start scripts):** `scripts/render_serverconfig.py` is
+  gone. It was one of four XML rewriters in the workspace doing the same job
+  with slightly different behaviour; being the best of them, it moved to
+  `7dtd-sandbox/scripts/sbconfig.py` and became the one renderer everything
+  calls rather than a fifth copy landing there. See
+  [ADR 0001](https://github.com/hordeforge/.github/blob/main/docs/adr/0001-test-tiers-and-declarative-suites.md).
+  Migration: `scripts/start_dedicated_prefab.sh` (and its Navezgane/RealEarth
+  wrappers) and `scripts/compare_sut.sh` now need a `7dtd-sandbox` checkout.
+  They look beside this repository and take `SANDBOX_ROOT` otherwise, and fail
+  naming the path they tried rather than rendering nothing.
+- `tests/test_render_serverconfig.py` and the render half of
+  `tests/test_rerun_convergence.py` moved with the implementation, to
+  `7dtd-sandbox/scripts/test_sbconfig.py`. The reset-world and overlap-guard
+  rerun gates stay here.
+
 ## [0.2.0] - 2026-08-26
 
 Credentials leave the command line for good, the repository stops carrying
@@ -168,6 +189,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.0
+[0.2.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.2.0
 [0.1.1]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.1.0
