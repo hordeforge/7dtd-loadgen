@@ -115,7 +115,7 @@ lint:
 
 test: lint build selftest unittest
 	@if command -v uv >/dev/null; then \
-		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short; \
+		cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short -rs; \
 	else \
 		echo "ERROR: uv is not installed; the Python gates must run inside the" >&2; \
 		echo "       locked env from uv.lock (a system python3 with pytest would" >&2; \
