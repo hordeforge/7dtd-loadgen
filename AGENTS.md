@@ -113,9 +113,21 @@ with server config and APM session IDs when comparing runs.
 | `../7dtd-server-apm` | Capture/compare while load runs; may call public runners only |
 | `../7dtd-server-optimizer` | Optim under test; independent install |
 | `../7dtd-realearth` | Optional RealEarth world under test; bots used to live under its tools |
+| `../7dtd-sandbox` | Owns the workspace serverconfig renderer (`scripts/sbconfig.py`) and instance isolation |
 
 Do not silently install mods into game trees from loadgen except via explicit
 documented dedicated-start scripts the operator runs.
+
+### Serverconfig rendering lives in Safehouse
+
+`scripts/start_dedicated_prefab.sh` and `scripts/compare_sut.sh` render their
+config through `$SANDBOX_ROOT/scripts/sbconfig.py render` (default
+`../7dtd-sandbox`), and fail by name when that checkout is absent. This repo
+ships no XML rewriter: one renderer per workspace is what keeps escaping,
+comment handling and insert-if-missing from drifting across four copies. See
+[ADR 0001](https://github.com/hordeforge/.github/blob/main/docs/adr/0001-test-tiers-and-declarative-suites.md).
+Its rerun-convergence gate moved with it, to
+`7dtd-sandbox/scripts/test_sbconfig.py`.
 
 ## RealEarth
 

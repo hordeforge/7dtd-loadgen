@@ -1,11 +1,9 @@
 """Rerun-convergence gates for the operations this repo documents as repeatable.
 
 Contract under test: executing an operation twice leaves the same state as
-executing it once (retry, cron overlap, double launch). Three surfaces carry an
+executing it once (retry, cron overlap, double launch). Two surfaces carry an
 explicit rerun-safety claim today and had no test pinning it:
 
-- scripts/render_serverconfig.py: a re-render overwrites byte-identically
-  (source-fresh read, truncating write; never appends).
 - scripts/reset_world.sh: the destructive save wipe converges - a second run
   right after the first is a clean no-op, and the empty-GAME_NAME guard holds
   on every run.
@@ -22,54 +20,14 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RENDER = ROOT / "scripts" / "render_serverconfig.py"
 RESET = ROOT / "scripts" / "reset_world.sh"
 RUNNER = ROOT / "scripts" / "run_loadgen.sh"
 # Absolute: some tests restrict the child PATH on purpose, and argv lookup
 # must not depend on it.
 BASH = shutil.which("bash") or "/bin/bash"
-
-SRC_XML = """<?xml version="1.0"?>
-<ServerSettings>
-\t<property name="ServerName" value="seed"/>
-\t<property name="GameName" value="seedworld"/>
-\t<property name="TelnetPassword" value="retest"/>
-</ServerSettings>
-"""
-
-
-# --- render_serverconfig.py -------------------------------------------------
-
-
-def _render(src: Path, dst: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [sys.executable, str(RENDER), str(src), str(dst),
-         "--set", "GameName=BotPoi4k", "--set", "TelnetPort=8081"],
-        capture_output=True, text=True, check=False,
-    )
-
-
-def test_render_rerun_is_byte_identical_and_never_appends(tmp_path):
-    src = tmp_path / "src.xml"
-    dst = tmp_path / "out.xml"
-    src.write_text(SRC_XML, encoding="utf-8")
-
-    r1 = _render(src, dst)
-    assert r1.returncode == 0, r1.stderr
-    first = dst.read_bytes()
-
-    # A crashed or interrupted earlier write can leave residue in the target:
-    # the rerun must replace the file wholesale, not append to it.
-    dst.write_bytes(first + b"\n<!-- stale residue from an earlier run -->\n")
-
-    r2 = _render(src, dst)
-    assert r2.returncode == 0, r2.stderr
-    assert dst.read_bytes() == first, "second render diverged or kept residue"
-
 
 # --- reset_world.sh ---------------------------------------------------------
 

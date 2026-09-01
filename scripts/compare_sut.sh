@@ -15,6 +15,9 @@
 # artifact vs known divergence), never a pass to fake.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Safehouse owns the serverconfig renderer for the whole workspace.
+SANDBOX_ROOT="${SANDBOX_ROOT:-$ROOT/../7dtd-sandbox}"
+SBCONFIG="$SANDBOX_ROOT/scripts/sbconfig.py"
 OUT_ROOT="${COMPARE_OUT:-$ROOT/workspace/comparison}"
 SCENARIO_ID=""
 SUTS=""
@@ -205,7 +208,7 @@ for sut in $SUTS; do
       # Same game options stock runs with (live values from the stock run's
       # getgamestat/getgamepref: day 60/18, max zombies 16, difficulty 1, move
       # 2/3). Written per scenario so both servers get one config each.
-      # Values go through render_serverconfig.py (argv data + XML-escaped), the
+      # Values go through the Safehouse renderer (argv data + XML-escaped), the
       # same tested path start_dedicated_prefab.sh uses: a quote in
       # --world/COMPARE_WORLD must never terminate an attribute and inject
       # properties into the SUT config.
@@ -229,7 +232,7 @@ for sut in $SUTS; do
   <property name="EACEnabled" value="false"/>
 </ServerSettings>
 EOF
-      python3 "$ROOT/scripts/render_serverconfig.py" \
+      python3 "$SBCONFIG" render \
         "$ZDTD_TEMPLATE" "$ZDTD_CFG" \
         --set "GameWorld=$WORLD_NAME" \
         --set "GameName=${SCENARIO_ID}_zdtd"
