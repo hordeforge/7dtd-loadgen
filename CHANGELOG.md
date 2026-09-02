@@ -8,6 +8,21 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-02
+
+### Fixed
+
+- The RealEarth gates stopped pinning that repository's own product constant.
+  `SeaLevelGameY` was asserted as `100`; RealEarth deliberately raised it to
+  `16000` with the YDim=32768 expand, so the gate went red on every dev box
+  while CI stayed green (CI has no sibling checkout to assert against). Loadgen
+  does not depend on the sea anchor; what it depends on, the scripts it invokes
+  and the ports its bots target, stays pinned. The multiplayer profile must
+  still agree with the default profile, but which value that is remains
+  RealEarth's call.
+- `pytest` runs with `-rs`, so a skipped cross-repo gate is named in CI output
+  rather than hiding in a count.
+
 ## [0.3.0] - 2026-09-01
 
 The serverconfig renderer leaves this repository.
@@ -189,7 +204,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.1
 [0.3.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.0
 [0.2.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.2.0
 [0.1.1]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.1.0...v0.1.1

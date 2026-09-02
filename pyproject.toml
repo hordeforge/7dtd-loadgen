@@ -1,6 +1,6 @@
 [project]
 name = "7dtd-loadgen"
-version = "0.3.0"
+version = "0.3.1"
 description = "Controlled LiteNetLib load generation for 7 Days to Die dedicated servers"
 requires-python = ">=3.11"
 dependencies = []
