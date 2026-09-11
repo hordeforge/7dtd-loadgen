@@ -26,16 +26,16 @@ Env knobs: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000), `BM_GAMESTAGE` (250),
   exploders. Telnet spawn **bypasses the `MaxSpawnedZombies` world cap** (which the
   server otherwise scales to only `MaxSpawnedZombies x1.9` on a blood moon, ~122 at
   the default 64; the 1.9x is `AIDirectorBloodMoonParty.Tick`'s
-  `AIDirector.CanSpawn(1.9f)` gate - [`7dtd-engine-research/docs/aidirector.md`](../7dtd-engine-research/docs/aidirector.md)).
+  `AIDirector.CanSpawn(1.9f)` gate - [`7dtd-engine-research/docs/entities/aidirector.md`](../7dtd-engine-research/docs/entities/aidirector.md)).
   Outside blood moons the stock sleepers restore against a separate **x2.1**
   headroom: `SleeperVolume.UpdateSpawn` gates on `AIDirector.CanSpawn(2.1f)`
-  ([`7dtd-engine-research/docs/spawning.md`](../7dtd-engine-research/docs/spawning.md) 8, and the
+  ([`7dtd-engine-research/docs/gameplay/spawning.md`](../7dtd-engine-research/docs/gameplay/spawning.md) 8, and the
   `RE_MAX_ZOMBIES` comment in `scripts/start_dedicated_prefab.sh`).
 - **Day-7 blood moon fires regardless of the config's 0.** The generated
   serverconfig sets `BloodMoonFrequency=0`, which the sandbox sync treats as the
   **7-day default** (live-observed 2026-08-11: `SetDay` logged `freq 7` and
   `BloodMoon starting for day 7` at dusk -
-  [`7dtd-engine-research/docs/aidirector.md`](../7dtd-engine-research/docs/aidirector.md)).
+  [`7dtd-engine-research/docs/entities/aidirector.md`](../7dtd-engine-research/docs/entities/aidirector.md)).
   The profile's `BloodMoonFrequency`/`BloodMoonRange` gameprefs are the real
   levers; a 0 does not disable the horde.
 - **High gamestage.** The stock `gamestage` console command is **read-only**

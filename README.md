@@ -266,7 +266,7 @@ operations to a per-entity map, maintains buff membership from
 before state changes and peers that join after the state already exists.
 
 **Stock join flake under churn (root cause closed 2026-08-10 in
-`7dtd-engine-research/docs/network.md` §4.0):** >12-bot cohorts can trigger a stock
+`7dtd-engine-research/docs/network/network.md` §4.0):** >12-bot cohorts can trigger a stock
 race where `LiteNetLibAuthWrapperServer.ConnectionRequestCheck` enumerates
 `ConnectionManager.Clients.List` on the socket-receive thread
 (`UnsyncedEvents=true`) while the main thread mutates it -> `Collection was
@@ -445,7 +445,7 @@ reported `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
 The post-login package set received by a fresh bot (ConfigFile x42, AuthState,
 IdMapping, WorldSpawnPoints, WorldInfo, WorldAreas, PlayerLoginAnswer,
 PlayerId, Localization, DecoUpdate; no EntitySpawn without other entities)
-matches the documented join path (`7dtd-engine-research/docs/network.md` §3b).
+matches the documented join path (`7dtd-engine-research/docs/network/network.md` §3b).
 
 ## Reading results
 
@@ -475,7 +475,7 @@ make clean     # remove C# bin/ and obj/
 The mock tests validate protocol layouts and state transitions, but a live
 server run is still required to validate compatibility with a particular 7DTD
 release. `--golden-wire` cross-checks package body layouts against the
-independent IL-derived wire docs in `7dtd-engine-research/docs/protocol-packages.md`
+independent IL-derived wire docs in `7dtd-engine-research/docs/network/protocol-packages.md`
 §6.23 (e.g. `NetPackageEntityPosAndRot`: `rot:Vector3` at byte 17 when
 `bUseQRotation=false`, `qrot:Quaternion` when true - both sources agree).
 
@@ -494,7 +494,7 @@ Current protocol, workload, and operations work is tracked in
   scheduled stock behavior: the research corpus's live runs (air drop, wandering
   horde, blood-moon start, save-format round-trips, weather state; `settime`-driven,
   bot-joined) boot through `scripts/start_dedicated_*.sh` - see
-  `7dtd-engine-research/docs/re-methodology.md` 5e. Any save these sessions produce is
+  `7dtd-engine-research/docs/meta/re-methodology.md` 5e. Any save these sessions produce is
   machine-checked against the documented on-disk codecs by
   `7dtd-engine-research/tools/save_roundtrip_check.py` (`make save-roundtrip` there):
   main.ttw, region files, chunk bodies, decoration/multiblocks, id mappings -

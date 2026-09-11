@@ -2,7 +2,7 @@
 
 How the stock dedicated validates joins, and the two ways to run the real
 stock client against a test server without valid Steam auth. RE ground truth:
-`../7dtd-engine-research/docs/platform-auth.md` (authorizer chain, Steam/EOS/Local
+`../7dtd-engine-research/docs/admin/platform-auth.md` (authorizer chain, Steam/EOS/Local
 platforms). This doc is the operational decision for the harness.
 
 ## How join auth works (stock V3.1.0)
