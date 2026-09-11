@@ -45,7 +45,7 @@ public sealed class VersionLongStringTests
         Assert.Equal("V 3.1.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 10, 0)));
         Assert.Equal("V 3.1.1", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 11, 0)));
         // V3.2.0 pin: Minor 20 packs to the display form the login gate accepts.
-        Assert.Equal("V 3.2.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 20, 9)));
+        Assert.Equal("V 3.2.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 20, 10)));
     }
 
     [Fact]
