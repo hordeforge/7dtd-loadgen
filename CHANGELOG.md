@@ -8,6 +8,14 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-11
+
+### Changed
+
+- The game version pin moves to **V3.2.0 b10**. `PackageCodec.GameVersion`
+  is the fallback the bots send until `PackageIds` arrives, so it must carry
+  the build number the login gate accepts.
+
 ## [0.3.1] - 2026-09-02
 
 ### Fixed
@@ -204,7 +212,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.1
 [0.3.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.0
 [0.2.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.2.0
