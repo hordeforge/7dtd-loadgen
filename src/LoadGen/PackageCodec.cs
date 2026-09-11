@@ -87,7 +87,7 @@ public static class PackageCodec
     }
 
     /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.</summary>
-    public static readonly VersionInfo GameVersion = new(1, 3, 20, 9); // EGameReleaseType.V=1; V3.2.0 (b9)
+    public static readonly VersionInfo GameVersion = new(1, 3, 20, 10); // EGameReleaseType.V=1; V3.2.0 (b10)
 
     public readonly record struct VersionInfo(byte ReleaseType, int Major, int Minor, int Build);
 
