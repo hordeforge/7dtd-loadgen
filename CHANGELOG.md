@@ -8,6 +8,14 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-20
+
+### Changed
+
+- Dependency and CI housekeeping only: `actions/checkout` to 7.0.1,
+  `actions/cache` to 6.1.0, `astral-sh/setup-uv` to 10.0.1, and the ruff
+  dev-tool bump. No bot, protocol, or gate behavior changed.
+
 ## [0.4.0] - 2026-09-11
 
 ### Changed
