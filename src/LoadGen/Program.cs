@@ -165,7 +165,6 @@ public static partial class Program
             "  --no-spawn-zombies  disable telnet spawns\n" +
             "  --telnet-host/port/password  dedicated telnet (default 127.0.0.1:8081 retest)\n" +
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
-            "  --mixed-actions     mixed walk/jump/turn/crouch steps instead of pure wander\n" +
             "  --bot-mix m1:w1,m2:w2  weighted per-bot modes; overrides --mode\n" +
             "  --max-dynamite N    dynamite charges per life (default 3, demolition 200)\n" +
             "  --spawn-entity LIST --spawn-per-player N --spawn-every-ms N\n" +

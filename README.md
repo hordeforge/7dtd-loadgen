@@ -213,7 +213,7 @@ tools/                 SUT-comparison capture/report + bench consolidation
 
 The join runner accepts `--count` and `--concurrency` for cohort size, plus
 `--timeout` for the wall-clock budget. Bots default to wandering until death;
-`--mixed-actions`, `--mode`, `--actions`, `--pace-ms`, and `--seed` make shorter
+`--mode`, `--actions`, `--pace-ms`, and `--seed` make shorter
 or deterministic action workloads possible. Use `--min-pass-rate` to require a
 minimum successful-client fraction.
 

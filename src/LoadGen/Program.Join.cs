@@ -136,12 +136,6 @@ public static partial class Program
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
             else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
             else if (args[i] == "--no-actions") opt.SkipActions = true;
-            else if (args[i] == "--mixed-actions")
-            {
-                opt.WanderUntilDeath = false;
-                opt.Mode = ActionLoop.BotMode.Mixed;
-                modeSet = true;
-            }
             else if (args[i] == "--max-dynamite" && i + 1 < args.Length)
             {
                 opt.MaxDynamitePerLife = int.Parse(args[++i]);

@@ -8,6 +8,13 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-09-21
+
+### Removed
+
+- The `--mixed-actions` flag, an alias of `--mode mixed`. Use
+  `--mode mixed` instead; behavior is identical.
+
 ## [0.4.1] - 2026-09-20
 
 ### Changed

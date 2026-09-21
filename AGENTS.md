@@ -89,8 +89,8 @@ Python test deps come from `uv.lock` (`make test` runs
 
 ## Workload controls
 
-Common knobs: `--count`, `--concurrency`, `--timeout`, `--mixed-actions`,
-`--mode`, `--actions`, `--pace-ms`, `--seed`, `--min-pass-rate`,
+Common knobs: `--count`, `--concurrency`, `--timeout`, `--mode`, `--actions`,
+`--pace-ms`, `--seed`, `--min-pass-rate`,
 `--no-spawn-zombies`, `--spawn-every-ms`, `--spawn-per-player`,
 `--kill-fallback` / `--no-kill-fallback`.
 
