@@ -8,9 +8,17 @@ the regenerated CONSOLIDATED output. No servers required.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
-from consolidated_report import DIFF_SCHEMA, collect_loadgen, collect_playtest, render
+from consolidated_report import (
+    DIFF_SCHEMA,
+    collect_loadgen,
+    collect_playtest,
+    main,
+    playtest_suites_in_ledger,
+    render,
+)
 
 
 def _write(path: Path, data: dict) -> None:
@@ -182,3 +190,46 @@ def test_wrong_shaped_playtest_evidence_survives(tmp_path):
     assert by_id["suite-weird"]["wall"] == {"stock": None, "zdtd": None}
     assert all(isinstance(f, str) for f in by_id["suite-weird"]["findings"])
     assert "suite-weird" in render(rows)
+
+
+def test_regeneration_refuses_to_drop_playtest_suites(tmp_path, monkeypatch, capsys):
+    """The playtest evidence is a sibling checkout. A clone without
+    ../7dtd-playtest regenerates a smaller ledger and exits 0, which reads as
+    'those suites were never compared'. The committed rows must survive a run
+    that cannot see their source, with a message naming the missing path."""
+    out = tmp_path / "out"
+    out.mkdir()
+    _write(out / "scen-clean" / "diff.json", {"compared": True, "findings": []})
+    committed = [{"tool": "playtest", "id": "smoke", "verdict": "CLEAN"},
+                 {"tool": "playtest", "id": "soak_long", "verdict": "DELTAS"}]
+    (out / "CONSOLIDATED.json").write_text(json.dumps(committed), encoding="utf-8")
+    before = (out / "CONSOLIDATED.json").read_text(encoding="utf-8")
+
+    assert playtest_suites_in_ledger(out) == ["smoke", "soak_long"]
+
+    monkeypatch.setattr(sys, "argv", [
+        "consolidated_report.py", "--out", str(out),
+        "--playtest-root", str(tmp_path / "absent-sibling")])
+    assert main() == 1
+
+    err = capsys.readouterr().err
+    assert "playtest evidence not found" in err
+    assert "smoke, soak_long" in err
+    assert (out / "CONSOLIDATED.json").read_text(encoding="utf-8") == before
+    assert not (out / "CONSOLIDATED.md").exists()
+
+
+def test_missing_playtest_root_warns_when_nothing_is_at_stake(tmp_path, monkeypatch, capsys):
+    """With no playtest rows in the committed ledger there is nothing to drop,
+    so the run proceeds and says the view is loadgen-only rather than failing."""
+    out = tmp_path / "out"
+    out.mkdir()
+    _write(out / "scen-clean" / "diff.json", {"compared": True, "findings": []})
+
+    monkeypatch.setattr(sys, "argv", [
+        "consolidated_report.py", "--out", str(out),
+        "--playtest-root", str(tmp_path / "absent-sibling")])
+    assert main() == 0
+
+    assert "loadgen scenarios only" in capsys.readouterr().err
+    assert "scen-clean" in (out / "CONSOLIDATED.md").read_text(encoding="utf-8")

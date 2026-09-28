@@ -19,6 +19,10 @@ A suite/scenario is HONESTLY classified:
 
 Usage: python3 tools/consolidated_report.py [--playtest-root <dir>] [--out <dir>]
 Defaults: playtest root ../7dtd-playtest, out workspace/comparison.
+
+Regeneration refuses to run when it would drop playtest suites the committed
+ledger already holds: the playtest evidence lives in a sibling checkout, and a
+clone without it would otherwise rewrite the ledger smaller and exit 0.
 """
 
 from __future__ import annotations
@@ -269,6 +273,23 @@ def render(rows: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def playtest_suites_in_ledger(out_dir: Path) -> list[str]:
+    """Suite ids the committed CONSOLIDATED.json already carries from
+    7dtd-playtest. That file is a previous run of this same tool, so an absent
+    or unparseable one just means nothing has been generated here yet."""
+    path = out_dir / "CONSOLIDATED.json"
+    if not path.is_file():
+        return []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            doc = json.load(fh)
+    except (OSError, ValueError):
+        return []
+    return [row["id"] for row in as_list(doc)
+            if isinstance(row, dict) and row.get("tool") == "playtest"
+            and isinstance(row.get("id"), str)]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -280,12 +301,28 @@ def main() -> int:
                     help="dir for CONSOLIDATED.md + CONSOLIDATED.json "
                          "(default: %(default)s)")
     args = ap.parse_args()
-    rows = collect_loadgen(Path(args.out)) + collect_playtest(Path(args.playtest_root))
+    out_dir = Path(args.out)
+    playtest_root = Path(args.playtest_root)
+    if not playtest_root.is_dir():
+        # The playtest evidence is a sibling checkout, so a clean clone without
+        # it regenerates a smaller ledger and still exits 0. Refuse instead: a
+        # committed view that loses suites reads as "those were never compared".
+        held = playtest_suites_in_ledger(out_dir)
+        if held:
+            print(f"ERROR: playtest evidence not found: {playtest_root}", file=sys.stderr)
+            print(f"       the committed ledger holds {len(held)} 7dtd-playtest "
+                  f"suite(s): {', '.join(held)}", file=sys.stderr)
+            print("       regenerating now would drop them. Check out "
+                  "../7dtd-playtest beside this repo, or pass --playtest-root.",
+                  file=sys.stderr)
+            return 1
+        print(f"WARN: no playtest evidence at {playtest_root}; the ledger will "
+              f"cover the loadgen scenarios only", file=sys.stderr)
+    rows = collect_loadgen(out_dir) + collect_playtest(playtest_root)
     if not rows:
         print("ERROR: no evidence found (run compare-all / playtest-compare first)",
               file=sys.stderr)
         return 1
-    out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "CONSOLIDATED.md").write_text(render(rows), encoding="utf-8", newline="\n")
     (out_dir / "CONSOLIDATED.json").write_text(

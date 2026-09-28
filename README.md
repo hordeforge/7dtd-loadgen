@@ -181,6 +181,11 @@ COMPARE_APM=0 make compare-sut                  # skip the stock cost capture
 COMPARE_APM_SECONDS=15 make compare-sut         # smaller stock cost window
 ```
 
+`compare-consolidated` reads the playtest suites from the `7dtd-playtest`
+sibling checkout, so it needs that repo beside this one. Without it the run
+stops with the missing path rather than rewriting the committed ledger one
+shorter; pass `--playtest-root` to point it at another checkout.
+
 A non-default world never clobbers the canonical evidence: `--world
 Pregen08k01` (or `COMPARE_WORLD=Pregen08k01`) writes to
 `workspace/comparison/join-fast-pregen08k01/` unless the scenario id already

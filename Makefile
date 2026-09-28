@@ -71,7 +71,8 @@ help:
 	@echo "  make reset-world-4k      Same, then relaunch the default 4k RWG dedicated"
 	@echo "  make scenarios           List RealEarth loadgen scenario ids"
 	@echo "  make research-save-check Verify every probe save against the research codecs"
-	@echo "                          (7dtd-engine-research make save-roundtrip-all; needs the sibling repo)"
+	@echo "                          (7dtd-engine-research make save-roundtrip-all; needs the"
+	@echo "                          sibling repo, or RESEARCH_ROOT=<path>)"
 	@echo "  make compare-sut         Stock-vs-zdtd comparison: run the same client scenario"
 	@echo "                          against both servers and diff the observable surface"
 	@echo "                          (SCENARIO=join-probe SUT=all|stock|zdtd)"
@@ -79,7 +80,8 @@ help:
 	@echo "  make compare-all         Every catalog scenario on both servers"
 	@echo "  make compare-worlds      join-fast across the world matrix"
 	@echo "  make compare-consolidated  Regenerate workspace/comparison/CONSOLIDATED.md"
-	@echo "                          from committed evidence (no servers needed)"
+	@echo "                          from committed evidence (no servers needed; needs the"
+	@echo "                          7dtd-playtest sibling, or it refuses to shrink the ledger)"
 	@echo "  make compare-verify      compare-all + consolidated + printed verdict"
 	@echo "  make bench-stock         Stock benchmark lane: one stock dedicated (fresh save,"
 	@echo "                          fixed world) runs the scenario matrix incl. the bench"
@@ -262,8 +264,16 @@ clean:
 # produced (main.ttw, region files, chunk bodies, decoration/multiblocks/nim)
 # plus the shipped Navezgane world header. Needs the sibling 7dtd-engine-research repo
 # at ../7dtd-engine-research. Exits non-zero on the first broken save.
+RESEARCH_ROOT ?= $(ROOT)/../7dtd-engine-research
 research-save-check:
-	@cd "$(ROOT)/../7dtd-engine-research" && make save-roundtrip-all
+	@if [ ! -d "$(RESEARCH_ROOT)" ]; then \
+	  echo "ERROR: sibling repo not found: $(RESEARCH_ROOT)" >&2; \
+	  echo "       research-save-check runs 7dtd-engine-research's own checker," >&2; \
+	  echo "       so it needs that checkout beside this repo. Clone it there, or" >&2; \
+	  echo "       point RESEARCH_ROOT=<path> at an existing checkout." >&2; \
+	  exit 1; \
+	fi
+	@cd "$(RESEARCH_ROOT)" && make save-roundtrip-all
 
 # Stock-vs-zdtd comparison harness: run the same client scenario against the
 # stock dedicated server and zdtd, capture the observable surface (log
