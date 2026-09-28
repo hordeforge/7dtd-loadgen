@@ -50,6 +50,9 @@ public static partial class Program
         // gets a bench block (window counts + active-client curve). 0 = disabled.
         int benchWarmupMs = 30_000;
         int benchWindowMs = 0;
+        // Suppress per-client progress on stdout; the summary, warnings and
+        // every artifact path keep writing.
+        bool quiet = false;
         // Wandering hordes: periodic scout-horde bursts that spawn at distance and
         // path in as a group. 0 = off. Slower cadence than the per-player trickle.
         int hordeEveryMs = 0;
@@ -108,8 +111,8 @@ public static partial class Program
                 break;
             default:
                 Console.Error.WriteLine(
-                    $"FAIL: unknown --profile '{profile}' (probe|join-burst|steady-wander|death-soak|mixed|bench)");
-                return 3;
+                    $"FAIL: unknown --profile '{profile}' (probe|join-burst|steady-wander|death-soak|mixed|bench) (see --help)");
+                return 2;
         }
 
         for (int i = 0; i < args.Length; i++)
@@ -150,28 +153,37 @@ public static partial class Program
             }
             else if ((args[i] == "--mode" || args[i] == "--bot-mode") && i + 1 < args.Length)
             {
-                if (ActionLoop.TryParseMode(args[++i], out var mode))
-                {
-                    opt.Mode = mode;
-                    opt.WanderUntilDeath = mode == ActionLoop.BotMode.Wander;
-                    modeSet = true;
-                }
+                string flag = args[i];
+                string raw = args[++i];
+                // An unparsable mode used to fall through as wander, so a typo
+                // silently ran a different workload than the script asked for.
+                if (!ActionLoop.TryParseMode(raw, out var mode))
+                    return InvalidArg(flag, raw, ModeList);
+                opt.Mode = mode;
+                opt.WanderUntilDeath = mode == ActionLoop.BotMode.Wander;
+                modeSet = true;
             }
             else if (args[i] == "--bot-mix" && i + 1 < args.Length)
             {
-                foreach (var part in args[++i].Split(',', StringSplitOptions.RemoveEmptyEntries))
+                string raw = args[++i];
+                foreach (var part in raw.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
                     var kv = part.Split(':');
                     if (kv.Length == 2 && ActionLoop.TryParseMode(kv[0].Trim(), out var m)
                         && int.TryParse(kv[1].Trim(), out var w) && w > 0)
                         botMix.Add((m, w));
                 }
-                if (botMix.Count > 0) modeSet = true;
+                if (botMix.Count == 0)
+                    return InvalidArg("--bot-mix", raw,
+                        "mode:weight pairs with a positive weight, e.g. traverse:35,combat:20; modes: " + ModeList);
+                modeSet = true;
             }
             else if (args[i] == "--death" && i + 1 < args.Length)
             {
-                if (ActionLoop.TryParseDeath(args[++i], out var death))
-                    opt.Death = death;
+                string raw = args[++i];
+                if (!ActionLoop.TryParseDeath(raw, out var death))
+                    return InvalidArg("--death", raw, DeathList);
+                opt.Death = death;
             }
             else if (args[i] == "--pace-ms" && i + 1 < args.Length)
                 opt.PaceMs = int.Parse(args[++i]);
@@ -194,6 +206,7 @@ public static partial class Program
             else if (args[i] == "--respawn-timeout-ms" && i + 1 < args.Length) opt.RespawnTimeoutMs = int.Parse(args[++i]);
             else if (args[i] == "--bench-warmup-ms" && i + 1 < args.Length) benchWarmupMs = int.Parse(args[++i]);
             else if (args[i] == "--bench-window-ms" && i + 1 < args.Length) benchWindowMs = int.Parse(args[++i]);
+            else if (args[i] == "--quiet") quiet = true;
         }
 
         if (count < 1) count = 1;
@@ -528,7 +541,12 @@ public static partial class Program
         if (count == 1)
         {
             var lines = new List<string>();
-            Action<string> log = s => { Console.WriteLine(s); lines.Add(s); };
+            // --quiet drops the console echo only; --log still gets every line.
+            Action<string> log = s =>
+            {
+                if (!quiet) Console.WriteLine(s);
+                lines.Add(s);
+            };
             var (rc, sm) = RunWithRejoin(opt.ClientId, log);
             spawnCts.Cancel();
             AwaitTeardown("zombie_spawn", spawnTask);
@@ -549,8 +567,11 @@ public static partial class Program
             // a single bot that failed is 0/1, which a 0 bar passes.
             double singlePassRate = rc == 0 ? 1.0 : 0.0;
             if (JoinGatePass(rc == 0 ? 1 : 0, 1, minPassRate))
+            {
+                Console.WriteLine("PASS: join total=1 passRate=100.00%");
                 return 0;
-            Console.WriteLine(
+            }
+            Console.Error.WriteLine(
                 $"FAIL: passRate={singlePassRate:P2} < minPassRate={minPassRate:P2}");
             return 1;
         }
@@ -613,7 +634,7 @@ public static partial class Program
             running.TryAdd(id, 0);
             try
             {
-                Action<string>? log = i < 3 ? Console.WriteLine : null;
+                Action<string>? log = i < 3 && !quiet ? Console.WriteLine : null;
                 try
                 {
                     var (rc, s) = RunWithRejoin(id, log);
@@ -751,7 +772,14 @@ public static partial class Program
             }
             WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }
-        return JoinGatePass(pass, count, minPassRate) ? 0 : 1;
+        // Verdict, same shape as the single-bot lane: the pass line is the
+        // result a caller reads, the fail line is a diagnostic for stderr.
+        bool gatePass = JoinGatePass(pass, count, minPassRate);
+        (gatePass ? Console.Out : Console.Error).WriteLine(
+            gatePass
+                ? $"PASS: join total={count} passRate={rate:P2}"
+                : $"FAIL: passRate={rate:P2} < minPassRate={minPassRate:P2}");
+        return gatePass ? 0 : 1;
     }
 
     /// <summary>One run manifest client row (shared by the single- and

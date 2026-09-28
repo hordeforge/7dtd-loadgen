@@ -127,6 +127,58 @@ def test_removed_mixed_actions_flag_fails_with_its_replacement():
         assert "--mode mixed" in output
 
 
+def test_unknown_flag_is_a_usage_error():
+    """A typo used to be a silent no-op: the parser ignores arguments it does
+    not recognize, so `--concurency 4` started the default probe workload and
+    exited 0. Pin exit 2, the offending token, and a message pointing at --help."""
+    for args in (
+        ["--bogus-flag"],
+        ["--join", "--concurency", "4"],
+        ["--join", "--count", "4", "--nospawn-zombies"],
+    ):
+        r = _run(args, timeout=20)
+        output = r.stdout + r.stderr
+        assert r.returncode == 2, (args, output[-2000:])
+        assert "unknown flag" in output
+        assert "--help" in output
+
+
+def test_negative_numbers_are_values_not_flags():
+    """--min-pass-rate -1 is a bad value, not an unknown flag: the flag check
+    must not swallow it before the range gate reports it."""
+    r = _run(["--join", "--min-pass-rate", "-1"], timeout=20)
+    output = r.stdout + r.stderr
+    assert r.returncode == 2, output[-2000:]
+    assert "--min-pass-rate" in output
+    assert "unknown flag" not in output
+
+
+def test_unparsable_enumerated_values_fail_instead_of_defaulting():
+    """--mode/--death/--bot-mix/--profile fell back to their defaults when the
+    value did not parse, so a typo ran a different workload than asked."""
+    for args, flag in (
+        (["--join", "--mode", "wanderr"], "--mode"),
+        (["--join", "--bot-mode", "wanderr"], "--bot-mode"),
+        (["--join", "--death", "drowned"], "--death"),
+        (["--join", "--bot-mix", "traverse:x"], "--bot-mix"),
+        (["--join", "--profile", "benchh"], "--profile"),
+    ):
+        r = _run(args, timeout=20)
+        output = r.stdout + r.stderr
+        assert r.returncode == 2, (args, output[-2000:])
+        assert flag in output
+        assert "FAIL" in output
+
+
+def test_golden_wire_pass_goes_to_stdout_only():
+    """A gate's PASS line is the result a consumer reads; stdout must not
+    carry anything else for the mode."""
+    r = _run(["--golden-wire"], timeout=30)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert r.stdout.startswith("PASS golden-wire:")
+    assert r.stderr == ""
+
+
 def test_help_documents_env_only_credentials():
     output = _run(["--help"], timeout=15).stdout
     assert "LOADGEN_KEY" in output

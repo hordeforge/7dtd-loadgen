@@ -40,6 +40,16 @@ public static partial class Program
     /// <summary>Valid UDP/TCP port range for --port/--telnet-port.</summary>
     public static bool IsValidPort(int port) => port >= 1 && port <= 65535;
 
+    /// <summary>Accepted --mode/--bot-mix values, taken from the enum so the
+    /// error message cannot drift from what the parser accepts. Lowercased to
+    /// match the spellings in --help (the parser is case-insensitive).</summary>
+    internal static readonly string ModeList =
+        string.Join('|', Enum.GetNames<ActionLoop.BotMode>().Select(n => n.ToLowerInvariant()));
+
+    /// <summary>Accepted --death values. TryParseDeath also takes the
+    /// synonyms below, but the help lists the canonical names.</summary>
+    internal const string DeathList = "none|drown|suicide|killed|random";
+
     /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.1.1".
     /// Backed by &lt;Version&gt; in LoadGen.csproj (see test_release_contract.py).</summary>
     public static string VersionLine()
@@ -94,6 +104,46 @@ public static partial class Program
         return 2;
     }
 
+    /// <summary>Every flag the parser accepts, in any mode. An argv token that
+    /// looks like a flag and is not in this set is a usage error, never a
+    /// silent no-op.</summary>
+    static readonly HashSet<string> KnownFlags = new(StringComparer.Ordinal)
+    {
+        "-h", "--help", "-V", "--version", "--golden-wire",
+        "--join", "--self-test", "--self-test-join",
+        "--actions", "--no-actions", "--bot-mix", "--bot-mode",
+        "--bench-warmup-ms", "--bench-window-ms", "--concurrency", "--count",
+        "--death", "--events-jsonl", "--horde-every-ms", "--horde-waves",
+        "--host", "--id", "--key", "--kill-fallback", "--no-kill-fallback",
+        "--log", "--max-dynamite", "--max-lives", "--min-pass-rate", "--mode",
+        "--name", "--observe-buff", "--observe-cvar", "--pace-ms", "--password",
+        "--port", "--profile", "--quiet", "--ramp-ms", "--respawn", "--no-respawn",
+        "--respawn-delay-ms", "--respawn-timeout-ms", "--run-manifest",
+        "--scenario-id", "--seed", "--spawn-entity", "--spawn-every-ms",
+        "--spawn-per-player", "--spawn-zombies", "--no-spawn-zombies",
+        "--stats-json", "--telnet-host", "--telnet-password", "--telnet-port",
+        "--timeout",
+    };
+
+    /// <summary>Reject an argv token that looks like a flag but is not one. The
+    /// parser ignores arguments it does not recognize, so a typo (<c>--concurency</c>)
+    /// or a flag from a newer script used to start the default probe workload
+    /// and exit 0: a silent change in what the server is asked to absorb, which
+    /// invalidates a benchmark rather than failing it. Same contract as
+    /// <see cref="RemovedFlag"/>. A negative number is a value, not a flag.</summary>
+    internal static string? UnknownFlag(string[] args)
+    {
+        foreach (var a in args)
+        {
+            if (a.Length < 2 || a[0] != '-') continue;
+            if (KnownFlags.Contains(a)) continue;
+            if (double.TryParse(a, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out _)) continue;
+            return a;
+        }
+        return null;
+    }
+
     /// <summary>Reject a flag removed from the CLI, naming its replacement.
     /// The parser ignores arguments it does not recognize, so a script still
     /// carrying a removed flag would otherwise start and run the default
@@ -133,7 +183,10 @@ public static partial class Program
             var err = PackageCodec.AssertGoldenWireLayouts();
             if (err != null)
             {
-                Console.WriteLine($"FAIL golden-wire: {err}");
+                // A failed gate is a diagnostic, not a result: the PASS line
+                // stays the only thing on stdout so a consumer grepping it
+                // cannot mistake a failure for output.
+                Console.Error.WriteLine($"FAIL golden-wire: {err}");
                 return 1;
             }
             Console.WriteLine(
@@ -148,6 +201,14 @@ public static partial class Program
         // parser's ignore-unknown behavior made it a silent no-op everywhere.
         if (args.Any(a => a == "--mixed-actions"))
             return RemovedFlag("--mixed-actions", "--mode mixed");
+
+        var unknown = UnknownFlag(args);
+        if (unknown != null)
+        {
+            Console.Error.WriteLine(
+                $"FAIL: unknown flag '{unknown}' (see --help for the accepted flags)");
+            return 2;
+        }
 
         string mode = "probe";
         if (args.Any(a => a == "--join")) mode = "join";
@@ -193,7 +254,7 @@ public static partial class Program
             "  --bench-window-ms N   bench measurement window; >0 enables the bench\n" +
             "      summary (stats-json bench block + BENCH_SUMMARY line)\n" +
             "  --mode wander|mixed|chatty|combat|patrol|chaos|demolition|bait|kite|traverse\n" +
-            "      default: wander (walk until world death)\n" +
+            "      default: wander (walk until world death); --bot-mode is an alias\n" +
             "  --death none|drown|suicide|killed|random\n" +
             "      default none: never self-kill; wait for world death\n" +
             "  --actions N         live steps (0 or omit = endless until death/timeout)\n" +
@@ -217,12 +278,19 @@ public static partial class Program
             "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions --ramp-ms --quiet\n" +
             "      --timeout is a wall-clock budget in ms, 1..2147483647 (~24.9 days)\n" +
+            "      --quiet drops per-client progress lines, keeping the summary\n" +
             "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +
             "  --observe-buff NAME  observe one exact replicated buff (repeatable)\n" +
             "  --events-jsonl PATH  write filtered joined/state events as JSON lines\n" +
             "  --golden-wire       Assert package body layouts vs Assembly-CSharp IL sizes\n" +
             "  -V / --version      print client version and exit\n" +
+            "  -h / --help         print this help and exit\n" +
+            "Exit codes:\n" +
+            "  0  run completed and met --min-pass-rate\n" +
+            "  1  run completed but failed the gate (or a mode's own check failed)\n" +
+            "  2  usage error: unknown/removed flag, invalid or out-of-range value\n" +
             "Notes:\n" +
+            "  An unrecognized flag is an error, not a no-op; nothing is ignored silently.\n" +
             "  Walk → world kill → DEATH → respawn → walk again until --timeout. No self-kill.\n" +
             "  Default timeout 1 hour. Rejoins on early disconnect. Telnet zed spawn for empty worlds.\n" +
             "Secrets via environment only (argv is ps-visible; there is no flag):\n" +

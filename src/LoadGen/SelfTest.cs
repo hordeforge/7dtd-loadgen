@@ -72,7 +72,10 @@ static class SelfTest
         server.Stop();
         if (!string.IsNullOrEmpty(logPath))
             Program.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
-        Console.WriteLine(pass ? $"PASS: self-test count={count}" : "FAIL: self-test");
+        // Verdict: the PASS line is the result a caller reads, the FAIL line is a
+        // diagnostic and belongs on stderr so stdout carries the result alone.
+        (pass ? Console.Out : Console.Error).WriteLine(
+            pass ? $"PASS: self-test count={count}" : "FAIL: self-test");
         return pass ? 0 : 1;
     }
 }

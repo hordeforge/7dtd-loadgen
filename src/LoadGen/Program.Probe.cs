@@ -55,13 +55,13 @@ public static partial class Program
             if (!string.IsNullOrEmpty(logPath))
                 WriteArtifact("log", logPath, () => WriteLines(logPath, result.Lines));
             if (!result.Pass)
-                Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
+                Console.Error.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
             else
                 Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] PASS: protocol progress beyond socket open");
             // Same gate as the multi-client lane: a 0 bar passes a failed probe.
             if (Program.JoinGatePass(result.Pass ? 1 : 0, 1, minPassRate))
                 return 0;
-            Console.WriteLine($"FAIL: passRate={(result.Pass ? 1.0 : 0.0):P2} < minPassRate={minPassRate:P2}");
+            Console.Error.WriteLine($"FAIL: passRate={(result.Pass ? 1.0 : 0.0):P2} < minPassRate={minPassRate:P2}");
             return 1;
         }
 
@@ -75,7 +75,7 @@ public static partial class Program
         Console.WriteLine(summary.ToReport());
         if (!Program.JoinGatePass(summary.Pass, summary.Total, minPassRate))
         {
-            Console.WriteLine($"FAIL: passRate={summary.PassRate:P2} < minPassRate={minPassRate:P2}");
+            Console.Error.WriteLine($"FAIL: passRate={summary.PassRate:P2} < minPassRate={minPassRate:P2}");
             return 1;
         }
         Console.WriteLine($"PASS: load {summary.Total} clients passRate={summary.PassRate:P2}");

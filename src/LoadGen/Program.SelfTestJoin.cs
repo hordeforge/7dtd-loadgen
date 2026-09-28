@@ -9,6 +9,7 @@ public static partial class Program
         string? logPath = null;
         string? runManifestPath = null;
         string scenarioId = Environment.GetEnvironmentVariable("LOADGEN_SCENARIO_ID") ?? "re-selftest-client-path";
+        bool quiet = false;
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--actions" && i + 1 < args.Length) actions = int.Parse(args[++i]);
@@ -16,11 +17,24 @@ public static partial class Program
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];
             else if (args[i] == "--run-manifest" && i + 1 < args.Length) runManifestPath = args[++i];
             else if (args[i] == "--scenario-id" && i + 1 < args.Length) scenarioId = args[++i];
+            else if (args[i] == "--quiet") quiet = true;
         }
         if (actions < 6) actions = 6;
 
         var lines = new List<string>();
-        void Log(string m) { Console.WriteLine(m); lines.Add(m); }
+        // --quiet drops the console echo of progress lines only; --log still
+        // gets every line, and the verdict always reaches the console.
+        void Log(string m)
+        {
+            if (!quiet) Console.WriteLine(m);
+            lines.Add(m);
+        }
+
+        void Verdict(string m, bool ok)
+        {
+            lines.Add(m);
+            (ok ? Console.Out : Console.Error).WriteLine(m);
+        }
 
         Log($"[{DateTime.UtcNow:O}] self-test-join actions={actions} seed={seed}");
         JoinStateMachine sm;
@@ -34,7 +48,7 @@ public static partial class Program
             // The in-process mock host failed to bind its UDP socket (port
             // exhaustion, sandboxed CI): report it like every other startup
             // failure instead of an unhandled-exception stack trace.
-            Log($"FAIL: in-process mock join host could not start: {ex.Message}");
+            Verdict($"FAIL: in-process mock join host could not start: {ex.Message}", false);
             return 1;
         }
         Log($"SUMMARY stage={sm.Stage} joined={sm.IsJoined} mode={sm.BotModeName} " +
@@ -45,10 +59,7 @@ public static partial class Program
             $"died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
         if (!string.IsNullOrEmpty(logPath))
             WriteArtifact("log", logPath, () => WriteLines(logPath, lines.Concat(sm.Log)));
-        if (rc == 0)
-            Log("PASS: self-test-join joined + actions");
-        else
-            Log("FAIL: self-test-join");
+        Verdict(rc == 0 ? "PASS: self-test-join joined + actions" : "FAIL: self-test-join", rc == 0);
 
         if (!string.IsNullOrEmpty(runManifestPath))
         {
