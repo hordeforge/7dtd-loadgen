@@ -27,6 +27,8 @@ select = [
     "I",    # isort: import order and grouping
     "UP",   # pyupgrade: syntax the pinned Python 3.11 makes obsolete
     "B",    # flake8-bugbear: mutable defaults, shadowed loop vars, ...
+    "PGH",  # pygrep-hooks: bare eval/exec, blanket noqa or type: ignore
+    "PLE",  # pylint errors: unreachable code, bad except, misused loop vars
     "RET",  # flake8-return: redundant else/return paths
     "PIE",  # flake8-pie: misimplemented, non-idiomatic constructs
     "Q",    # flake8-quotes: one string style across the tree
@@ -56,6 +58,11 @@ files = ["scripts", "tools", "tests"]
 explicit_package_bases = true
 mypy_path = "tools:scripts:tests"
 warn_unused_ignores = true
+# The ratchet below names 22 modules by name. A rename or a delete would
+# leave the entry matching nothing, and the module it used to hold would
+# silently drop back to untyped with no error anywhere: an overrides block
+# that matches no module is not an error by default. This makes it one.
+warn_unused_configs = true
 warn_redundant_casts = true
 no_implicit_optional = true
 # Free strictness, proven by a clean run on the tree as it stands. Equality
