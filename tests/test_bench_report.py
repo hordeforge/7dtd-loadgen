@@ -165,3 +165,22 @@ def test_corrupt_run_meta_skips_scenario_not_whole_lap(tmp_path):
     assert "skipping unreadable" in r.stderr
     payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
     assert set(payload["laps"]["lap1"]["scenarios"]) == {"join-fast"}
+
+
+def test_unreadable_stats_is_recorded_not_silently_substituted(tmp_path):
+    """stats.json is the authoritative join outcome. A corrupt one must be
+    flagged in the report and the JSON, not quietly replaced by run-meta's
+    older summary numbers."""
+    meta = {"scenario": "bench", "summary": {"pass": 16, "fail": 0},
+            "hostLoadStart": "1.0", "hostLoadEnd": "1.2",
+            "startUtc": "2026-08-22T10:00:00Z", "endUtc": "2026-08-22T10:01:00Z"}
+    _make_lap(tmp_path, "lap1", {"bench": dict(meta, bench={"actionsPerSec": 41.0})})
+    (tmp_path / "lap1" / "bench" / "stats.json").write_text('{"pass": 1', encoding="utf-8")
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    assert "unreadable" in r.stderr
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+    assert "stats.json unreadable for: lap1/bench" in md
+    payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
+    assert payload["laps"]["lap1"]["scenarios"]["bench"]["statsUnreadable"] is True

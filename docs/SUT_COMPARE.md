@@ -129,7 +129,7 @@ puts in death messages.
 normalization, clock-rate derivation, bracket-format listents rows, NOT
 COMPARED path, gamestats comparison, stock apmStock extraction + report
 rendering. `tests/test_consolidated_report.py` covers the consolidated
-overview classification (CLEAN / DELTAS / ONE-SIDE) from synthetic evidence.
+overview classification (CLEAN / DELTAS / ONE-SIDE / UNREADABLE) from synthetic evidence.
 Both run in `make test` (no servers required).
 
 ## Evidence dirs and world tagging
@@ -171,7 +171,8 @@ so an evidence dir always names exactly what was compared.
 (`workspace/comparison/CONSOLIDATED.md` + `.json`): every loadgen scenario
 (per-scenario `diff.json`) and every playtest suite
 (`../7dtd-playtest/workspace/comparison-playtest/*/playtest-compare.json`),
-classified CLEAN / DELTAS / ONE-SIDE. It is computed, never hand-maintained,
+classified CLEAN / DELTAS / ONE-SIDE / UNREADABLE (evidence present but not
+parseable, which is listed rather than dropped). It is computed, never hand-maintained,
 so the view cannot drift from the runs. The hand-written summary below is the
 triage record behind those rows.
 

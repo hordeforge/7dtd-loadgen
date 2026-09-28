@@ -224,5 +224,5 @@ compare-consolidated:
 # fixed, one that stays is still a finding.
 compare-verify: compare-all compare-consolidated
 	@echo "=== consolidated verdict ==="
-	@awk -F'|' 'NR>3 {t=$$2; id=$$3; v=$$4; gsub(/^ +| +$$/, "", t); gsub(/^ +| +$$/, "", id); gsub(/^ +| +$$/, "", v); if (v=="DELTAS"||v=="CLEAN"||v=="ONE-SIDE") print v, "->", t"/"id}' \
+	@awk -F'|' 'NR>3 {t=$$2; id=$$3; v=$$4; gsub(/^ +| +$$/, "", t); gsub(/^ +| +$$/, "", id); gsub(/^ +| +$$/, "", v); if (v=="DELTAS"||v=="CLEAN"||v=="ONE-SIDE"||v=="UNREADABLE") print v, "->", t"/"id}' \
 		workspace/comparison/CONSOLIDATED.md

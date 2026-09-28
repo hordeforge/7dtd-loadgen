@@ -9,11 +9,13 @@ output is regenerated from committed evidence, so the view cannot drift from
 the runs.
 
 A suite/scenario is HONESTLY classified:
-  - CLEAN    both sides ran, no per-case/axis differences, no findings
-  - DELTAS   both sides ran, differences exist (findings to triage, never faked)
-  - ONE-SIDE only one server ran (missing capability or run failure) - never
-             reported as compared
-  - STALE    only one side's evidence is present
+  - CLEAN       both sides ran, no per-case/axis differences, no findings
+  - DELTAS      both sides ran, differences exist (findings to triage, never faked)
+  - ONE-SIDE    only one server ran (missing capability or run failure) - never
+                reported as compared
+  - UNREADABLE  the evidence file exists but could not be parsed. It is listed
+                as its own verdict: dropping the entry would silently remove a
+                scenario from the ledger and read as "nothing was compared here".
 
 Usage: python3 tools/consolidated_report.py [--playtest-root <dir>] [--out <dir>]
 Defaults: playtest root ../7dtd-playtest, out workspace/comparison.
@@ -29,12 +31,33 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load_json(p: Path) -> dict | None:
+def _load_json(p: Path) -> tuple[dict | None, str | None]:
+    """(document, error). A missing file is absence of evidence; a file that is
+    present but unparseable is broken evidence, and the caller must not fold the
+    two into the same empty result."""
+    if not p.is_file():
+        return None, None
     try:
         with open(p, encoding="utf-8") as fh:
-            return json.load(fh)
-    except (OSError, ValueError):
-        return None
+            doc = json.load(fh)
+    except (OSError, ValueError) as e:
+        return None, f"{p.name}: {e.__class__.__name__}: {e}"
+    if not isinstance(doc, dict):
+        return None, f"{p.name}: expected a JSON object, got {type(doc).__name__}"
+    return doc, None
+
+
+def _unreadable_row(tool: str, ident: str, detail: str) -> dict:
+    return {
+        "tool": tool,
+        "id": ident,
+        "compared": False,
+        "ran": None,
+        "missing": None,
+        "verdict": "UNREADABLE",
+        "findings": [f"evidence unreadable ({detail})"],
+        "summary": None,
+    }
 
 
 def collect_loadgen(compare_root: Path) -> list[dict]:
@@ -43,7 +66,11 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
     if not compare_root.is_dir():
         return rows
     for scenario_dir in sorted(p for p in compare_root.iterdir() if p.is_dir()):
-        d = _load_json(scenario_dir / "diff.json")
+        d, err = _load_json(scenario_dir / "diff.json")
+        if err is not None:
+            print(f"WARN: {scenario_dir.name}/diff.json unreadable: {err}", file=sys.stderr)
+            rows.append(_unreadable_row("loadgen", scenario_dir.name, err))
+            continue
         if d is None:
             continue
         verdict = "ONE-SIDE" if d.get("compared") is False else (
@@ -68,7 +95,12 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
     if not playtest_root.is_dir():
         return rows
     for suite_dir in sorted(p for p in playtest_root.iterdir() if p.is_dir()):
-        d = _load_json(suite_dir / "playtest-compare.json")
+        d, err = _load_json(suite_dir / "playtest-compare.json")
+        if err is not None:
+            print(f"WARN: {suite_dir.name}/playtest-compare.json unreadable: {err}",
+                  file=sys.stderr)
+            rows.append(_unreadable_row("playtest", suite_dir.name, err))
+            continue
         if d is None:
             continue
         stock = d.get("stock", {}).get("summary") or {}
@@ -117,11 +149,14 @@ def render(rows: list[dict]) -> str:
               "playtest playtest-compare.json). CLEAN = both sides ran with no "
               "differences; DELTAS = differences recorded as findings (triage, "
               "never faked); ONE-SIDE = only one server ran (never counted as "
-              "compared).\n")]
+              "compared). UNREADABLE = evidence present but unparseable.\n")]
     lines.append("| tool | id | verdict | stock | zdtd | wall s | findings |")
     lines.append("|---|---|---|---|---|---|---|")
     for r in rows:
-        if r["tool"] == "playtest":
+        if r["verdict"] == "UNREADABLE":
+            stock_cell = zdtd_cell = "unreadable"
+            wall_cell = "n/a"
+        elif r["tool"] == "playtest":
             s = r["summary"]["stock"]
             z = r["summary"]["zdtd"]
             stock_cell = f"{s.get('pass', 0)}/{s.get('fail', 0)}/{s.get('skip', 0)}"
@@ -144,6 +179,11 @@ def render(rows: list[dict]) -> str:
             lines.append(f"- ran: {r.get('ran')} | missing: {r.get('missing')} "
                          f"(missing capability or failed run; not compared)\n")
             continue
+        if r["verdict"] == "UNREADABLE":
+            for f in r["findings"]:
+                lines.append(f"- {f}; the entry is listed, not scored "
+                             f"(re-run compare to regenerate it)\n")
+            continue
         for f in r["findings"]:
             lines.append(f"- finding: {f}")
         for dlt in r.get("deltas", []):
@@ -154,7 +194,8 @@ def render(rows: list[dict]) -> str:
     total = len(rows)
     lines.insert(1, f"\nCompared entries: {clean}/{total} CLEAN, "
                     f"{sum(1 for r in rows if r['verdict'] == 'DELTAS')} DELTAS, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'ONE-SIDE')} ONE-SIDE.\n")
+                    f"{sum(1 for r in rows if r['verdict'] == 'ONE-SIDE')} ONE-SIDE, "
+                    f"{sum(1 for r in rows if r['verdict'] == 'UNREADABLE')} UNREADABLE.\n")
     return "\n".join(lines) + "\n"
 
 

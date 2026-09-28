@@ -91,11 +91,23 @@ def load_lap(lap_dir: Path) -> dict:
             continue
         stats = {}
         stats_path = meta_path.parent / "stats.json"
+        stats_unreadable = False
         if stats_path.is_file():
             try:
                 stats = json.loads(stats_path.read_text(encoding="utf-8"))
-            except (ValueError, OSError):
-                pass
+            except (ValueError, OSError) as e:
+                # stats.json is the authoritative join outcome. Falling back to
+                # run-meta silently would let a lap killed mid-write report the
+                # older, partial counts as this lap's measurement.
+                print(f"WARN: unreadable {stats_path} ({e}); join counts fall back "
+                      f"to run-meta summary", file=sys.stderr)
+                stats_unreadable = True
+            else:
+                if not isinstance(stats, dict):
+                    print(f"WARN: non-object {stats_path}; join counts fall back "
+                          f"to run-meta summary", file=sys.stderr)
+                    stats = {}
+                    stats_unreadable = True
         bench = (stats.get("bench") or {}) if isinstance(stats, dict) else {}
         # stats.json is the authoritative join outcome (client.log can contain
         # binary bytes that defeat grep); fall back to run-meta summary.
@@ -108,6 +120,7 @@ def load_lap(lap_dir: Path) -> dict:
             "wallS": round(wall, 1) if wall is not None else None,
             "joinsPass": joins_pass,
             "joinsFail": joins_fail,
+            "statsUnreadable": stats_unreadable,
             "hostLoad": f"{meta.get('hostLoadStart')}->{meta.get('hostLoadEnd')}",
             "bench": bench,
             "apm": apm_cell(meta_path.parent),
@@ -137,6 +150,12 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
             lines.append(f"| {name} | {sc} | {s['joinsPass']}/{s['joinsFail']} | "
                          f"{wall} | {s['hostLoad']} | {win} | {aps} | {active} | "
                          f"{s['apm']} |")
+    degraded = [f"{name}/{sc}" for name, lap in laps
+                for sc, s in lap["scenarios"].items() if s.get("statsUnreadable")]
+    if degraded:
+        lines.append(f"\n- stats.json unreadable for: {', '.join(degraded)} "
+                     f"(join counts came from run-meta, not the authoritative "
+                     f"stats artifact)")
     # Repeatability across laps.
     if len(laps) >= 2:
         lines.append("\n## Repeatability (per-scenario wall, +-20% bound)\n")

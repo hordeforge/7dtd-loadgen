@@ -35,7 +35,11 @@ def frame_alive():
     unreadable. Mapping lost telemetry to 0 read as a perfect frame: every sweep
     round reported 'ok', the over-budget stop never fired, and the final
     CAPACITY number was fabricated from data that was never received."""
-    d = B.snapshot()
+    try:
+        d = B.snapshot()
+    except B.SnapshotUnavailable as e:
+        B.log(f"  apm snapshot unavailable: {e}")
+        return None
     w = d.get("world") or {}
     frame_ms = w.get("unityDeltaMs")
     if frame_ms is None:

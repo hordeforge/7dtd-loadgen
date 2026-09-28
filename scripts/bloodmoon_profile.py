@@ -114,6 +114,10 @@ def telnet(cmds, settle=1.0):
     return decode_stream(out)
 
 
+class SnapshotUnavailable(RuntimeError):
+    """The APM bridge snapshot is missing, unreadable, or not JSON."""
+
+
 def player_ids():
     return [int(m) for m in re.findall(r"\d+\.\s*id=(\d+),", telnet(["listplayers"]))]
 
@@ -122,6 +126,10 @@ def alive():
     """Live entity count from a fresh APM snapshot; -1 when unreadable."""
     try:
         value = (snapshot().get("world") or {}).get("entityAlives")
+    except SnapshotUnavailable as e:
+        log(f"  apm snapshot unavailable: {e}")
+        return -1
+    try:
         return int(value) if value is not None else -1
     except (TypeError, ValueError):
         return -1
@@ -215,7 +223,8 @@ def spawn_endgame(target):
             time.sleep(2)
             ids = player_ids()
         if not ids:
-            if snap_players() > 0:  # players are really there, telnet just hitched
+            sp = snap_players()
+            if sp > 0:  # players are really there, telnet just hitched
                 telnet_fails += 1
                 if telnet_fails >= 6:
                     # Server too bogged to service telnet = it has already saturated.
@@ -226,7 +235,11 @@ def spawn_endgame(target):
                 log(f"  listplayers empty but players present (x{telnet_fails}) - retrying")
                 time.sleep(3)
                 continue
-            log("  no players - aborting spawn")
+            if sp < 0:
+                log("  apm snapshot unavailable, so player count is unknown - "
+                    "aborting spawn rather than reporting an unverified ceiling")
+            else:
+                log("  no players - aborting spawn")
             break
         telnet_fails = 0
         # ~1 cycle of the mix distributed across players per round.
@@ -246,24 +259,46 @@ def spawn_endgame(target):
 
 
 def snapshot():
+    """One APM reading, or SnapshotUnavailable naming the file and the cause.
+
+    Lost telemetry is never mapped to an empty dict: every caller would then
+    read missing fields as measurements of zero."""
     telnet(["apm dump"])
     time.sleep(1.5)
     try:
-        return json.loads(APM_SNAP.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
+        raw = APM_SNAP.read_text(encoding="utf-8")
+    except OSError as e:
+        raise SnapshotUnavailable(f"{APM_SNAP}: {e}") from e
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise SnapshotUnavailable(f"{APM_SNAP}: invalid JSON ({e})") from e
 
 
 def snap_players():
-    return (snapshot().get("world") or {}).get("players") or 0
+    """Live player count, or -1 when the snapshot is unreadable (so a broken
+    telemetry path is never reported as a server with no players)."""
+    try:
+        d = snapshot()
+    except SnapshotUnavailable as e:
+        log(f"  apm snapshot unavailable: {e}")
+        return -1
+    return (d.get("world") or {}).get("players") or 0
 
 
 def health():
-    d = snapshot()
+    """Steady-state reading, flagged readable=False with the cause when the
+    snapshot is unavailable. A caller judging a load from a dict of Nones would
+    report a server it never measured."""
+    try:
+        d = snapshot()
+    except SnapshotUnavailable as e:
+        return {"readable": False, "error": str(e)}
     w = d.get("world") or {}
     u = d.get("update") or {}
     # unityDeltaMs is the real frame period (the "are we at 20 TPS" signal: <=55ms ok).
-    return {"entityAlives": w.get("entityAlives"), "players": w.get("players"),
+    return {"readable": True,
+            "entityAlives": w.get("entityAlives"), "players": w.get("players"),
             "frameMs": w.get("unityDeltaMs"), "tickAvgMs": u.get("serverTickIntervalAvgMs"),
             "tickMaxMs": u.get("serverTickIntervalMaxMs"), "gmMaxMs": u.get("gmUpdateDurationMaxMs"),
             "lateTicks": u.get("lateTicks"), "stallMs": u.get("tickStallMsTotal")}
@@ -313,19 +348,31 @@ def main():
         time.sleep(8)  # let the spawn churn settle before reading steady-state health
         h = health()
         log("=== LOAD ESTABLISHED ===")
+        if not h.get("readable"):
+            log(f"  apm snapshot unreadable: {h.get('error')}")
         log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  entityAlives={h.get('entityAlives')}")
         log(f"  frame={h.get('frameMs')}ms (50ms=20TPS budget)  tickMax={h.get('tickMaxMs')}ms  "
             f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  stall={h.get('stallMs')}ms")
         frame = h.get("frameMs")
-        keeps = isinstance(frame, (int, float)) and frame <= 55
-        log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
+        if not h.get("readable"):
+            # A missing snapshot is not an over-budget server: say the load was
+            # never measured instead of printing a verdict from a None frame.
+            log("  VERDICT: UNKNOWN (no apm snapshot; the load was not measured)")
+        elif not isinstance(frame, (int, float)):
+            log("  VERDICT: UNKNOWN (snapshot has no unityDeltaMs; the load was not measured)")
+        else:
+            keeps = frame <= 55
+            log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
         if HOLD_S <= 0:
             log("holding load (BM_HOLD_S=0). Attach APM/capture now. Ctrl-C to tear down.")
             try:
                 while True:
                     time.sleep(30)
                     h = health()
-                    log(f"  hold: alive={h.get('entityAlives')} frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
+                    if not h.get("readable"):
+                        log(f"  hold: apm snapshot unreadable: {h.get('error')}")
+                    else:
+                        log(f"  hold: alive={h.get('entityAlives')} frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
             except KeyboardInterrupt:
                 pass
         else:

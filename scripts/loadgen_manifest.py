@@ -14,10 +14,15 @@ from pathlib import Path
 
 
 def integer(name: str) -> int:
+    """Parse one LOADGEN_* integer. A non-numeric value aborts the manifest
+    write: substituting 0 would record port 0, count 0 or timeout 0 in the run
+    manifest, which reads as a measured value in every downstream lap summary.
+    run_loadgen.sh keeps the client's exit code and warns on this failure."""
+    raw = os.environ.get(name, "0")
     try:
-        return int(os.environ.get(name, "0"))
-    except ValueError:
-        return 0
+        return int(raw)
+    except ValueError as e:
+        raise SystemExit(f"loadgen_manifest: {name}={raw!r} is not an integer") from e
 
 
 manifest = {

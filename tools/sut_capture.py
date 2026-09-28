@@ -133,6 +133,10 @@ def telnet_snapshot(run_dir):
     """Parse the telnet.txt transcript into day/entities/players counts."""
     p = os.path.join(run_dir, "telnet.txt")
     if not os.path.exists(p):
+        # Every entity/day/clock axis comes from this transcript, so its absence
+        # is a named gap in the comparison, not an empty result.
+        print(f"WARNING: no telnet transcript at {p}; the telnet axis is missing",
+              file=sys.stderr)
         return None
     with open(p, encoding="utf-8", errors="replace") as fh:
         text = fh.read()
@@ -326,7 +330,9 @@ def stock_apm_summary(run_dir):
     try:
         with open(p, encoding="utf-8") as fh:
             s = json.load(fh)
-    except (ValueError, OSError):
+    except (ValueError, OSError) as e:
+        print(f"WARNING: stock apm summary unreadable {p}: "
+              f"{e.__class__.__name__}: {e}; cost axis omitted", file=sys.stderr)
         return None
     out = {"session": sessions[-1]}
     meta = s.get("metadata") or {}
@@ -361,7 +367,12 @@ def run_meta(run_dir):
     try:
         with open(p, encoding="utf-8") as fh:
             return json.load(fh)
-    except (ValueError, OSError):
+    except (ValueError, OSError) as e:
+        # Provenance is what makes a comparison auditable. A silent None here
+        # renders a REPORT.md with no "what was under test" line, which reads as
+        # a run without metadata rather than a run whose metadata was lost.
+        print(f"WARNING: run metadata unreadable {p}: "
+              f"{e.__class__.__name__}: {e}; provenance omitted", file=sys.stderr)
         return None
 
 

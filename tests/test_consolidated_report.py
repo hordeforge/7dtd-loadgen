@@ -1,7 +1,7 @@
 """Offline gate for the consolidated comparison report (tools/consolidated_report.py).
 
 Feeds synthetic loadgen diff.json + playtest playtest-compare.json trees and
-asserts the honest classification: CLEAN / DELTAS / ONE-SIDE, plus the
+asserts the honest classification: CLEAN / DELTAS / ONE-SIDE / UNREADABLE, plus the
 regenerated CONSISTENT output. No servers required.
 """
 
@@ -64,3 +64,31 @@ def test_clean_deltas_and_one_side(tmp_path):
 def test_no_evidence_is_an_error(tmp_path):
     assert collect_loadgen(tmp_path / "nope") == []
     assert collect_playtest(tmp_path / "nope") == []
+
+
+def test_corrupt_evidence_is_listed_as_unreadable(tmp_path, capsys):
+    """A diff.json that exists but does not parse must appear in the ledger as
+    UNREADABLE. Dropping it silently removes the scenario from the overview and
+    reads as 'nothing was compared here'."""
+    lg = tmp_path / "lg"
+    broken = lg / "scen-broken"
+    broken.mkdir(parents=True)
+    (broken / "diff.json").write_text('{"compared": true', encoding="utf-8")
+    _write(lg / "scen-clean" / "diff.json", {"compared": True, "findings": []})
+
+    rows = collect_loadgen(lg)
+    verdicts = {r["id"]: r["verdict"] for r in rows}
+    assert verdicts == {"scen-clean": "CLEAN", "scen-broken": "UNREADABLE"}
+    assert "unreadable" in capsys.readouterr().err
+
+    md = render(rows)
+    assert "1 UNREADABLE" in md
+    assert "scen-broken" in md
+
+
+def test_non_object_evidence_is_unreadable(tmp_path):
+    pt = tmp_path / "pt" / "suite-bad"
+    pt.mkdir(parents=True)
+    (pt / "playtest-compare.json").write_text("[1, 2, 3]", encoding="utf-8")
+    rows = collect_playtest(tmp_path / "pt")
+    assert [r["verdict"] for r in rows] == ["UNREADABLE"]
