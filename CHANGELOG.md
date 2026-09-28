@@ -16,7 +16,13 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
-- Nothing yet since 0.5.0.
+- Nothing yet since 0.6.0.
+
+## [0.6.0] - 2026-09-28
+
+### Changed
+
+- Version bump only; no functional change since 0.5.0.
 
 ## [0.5.0] - 2026-09-28
 
@@ -922,7 +928,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.0...v0.4.1
