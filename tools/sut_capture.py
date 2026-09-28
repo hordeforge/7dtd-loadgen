@@ -370,12 +370,15 @@ def stock_apm_summary(run_dir):
         out["gcFullCollections"] = gc["fullCollections"]
     layers = {}
     signals = {}
-    for layer in s.get("layers") or []:
-        if layer.get("score") is not None:
-            layers[layer["layer"]] = layer["score"]
-        sig = {k: v for k, v in (layer.get("signals") or {}).items() if v is not None}
+    for l in s.get("layers") or []:
+        name = l.get("layer")
+        if not name:
+            continue
+        if l.get("score") is not None:
+            layers[name] = l["score"]
+        sig = {k: v for k, v in (l.get("signals") or {}).items() if v is not None}
         if sig:
-            signals[layer["layer"]] = sig
+            signals[name] = sig
     if layers:
         out["layers"] = layers
     if signals:

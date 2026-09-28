@@ -68,7 +68,6 @@ def mutating_command(cmd: str) -> bool:
     return bool(verb) and verb[0].lower() in MUTATING_VERBS
 
 
-
 def redact_identities(text: str) -> str:
     """Strip the per-player identifiers out of a transcript before it is kept.
 
@@ -186,8 +185,7 @@ def main():
 
         # A failed banner/password handshake leaves rc non-zero; running the
         # command list then would send them into a session that is not ours.
-        cmds = [] if rc != 0 else [c.strip() for c in args.commands.split(",") if c.strip()]
-        for idx, cmd in enumerate(cmds):
+        for idx, cmd in enumerate(cmds if rc == 0 else []):
             if args.tail_sleep > 0 and idx == len(cmds) - 1:
                 time.sleep(args.tail_sleep)
             # Marker line so parsers can associate each reply with a timestamp.

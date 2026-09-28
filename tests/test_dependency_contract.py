@@ -8,6 +8,7 @@ declared that nothing runs.
 
 from __future__ import annotations
 
+import ast
 import re
 import subprocess
 import sys
@@ -78,13 +79,23 @@ def test_python_sources_import_only_stdlib_and_pytest():
     stdlib = set(sys.stdlib_module_names)
     seen: dict[str, str] = {}
     for path in [*ROOT.glob("tools/*.py"), *ROOT.glob("scripts/*.py"), *ROOT.glob("tests/*.py")]:
-        for line in path.read_text(encoding="utf-8").splitlines():
-            m = re.match(r"\s*(?:from|import)\s+([A-Za-z_][\w]*)", line)
-            if m is None:
+        # Parsed, not line-matched: a docstring line beginning with "from the
+        # rounded value" is prose, and the old regex read it as a module named
+        # "the" and failed the gate.
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                if node.level:  # from . import x
+                    continue
+                names = [node.module or ""]
+            else:
                 continue
-            top = m.group(1)
-            if top not in stdlib and top not in local:
-                seen.setdefault(top, path.name)
+            for name in names:
+                top = name.split(".", 1)[0]
+                if top and top not in stdlib and top not in local:
+                    seen.setdefault(top, path.name)
     assert set(seen) <= allowed_third_party, (
         f"undeclared imports: {seen}; add it to the dev extra and uv.lock, or "
         "drop the import"

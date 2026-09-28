@@ -80,6 +80,17 @@ def test_non_numeric_counts_fall_back_instead_of_crashing(tmp_path):
     assert "ValueError" in r.stderr
 
 
+def test_non_object_json_falls_back_instead_of_crashing(tmp_path):
+    # Valid JSON of the wrong shape: .get would raise AttributeError out of
+    # main(), same as the non-numeric case above.
+    stats = tmp_path / "stats.json"
+    stats.write_text(json.dumps([12, 4]), encoding="utf-8")
+    r = _run(str(stats))
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split() == ["0", "0"]
+    assert "TypeError" in r.stderr
+
+
 def test_wrong_arity_exits_2_without_inventing_counts():
     r = _run()
     assert r.returncode == 2

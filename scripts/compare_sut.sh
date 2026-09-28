@@ -15,6 +15,7 @@
 # artifact vs known divergence), never a pass to fake.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+source "$ROOT/scripts/harness_lib.sh"
 # Safehouse owns the serverconfig renderer for the whole workspace.
 SANDBOX_ROOT="${SANDBOX_ROOT:-$ROOT/../7dtd-sandbox}"
 SBCONFIG="$SANDBOX_ROOT/scripts/sbconfig.py"
@@ -151,15 +152,10 @@ WORLD_TAG="${WORLD_NAME,,}"
 # <out>/<scenario>-<world> directly (NOT nested an extra level deeper), so the
 # documented path holds and consolidated_report's one-level diff.json walk
 # still sees the world-matrix runs.
-SCENARIO_DIR=""
-if [[ -n "$WORLD_TAG" && "$WORLD_TAG" != "navezgane" ]]; then
-  if [[ "$SCENARIO_ID" != *"-${WORLD_TAG}" ]]; then
-    echo "note: world '$WORLD_NAME' is not the default - evidence goes to ${SCENARIO_ID}-${WORLD_TAG}"
-    SCENARIO_DIR="$OUT_ROOT/${SCENARIO_ID}-${WORLD_TAG}"
-  fi
-fi
-if [[ -z "$SCENARIO_DIR" ]]; then
-  SCENARIO_DIR="$OUT_ROOT/$SCENARIO_ID"
+SCENARIO_DIR="$OUT_ROOT/$SCENARIO_ID"
+if [[ -n "$WORLD_TAG" && "$WORLD_TAG" != "navezgane" && "$SCENARIO_ID" != *"-${WORLD_TAG}" ]]; then
+  echo "note: world '$WORLD_NAME' is not the default - evidence goes to ${SCENARIO_ID}-${WORLD_TAG}"
+  SCENARIO_DIR="$OUT_ROOT/${SCENARIO_ID}-${WORLD_TAG}"
 fi
 
 # Sanity: a scenario id that already encodes a world must agree with it.
@@ -417,11 +413,12 @@ EOF
   # The capture embeds this into surface.json, so a REPORT.md/diff.json always
   # names the exact loadgen + zdtd revisions it compared. hostLoad lets a
   # reader judge whether cost numbers (wall, APM) were taken under contention.
-  LOADGEN_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-  LOADGEN_DIRTY="$(git -C "$ROOT" status --porcelain 2>/dev/null | wc -l)"
-  ZDTD_GIT="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-  ZDTD_DIRTY="$(git -C "${ZDTD_ROOT:-$ROOT/../zdtd-server}" status --porcelain 2>/dev/null | wc -l)"
-  HOST_LOAD="$(cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo unknown)"
+  LOADGEN_GIT="$(git_short "$ROOT")"
+  LOADGEN_DIRTY="$(git_dirty "$ROOT")"
+  ZDTD_REPO="${ZDTD_ROOT:-$ROOT/../zdtd-server}"
+  ZDTD_GIT="$(git_short "$ZDTD_REPO")"
+  ZDTD_DIRTY="$(git_dirty "$ZDTD_REPO")"
+  HOST_LOAD="$(hostload)"
   cat >"$run_dir/run-meta.json" <<EOF
 {
   "scenario": "$SCENARIO_ID",

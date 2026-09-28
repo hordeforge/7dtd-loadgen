@@ -35,6 +35,11 @@ under **Changed** with their migration path.
 
 ### Changed
 
+- `git_short`, `git_dirty` and `hostload` move to `scripts/harness_lib.sh`,
+  sourced by `bench_stock.sh` and `compare_sut.sh`. `compare_sut.sh` had
+  inlined the first two and read load average with `cut` where
+  `bench_stock.sh` used `awk`; the run-meta provenance the report tools read
+  could drift between lanes. One implementation each now.
 - The declared game build and the pin now agree. `README.md` and the `TODO.md`
   residual table both still named V3.1.0 b14 after 0.4.0 moved the pin to
   V3.2.0 b10, so a reader was told the wrong build was live-verified. The
@@ -65,6 +70,29 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- `scripts/stats_pass_fail.py` raised `AttributeError` out of `main()` on a
+  `stats.json` holding valid JSON of the wrong shape, where every other
+  malformed input takes the documented `0 0` fallback with a stderr note. A
+  non-object document is now the same documented fallback.
+- `capacity_ceiling` returned the last in-budget row rather than the highest,
+  so an endgame zombie dying mid-sweep (a later round reporting fewer alives
+  than an earlier one) under-reported the ceiling. The docstring said
+  "highest"; the code now does it.
+- The dependency-contract gate matched import statements with a per-line
+  regex, so a docstring line beginning "from the rounded value" failed the
+  gate as an undeclared module named `the`. It parses with `ast` now and
+  reads real import nodes.
+- Three gates asserted behavior the tree has since moved past: the manifest
+  schema id (`7dtd.loadgen.runner.v1` for the wrapper's record, distinct from
+  the client's `7dtd.loadgen.run.v1`), the `botMix` workload field, and a
+  non-numeric `LOADGEN_COUNT` that now aborts the manifest write instead of
+  recording a measured 0. They assert the current contract.
+- The release contract gate built a 3-element version form, so it could not
+  match either spelling the docs actually use (README's
+  `VersionInfo(1, 3, 20, 10)`, TODO's `(1,3,20,10)`) and failed on a correct
+  README. `pinned_game_version` returns the full
+  `(release, major, minor, build)` tuple the C# declaration writes, and the
+  gate matches the constructor form with optional spacing.
 - The zdtd save inventory kept the Region chunk count in the same map as the
   file sizes, so `totalBytes` summed a file count into a byte total and
   `REPORT.md` listed a `Region/file_count` file that does not exist. The count

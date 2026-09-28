@@ -75,7 +75,7 @@ def test_row_verdict_uses_the_raw_reading():
     assert over["over_budget"] is True
 
 
-def test_ceiling_is_the_last_round_inside_the_budget():
+def test_ceiling_is_the_highest_round_inside_the_budget():
     curve = [
         capacity_sweep.sample_row(40, 48.0, 55.0),
         capacity_sweep.sample_row(80, 54.96, 55.0),
@@ -85,6 +85,17 @@ def test_ceiling_is_the_last_round_inside_the_budget():
     # 54.96 ms is inside the 55 ms budget, so 80 zombies is the ceiling; the
     # rounded 55.0 reading would have dropped it.
     assert capacity_sweep.capacity_ceiling(curve) == 80
+
+
+def test_ceiling_survives_a_dying_cohort_lowering_later_rows():
+    # Endgame zombies die between rounds, so a later row can report fewer
+    # alives than an earlier in-budget row. The ceiling is the highest
+    # sustained load, not the last row's count.
+    curve = [
+        capacity_sweep.sample_row(300, 48.0, 55.0),
+        capacity_sweep.sample_row(200, 50.0, 55.0),
+    ]
+    assert capacity_sweep.capacity_ceiling(curve) == 300
 
 
 def test_ceiling_is_zero_when_every_round_broke_the_budget():

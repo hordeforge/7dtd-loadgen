@@ -86,7 +86,7 @@ def pinned_game_version() -> tuple[int, int, int]:
     assert match, "PackageCodec.GameVersion declaration not found"
     release, major, minor, build = (int(g) for g in match.groups())
     assert release == 1, f"EGameReleaseType.V expected, got {release}"
-    return major, minor, build
+    return release, major, minor, build
 
 
 def test_documented_game_build_matches_the_pin():
@@ -96,16 +96,16 @@ def test_documented_game_build_matches_the_pin():
     and both kept naming V3.1.0 b14, so a reader was told the wrong build was
     live-verified.
     """
-    major, minor, build = pinned_game_version()
-    dotted = f"{major}.{minor}.{build}"
+    release, major, minor, build = pinned_game_version()
     # VersionLongString packs minor as mid*10+patch (PackageCodec.VersionLongString).
     display = f"V {major}.{minor // 10}.{minor % 10}"
+    # Either spelling is accepted: README writes the C# constructor form
+    # VersionInfo(1, 3, 20, 10), TODO the bare (1,3,20,10) tuple.
+    ctor = re.compile(rf"{release}\s*,\s*{major}\s*,\s*{minor}\s*,\s*{build}")
     for name in ("README.md", "TODO.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
-        # Either spelling is accepted: README writes 1.3.20.10, TODO the
-        # (1,3,20,10) constructor form.
-        forms = (dotted, f"{major},{minor},{build}")
-        assert any(f in text for f in forms), (
-            f"{name} does not mention the pinned GameVersion {dotted}"
+        assert ctor.search(text), (
+            f"{name} does not mention the pinned GameVersion "
+            f"({release}, {major}, {minor}, {build})"
         )
         assert display in text, f"{name} does not mention the display form '{display}'"

@@ -61,9 +61,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-git_short() { git -C "$1" rev-parse --short HEAD 2>/dev/null || echo unknown; }
-git_dirty() { git -C "$1" status --porcelain 2>/dev/null | wc -l; }
-hostload() { awk '{print $1}' /proc/loadavg 2>/dev/null || echo "n/a"; }
+source "$ROOT/scripts/harness_lib.sh"
 
 # Matrix: scenario id -> loadgen args (the bench profile gets its own knobs).
 # Bench has warmup+window so its APM capture is aligned with the window.

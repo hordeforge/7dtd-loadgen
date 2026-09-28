@@ -45,9 +45,13 @@ def sample_row(zombies: int, frame_ms: float, budget: float) -> dict:
 
 
 def capacity_ceiling(curve: list[dict]) -> int:
-    """Highest zombie count whose frame reading stayed inside the budget."""
-    inside = [p for p in curve if not p["over_budget"]]
-    return inside[-1]["zombies"] if inside else 0
+    """Highest zombie count whose frame reading stayed inside the budget.
+
+    The max, not the last row: alive counts drop when endgame zombies die, so
+    the final in-budget row is not necessarily the highest load sustained.
+    """
+    inside = [p["zombies"] for p in curve if not p["over_budget"]]
+    return max(inside) if inside else 0
 
 
 def frame_alive():

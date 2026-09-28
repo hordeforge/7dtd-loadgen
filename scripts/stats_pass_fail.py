@@ -13,8 +13,10 @@ def main() -> int:
         print(__doc__, file=sys.stderr)
         return 2
     try:
-        stats = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-        counts = int(stats.get("pass", 0)), int(stats.get("fail", 0))
+        doc = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+        if not isinstance(doc, dict):
+            raise TypeError(f"expected a JSON object, got {type(doc).__name__}")
+        counts = int(doc.get("pass", 0)), int(doc.get("fail", 0))
     except (OSError, ValueError, TypeError) as e:
         # "0 0" is the documented fallback, but silently substituting it lets a
         # missing/corrupt stats.json masquerade as a measured all-fail run once

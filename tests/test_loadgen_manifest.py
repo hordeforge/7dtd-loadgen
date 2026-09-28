@@ -1,5 +1,5 @@
-"""scripts/loadgen_manifest.py: the 7dtd.loadgen.runner.v1 artifact written after
-every run_loadgen.sh cohort.
+"""scripts/loadgen_manifest.py: the 7dtd.loadgen.runner.v1 artifact written
+after every run_loadgen.sh cohort.
 
 Distinct from the per-client 7dtd.loadgen.run.v1 manifest the client writes
 itself via --run-manifest: the two carry different fields and share no id, so

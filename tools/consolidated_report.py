@@ -27,6 +27,7 @@ import argparse
 import io
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 # Locale-independent text boundary: the rendered text comes from UTF-8 JSON
@@ -38,6 +39,9 @@ if isinstance(sys.stderr, io.TextIOWrapper):
     sys.stderr.reconfigure(encoding="utf-8")
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Verdict labels in the order the header line reports them.
+VERDICT_ORDER = ("CLEAN", "DELTAS", "ONE-SIDE", "UNREADABLE", "STALE")
 
 
 def _load_json(p: Path) -> tuple[dict | None, str | None]:
@@ -193,10 +197,9 @@ def render(rows: list[dict]) -> str:
             wall_cell = f"{fmt_wall(wall.get('stock'))} / {fmt_wall(wall.get('zdtd'))}"
         else:
             ran = r["ran"]
-            ran_stock = ran == "stock" or (isinstance(ran, list) and "stock" in ran)
-            ran_zdtd = ran == "zdtd" or (isinstance(ran, list) and "zdtd" in ran)
-            stock_cell = "ran" if r["compared"] else ("ran" if ran_stock else "n/a")
-            zdtd_cell = "ran" if r["compared"] else ("ran" if ran_zdtd else "n/a")
+            ran_sides = [ran] if isinstance(ran, str) else (ran or [])
+            stock_cell = "ran" if r["compared"] or "stock" in ran_sides else "n/a"
+            zdtd_cell = "ran" if r["compared"] or "zdtd" in ran_sides else "n/a"
             wall_cell = "n/a"
         lines.append(f"| {r['tool']} | {r['id']} | {r['verdict']} | {stock_cell} "
                      f"| {zdtd_cell} | {wall_cell} | {len(r['findings'])} |")
@@ -220,13 +223,10 @@ def render(rows: list[dict]) -> str:
             lines.append(f"- delta {dlt['case']}: {dlt['stock']} vs {dlt['zdtd']} "
                          f"({dlt['detail']})")
         lines.append("")
-    clean = sum(1 for r in rows if r["verdict"] == "CLEAN")
-    total = len(rows)
-    lines.insert(1, f"\nCompared entries: {clean}/{total} CLEAN, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'DELTAS')} DELTAS, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'ONE-SIDE')} ONE-SIDE, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'UNREADABLE')} UNREADABLE, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'STALE')} STALE.\n")
+    verdicts = Counter(r["verdict"] for r in rows)
+    lines.insert(1, "\nCompared entries: "
+                    + ", ".join(f"{verdicts[v]} {v}" for v in VERDICT_ORDER)
+                    + f" out of {len(rows)}.\n")
     return "\n".join(lines) + "\n"
 
 
