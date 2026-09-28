@@ -14,6 +14,12 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ## [Unreleased]
 
+### Changed
+
+- Nothing yet since 0.5.0.
+
+## [0.5.0] - 2026-09-28
+
 ### Added
 
 - `make sbom` writes a CycloneDX 1.6 inventory of both lock files
@@ -916,7 +922,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.1...v0.4.0
