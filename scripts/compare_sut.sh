@@ -246,6 +246,9 @@ for sut in $SUTS; do
       PIDFILE="$USERDATA/dedicated.pid"
       CURRENT_PIDFILE="$PIDFILE"
       ready=0
+      # Measured elapsed, not the round count (each round sleeps 1s and greps
+      # the growing server log), so the timeout message names real time.
+      ready_start=$SECONDS
       for _ in $(seq 1 150); do
         # The join-ready signal is the server log's "StartGame done", not telnet
         # up: telnet accepts connections while the world is still loading and
@@ -259,7 +262,7 @@ for sut in $SUTS; do
         sleep 1
       done
       if [[ "$ready" != 1 ]]; then
-        echo "  stock: not ready in 150s; see boot.log" >&2
+        echo "  stock: not ready after $(( SECONDS - ready_start ))s; see boot.log" >&2
         kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
         reap_boot "$BOOT_PID" 30
         exit 1
@@ -324,6 +327,7 @@ EOF
       PIDFILE="$run_dir/world/dedicated.pid"
       CURRENT_PIDFILE="$PIDFILE"
       ready=0
+      ready_start=$SECONDS
       for _ in $(seq 1 180); do
         # "config port=" prints mid-init; the network-ready marker is the last
         # init line (challenge + negotiated package mappings), printed with a
@@ -332,7 +336,7 @@ EOF
         sleep 1
       done
       if [[ "$ready" != 1 ]]; then
-        echo "  zdtd: not ready in 180s; see boot.log" >&2
+        echo "  zdtd: not ready after $(( SECONDS - ready_start ))s; see boot.log" >&2
         exit 1
       fi
       echo "  zdtd ready (challenge line in server.log)"

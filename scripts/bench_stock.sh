@@ -145,6 +145,11 @@ BOOT_PID=$!
 # instead of orphaning it with the ports held.
 SERVER_PIDFILE="$USERDATA/dedicated.pid"
 ready=0
+# Measured elapsed, not the round count: each round sleeps 1s and then greps the
+# whole (growing) server log, so 150 rounds can span far more than the "150s"
+# the old message claimed, and an operator reading that number while a boot ran
+# for ten minutes had no way to tell a slow boot from a stuck one.
+ready_start=$SECONDS
 for _ in $(seq 1 150); do
   stock_log="$(cat "$USERDATA/dedicated.logpath" 2>/dev/null || true)"
   if [[ -n "$stock_log" && -f "$stock_log" ]] && grep -q "StartGame done" "$stock_log" 2>/dev/null; then
@@ -153,7 +158,7 @@ for _ in $(seq 1 150); do
   sleep 1
 done
 if [[ "$ready" != 1 ]]; then
-  echo "ERROR: stock not ready in 150s; see $OUT/boot.log" >&2
+  echo "ERROR: stock not ready after $(( SECONDS - ready_start ))s; see $OUT/boot.log" >&2
   kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
   reap_boot "$BOOT_PID"
   exit 1
