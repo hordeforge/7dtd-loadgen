@@ -10,7 +10,8 @@ namespace SevenDTD.LoadGen;
 /// <summary>
 /// Full 7DTD join path: LiteNetLib connect → challenge echo → PackageIds → PlayerLogin
 /// → spawn → random walk/jump/drown/suicide/killed actions.
-/// Binds unique 127.x.x.x when LocalBindIp set (bypasses dedicated 500ms/IP rate limit).
+/// Binds unique 127.x.x.x when LocalBindIp set (bypasses dedicated 500ms/IP rate limit),
+/// falling back to a shared 127.0.0.1 on hosts that do not route 127.0.0.0/8.
 /// </summary>
 public sealed class GameJoinClient
 {
@@ -187,6 +188,16 @@ public sealed class GameJoinClient
         _bench = opt.Bench;
 
         string bindIp = string.IsNullOrWhiteSpace(opt.LocalBindIp) ? "0.0.0.0" : opt.LocalBindIp!;
+        // Bind probe, before the preflight's Connect: whether an address is
+        // bindable is a property of the host's routing table, and 127.0.0.0/8
+        // is a Linux default, not a given (macOS routes 127.0.0.1/32). Failing
+        // the bot there left a cohort unable to start at all.
+        if (!CanBind(ProbeBind(bindIp))
+            && ShouldFallbackToLoopback(bindIp, CanBind(LoopbackFallbackBind)))
+        {
+            Log($"NOTE loopback bind map unavailable: {ProbeBind(bindIp)} is not bindable on this host; every bot shares {LoopbackFallbackBind} and the per-IP connect throttle re-engages");
+            bindIp = LoopbackFallbackBind;
+        }
         // Preflight only: prove the loopback bind and hostname resolve before
         // LiteNetLib starts, then release the socket. Holding it for the whole
         // Run() cost one idle fd per bot for the session (a 1000-bot soak held
@@ -194,7 +205,7 @@ public sealed class GameJoinClient
         // NetManager's own socket).
         try
         {
-            using (var udp = new UdpClient(new IPEndPoint(IPAddress.Parse(bindIp == "0.0.0.0" ? "127.0.0.1" : bindIp), 0)))
+            using (var udp = new UdpClient(new IPEndPoint(IPAddress.Parse(ProbeBind(bindIp)), 0)))
             {
                 udp.Connect(opt.Host, opt.Port);
             }
@@ -318,9 +329,9 @@ public sealed class GameJoinClient
         bool started;
         lock (SweepGate)
         {
-            if (!string.IsNullOrWhiteSpace(opt.LocalBindIp) && opt.LocalBindIp != "0.0.0.0")
+            if (!string.IsNullOrWhiteSpace(bindIp) && bindIp != "0.0.0.0")
             {
-                var v4 = IPAddress.Parse(opt.LocalBindIp);
+                var v4 = IPAddress.Parse(bindIp);
                 started = net.Start(v4, IPAddress.IPv6Any, 0);
             }
             else
@@ -728,6 +739,40 @@ public sealed class GameJoinClient
     /// <summary>Addresses the bind map cycles through: 127.0.0.0/8 less the
     /// 127.0.0.0 network address. One period of the (client, attempt) map.</summary>
     internal const int LoopbackBindCycle = 256 * 256 * 254;
+
+    /// <summary>Bind used when the host does not route the rest of 127.0.0.0/8.
+    /// Stock Linux configures lo as 127.0.0.1/8; hosts that configure a /32
+    /// loopback (macOS by default) cannot bind any other 127.x.x.x, so every
+    /// bot but the first would fail the preflight and no cohort would run.</summary>
+    internal const string LoopbackFallbackBind = "127.0.0.1";
+
+    /// <summary>True when a client asked for a specific bind address, that
+    /// address is not bindable on this host, and plain 127.0.0.1 is. A shared
+    /// fallback bind re-arms the per-IP connect throttle, the same documented
+    /// cost as running past the end of the /8 map, so it beats failing the bot.</summary>
+    internal static bool ShouldFallbackToLoopback(string requestedBind, bool loopbackBindable) =>
+        loopbackBindable
+        && requestedBind is not "" and not "0.0.0.0" and not LoopbackFallbackBind;
+
+    /// <summary>Capability probe, not an OS check: whether an address can be
+    /// bound is a property of the host's routing table.</summary>
+    static bool CanBind(string address)
+    {
+        try
+        {
+            using var udp = new UdpClient(new IPEndPoint(IPAddress.Parse(address), 0));
+            return true;
+        }
+        catch (SocketException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Address the preflight socket binds: the wildcard means "any",
+    /// so probe loopback instead.</summary>
+    internal static string ProbeBind(string bindIp) =>
+        bindIp == "0.0.0.0" ? LoopbackFallbackBind : bindIp;
 
     /// <summary>127.0.0.0/8 unique bind for client index (avoids dedicated per-IP connect throttle).
     /// The index is a (client, attempt) product and folds in long: in int it wraps

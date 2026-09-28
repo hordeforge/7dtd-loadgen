@@ -81,6 +81,25 @@ public sealed class LoopbackBindForIndexTests
     }
 
     [Fact]
+    public void UnbindableMapAddress_FallsBackToLoopbackOne()
+    {
+        // Hosts that route loopback as 127.0.0.1/32 (macOS by default) cannot
+        // bind 127.0.1.5, and the preflight turned that into a hard per-bot
+        // failure, so no cohort ran at all. Sharing one bind re-arms the
+        // per-IP throttle instead, the same cost as running past the /8 map.
+        Assert.True(GameJoinClient.ShouldFallbackToLoopback("127.0.1.5", loopbackBindable: true));
+        Assert.False(GameJoinClient.ShouldFallbackToLoopback("127.0.1.5", loopbackBindable: false));
+        // A caller that asked for no bind, for the wildcard, or for the
+        // fallback itself has nothing to fall back to or from.
+        Assert.False(GameJoinClient.ShouldFallbackToLoopback("0.0.0.0", loopbackBindable: true));
+        Assert.False(GameJoinClient.ShouldFallbackToLoopback("", loopbackBindable: true));
+        Assert.False(GameJoinClient.ShouldFallbackToLoopback("127.0.0.1", loopbackBindable: true));
+        // The wildcard bind is probed on loopback: it is not a bind address.
+        Assert.Equal("127.0.0.1", GameJoinClient.ProbeBind("0.0.0.0"));
+        Assert.Equal("127.0.1.5", GameJoinClient.ProbeBind("127.0.1.5"));
+    }
+
+    [Fact]
     public void ExtremeIndex_StaysWellFormed()
     {
         // long.MinValue / long.MaxValue reach the map as one folded value; the

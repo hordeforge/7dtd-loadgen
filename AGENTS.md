@@ -25,7 +25,7 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
 3. **Run bots only against servers you administer** or have permission to test.
 4. **Telnet passwords are test-only.** Prefer env / local config; default lab password must not be exposed publicly.
 5. **Reproducible perf runs need fixed world, seed, bot count, concurrency, duration, action seed, and pressure settings.** Warm worlds consistently; do not compare first RWG gen to a warm save.
-6. **Fake clients bind unique `127.x.x.x` addresses** to bypass per-IP connect throttles; preserve that behavior when changing networking.
+6. **Fake clients bind unique `127.x.x.x` addresses** to bypass per-IP connect throttles; preserve that behavior when changing networking. Where the host does not route `127.0.0.0/8`, the client probes the address and shares `127.0.0.1` rather than failing the bot, so a missing map must degrade to a shared bind, never to a join failure.
 7. **.NET 8** for the client (`src/LoadGen`). Optional Python tests via **`uv`**, never pip.
 8. **No AI attribution** in commits/docs/comments. **No em dashes** in shipped text.
 9. Empty height-test maps often lack AI spawn points; prefer stock pregen or RWG 4k for sleeper/POI pressure.

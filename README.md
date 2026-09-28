@@ -482,7 +482,10 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
   connect throttle. On stock Linux `lo` is configured as `127.0.0.1/8`, so the
   whole /8 is bindable (~16.7M addresses; `LoopbackBindForIndex` walks exactly
   that space). Past it, bots share IPs and the throttle re-engages (slower
-  join, not an error).
+  join, not an error). A host that does not route `127.0.0.0/8` (macOS routes
+  `127.0.0.1/32`) makes the client log one `NOTE loopback bind map
+  unavailable` per bot and fall back to a shared `127.0.0.1`, the same
+  slower-join cost rather than a failed cohort.
 - **Server-side caps:** the dedicated server has its own limits that bound a
   bot cohort - MaxPlayers (join denial past it, `NetPackagePlayerDenied`
   reason 2), the LiteNetLib join-churn race under >12 simultaneous joins

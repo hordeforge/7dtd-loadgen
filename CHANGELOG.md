@@ -8,6 +8,16 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+### Fixed
+
+- A host that does not route `127.0.0.0/8` can run a cohort. The per-bot
+  preflight bind turned an unbindable `127.x.x.x` map address into a hard
+  `FAIL udp`, so every bot past the first died and the run reported a
+  pass-rate collapse. The client now probes the address, logs one
+  `NOTE loopback bind map unavailable` per bot and shares `127.0.0.1`, the
+  same throttle re-engagement documented for running past the end of the /8
+  map.
+
 ### Changed
 
 - Latency percentiles cover the whole run. `PingStats` kept the first 200k RTT
