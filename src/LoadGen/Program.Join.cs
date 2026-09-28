@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 namespace SevenDTD.LoadGen;
 
+// Everything join mode needs: the cohort run itself plus the workload blocks
+// and artifact writers only it calls. Helpers more than one mode uses
+// (WriteArtifact, AwaitTeardown) live in Program.Support.cs.
 public static partial class Program
 {
     static int RunJoin(string[] args)
@@ -520,45 +523,6 @@ public static partial class Program
             };
         }
 
-        /// <summary>One run manifest client row (shared by the single- and
-        /// multi-bot writers so the schema cannot drift).</summary>
-        static Dictionary<string, object?> ManifestClientRow(int id, int rc, JoinStateMachine s) => new()
-        {
-            ["id"] = id,
-            ["rc"] = rc,
-            ["mode"] = s.BotModeName,
-            ["entityId"] = s.EntityId,
-            ["walks"] = s.WalkActions,
-            ["deaths"] = s.DeathCount,
-            ["respawns"] = s.RespawnCount,
-            ["died"] = s.Died,
-            ["deathCause"] = s.DeathCause,
-        };
-
-        /// <summary>Join run manifest (schema 7dtd.loadgen.run.v1): cohort payload
-        /// plus one row per bot. Shared by the single- and multi-bot paths so a
-        /// --run-manifest request is honored at any cohort size.</summary>
-        void WriteJoinManifest(Dictionary<string, object?> payload, IEnumerable<(int id, int rc, JoinStateMachine s)> rows)
-        {
-            var run = new Dictionary<string, object?>
-            {
-                ["schema"] = "7dtd.loadgen.run.v1",
-                ["kind"] = "join",
-                ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
-                ["cohort"] = payload,
-                ["clients"] = rows.OrderBy(r => r.id).Select(r => ManifestClientRow(r.id, r.rc, r.s)).ToList(),
-                ["product"] = new Dictionary<string, object?>
-                {
-                    ["name"] = "RealEarth",
-                    ["priorityFocus"] = "P0-P1",
-                    ["notes"] = "Tall Y + inject soak when dedicated expanded",
-                },
-            };
-            WriteArtifact("run_manifest", runManifestPath, () =>
-                File.WriteAllText(runManifestPath,
-                    System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
-        }
-
         if (count == 1)
         {
             var lines = new List<string>();
@@ -578,7 +542,7 @@ public static partial class Program
                     File.WriteAllText(statsJsonPath,
                         System.Text.Json.JsonSerializer.Serialize(payload1, ArtifactJsonOpts) + "\n"));
             if (!string.IsNullOrEmpty(runManifestPath))
-                WriteJoinManifest(payload1, new[] { (opt.ClientId, rc, sm) });
+                WriteJoinManifest(runManifestPath, scenarioId, payload1, new[] { (opt.ClientId, rc, sm) });
             return rc;
         }
 
@@ -755,7 +719,7 @@ public static partial class Program
                         System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
             }
             if (!string.IsNullOrEmpty(runManifestPath))
-                WriteJoinManifest(payload, results.ToList());
+                WriteJoinManifest(runManifestPath, scenarioId, payload, results.ToList());
         }
         if (!string.IsNullOrEmpty(logPath))
         {
@@ -777,4 +741,115 @@ public static partial class Program
         }
         return JoinGatePass(pass, count, minPassRate) ? 0 : 1;
     }
+
+    /// <summary>One run manifest client row (shared by the single- and
+    /// multi-bot writers so the schema cannot drift).</summary>
+    static Dictionary<string, object?> ManifestClientRow(int id, int rc, JoinStateMachine s) => new()
+    {
+        ["id"] = id,
+        ["rc"] = rc,
+        ["mode"] = s.BotModeName,
+        ["entityId"] = s.EntityId,
+        ["walks"] = s.WalkActions,
+        ["deaths"] = s.DeathCount,
+        ["respawns"] = s.RespawnCount,
+        ["died"] = s.Died,
+        ["deathCause"] = s.DeathCause,
+    };
+
+    /// <summary>Join run manifest (schema 7dtd.loadgen.run.v1): cohort payload
+    /// plus one row per bot. Shared by the single- and multi-bot paths so a
+    /// --run-manifest request is honored at any cohort size.</summary>
+    internal static void WriteJoinManifest(
+        string path, string scenarioId,
+        Dictionary<string, object?> payload, IEnumerable<(int id, int rc, JoinStateMachine s)> rows)
+    {
+        var run = new Dictionary<string, object?>
+        {
+            ["schema"] = "7dtd.loadgen.run.v1",
+            ["kind"] = "join",
+            ["scenarioId"] = string.IsNullOrEmpty(scenarioId) ? null : scenarioId,
+            ["cohort"] = payload,
+            ["clients"] = rows.OrderBy(r => r.id).Select(r => ManifestClientRow(r.id, r.rc, r.s)).ToList(),
+            ["product"] = new Dictionary<string, object?>
+            {
+                ["name"] = "RealEarth",
+                ["priorityFocus"] = "P0-P1",
+                ["notes"] = "Tall Y + inject soak when dedicated expanded",
+            },
+        };
+        WriteArtifact("run_manifest", path, () =>
+            File.WriteAllText(path,
+                System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
+    }
+
+    /// <summary>Workload identity recorded in stats-json and the run manifest
+    /// (README: "the run manifest records seed, dynamite cap, and spawn
+    /// configuration for workload comparability").</summary>
+    internal static Dictionary<string, object?> WorkloadBlock(
+        int seed, int actions, int paceMs, int count, int concurrency, int clientIdBase,
+        int rampMs, int maxDynamitePerLife, bool respawn, int maxLives,
+        bool spawnZombies, bool killFallback, string spawnEntity, int spawnPerPlayer,
+        int spawnEveryMs, int hordeEveryMs, int hordeWaves) => new()
+        {
+            ["seed"] = seed,
+            ["actions"] = actions,
+            ["paceMs"] = paceMs,
+            ["count"] = count,
+            ["concurrency"] = concurrency,
+            ["clientIdBase"] = clientIdBase,
+            ["rampMs"] = rampMs,
+            ["maxDynamitePerLife"] = maxDynamitePerLife,
+            ["respawn"] = respawn,
+            ["maxLives"] = maxLives,
+            ["spawnZombies"] = spawnZombies,
+            ["killFallback"] = killFallback,
+            ["spawnEntity"] = spawnEntity,
+            ["spawnPerPlayer"] = spawnPerPlayer,
+            ["spawnEveryMs"] = spawnEveryMs,
+            ["hordeEveryMs"] = hordeEveryMs,
+            ["hordeWaves"] = hordeWaves,
+        };
+
+    /// <summary>Cancellable sleep that reports whether to keep looping.
+    /// .Wait() wraps delay cancellation in AggregateException, which neither an
+    /// OperationCanceledException catch nor the token-gated fault catch sees:
+    /// letting it propagate would fault the pressure task on every clean
+    /// teardown and make AwaitTeardown log a spurious ERROR into the run log.</summary>
+    static bool NappableDelay(int ms, CancellationToken ct)
+    {
+        try { Task.Delay(ms, ct).Wait(); }
+        catch { /* cancellation (or a rare race); the token decides */ }
+        return !ct.IsCancellationRequested;
+    }
+
+    /// <summary>Periodic telnet pressure loop shared by the zombie trickle and
+    /// wandering hordes: one fresh telnet session per wave (long sessions drop
+    /// half-open sockets), fixed backoff on faults, ends with cancellation.</summary>
+    internal static Task RunTelnetPressureLoop(
+        string label, CancellationToken ct,
+        int startDelayMs, int intervalMs, int errorBackoffMs,
+        Func<TelnetAdmin> createAdmin, Action<TelnetAdmin> wave)
+        => Task.Run(() =>
+        {
+            if (!NappableDelay(startDelayMs, ct)) return;
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    using var admin = createAdmin();
+                    if (admin.Connect())
+                        wave(admin);
+                    if (!NappableDelay(intervalMs, ct)) break;
+                }
+                catch (OperationCanceledException) { break; }
+                // A fault observed while shutting down is teardown, not a telnet
+                // error: gate on the token so a stop never waits out the backoff.
+                catch (Exception ex) when (!ct.IsCancellationRequested)
+                {
+                    Console.Error.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
+                    if (!NappableDelay(errorBackoffMs, ct)) break;
+                }
+            }
+        });
 }
