@@ -20,10 +20,10 @@ public sealed class TelnetPressureLoopTests
             intervalMs: 60_000,
             errorBackoffMs: 60_000,
             // Port 1 refuses instantly on loopback: Connect fails, wave never runs.
-            createAdmin: () =>
+            createAdmin: log =>
             {
                 adminCreated.Set();
-                return new TelnetAdmin("127.0.0.1", 1, password: "", log: null);
+                return new TelnetAdmin("127.0.0.1", 1, password: "", log);
             },
             wave: _ => throw new InvalidOperationException("wave must not run"));
 
@@ -44,7 +44,7 @@ public sealed class TelnetPressureLoopTests
         var task = Program.RunTelnetPressureLoop(
             "test", cts.Token,
             startDelayMs: 0, intervalMs: 1_000, errorBackoffMs: 1_000,
-            () => new TelnetAdmin("127.0.0.1", 1, password: "", log: null),
+            log => new TelnetAdmin("127.0.0.1", 1, password: "", log),
             _ => throw new InvalidOperationException("wave must not run"));
 
         var done = await Task.WhenAny(task, Task.Delay(5_000));

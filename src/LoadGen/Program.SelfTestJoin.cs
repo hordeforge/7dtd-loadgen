@@ -45,7 +45,7 @@ public static partial class Program
             (ok ? Console.Out : Console.Error).WriteLine(m);
         }
 
-        Log($"[{DateTime.UtcNow:O}] self-test-join actions={actions} seed={seed}");
+        Log(RunReport.Event("INFO", $"self-test-join actions={actions} seed={seed}"));
         JoinStateMachine sm;
         int rc;
         try

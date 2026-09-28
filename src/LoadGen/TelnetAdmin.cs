@@ -185,7 +185,7 @@ public sealed partial class TelnetAdmin : IDisposable
             if (IsSafeCommandToken(r.Token))
                 rows.Add((r.Id, r.Token));
             else
-                log?.Invoke($"TELNET skipped unsafe player token (len={r.Token.Length})");
+                log?.Invoke(RunReport.Event("WARN", $"TELNET skipped unsafe player token (len={r.Token.Length})"));
         }
         return rows;
     }
@@ -263,7 +263,7 @@ public sealed partial class TelnetAdmin : IDisposable
             var connect = _tcp.ConnectAsync(_host, _port);
             if (!connect.Wait(timeoutMs))
             {
-                _log?.Invoke($"TELNET connect timeout {_host}:{_port}");
+                _log?.Invoke(RunReport.Event("WARN", $"TELNET connect timeout {_host}:{_port}"));
                 // Disposing the socket below faults the still-pending connect;
                 // observe that fault so the abandoned task cannot resurface as
                 // an unobserved task exception later in the run.
@@ -281,19 +281,19 @@ public sealed partial class TelnetAdmin : IDisposable
                 // would leak the tail as unauthenticated console commands.
                 if (!IsSingleLineCommand(_password))
                 {
-                    _log?.Invoke("TELNET rejected password with control characters");
+                    _log?.Invoke(RunReport.Event("ERROR", "TELNET rejected password with control characters"));
                     Dispose();
                     return false;
                 }
                 WriteLine(_password);
                 _ = ReadAvailable(600);
             }
-            _log?.Invoke($"TELNET connected {_host}:{_port}");
+            _log?.Invoke(RunReport.Event("INFO", $"TELNET connected {_host}:{_port}"));
             return true;
         }
         catch (Exception ex)
         {
-            _log?.Invoke($"TELNET connect fail: {ex.Message}");
+            _log?.Invoke(RunReport.Event("WARN", $"TELNET connect fail: {ex.Message}"));
             Dispose();
             return false;
         }
@@ -311,7 +311,7 @@ public sealed partial class TelnetAdmin : IDisposable
         {
             // Server-derived text (listplayers tokens) must never split into a
             // second admin command; drop the whole command instead.
-            _log?.Invoke($"TELNET rejected non-single-line command (len={cmd.Length})");
+            _log?.Invoke(RunReport.Event("WARN", $"TELNET rejected non-single-line command (len={cmd.Length})"));
             return "";
         }
         try
@@ -327,7 +327,7 @@ public sealed partial class TelnetAdmin : IDisposable
         }
         catch (Exception ex)
         {
-            _log?.Invoke($"TELNET exec fail: {ex.Message}");
+            _log?.Invoke(RunReport.Event("WARN", $"TELNET exec fail: {ex.Message}"));
             return "";
         }
     }
@@ -424,21 +424,21 @@ public sealed partial class TelnetAdmin : IDisposable
                     WorldDeathBus.NotifyKilled(name);
                 }
             }
-            _log?.Invoke(
+            _log?.Invoke(RunReport.Event("INFO",
                 $"TELNET world_kill players={names.Count} killed={killed} " +
-                $"(spawn point missing on this world)");
+                $"(spawn point missing on this world)"));
         }
         else if (!anySpawnPoint && !KillFallback)
-            _log?.Invoke($"TELNET spawnentity/spawnscouts failed (no spawn point); kill fallback off, livePlayers={ids.Count}");
+            _log?.Invoke(RunReport.Event("WARN", $"TELNET spawnentity/spawnscouts failed (no spawn point); kill fallback off, livePlayers={ids.Count}"));
         else if (spawned > 0 || ids.Count > 0)
-            _log?.Invoke($"TELNET pressure livePlayers={ids.Count} units~={spawned} type={entityName}");
+            _log?.Invoke(RunReport.Event("INFO", $"TELNET pressure livePlayers={ids.Count} units~={spawned} type={entityName}"));
         else
             // A console that stopped answering mid-run returns "" from every
             // Exec, so ids and names are empty and none of the branches above
             // fires: the round applied no pressure and said nothing, which
             // reads exactly like a round the server absorbed.
-            _log?.Invoke("TELNET pressure NOT APPLIED: listplayers returned no living "
-                + "rows (console down or auth failed); 0 units this round");
+            _log?.Invoke(RunReport.Event("WARN", "TELNET pressure NOT APPLIED: listplayers returned no living "
+                + "rows (console down or auth failed); 0 units this round"));
         return spawned + killed;
     }
 
@@ -459,8 +459,8 @@ public sealed partial class TelnetAdmin : IDisposable
             // "nobody is connected" and "the console stopped answering". Name
             // it: a horde wave that silently did nothing is indistinguishable
             // from one the server absorbed.
-            _log?.Invoke("TELNET wandering_horde NOT APPLIED: listplayers returned no "
-                + "living rows (console down or auth failed)");
+            _log?.Invoke(RunReport.Event("WARN", "TELNET wandering_horde NOT APPLIED: listplayers returned no "
+                + "living rows (console down or auth failed)"));
             return 0;
         }
         int spawned = 0;
@@ -479,7 +479,7 @@ public sealed partial class TelnetAdmin : IDisposable
         // Advance by the number actually targeted (not requested), so rotation
         // stays even when targets > player count.
         cursor = (cursor + hit) % ids.Count;
-        _log?.Invoke($"TELNET wandering_horde targets={hit} waves={waves} units~={spawned}");
+        _log?.Invoke(RunReport.Event("INFO", $"TELNET wandering_horde targets={hit} waves={waves} units~={spawned}"));
         return spawned;
     }
 
@@ -548,7 +548,7 @@ public sealed partial class TelnetAdmin : IDisposable
                 // The read window ends early on an IO fault; leave the same
                 // breadcrumb Exec's failure path leaves so empty responses are
                 // attributable to the dropped session instead of a silent server.
-                _log?.Invoke($"TELNET read fail: {ex.Message}");
+                _log?.Invoke(RunReport.Event("WARN", $"TELNET read fail: {ex.Message}"));
                 break;
             }
         }

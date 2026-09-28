@@ -70,9 +70,9 @@ public static partial class Program
             if (!string.IsNullOrEmpty(logPath))
                 RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, result.Lines));
             if (!result.Pass)
-                Console.Error.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
+                Console.Error.WriteLine(RunReport.Event("ERROR", $"[fake#{clientId}] FAIL: no LiteNetLib protocol progress"));
             else
-                Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] PASS: protocol progress beyond socket open");
+                Console.WriteLine(RunReport.Event("INFO", $"[fake#{clientId}] PASS: protocol progress beyond socket open"));
             // Same gate as the multi-client lane: a 0 bar passes a failed probe.
             if (Program.JoinGatePass(result.Pass ? 1 : 0, 1, minPassRate))
                 return 0;
@@ -81,9 +81,9 @@ public static partial class Program
         }
 
         concurrency = LoadRunner.ResolveConcurrency(concurrency, count);
-        Console.WriteLine(
-            $"[{DateTime.UtcNow:O}] LOAD start host={host} port={port} count={count} " +
-            $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={ArtifactFormat.Percent0(minPassRate)}");
+        Console.WriteLine(RunReport.Event("INFO",
+            $"LOAD start host={host} port={port} count={count} " +
+            $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={ArtifactFormat.Percent0(minPassRate)}"));
         var summary = LoadRunner.Run(host, port, key, timeoutMs, count, concurrency, rampMs, quiet, idBase: clientId);
         if (!string.IsNullOrEmpty(logPath))
             RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, summary.ToReportLines()));

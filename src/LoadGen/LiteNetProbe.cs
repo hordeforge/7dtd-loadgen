@@ -22,7 +22,7 @@ public static class LiteNetProbe
         var sw = Stopwatch.StartNew();
         void Log(string msg)
         {
-            string line = $"[{DateTime.UtcNow:O}] [fake#{clientId}] {msg}";
+            string line = RunReport.Event("INFO", $"[fake#{clientId}] {msg}");
             writeLine?.Invoke(line);
             if (keepLines) lines.Add(line);
         }

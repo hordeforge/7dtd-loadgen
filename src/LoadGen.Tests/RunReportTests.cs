@@ -74,6 +74,23 @@ public sealed class RunReportTests
     }
 
     [Fact]
+    public void Event_CarriesTheUtcStampAndTheLevel()
+    {
+        // Every line of a run is built here: a module that formats its own line
+        // puts one into the transcript with no timestamp and no level, which a
+        // time-ordered read and a grep on ERROR both miss.
+        string line = RunReport.Event("WARN", "console unreachable");
+        Assert.Matches(@"^\[\d{4}-\d{2}-\d{2}T[0-9:.]+Z\] WARN console unreachable$", line);
+    }
+
+    [Fact]
+    public void FaultLine_KeepsTheTimestampLevelAndFaultShape()
+    {
+        string line = RunReport.FaultLine("join session", new InvalidOperationException("boom"));
+        Assert.Matches(@"^\[\d{4}-\d{2}-\d{2}T[0-9:.]+Z\] ERROR join session: InvalidOperationException: boom", line);
+    }
+
+    [Fact]
     public void Snippet_AtZeroCapIsEmptyRatherThanOutOfRange()
     {
         // A zero cap used to index s[-1] and throw, taking the caller with it.
