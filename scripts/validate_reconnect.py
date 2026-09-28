@@ -27,6 +27,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from loadgen_config import env_bool
+
 ROOT = Path(__file__).resolve().parent.parent
 DS_DIR = Path(
     os.environ.get(
@@ -139,7 +142,7 @@ def main() -> int:
                     help="seconds to observe rejoins")
     args = ap.parse_args()
 
-    skip_start = os.environ.get("SKIP_SERVER_START", "0") == "1"
+    skip_start = env_bool("SKIP_SERVER_START")
     # proc is set inside try so a fault or Ctrl-C on ANY step reaches the
     # teardown below: an orphaned cohort keeps wandering against the server
     # until its wall clock expires.

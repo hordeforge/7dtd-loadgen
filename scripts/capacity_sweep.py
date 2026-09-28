@@ -22,12 +22,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bloodmoon_profile as B
 import procs
-from loadgen_config import env_float, env_int
+from loadgen_config import env_bool, env_float, env_int
 
 STEP = env_int("SWEEP_STEP", 40, minimum=1)
 MAX_Z = env_int("SWEEP_MAX", 900, minimum=STEP)
 BUDGET = env_float("SWEEP_BUDGET_MS", float(B.FRAME_BUDGET_MS), minimum=0.1)
-CAPTURE = os.environ.get("CAPTURE_AT_CEILING", "0") == "1"
+CAPTURE = env_bool("CAPTURE_AT_CEILING")
 # Sibling checkout of 7dtd-server-apm (repo root's parent dir); RE_APM_DIR overrides.
 APM_DIR = Path(
     os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-server-apm"

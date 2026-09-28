@@ -114,33 +114,33 @@ public sealed class PackageCodecFuzzTests
         typeof(InvalidDataException),   // bounded mapping count or malformed package body
     };
 
+    // Every body parser is held to the same allowlist. Narrower per-parser
+    // catch lists let a contracted InvalidDataException (a hostile string
+    // length prefix, say) escape to the outer assertion, which reported a
+    // correct rejection as a codec bug and turned this gate red at iteration 1.
+    static void InvokeParser(Action parse)
+    {
+        try { parse(); }
+        catch (Exception ex) when (AllowedParserExceptions.Contains(ex.GetType())) { }
+    }
+
     static void InvokeAllBodyParsers(byte[] body, int iter)
     {
-        try { _ = PackageCodec.ParsePackageIdsBody(body); }
-        catch (Exception ex) when (AllowedParserExceptions.Contains(ex.GetType())) { }
-
-        try { _ = PackageCodec.ParseLoginAnswerBody(body); }
-        catch (Exception ex) when (ex is EndOfStreamException or FormatException or IOException) { }
-
-        try { _ = PackageCodec.ParsePlayerDeniedBody(body); }
-        catch (Exception ex) when (ex is EndOfStreamException or FormatException or IOException) { }
-
-        try { _ = PackageCodec.ParseSpawnedBody(body); }
-        catch (Exception ex) when (ex is EndOfStreamException) { }
+        InvokeParser(() => _ = PackageCodec.ParsePackageIdsBody(body));
+        InvokeParser(() => _ = PackageCodec.ParseLoginAnswerBody(body));
+        InvokeParser(() => _ = PackageCodec.ParsePlayerDeniedBody(body));
+        InvokeParser(() => _ = PackageCodec.ParseSpawnedBody(body));
 
         // Contracted sentinel path: bodies under the 30-byte minimum must
-        // return id 0, not throw. Longer bodies decode or throw EndOfStream
-        // on a truncated useQ=true tail (callers guard that branch).
+        // return id 0, not throw. Longer bodies decode or throw a contracted
+        // truncation exception on a truncated useQ=true tail (callers guard
+        // that branch).
         if (body.Length < 30)
             Assert.Equal((0, 0f, 0f, 0f, false), PackageCodec.ParsePosAndRotBody(body));
         else
-        {
-            try { _ = PackageCodec.ParsePosAndRotBody(body); }
-            catch (Exception ex) when (ex is EndOfStreamException) { }
-        }
+            InvokeParser(() => _ = PackageCodec.ParsePosAndRotBody(body));
 
-        try { _ = PackageCodec.ParseAliveFlagsBody(body); }
-        catch (Exception ex) when (ex is EndOfStreamException) { }
+        InvokeParser(() => _ = PackageCodec.ParseAliveFlagsBody(body));
 
         // Decompressor must answer a clean bool for any garbage buffer, never
         // throw, and hand back null exactly when it reports failure. Sampled

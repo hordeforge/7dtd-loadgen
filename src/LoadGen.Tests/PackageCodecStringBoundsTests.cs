@@ -77,6 +77,20 @@ public sealed class PackageCodecStringBoundsTests
     }
 
     [Fact]
+    public void RejectsAFiveGroupPrefixThatSetsTheSignBit()
+    {
+        // Five in-range groups whose value is negative as an int32: the fourth
+        // group alone (0x7F << 21) is 0xFE000000. The reader accumulated in int,
+        // so len came out negative, passed the "len > limit" bound, and reached
+        // ReadBytes as a negative count: ArgumentOutOfRangeException('count')
+        // instead of the contracted InvalidDataException. Found by
+        // PackageCodecFuzzTests.BodyParsers_MalformedBodies_OnlyContractedExceptionsEscape.
+        byte[] prefix = { 0xFF, 0xFF, 0xFF, 0xFF, 0x7F };
+        using var r = Reader(prefix);
+        Assert.Throws<InvalidDataException>(() => PackageCodec.ReadBoundedString(r, "test"));
+    }
+
+    [Fact]
     public void RejectsATruncatedLengthPrefix()
     {
         using var r = Reader(new byte[] { 0x80 });

@@ -381,7 +381,7 @@ mid-run or silently changing gate semantics.
 | `LOADGEN_TIMEOUT` | `8000` (`make join`: `3600000`) | per-run wall clock, ms > 0 |
 | `LOADGEN_ACTIONS` | `24` | steps after join; 0 = endless wander until death/timeout |
 | `LOADGEN_MIN_PASS_RATE` | `0.95` | successful-client fraction, 0..1 |
-| `LOADGEN_RAMP_MS` | `0` | join stagger window, clamped 0..3600000 |
+| `LOADGEN_RAMP_MS` | `0` | join stagger window; outside 0..3600000 exits 2 rather than clamping |
 | `LOADGEN_QUIET` | unset | non-empty silences probe/self-test logs |
 | `LOADGEN_ALLOW_OVERLAP` | unset | `1` skips the per-target rerun lock that otherwise fails a second cohort against the same host:port |
 | `LOADGEN_SELF_TEST` | `0` | `1` forces self-test mode |

@@ -139,15 +139,24 @@ public static partial class Program
             else if (args[i] == "--run-manifest" && i + 1 < args.Length) runManifestPath = args[++i];
             else if (args[i] == "--scenario-id" && i + 1 < args.Length) scenarioId = args[++i];
             else if (args[i] == "--ramp-ms" && i + 1 < args.Length)
-                // Clamp: i*joinRampMs must not overflow the Task.Delay cast at scale.
-                joinRampMs = Math.Clamp(int.Parse(args[++i]), 0, 3_600_000);
+            {
+                if (!TryParseRampMs(args[++i], out int rampMs))
+                    return InvalidArg("--ramp-ms", args[i],
+                        $"an integer 0..{MaxRampMs} (per-bot join stagger)");
+                joinRampMs = rampMs;
+            }
             else if (args[i] == "--id" && i + 1 < args.Length) opt.ClientId = int.Parse(args[++i]);
             else if (args[i] == "--name" && i + 1 < args.Length) opt.PlayerName = args[++i];
             else if (args[i] == "--actions" && i + 1 < args.Length) opt.ActionCount = int.Parse(args[++i]);
             else if (args[i] == "--seed" && i + 1 < args.Length) opt.ActionSeed = int.Parse(args[++i]);
             else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
-            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
+            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length)
+            {
+                if (!TryParseMinPassRate(args[++i], out double parsedRate))
+                    return InvalidArg("--min-pass-rate", args[i], "a fraction between 0 and 1");
+                minPassRate = parsedRate;
+            }
             else if (args[i] == "--no-actions") opt.SkipActions = true;
             else if (args[i] == "--max-dynamite" && i + 1 < args.Length)
             {
@@ -211,7 +220,12 @@ public static partial class Program
             else if (args[i] == "--quiet") quiet = true;
         }
 
-        if (count < 1) count = 1;
+        // A 0 or negative cohort was raised to 1 in silence, so a typo in
+        // LOADGEN_COUNT or --count produced a one-bot run whose summary and
+        // stats json read downstream as a measured result. The cohort is the
+        // headline number of a load run: reject it.
+        if (!IsValidCount(count))
+            return InvalidArg("--count", count.ToString(), "an integer 1 or more (bots in the cohort)");
 
         // --bot-mix overrides --mode, so a mix entry naming wander must stay
         // wander: --mode's --bot-mix-independent conversion (Wander+!WanderUntilDeath
@@ -270,6 +284,30 @@ public static partial class Program
             return InvalidArg("--respawn-delay-ms", opt.RespawnDelayMs.ToString(), ">= 0");
         if (opt.RespawnTimeoutMs <= 0)
             return InvalidArg("--respawn-timeout-ms", opt.RespawnTimeoutMs.ToString(), "a positive millisecond value");
+        // 0 is the documented "off"/"endless" sentinel for every knob below, so
+        // only a negative value is a defect. Each one failed differently when
+        // it slipped through: --bench-window-ms -1 made the bench block vanish
+        // while the run still printed a summary, --spawn-per-player -4 built a
+        // nonsense telnet console command, --actions -1 is indistinguishable
+        // from "endless" downstream and reached stats json as actions: -1.
+        if (opt.ActionCount < 0)
+            return InvalidArg("--actions", opt.ActionCount.ToString(), "an action count >= 0 (0 = until the timeout)");
+        if (benchWarmupMs < 0)
+            return InvalidArg("--bench-warmup-ms", benchWarmupMs.ToString(), ">= 0");
+        if (benchWindowMs < 0)
+            return InvalidArg("--bench-window-ms", benchWindowMs.ToString(), ">= 0 (0 disables the bench block)");
+        if (spawnEveryMs < 0)
+            return InvalidArg("--spawn-every-ms", spawnEveryMs.ToString(), ">= 0 (0 disables the zombie trickle)");
+        if (spawnPerPlayer < 0)
+            return InvalidArg("--spawn-per-player", spawnPerPlayer.ToString(), ">= 0 (zombies per player per wave)");
+        if (hordeEveryMs < 0)
+            return InvalidArg("--horde-every-ms", hordeEveryMs.ToString(), ">= 0 (0 disables scout hordes)");
+        if (hordeWaves < 0)
+            return InvalidArg("--horde-waves", hordeWaves.ToString(), ">= 0 (waves per horde burst)");
+        if (opt.MaxDynamitePerLife < 0)
+            return InvalidArg("--max-dynamite", opt.MaxDynamitePerLife.ToString(), ">= 0 (0 denies dynamite)");
+        if (opt.MaxLives < 0)
+            return InvalidArg("--max-lives", opt.MaxLives.ToString(), ">= 0 (0 = respawn forever)");
         // Join bots are long-lived players and never free their slot, so
         // concurrency is the live-player cap. Default it to count (every bot a
         // simultaneous player; --ramp-ms staggers the joins). Warn loudly if the

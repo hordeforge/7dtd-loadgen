@@ -34,13 +34,24 @@ public static partial class Program
             else if (args[i] == "--id" && i + 1 < args.Length) clientId = int.Parse(args[++i]);
             else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
-            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
-            // Clamp like the join parser: the ramp delay cast must not overflow.
-            else if (args[i] == "--ramp-ms" && i + 1 < args.Length) rampMs = Math.Clamp(int.Parse(args[++i]), 0, 3_600_000);
+            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length)
+            {
+                if (!TryParseMinPassRate(args[++i], out double rate))
+                    return InvalidArg("--min-pass-rate", args[i], "a fraction between 0 and 1");
+                minPassRate = rate;
+            }
+            else if (args[i] == "--ramp-ms" && i + 1 < args.Length)
+            {
+                if (!TryParseRampMs(args[++i], out int parsedRamp))
+                    return InvalidArg("--ramp-ms", args[i],
+                        $"an integer 0..{MaxRampMs} (per-bot join stagger)");
+                rampMs = parsedRamp;
+            }
             else if (args[i] == "--quiet") quiet = true;
         }
 
-        if (count < 1) count = 1;
+        if (!IsValidCount(count))
+            return InvalidArg("--count", count.ToString(), "an integer 1 or more (probes in the cohort)");
         if (!IsValidPort(port))
             return InvalidArg("--port", port.ToString(), "an integer 1..65535");
         if (!IsValidMinPassRate(minPassRate))

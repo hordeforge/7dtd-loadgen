@@ -936,7 +936,15 @@ public static class PackageCodec
     public static string ReadBoundedString(BinaryReader r, string field)
     {
         long remaining = r.BaseStream.Length - r.BaseStream.Position;
-        int len = 0, shift = 0, b;
+        // Accumulated in long, not int. Five 7-bit groups can set the int sign
+        // bit from the fourth group on (127 << 21 is 0xFE000000), so an int
+        // accumulator wrapped to a negative length, slipped past the
+        // "len > limit" bound, and reached ReadBytes as a negative count:
+        // ArgumentOutOfRangeException('count') instead of the contracted
+        // InvalidDataException. In long the value is the one the sender meant,
+        // and the bound below rejects it.
+        long len = 0;
+        int shift = 0, b;
         do
         {
             if (remaining <= 0)
@@ -947,14 +955,14 @@ public static class PackageCodec
             // above 0x0F, is a prefix no valid sender writes.
             if (shift > 28 || (shift == 28 && (b & 0x7F) > 0x0F))
                 throw new InvalidDataException($"{field}: string length prefix overflows int32");
-            len |= (b & 0x7F) << shift;
+            len |= (long)(b & 0x7F) << shift;
             shift += 7;
         } while ((b & 0x80) != 0);
 
         long limit = Math.Min(MaxWireStringBytes, remaining);
         if (len > limit)
             throw new InvalidDataException($"{field}: string length {len} exceeds {limit} available bytes");
-        return Encoding.UTF8.GetString(r.ReadBytes(len));
+        return Encoding.UTF8.GetString(r.ReadBytes((int)len));
     }
 
     public static (VersionInfo version, string[] mappings, bool useEac) ParsePackageIdsBody(byte[] body)

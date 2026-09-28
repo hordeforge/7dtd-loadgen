@@ -9,6 +9,8 @@ variable named instead of midway through a run:
   for env_int(name) with no default and gets a hard error)
 - non-numeric -> exit non-zero naming the variable and the offending value
 - out of range -> exit non-zero naming the variable and the bound
+- bool -> only 1/0, true/false, yes/no, on/off; anything else exits non-zero
+  instead of comparing to "1" and reading an unrecognized spelling as false
 
 Run configs are evidence: a silently substituted 0 for a port, a count or a
 timeout reads downstream as a measured value.
@@ -24,6 +26,12 @@ MIN_PORT = 1
 MAX_PORT = 65535
 
 _Number = TypeVar("_Number", int, float)
+
+# Accepted spellings for a boolean knob, lowercased. Deliberately explicit:
+# a bare `== "1"` test reads "yes", "on" and "true" as false, so a script
+# configured with a reasonable spelling silently ran the other branch.
+TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
+FALSE_VALUES = frozenset({"0", "false", "no", "off"})
 
 
 def env_str(name: str, default: str = "") -> str:
@@ -74,6 +82,21 @@ def env_float(
 
 def env_port(name: str, default: int) -> int:
     return env_int(name, default, minimum=MIN_PORT, maximum=MAX_PORT)
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if not raw:
+        return default
+    value = raw.strip().lower()
+    if value in TRUE_VALUES:
+        return True
+    if value in FALSE_VALUES:
+        return False
+    raise SystemExit(
+        f"{name}={raw!r} is not a boolean "
+        f"(true: {', '.join(sorted(TRUE_VALUES))}; false: {', '.join(sorted(FALSE_VALUES))})"
+    )
 
 
 def env_optional_int(name: str, minimum: int | None = None) -> int | None:

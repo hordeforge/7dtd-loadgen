@@ -68,6 +68,48 @@ public static partial class Program
     /// would need a long budget for.</summary>
     public const int MaxTimeoutMs = int.MaxValue;
 
+    /// <summary>Ceiling for --ramp-ms. RampDelayMs widens the product to long
+    /// before the Task.Delay(int) cast, but a ramp longer than an hour is a
+    /// typo, and clamping it hid the value the caller actually passed.</summary>
+    public const int MaxRampMs = 3_600_000;
+
+    /// <summary>--ramp-ms as a join stagger within [0, <see cref="MaxRampMs"/>].
+    /// Rejected out of range rather than clamped: a clamped ramp still runs the
+    /// cohort, just not the one the operator asked for.</summary>
+    public static bool TryParseRampMs(string raw, out int ms)
+    {
+        ms = 0;
+        if (!int.TryParse(raw, System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture, out int v))
+            return false;
+        if (v < 0 || v > MaxRampMs)
+            return false;
+        ms = v;
+        return true;
+    }
+
+    /// <summary>--min-pass-rate as a fraction, parsed with the invariant culture
+    /// like <see cref="TryParseTimeoutMs"/>. double.Parse reads through the
+    /// current culture, so a comma-decimal locale accepted "0,95" as 0.95 and
+    /// rejected the documented "0.95" spelling: the same run config gave
+    /// opposite results on two operator machines.</summary>
+    public static bool TryParseMinPassRate(string raw, out double rate)
+    {
+        rate = 0;
+        if (!double.TryParse(raw, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out double v))
+            return false;
+        if (!IsValidMinPassRate(v))
+            return false;
+        rate = v;
+        return true;
+    }
+
+    /// <summary>Cohort size. A 0 or negative --count used to be silently
+    /// raised to 1, so a LOADGEN_COUNT=0 typo produced a one-bot run whose
+    /// stats json reads downstream as a measured one.</summary>
+    public static bool IsValidCount(int count) => count >= 1;
+
     /// <summary>--timeout as a positive millisecond budget within
     /// <see cref="MaxTimeoutMs"/>. Parsed as long so an over-long soak is
     /// rejected with its bound named, instead of throwing OverflowException out
