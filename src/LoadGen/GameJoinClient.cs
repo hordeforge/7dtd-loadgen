@@ -1075,7 +1075,10 @@ public sealed class GameJoinClient
         string text = ExtractPrintable(body);
         if (string.IsNullOrEmpty(text) || text.Length < 4) return;
 
-        log($"CHAT {Snippet(text, 160)}");
+        // Server chat carries whatever connected players typed plus the names
+        // the server puts in death GMSGs. Only its length is logged: the match
+        // below needs the text, the log file does not.
+        log($"CHAT chars={text.Length}");
 
         // Fold normalization forms before matching: an NFD name from argv
         // ("Zoe" + combining acute) and its NFC echo from the server relay are
@@ -1104,8 +1107,7 @@ public sealed class GameJoinClient
             State.DeathCause = "world_radiation";
         else
             State.DeathCause = "world_death";
-        string snippet = Snippet(text, 120);
-        log($"DEATH cause={State.DeathCause} entity={State.EntityId} via=chat text={snippet}");
+        log($"DEATH cause={State.DeathCause} entity={State.EntityId} via=chat chars={text.Length}");
     }
 
     // Whole-word substring match (allocation-free): "refake3" matches "refake3 died"

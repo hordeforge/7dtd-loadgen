@@ -78,13 +78,30 @@ telnet console.
 | server banner | telnet greeting | max players, difficulty, world, game name; mismatches are findings |
 | day/time + clock rate | telnet gettime (twice) | rate = game-min per real-sec over the snapshot window; comparable across boot-time offsets |
 | entity counts | telnet listents | total / alive / per-type breakdown |
-| player counts | telnet listplayers | players connected at snapshot time |
+| player counts | telnet listplayers | players connected at snapshot time; no per-player row is kept |
 | gamestats | telnet getgamestat | compared on shared names; stock-only stats reported |
 | save files | userdata/Saves vs world/ | presence + sizes; formats differ by design |
 
 The snapshot is taken while the client is connected (the harness waits for the
 loadgen `JOINED entity=` line, written the moment the bot enters the game
 world; the session-end `PASS joined` summary is too late).
+
+## Player identities in run artifacts
+
+A dedicated server is shared infrastructure, so a real player can connect to a
+lab session. Two rules keep their identifiers out of the kept evidence:
+
+- `tools/sut_telnet.py` writes the transcript with each player name replaced by
+  a session-stable pseudonym (`player-1`, `player-2`, ...) and `pltfmid`,
+  `crossid` and `ip` replaced by `redacted`. Row shape, row counts, entity
+  classes and the banner stay, so every axis above is unchanged.
+- `tools/sut_capture.py` keeps the player count only; it never copies a
+  name or an entity id into `surface.json`.
+
+The client log follows the same rule for chat: `CHAT chars=<n>` and
+`DEATH ... via=chat chars=<n>` record that a message arrived and how long it
+was, never the text, which is player-typed free text plus the names the server
+puts in death messages.
 
 ## Status semantics
 

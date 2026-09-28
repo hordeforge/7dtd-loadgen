@@ -8,6 +8,16 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+### Changed
+
+- Per-player identifiers no longer reach kept run evidence. Telnet
+  transcripts pseudonymize each player name (`player-1`, ...) and replace
+  `pltfmid`, `crossid` and `ip` with `redacted`; `surface.json` keeps the
+  player count and drops the `players.rows` list; the client log records
+  `CHAT chars=<n>` instead of the server's chat text, which is player-typed
+  free text plus the names the server puts in death messages. Comparison
+  axes (counts, entity classes, banner, gamestats) are unchanged.
+
 ### Fixed
 
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,

@@ -151,7 +151,10 @@ def test_full_comparison_pipeline(tmp_path):
     assert s["log"]["telnetCloseErrors"] == 1
     assert s["telnet"]["entities"] == {"count": 1, "alive": 1, "dead": 0,
                                        "types": {"EntityZombie": 1}}
-    assert s["telnet"]["players"]["count"] == 1
+    assert s["telnet"]["players"] == {"count": 1}
+    # The listplayers row names a player; the surface keeps the count only, so
+    # no per-player identity lands in an artifact the harness commits.
+    assert "Alice" not in json.dumps(s)
     assert s["telnet"]["clockRateGameMinPerRealSec"] == 0.4
     assert s["saves"]["count"] == 2
 

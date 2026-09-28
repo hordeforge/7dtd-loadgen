@@ -4,7 +4,8 @@
 Both servers expose a stock-shaped console (stock: TelnetPort; zdtd:
 --admin-port mirrors the stock telnet greeting/commands), so one driver covers
 both sides of a comparison. Authenticates when the banner asks for a password,
-then runs the requested commands and writes the raw transcript to a file.
+then runs the requested commands and writes the transcript to a file with every
+per-player identifier replaced by a session-stable pseudonym.
 
 The password resolves from LOADGEN_TELNET_PASSWORD (SEVENDTD_TELNET_PASSWORD
 accepted as legacy alias). There is no flag for it: argv is world-readable in
@@ -16,10 +17,46 @@ Usage:
 
 import argparse
 import os
+import re
 import select
 import socket
 import sys
 import time
+
+# Identity fields the console prints for every connected player. The snapshot
+# only compares player counts, so the values never reach the transcript file
+# (transcripts are committed as run evidence).
+IDENTITY_FIELD = re.compile(r"\b(pltfmid|crossid|ip)=([^,\s]*)")
+# Stock listents wraps a player in "[type=EntityPlayer, name=<name>, id=N]".
+BRACKET_PLAYER_NAME = re.compile(r"(\[type=EntityPlayer[^,\]]*,\s*name=)([^,\]]+)(,)")
+# listplayers rows: "0. id=171, <name>, pos=(...)".
+ROW_NAME = re.compile(r"^(\s*\d+\. id=\d+, )(.+?)(, pos=)")
+REDACTED = "redacted"
+
+
+def redact_identities(text: str) -> str:
+    """Strip the per-player identifiers out of a transcript before it is kept.
+
+    A dedicated server is shared infrastructure: a real player who connects to
+    a lab session puts their in-game name, platform id and IP in listplayers
+    and listents output. The comparisons read counts, class names and the
+    banner from these rows, never the identity, so the name is replaced by a
+    session-stable pseudonym (row-to-row correlation survives) and the
+    platform id and address by a placeholder.
+    """
+    aliases: dict[str, str] = {}
+
+    def alias(name: str) -> str:
+        return aliases.setdefault(name, f"player-{len(aliases) + 1}")
+
+    out = []
+    for line in text.splitlines(keepends=True):
+        if "[type=" in line:
+            line = BRACKET_PLAYER_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
+        elif "deaths=" in line:
+            line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
+        out.append(IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", line))
+    return "".join(out)
 
 
 def drain(sock, deadline):
@@ -125,7 +162,7 @@ def main():
         except OSError:
             pass
 
-    out = transcript.decode("utf-8", errors="replace")
+    out = redact_identities(transcript.decode("utf-8", errors="replace"))
     if args.out == "-":
         sys.stdout.write(out)
     else:
