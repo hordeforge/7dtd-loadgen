@@ -39,7 +39,7 @@ def test_golden_wire_cli(scratch: Path) -> None:
     assert f"PosAndRot body={GOLDEN_POS_BODY}" in out
 
 
-def test_relpos_constants_in_source():
+def test_relpos_constants_in_source() -> None:
     src = (ROOT / "src" / "LoadGen" / "PackageCodec.cs").read_text(encoding="utf-8")
     assert f"EntityRelPosAndRotNoQ = {GOLDEN_REL_BODY}" in src
     assert f"EntityRelPosAndRotNoQContentLen = {GOLDEN_REL_CONTENT_LEN}" in src

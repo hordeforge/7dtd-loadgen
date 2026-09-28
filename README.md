@@ -442,7 +442,7 @@ environment variable to use, in every mode (probe, `--join`, `--self-test`,
 | dedicated admin telnet password | `LOADGEN_TELNET_PASSWORD` | `retest` (test-only lab credential) |
 
 Treat both as test-only; do not expose the configured ports publicly
-(`docs/THREAT_MODEL.md` R2).
+(`docs/THREAT_MODEL.md` R1 and R3).
 
 ### Dedicated server start variables
 
