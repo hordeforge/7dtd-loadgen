@@ -9,6 +9,27 @@ public static partial class Program
     /// run manifest): one instance so the artifact schemas serialize identically.</summary>
     static readonly System.Text.Json.JsonSerializerOptions ArtifactJsonOpts = new() { WriteIndented = true };
 
+    /// <summary>One line describing a swallowed fault: context, type, message
+    /// and the top stack frame. A long cohort run catches per-bot and per-task
+    /// faults by design (one bad bot must not end the run), so the message is
+    /// all that survives; the frame is what makes it diagnosable once the
+    /// run's console is gone.</summary>
+    internal static string FaultText(string context, Exception ex) =>
+        $"{context}: {ex.GetType().Name}: {ex.Message}{TopFrame(ex)}";
+
+    /// <summary>Leading stack frame as a single line, or empty when the
+    /// exception carries none. One line, because a multi-line trace inside a
+    /// timestamped log line breaks line-oriented parsers.</summary>
+    internal static string TopFrame(Exception ex)
+    {
+        string? trace = ex.StackTrace;
+        if (string.IsNullOrEmpty(trace)) return "";
+        int end = trace.IndexOf('\n');
+        return (end < 0 ? trace : trace[..end]).Trim() is { Length: > 0 } first
+            ? $" at {first}"
+            : "";
+    }
+
     /// <summary>Write line-oriented artifact text with LF terminators and no
     /// BOM, whatever the host's Environment.NewLine is. Client logs and JSONL
     /// sinks are read by the Python report lanes and diffed as evidence, so
@@ -40,7 +61,7 @@ public static partial class Program
         catch (Exception ex)
         {
             Console.Error.WriteLine(
-                $"[{DateTime.UtcNow:O}] ERROR writing {label} {path}: {ex.GetType().Name}: {ex.Message}");
+                $"[{DateTime.UtcNow:O}] ERROR {FaultText($"writing {label} {path}", ex)}");
         }
     }
 
@@ -56,9 +77,8 @@ public static partial class Program
         }
         catch (AggregateException ex)
         {
-            var baseEx = ex.GetBaseException();
             Console.Error.WriteLine(
-                $"[{DateTime.UtcNow:O}] ERROR {name} task faulted: {baseEx.GetType().Name}: {baseEx.Message}");
+                $"[{DateTime.UtcNow:O}] ERROR {FaultText($"{name} task faulted", ex.GetBaseException())}");
         }
         catch (OperationCanceledException) { }
     }

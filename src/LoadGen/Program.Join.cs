@@ -21,6 +21,10 @@ public static partial class Program
         var observedCvars = new List<string>();
         var observedBuffs = new List<string>();
         string scenarioId = Environment.GetEnvironmentVariable("LOADGEN_SCENARIO_ID") ?? "";
+        // Console lines are the only record of a run until its artifacts land,
+        // and the artifacts carry the scenario id. Echoing it on the run header
+        // is what ties a wall of bot lines back to one stats json / manifest.
+        string scenarioTag = string.IsNullOrEmpty(scenarioId) ? "" : $" scenario={scenarioId}";
         int joinRampMs = 0;
         int count = 1;
         int concurrency = 0;
@@ -444,7 +448,7 @@ public static partial class Program
                     // log is null for most cohort members; route to stderr so the
                     // fault is never invisible (summary only carries the count).
                     (log ?? Console.Error.WriteLine)(
-                        $"[{DateTime.UtcNow:O}] join#{clientId} EX: {ex.GetType().Name}: {ex.Message}");
+                        $"[{DateTime.UtcNow:O}] join#{clientId} EX {FaultText($"attempt {attempt}", ex)}");
                 }
                 last = c.State;
                 totals.AddCounters(last);
@@ -488,10 +492,11 @@ public static partial class Program
 
         // Shared stats-json body for single- and multi-bot runs so the schema
         // cannot drift between the two writers (ping evidence included in both).
-        Dictionary<string, object?> BuildStatsPayload(int total, int pass, in CohortCounters c)
+        Dictionary<string, object?> BuildStatsPayload(int total, int pass, in CohortCounters c, IEnumerable<int> joinSamples)
         {
             double rate = total == 0 ? 0 : (double)pass / total;
             var ping = PingStats.Summary();
+            var (joinCount, joinP50, joinP95, joinMax) = JoinLatency.Summary(joinSamples);
             return new Dictionary<string, object?>
             {
                 ["schema"] = "7dtd.loadgen.stats.v1",
@@ -530,6 +535,10 @@ public static partial class Program
                     spawnZombies, killFallback, spawnEntity, spawnPerPlayer,
                     spawnEveryMs, hordeEveryMs, hordeWaves),
                 ["pingSamples"] = ping.count,
+                ["joinMsSamples"] = joinCount,
+                ["joinMsP50"] = joinP50,
+                ["joinMsP95"] = joinP95,
+                ["joinMsMax"] = joinMax,
                 ["pingAvgMs"] = Math.Round(ping.avg, 1),
                 ["pingP50Ms"] = ping.p50,
                 ["pingP95Ms"] = ping.p95,
@@ -540,6 +549,13 @@ public static partial class Program
 
         if (count == 1)
         {
+            // Same run header as the cohort lane: a single-bot run also produces
+            // a stats json and a manifest, and its console lines have to name
+            // the run they belong to.
+            Console.WriteLine(
+                $"[{DateTime.UtcNow:O}] JOIN_LOAD count=1 concurrency=1 host={opt.Host}:{opt.Port} " +
+                $"mode={opt.Mode} death={opt.Death} actions={opt.ActionCount} seed={opt.ActionSeed} " +
+                $"timeoutMs={opt.TimeoutMs}{scenarioTag} bind={opt.LocalBindIp ?? "0.0.0.0"}");
             var lines = new List<string>();
             // --quiet drops the console echo only; --log still gets every line.
             Action<string> log = s =>
@@ -556,7 +572,7 @@ public static partial class Program
             // Single-bot runs still write stats-json (and the run manifest when
             // asked) so the bench lane evidence is uniform (probe-15s/join-fast/
             // join-probe/horde-lite are count=1).
-            var payload1 = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm));
+            var payload1 = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm), new[] { sm.JoinMs });
             if (!string.IsNullOrEmpty(statsJsonPath))
                 WriteArtifact("stats", statsJsonPath, () =>
                     File.WriteAllText(statsJsonPath,
@@ -590,7 +606,7 @@ public static partial class Program
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] JOIN_LOAD count={count} concurrency={concurrency} " +
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
-            $"seed={opt.ActionSeed} " +
+            $"seed={opt.ActionSeed}{scenarioTag} " +
             $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} killFallback={killFallback} " +
             $"bind=127.x multi-ip");
         // killFallback only takes effect inside the telnet spawn loop, so the
@@ -645,7 +661,7 @@ public static partial class Program
                     // Unconditional: a cohort-wide fault must never be invisible
                     // just because the bot's console log was throttled off.
                     Console.Error.WriteLine(
-                        $"[{DateTime.UtcNow:O}] join#{id} EX: {ex.GetType().Name}: {ex.Message}");
+                        $"[{DateTime.UtcNow:O}] join#{id} EX {FaultText("session", ex)}");
                     var failState = new JoinStateMachine
                     {
                         EntityId = -1,
@@ -689,8 +705,10 @@ public static partial class Program
             or DeathCause.SuicideFallback or DeathCause.KilledExternal);
         int diedEx = results.Count(r => r.s.DeathCause == DeathCause.Exception);
 
+        var (joinCount, joinP50, joinP95, joinMax) = JoinLatency.Summary(results.Select(r => r.s.JoinMs));
         var report =
             $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
+            $"JOIN_LATENCY joined={joinCount} p50Ms={joinP50} p95Ms={joinP95} maxMs={joinMax}\n" +
             $"JOIN_ACTIONS walks={cohort.Walks} jumps={cohort.Jumps} crouch={cohort.Crouches} aim={cohort.Aims} turn={cohort.Turns} " +
             $"strafe={cohort.Strafes} look={cohort.Looks} chat={cohort.Chats} break={cohort.Breaks} attack={cohort.Attacks} " +
             $"diedClients={cohort.DiedClients} totalDeaths={cohort.TotalDeaths} totalRespawns={cohort.TotalRespawns} " +
@@ -700,7 +718,7 @@ public static partial class Program
             $"timeout_alive={timedOut} disconnect={disc} self_kill={selfKill} exception={diedEx}\n" +
             $"DEATH_HISTOGRAM {string.Join(" ", byCause)}\n" +
             string.Join("\n", results.OrderBy(r => r.id).Take(30).Select(r =>
-                $"  id={r.id} rc={r.rc} mode={r.s.BotModeName} entity={r.s.EntityId} w={r.s.WalkActions} j={r.s.JumpActions} " +
+                $"  id={r.id} rc={r.rc} mode={r.s.BotModeName} entity={r.s.EntityId} joinMs={r.s.JoinMs} w={r.s.WalkActions} j={r.s.JumpActions} " +
                 $"deaths={r.s.DeathCount} respawns={r.s.RespawnCount} rejoins={r.s.RejoinCount} " +
                 $"lastDied={r.s.Died} cause={DeathCauseNames.Of(r.s.DeathCause)}"));
         if (bench is { } b)
@@ -719,7 +737,7 @@ public static partial class Program
         Console.WriteLine(report);
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
         {
-            var payload = BuildStatsPayload(count, pass, cohort);
+            var payload = BuildStatsPayload(count, pass, cohort, results.Select(r => r.s.JoinMs));
             payload["world_killed"] = worldKilled;
             payload["timeout_alive"] = timedOut;
             payload["disconnect"] = disc;
@@ -887,7 +905,8 @@ public static partial class Program
                 // error: gate on the token so a stop never waits out the backoff.
                 catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
-                    Console.Error.WriteLine($"[{DateTime.UtcNow:O}] TELNET {label} err: {ex.Message}");
+                    Console.Error.WriteLine(
+                        $"[{DateTime.UtcNow:O}] TELNET {label} err {FaultText(label, ex)}");
                     if (!NappableDelay(errorBackoffMs, ct)) break;
                 }
             }

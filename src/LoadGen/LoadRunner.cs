@@ -55,7 +55,7 @@ public static class LoadRunner
                     catch (Exception ex)
                     {
                         var lines = new List<string>();
-                        if (keepLines) lines.Add($"[{DateTime.UtcNow:O}] [fake#{id}] EX: {ex.GetType().Name}: {ex.Message}");
+                        if (keepLines) lines.Add($"[{DateTime.UtcNow:O}] [fake#{id}] EX {Program.FaultText("session", ex)}");
                         r = new ProbeResult
                         {
                             Pass = false,

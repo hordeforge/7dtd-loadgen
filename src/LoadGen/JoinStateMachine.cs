@@ -174,6 +174,11 @@ public sealed class JoinStateMachine
     public string BotModeName { get; set; } = "Wander";
     public int PackagesReceived { get; set; }
     public int PackagesSent { get; set; }
+    /// <summary>Milliseconds from this attempt's connect request to the
+    /// server-confirmed spawn, or -1 when it never joined. Join handshake time
+    /// is the latency this tool exists to measure, so the run reports it per
+    /// bot and as cohort percentiles.</summary>
+    public int JoinMs { get; set; } = -1;
     /// <summary>Monotonic move counter used to pace absolute-position keyframes.</summary>
     public long MoveTicks { get; set; }
     public bool SpawnRequested { get; set; }

@@ -84,13 +84,13 @@ public sealed class GameJoinClient
             foreach (var n in ActiveNets.Keys)
             {
                 try { n.DisconnectAll(); }
-                catch (Exception ex) { Console.Error.WriteLine($"shutdown disconnect: {ex.Message}"); }
+                catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("shutdown disconnect", ex)); }
             }
             System.Threading.Thread.Sleep(200);
             foreach (var n in ActiveNets.Keys)
             {
                 try { n.Stop(); }
-                catch (Exception ex) { Console.Error.WriteLine($"shutdown stop: {ex.Message}"); }
+                catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("shutdown stop", ex)); }
             }
         }
     }
@@ -105,7 +105,7 @@ public sealed class GameJoinClient
         lock (SweepGate)
         {
             try { net.Stop(); }
-            catch (Exception ex) { Console.Error.WriteLine($"net stop: {ex.Message}"); }
+            catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("net stop", ex)); }
         }
     }
 
@@ -113,6 +113,7 @@ public sealed class GameJoinClient
 
     BenchClock? _bench;
     bool _observerSinkFaultLogged;
+    long _connectTicks;
 
     public sealed class Options
     {
@@ -321,6 +322,10 @@ public sealed class GameJoinClient
         if (!started)
         {
             State.Fail("litenet_start");
+            // The cohort console echo is throttled to a few bots, so a fail
+            // path without a line is invisible for every other bot: the run
+            // just reports a pass-rate drop with no cause.
+            Log($"FAIL litenet_start bind={bindIp}");
             StopNet(net);
             return 1;
         }
@@ -334,9 +339,13 @@ public sealed class GameJoinClient
         if (peer == null)
         {
             State.Fail("litenet_connect_null");
+            Log($"FAIL litenet_connect_null host={opt.Host}:{opt.Port} bind={bindIp}");
             StopNet(net);
             return 1;
         }
+        // Join latency is measured from the connect request: everything after
+        // it (challenge, package ids, login, spawn) is the server's cost.
+        _connectTicks = System.Diagnostics.Stopwatch.GetTimestamp();
 
         var sw = Stopwatch.StartNew();
         bool loginSent = false;
@@ -672,13 +681,17 @@ public sealed class GameJoinClient
             || State.Stage == JoinStage.Joined || State.Stage == JoinStage.Disconnected))
         {
             Log(
-                $"PASS joined entity={State.EntityId} walks={State.WalkActions} jumps={State.JumpActions} " +
+                $"PASS joined entity={State.EntityId} joinMs={State.JoinMs} " +
+                $"walks={State.WalkActions} jumps={State.JumpActions} " +
                 $"deaths={State.DeathCount} respawns={State.RespawnCount} " +
                 $"lastDied={State.Died} lastCause={DeathCauseNames.Of(State.DeathCause)} stage={State.Stage}");
             return 0;
         }
 
+        // elapsedMs separates "the handshake broke" from "the server never
+        // answered": a stall burns the whole budget and reports timeout.
         Log($"FAIL lastStage={State.Stage} reason={State.FailReason ?? "timeout"} " +
+            $"elapsedMs={sw.ElapsedMilliseconds} joinMs={State.JoinMs} " +
             $"recv={State.PackagesReceived} sent={State.PackagesSent} everJoined={State.EverJoined}");
         return 1;
     }
@@ -1010,8 +1023,11 @@ public sealed class GameJoinClient
         }
         else
         {
+            if (State.JoinMs < 0)
+                State.JoinMs = (int)((System.Diagnostics.Stopwatch.GetTimestamp() - _connectTicks)
+                    * 1000.0 / System.Diagnostics.Stopwatch.Frequency);
             State.MarkJoined();
-            log($"STAGE Joined: entity={entityId}");
+            log($"STAGE Joined: entity={entityId} joinMs={State.JoinMs}");
         }
         // Ensure stage stays Joined after respawn (Advance may not regress, MarkJoined already Joined)
         if (State.EverJoined && State.Stage == JoinStage.SpawnedInWorld)
