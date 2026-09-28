@@ -5,6 +5,12 @@ frame_alive() is the only thing standing between a dead APM snapshot and a
 fabricated capacity ceiling: the sweep judges every round's frame time against
 the tick budget, so an unreadable reading must be None (the sweep stops) and
 never a 0.0 ms perfect frame.
+
+The frame-budget verdict is one value: the ok/OVER flag and the ceiling come
+from the raw reading, not the rounded display value. Judging the rounded value
+instead moved the boundary by up to half a display step: at a 55 ms budget a
+54.96 ms frame reads 55.0 and was dropped from the ceiling while the same
+round's log line and stop counter called it ok.
 """
 
 from __future__ import annotations
@@ -58,3 +64,30 @@ def test_string_frame_time_is_coerced(snapshot):
     # not raise out of the sweep loop.
     snapshot({"world": {"unityDeltaMs": "57.25", "entityAlives": "900"}})
     assert capacity_sweep.frame_alive() == (57.25, 900)
+
+
+def test_row_verdict_uses_the_raw_reading():
+    inside = capacity_sweep.sample_row(zombies=40, frame_ms=54.96, budget=55.0)
+    assert inside["frame_ms"] == 55.0  # rounded for the report
+    assert inside["over_budget"] is False
+    over = capacity_sweep.sample_row(zombies=80, frame_ms=55.04, budget=55.0)
+    assert over["frame_ms"] == 55.0
+    assert over["over_budget"] is True
+
+
+def test_ceiling_is_the_last_round_inside_the_budget():
+    curve = [
+        capacity_sweep.sample_row(40, 48.0, 55.0),
+        capacity_sweep.sample_row(80, 54.96, 55.0),
+        capacity_sweep.sample_row(120, 61.0, 55.0),
+        capacity_sweep.sample_row(160, 70.0, 55.0),
+    ]
+    # 54.96 ms is inside the 55 ms budget, so 80 zombies is the ceiling; the
+    # rounded 55.0 reading would have dropped it.
+    assert capacity_sweep.capacity_ceiling(curve) == 80
+
+
+def test_ceiling_is_zero_when_every_round_broke_the_budget():
+    curve = [capacity_sweep.sample_row(40, 61.0, 55.0)]
+    assert capacity_sweep.capacity_ceiling(curve) == 0
+    assert capacity_sweep.capacity_ceiling([]) == 0

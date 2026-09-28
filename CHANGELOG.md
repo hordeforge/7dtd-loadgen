@@ -59,6 +59,24 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- The zdtd save inventory kept the Region chunk count in the same map as the
+  file sizes, so `totalBytes` summed a file count into a byte total and
+  `REPORT.md` listed a `Region/file_count` file that does not exist. The count
+  is reported as `regionFileCount` beside the map now.
+- The clock-rate axis wrapped the game-minute delta modulo a game day, which
+  turned a game clock that went backwards (save reload, out-of-order markers)
+  into a ~24x rate reading. `gm()` already counts absolute game minutes, so a
+  midnight rollover needs no wrap; a negative delta now reports no rate.
+- The capacity sweep judged over-budget from the rounded frame time in the
+  curve but from the raw reading in the round log and the stop counter, so a
+  54.96 ms frame at a 55 ms budget was 'ok' in the log and dropped from the
+  ceiling. One row, one verdict.
+- A bench lap whose `endUtc` precedes its `startUtc` reported a 0.0 s wall
+  instead of an unmeasured one, which published a 100% repeatability delta
+  blamed on host contention. The wall is `n/a` now.
+- The telnet-transcript fuzz gate still asserted `players.rows`, removed when
+  per-player identifiers were kept out of run evidence, so five gates failed
+  on `KeyError: 'rows'`. They assert the count-only surface now.
 - Run artifacts no longer inherit the writer's operating system line endings.
   Client logs, the `--events-jsonl` sink, the death CSV and the cohort summary
   were written with `Environment.NewLine`, and the report tools with the

@@ -184,3 +184,24 @@ def test_unreadable_stats_is_recorded_not_silently_substituted(tmp_path):
     assert "stats.json unreadable for: lap1/bench" in md
     payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
     assert payload["laps"]["lap1"]["scenarios"]["bench"]["statsUnreadable"] is True
+
+
+def test_wall_ends_before_it_starts_is_unmeasured_not_zero(tmp_path):
+    """A run whose endUtc precedes its startUtc (clock step, mis-stamped run)
+    has no wall. Clamping the negative span to 0 published '0.0 s' as a
+    measurement and turned the repeatability delta into a 100% OVER blamed on
+    host contention."""
+    meta = {"scenario": "bench", "summary": {"pass": 16, "fail": 0},
+            "hostLoadStart": "1.0", "hostLoadEnd": "1.2",
+            "startUtc": "2026-08-22T10:01:00Z", "endUtc": "2026-08-22T10:00:00Z",
+            "bench": {"actionsPerSec": 280.0}}
+    good = dict(meta, startUtc="2026-08-22T10:00:00Z", endUtc="2026-08-22T10:01:00Z")
+    _make_lap(tmp_path, "lap1", {"bench": good})
+    _make_lap(tmp_path, "lap2", {"bench": dict(meta)})
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+    assert "n/a (missing wall)" in md
+    payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
+    assert payload["laps"]["lap2"]["scenarios"]["bench"]["wallS"] is None

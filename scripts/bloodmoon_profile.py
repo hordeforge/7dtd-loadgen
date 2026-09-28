@@ -54,6 +54,11 @@ PLAYERS = int(os.environ.get("BM_PLAYERS", "64"))
 ZOMBIES = int(os.environ.get("BM_ZOMBIES", "1000"))
 GAMESTAGE = int(os.environ.get("BM_GAMESTAGE", "250"))
 HOLD_S = int(os.environ.get("BM_HOLD_S", "0"))
+# Frame-period budget for the "are we at 20 TPS" verdict (unityDeltaMs). 20 TPS
+# is a 50 ms period; 55 ms is the harness slack on top of it, the same default
+# capacity_sweep uses (SWEEP_BUDGET_MS), so the two profiles judge the same
+# load the same way.
+FRAME_BUDGET_MS = float(os.environ.get("BM_FRAME_BUDGET_MS", "55"))
 
 # Deterministic endgame composition (weights per 20-zombie cycle). ~15% exploders
 # (FatCop + Demolition), the rest radiated/feral tanks + a screamer. All names
@@ -319,7 +324,8 @@ def health():
         return {"readable": False, "error": str(e)}
     w = d.get("world") or {}
     u = d.get("update") or {}
-    # unityDeltaMs is the real frame period (the "are we at 20 TPS" signal: <=55ms ok).
+    # unityDeltaMs is the real frame period (the "are we at 20 TPS" signal,
+    # judged against FRAME_BUDGET_MS).
     return {"readable": True,
             "entityAlives": w.get("entityAlives"), "players": w.get("players"),
             "frameMs": w.get("unityDeltaMs"), "tickAvgMs": u.get("serverTickIntervalAvgMs"),
@@ -374,7 +380,7 @@ def main():
         if not h.get("readable"):
             log(f"  apm snapshot unreadable: {h.get('error')}")
         log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  entityAlives={h.get('entityAlives')}")
-        log(f"  frame={h.get('frameMs')}ms (50ms=20TPS budget)  tickMax={h.get('tickMaxMs')}ms  "
+        log(f"  frame={h.get('frameMs')}ms (budget {FRAME_BUDGET_MS}ms/frame)  tickMax={h.get('tickMaxMs')}ms  "
             f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  stall={h.get('stallMs')}ms")
         frame = h.get("frameMs")
         if not h.get("readable"):
@@ -384,7 +390,7 @@ def main():
         elif not isinstance(frame, (int, float)):
             log("  VERDICT: UNKNOWN (snapshot has no unityDeltaMs; the load was not measured)")
         else:
-            keeps = frame <= 55
+            keeps = frame <= FRAME_BUDGET_MS
             log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
         if HOLD_S <= 0:
             log("holding load (BM_HOLD_S=0). Attach APM/capture now. Ctrl-C to tear down.")

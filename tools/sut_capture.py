@@ -207,13 +207,16 @@ def telnet_snapshot(run_dir):
             except ValueError:
                 dt_s = None
         if dt_s is not None and dt_s > 0:
-            # The game clock rolls over at 00:00 into the next Day, so a session
-            # that straddles game midnight ("Day 60, 23:58" -> "Day 61, 00:03")
-            # subtracts to a large negative number. Modulo one game day turns
-            # the rollover into the few minutes that actually elapsed; the
-            # capture window is seconds, far shorter than a game day.
-            game_min = (gm(last) - gm(first)) % GAME_MINUTES_PER_DAY
-            rate = round(game_min / dt_s, 4)
+            # gm() counts absolute game minutes, so a session that straddles
+            # game midnight ("Day 60, 23:58" -> "Day 61, 00:03") already
+            # subtracts to the 5 minutes that elapsed. A negative delta is
+            # therefore a clock that went backwards (save reload, out-of-order
+            # markers), not a rollover: report no rate rather than wrapping it
+            # modulo a game day, which turned a -1 into +1439 game-minutes and
+            # a 1-minute walk backwards into a 24x rate reading.
+            game_min = gm(last) - gm(first)
+            if game_min >= 0:
+                rate = round(game_min / dt_s, 4)
     return {
         "day": list(day.groups()) if day else None,
         "banner": banner,
@@ -248,8 +251,16 @@ def join_outcome(path):
 
 def save_inventory(run_dir, sut):
     """Presence/size summary. Formats differ by design (stock .7rg/.ttw vs
-    zdtd .zch/.zsv), so this is a presence/growth comparison, not a byte diff."""
+    zdtd .zch/.zsv), so this is a presence/growth comparison, not a byte diff.
+
+    Every value in the returned file map is a size in bytes. The zdtd Region
+    chunk count is a different quantity and is reported beside the map, never
+    inside it: mixing it in made totalBytes sum a file count into a byte total
+    (3000 chunk files inflated a save by 3000 'bytes') and listed a
+    non-existent 'Region/file_count' file in the inventory.
+    """
     files = {}
+    region_file_count = None
     if sut == "stock":
         root = os.path.join(run_dir, "userdata", "Saves")
         for base, _dirs, names in os.walk(root):
@@ -261,9 +272,7 @@ def save_inventory(run_dir, sut):
                         files[os.path.relpath(p, root)] = size
     else:
         world = os.path.join(run_dir, "world")
-        if not os.path.isdir(world):
-            files = {}
-        else:
+        if os.path.isdir(world):
             # Skip harness artifacts and the server's own log copy.
             for f in sorted(os.listdir(world)):
                 if f in ("dedicated.pid", "server.log"):
@@ -276,13 +285,13 @@ def save_inventory(run_dir, sut):
                     files[f] = size
             region = os.path.join(world, "Region")
             if os.path.isdir(region):
-                names = sorted(os.listdir(region))
-                files["Region/file_count"] = len(names)
+                region_file_count = len(os.listdir(region))
     keys = sorted(files)
-    total = sum(v for k, v in files.items() if not k.endswith("file_count"))
-    return {"count": len([k for k in keys if not k.endswith("file_count")]),
-            "totalBytes": total,
-            "files": {k: files[k] for k in keys[:80]}}
+    out = {"count": len(keys), "totalBytes": sum(files[k] for k in keys),
+           "files": {k: files[k] for k in keys[:80]}}
+    if region_file_count is not None:
+        out["regionFileCount"] = region_file_count
+    return out
 
 
 def zdtd_apm_summary(path):

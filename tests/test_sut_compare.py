@@ -188,6 +188,27 @@ def test_full_comparison_pipeline(tmp_path):
     assert "layer scores: cpu=20, sync=10" in report
 
 
+def test_save_total_bytes_excludes_the_region_file_count(tmp_path):
+    """Every value in the save inventory is a size in bytes. The zdtd Region
+    chunk count is a different quantity: keeping it in the same map summed a
+    file count into totalBytes and listed a 'Region/file_count' file that does
+    not exist."""
+    run_dir = tmp_path / "run"
+    world = run_dir / "world"
+    (world / "Region").mkdir(parents=True)
+    (world / "players.zsv").write_bytes(b"x" * 128)
+    for i in range(5):
+        (world / "Region" / f"c_{i}.zch").write_bytes(b"x" * 1000)
+
+    r = _py([str(TOOLS / "sut_capture.py"), str(run_dir), "zdtd"])
+    assert r.returncode == 0, r.stderr
+    saves = json.loads(r.stdout)["saves"]
+    assert saves["totalBytes"] == 128
+    assert saves["regionFileCount"] == 5
+    assert saves["count"] == 1
+    assert "Region/file_count" not in saves["files"]
+
+
 def test_not_compared_when_one_side_missing(tmp_path):
     stock_dir = tmp_path / "scenario" / "stock"
     _make_run(stock_dir, "stock", stock=True)
@@ -238,7 +259,7 @@ def test_clock_rate_prefers_monotonic_markers(tmp_path):
 
 def test_clock_rate_survives_game_midnight(tmp_path):
     """A capture straddling game midnight rolls the Day counter over, so the
-    minute delta must be taken modulo one game day, not across the boundary."""
+    minute delta must be read as absolute game minutes, not as HH:MM alone."""
     (tmp_path / "telnet.txt").write_text(
         "# ts=2026-08-12T00:00:00Z mono=1000 cmd=gettime\n"
         "Day 60, 23:58\n"
@@ -249,9 +270,25 @@ def test_clock_rate_survives_game_midnight(tmp_path):
     r = _py([str(TOOLS / "sut_capture.py"), str(tmp_path), "stock"])
     assert r.returncode == 0, r.stderr
     telnet = json.loads(r.stdout)["telnet"]
-    # 5 game-min over 12.5 s. A plain subtraction reads -1435 and reports a
-    # negative rate.
+    # 5 game-min over 12.5 s. Comparing the HH:MM fields alone would read the
+    # same day as -1435.
     assert telnet["clockRateGameMinPerRealSec"] == 0.4
+
+
+def test_clock_rate_absent_when_game_clock_goes_backwards(tmp_path):
+    """A game clock that walks backwards (save reload, out-of-order markers)
+    has no measurable rate. Wrapping the delta modulo a game day turned a
+    -1 minute delta into +1439 and reported 23.98 game-min per real-second."""
+    (tmp_path / "telnet.txt").write_text(
+        "# ts=2026-08-12T00:00:00Z mono=1000 cmd=gettime\n"
+        "Day 42, 13:38\n"
+        "# ts=2026-08-12T00:01:00Z mono=61000 cmd=gettime\n"
+        "Day 42, 13:37\n",
+        encoding="utf-8",
+    )
+    r = _py([str(TOOLS / "sut_capture.py"), str(tmp_path), "stock"])
+    assert r.returncode == 0, r.stderr
+    assert json.loads(r.stdout)["telnet"]["clockRateGameMinPerRealSec"] is None
 
 
 def test_missing_telnet_on_one_side_does_not_crash(tmp_path):

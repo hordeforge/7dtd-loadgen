@@ -3,9 +3,10 @@
 
 Produces the operator number "P players sustain N endgame zombies at 20 TPS".
 Parameterized via env: BM_PLAYERS (players, via bloodmoon_profile), SWEEP_STEP
-(+zombies/round, default 40), SWEEP_MAX (default 900), SWEEP_BUDGET_MS (55),
-CAPTURE_AT_CEILING=1 to run a full APM capture at the ceiling before teardown
-(deep bridge sections attribute the per-entity cost at that exact load).
+(+zombies/round, default 40), SWEEP_MAX (default 900), SWEEP_BUDGET_MS (default
+bloodmoon_profile.FRAME_BUDGET_MS), CAPTURE_AT_CEILING=1 to run a full APM
+capture at the ceiling before teardown (deep bridge sections attribute the
+per-entity cost at that exact load).
 
 Uses the blood-moon standard's server bring-up, join ramp, gamestage, and
 endgame spawn mix (scripts/bloodmoon_profile.py).
@@ -24,10 +25,26 @@ import procs
 
 STEP = int(os.environ.get("SWEEP_STEP", "40"))
 MAX_Z = int(os.environ.get("SWEEP_MAX", "900"))
-BUDGET = float(os.environ.get("SWEEP_BUDGET_MS", "55"))
+BUDGET = float(os.environ.get("SWEEP_BUDGET_MS", str(B.FRAME_BUDGET_MS)))
 CAPTURE = os.environ.get("CAPTURE_AT_CEILING", "0") == "1"
 # Sibling checkout of 7dtd-server-apm (repo root's parent dir); RE_APM_DIR overrides.
 APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-server-apm")
+
+
+def sample_row(zombies: int, frame_ms: float, budget: float) -> dict:
+    """One curve row. over_budget is decided from the raw frame reading, never
+    from the rounded display value: a 54.96 ms frame at a 55 ms budget rounds
+    to 55.0, so judging the rounded number called it over budget while the
+    same round's log line (and the stop counter) called it ok, and the two
+    disagreed about where the ceiling is."""
+    return {"zombies": zombies, "frame_ms": round(frame_ms, 1),
+            "over_budget": frame_ms > budget}
+
+
+def capacity_ceiling(curve: list[dict]) -> int:
+    """Highest zombie count whose frame reading stayed inside the budget."""
+    inside = [p for p in curve if not p["over_budget"]]
+    return inside[-1]["zombies"] if inside else 0
 
 
 def frame_alive():
@@ -85,13 +102,13 @@ def main():
             else:
                 f = (samples[0][0] + samples[1][0]) / 2
                 a = samples[1][1]
-            curve.append({"zombies": a, "frame_ms": round(f, 1)})
-            B.log(f"  zombies={a} frame={f:.1f}ms {'OVER' if f > BUDGET else 'ok'}")
-            over = over + 1 if f > BUDGET else 0
+            row = sample_row(a, f, BUDGET)
+            curve.append(row)
+            B.log(f"  zombies={a} frame={f:.1f}ms {'OVER' if row['over_budget'] else 'ok'}")
+            over = over + 1 if row["over_budget"] else 0
 
         B.log("=== CEILING REACHED ===")
-        ok = [p for p in curve if p["frame_ms"] <= BUDGET]
-        ceiling = ok[-1]["zombies"] if ok else 0
+        ceiling = capacity_ceiling(curve)
         last_z = curve[-1]["zombies"] if curve else 0
         B.log(f"  CAPACITY: {joined} players sustain ~{ceiling} endgame zombies at 20 TPS "
               f"(first sustained break at ~{last_z})")

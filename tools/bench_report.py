@@ -31,12 +31,19 @@ TOLERANCE = 0.20  # per-scenario wall repeatability bound
 
 
 def iso_delta(a: str, b: str) -> float | None:
+    """Seconds between two UTC stamps, or None when they do not make one.
+
+    A negative span is a clock step or a mis-stamped run, not a zero-second
+    run: clamping it to 0.0 published 0 as a measured wall and then blamed
+    the 100% repeatability delta on host contention.
+    """
     try:
         ta = dt.datetime.fromisoformat(a)
         tb = dt.datetime.fromisoformat(b)
-        return max(0.0, (tb - ta).total_seconds())
     except (ValueError, TypeError):
         return None
+    span = (tb - ta).total_seconds()
+    return span if span >= 0 else None
 
 
 def apm_summary(run_dir: Path) -> dict:
