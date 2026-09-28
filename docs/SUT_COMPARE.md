@@ -100,14 +100,18 @@ keep the identifiers out of the kept evidence:
   a session-stable pseudonym (`player-1`, `player-2`, ...) and `pltfmid`,
   `crossid`, `ip` and the greeting's `Server IP` replaced by `redacted`. Row
   shape, row counts, entity classes and the rest of the banner stay, so every
-  axis above is unchanged.
+  axis above is unchanged. A name is player-typed free text, so it can hold the
+  delimiter that ends its own field (`name=`, `, pos=`, a quote); the redactor
+  ends a name at the last terminator on the line, and taking the first one
+  leaves the rest of a person's name in the kept transcript.
 - The stock server relays its own connect and disconnect log into the session,
   so the identity also arrives as `PlayerName='...'` / `PltfmId='...'` /
-  `CrossId='...'` / `OwnerID='...'` on a lifecycle line, as the connecting
-  address in `LiteNetLib: Client connect from: <addr>:<port>`, and as a bare
-  platform id in a command echo. The driver masks all four too; a name keeps
-  the session pseudonym, so the line still correlates with the rows it
-  belongs to.
+  `CrossId='...'` / `OwnerID='...'` on a lifecycle line, in the same unquoted
+  form (`PlayerName=...`, `CrossId=...`) where the build relays it bare, as the
+  connecting address in `LiteNetLib: Client connect from: <addr>:<port>`, and
+  as a bare platform id in a command echo. The driver masks all of them too; a
+  name keeps the session pseudonym, so the line still correlates with the rows
+  it belongs to.
 - `tools/sut_capture.py` keeps the player count only; it never copies a
   name or an entity id into `surface.json`, and it masks `Server IP` again on
   the way in, so a transcript captured before that rule (or by another tool)

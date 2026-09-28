@@ -218,6 +218,14 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   `CHAT chars=<n>` instead of the server's chat text, which is player-typed
   free text plus the names the server puts in death messages. Comparison
   axes (counts, entity classes, banner, gamestats) are unchanged.
+- Two identity leaks closed in the kept transcript. A relayed lifecycle line
+  that the console prints unquoted (`PlayerName=Alice, CrossId=...`) kept the
+  name in the clear, because only the quoted form was recognized; a
+  listplayers row ended a name at the first `, pos=`, so a name carrying one
+  (`Alice, joined 2019`) left its tail in the transcript. A name now ends at
+  the last terminator on the line, and the unquoted identity fields are masked
+  like the quoted ones. An entity row's class name and a key with no value
+  still come through untouched.
 - The session host's own address no longer reaches kept run evidence. The
   console greeting's `Server IP` is the machine the lab session ran on, no
   comparison axis reads it, and it was committed verbatim in the `telnet.txt`
