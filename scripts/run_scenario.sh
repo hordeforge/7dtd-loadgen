@@ -8,6 +8,8 @@
 #   ./scripts/run_scenario.sh --list
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/python_env.sh
+source "$ROOT/scripts/python_env.sh"
 SCENARIO_FILE="${LOADGEN_SCENARIO_FILE:-$ROOT/scripts/scenarios/realearth.json}"
 START_SERVER=0
 LIST=0
@@ -34,7 +36,8 @@ if [[ ! -f "$SCENARIO_FILE" ]]; then
 fi
 
 if [[ "$LIST" == "1" ]]; then
-  exec python3 "$ROOT/scripts/scenario_env.py" --list "$SCENARIO_FILE"
+  run_python "$ROOT/scripts/scenario_env.py" --list "$SCENARIO_FILE"
+  exit 0
 fi
 
 if [[ -z "$ID" ]]; then
@@ -46,7 +49,7 @@ fi
 # Read as KEY=VALUE data, never eval'd: a scenario value reaches the environment
 # without ever being parsed as shell, so no quoting in the generator stands
 # between a catalog entry and command execution here.
-scenario_exports="$(python3 "$ROOT/scripts/scenario_env.py" export "$SCENARIO_FILE" "$ID")" || exit 1
+scenario_exports="$(run_python "$ROOT/scripts/scenario_env.py" export "$SCENARIO_FILE" "$ID")" || exit 1
 while IFS='=' read -r key value; do
   [[ -n "$key" ]] && export "$key=$value"
 done <<< "$scenario_exports"

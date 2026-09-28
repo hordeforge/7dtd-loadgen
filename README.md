@@ -32,12 +32,19 @@ whatever is missing. It does not look for a game install:
 |---|---|---|
 | .NET SDK | build, selftest, C# unit tests | 8.0.x (pinned in `global.json`) |
 | `shellcheck` | `make lint` on `scripts/*.sh` | any recent release |
-| `uv` + Python | pytest gates, ruff, mypy (locked env from `uv.lock`) | Python >= 3.11 (`pyproject.toml`) |
+| `uv` + Python | pytest gates, ruff, mypy, and the interpreter every repo shell script runs its tools with (locked env from `uv.lock`) | Python >= 3.11 (`pyproject.toml`) |
 | 7DTD dedicated server | live joins only | V3.2.0 |
 
 `make test` (the lane CI runs) needs all three tools; a game install is never
 required for it, and `make build` always uses the pinned NuGet LiteNetLib so
 binaries do not depend on a local install.
+
+`uv` is required by the scenario, compare, bench and dedicated-start scripts
+too, not only by the test lane. They call their tools through `run_python`
+from `scripts/python_env.sh` (`uv run --locked`), so a report or scenario
+catalog reads the same JSON on a box whose system Python is a different
+minor; without `uv` on PATH the call fails with that name rather than
+falling back.
 
 Platform: Linux on x86-64, which is what CI runs (`ubuntu-latest`) and the only
 platform the runners and `make` lanes are written for. The load client itself

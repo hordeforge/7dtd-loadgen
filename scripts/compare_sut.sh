@@ -17,6 +17,8 @@
 # artifact vs known divergence), never a pass to fake.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/python_env.sh
+source "$ROOT/scripts/python_env.sh"
 source "$ROOT/scripts/harness_lib.sh"
 # Safehouse owns the serverconfig renderer for the whole workspace.
 SANDBOX_ROOT="${SANDBOX_ROOT:-$ROOT/../7dtd-sandbox}"
@@ -65,7 +67,7 @@ while [[ $# -gt 0 ]]; do
       shift 2 ;;
     --world) need_value --world "${2+set}"; WORLD_NAME="$2"; shift 2 ;;
     --list)
-      python3 "$ROOT/scripts/sut_catalog.py" list
+      run_python "$ROOT/scripts/sut_catalog.py" list
       exit 0 ;;
     -h|--help)
       echo "Usage: $0 --scenario <id> --sut stock|zdtd|all [client envs]"
@@ -100,7 +102,7 @@ fi
 # defaults. The catalog is scripts/scenarios/sut.json. Resolution must fail
 # loudly: a typo'd id used to resolve to empty fields and silently ran the
 # default workload against both servers for minutes under the wrong name.
-if ! catalog_row="$(python3 "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID")"; then
+if ! catalog_row="$(run_python "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID")"; then
   echo "ERROR: scenario '$SCENARIO_ID' not resolvable from scripts/scenarios/sut.json (try --list)" >&2
   exit 1
 fi
@@ -366,7 +368,7 @@ EOF
   # refuses for credentials); sut_telnet.py resolves LOADGEN_TELNET_PASSWORD.
   # Setting it is harmless on zdtd, whose console has no password.
   if ! LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD" \
-     python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${PROBE_ARGS[@]}"; then
+     run_python "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${PROBE_ARGS[@]}"; then
     echo "  ERROR: $sut admin console not answering after ready" >&2
     exit 1
   fi
@@ -441,7 +443,7 @@ EOF
 
   TELNET_ARGS=(--out "$run_dir/telnet.txt" --commands "$TELNET_CMD" --tail-sleep 12)
   LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD" \
-    python3 "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${TELNET_ARGS[@]}" \
+    run_python "$ROOT/tools/sut_telnet.py" "$HOST" "$TELNET_PORT" "${TELNET_ARGS[@]}" \
     || echo "  (telnet snapshot failed)"
 
   # Wait for the client to finish, then summarize the join outcome.
@@ -499,7 +501,7 @@ EOF
 
   # Surface capture (per run, machine-readable). A capture failure is a harness
   # bug, not a scenario result - fail loudly.
-  python3 "$ROOT/tools/sut_capture.py" "$run_dir" "$sut" >"$run_dir/surface.json"
+  run_python "$ROOT/tools/sut_capture.py" "$run_dir" "$sut" >"$run_dir/surface.json"
 
   # Teardown.
   if [[ -f "$PIDFILE" ]]; then
@@ -525,5 +527,5 @@ done
 # sut_report.py already downgrades a one-sided scenario to NOT COMPARED, so
 # re-running it here is what makes a partial rerun converge on the truth.
 echo "=== diff report ==="
-python3 "$ROOT/tools/sut_report.py" "$SCENARIO_DIR"
+run_python "$ROOT/tools/sut_report.py" "$SCENARIO_DIR"
 echo "report: $SCENARIO_DIR/REPORT.md"

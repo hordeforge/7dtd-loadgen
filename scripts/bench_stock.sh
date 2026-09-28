@@ -17,6 +17,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=scripts/python_env.sh
+source "$ROOT/scripts/python_env.sh"
 LAP="1"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -215,7 +217,7 @@ for sc in "${scenarios[@]}"; do
   h1=$(hostload)
   t1=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-  read -r pass fail <<<"$(python3 "$ROOT/scripts/stats_pass_fail.py" "$run_dir/stats.json")"
+  read -r pass fail <<<"$(run_python "$ROOT/scripts/stats_pass_fail.py" "$run_dir/stats.json")"
   bench_line=$(grep -a "BENCH_SUMMARY" "$run_dir/client.log" 2>/dev/null | tail -1 || true)
   # The recorded value is the argv the client actually got, not a re-parsed
   # string. Every element was charset-checked against the matrix above.

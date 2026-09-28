@@ -26,7 +26,7 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
 4. **Telnet passwords are test-only.** Prefer env / local config; default lab password must not be exposed publicly.
 5. **Reproducible perf runs need fixed world, seed, bot count, concurrency, duration, action seed, and pressure settings.** Warm worlds consistently; do not compare first RWG gen to a warm save.
 6. **Fake clients bind unique `127.x.x.x` addresses** to bypass per-IP connect throttles; preserve that behavior when changing networking. Where the host does not route `127.0.0.0/8`, the client probes the address and shares `127.0.0.1` rather than failing the bot, so a missing map must degrade to a shared bind, never to a join failure.
-7. **.NET 8** for the client (`src/LoadGen`). Optional Python tests via **`uv`**, never pip.
+7. **.NET 8** for the client (`src/LoadGen`). Python runs through **`uv`**, never pip and never a bare `python3`: the Makefile lanes use `uv run --locked`, and every `scripts/*.sh` reaches its tools through `run_python` from `scripts/python_env.sh` (`uv run --locked --project "$ROOT" python`). A script that calls the host `python3` runs on whatever interpreter the machine has, which is a different stdlib than the pin `uv.lock` and `.python-version` record; `tests/test_build_contract.py` fails the lane when one appears. The sibling renderer's `sbconfig.py` is the one exception: it belongs to `7dtd-sandbox` and that checkout states its own interpreter.
 8. **No AI attribution** in commits/docs/comments. **No em dashes** in shipped text.
 9. Empty height-test maps often lack AI spawn points; prefer stock pregen or RWG 4k for sleeper/POI pressure.
 10. **Overlapping runs are refused, not merged.** `run_loadgen.sh` takes an

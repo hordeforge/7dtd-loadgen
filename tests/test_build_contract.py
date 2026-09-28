@@ -106,6 +106,29 @@ def test_sdk_is_pinned_in_tree():
     )
 
 
+def test_repo_python_tools_run_on_the_pinned_interpreter():
+    """A shell script that calls `python3` from PATH runs its tool on
+    whatever interpreter the host has, while the gates that check that tool
+    ran under the pinned one. Every repo tool call goes through run_python
+    (uv run --locked), so a machine on a newer system Python cannot read a
+    scenario catalog or render a report differently from CI."""
+    shared = ROOT / "scripts" / "python_env.sh"
+    assert shared.is_file(), "scripts/python_env.sh is the one place run_python is defined"
+    for script in sorted((ROOT / "scripts").glob("*.sh")):
+        for line in script.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            if re.search(r'"\$\{?ROOT\}?/(scripts|tools)/[A-Za-z0-9_]+\.py', line) and re.search(
+                r"(^|[\s(=])python3?\s", stripped
+            ):
+                raise AssertionError(
+                    f"{script.relative_to(ROOT)}: {stripped!r} runs a repo tool on "
+                    "the host python3; call run_python (sourced from "
+                    "scripts/python_env.sh) instead"
+                )
+
+
 def test_interpreter_pin_matches_the_mypy_target():
     """Gates run under `uv run`, so an unpinned interpreter means the tests
     execute on whatever the host ships. .python-version and the mypy

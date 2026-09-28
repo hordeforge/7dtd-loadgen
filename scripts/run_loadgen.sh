@@ -7,6 +7,8 @@
 #                             as `make build GAME_DIR=...`)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/python_env.sh
+source "$ROOT/scripts/python_env.sh"
 DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.cache/dotnet-sdk}"
 export PATH="${DOTNET_ROOT}:${PATH}"
 HOST="${LOADGEN_HOST:-127.0.0.1}"
@@ -208,7 +210,7 @@ if mkdir -p "$(dirname "$MANIFEST")" \
       LOADGEN_SCENARIO_ID="${LOADGEN_SCENARIO_ID:-}" \
       LOADGEN_MAX_DYNAMITE="$MAX_DYNAMITE" LOADGEN_SEED="$SEED" LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" \
       LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
-      python3 "$ROOT/scripts/loadgen_manifest.py"; then
+      run_python "$ROOT/scripts/loadgen_manifest.py"; then
   echo "manifest: $MANIFEST"
 else
   echo "WARN: manifest write failed for $MANIFEST; client exit code $rc preserved" >&2

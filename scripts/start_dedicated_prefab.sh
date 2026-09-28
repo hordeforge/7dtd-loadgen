@@ -17,6 +17,8 @@
 #   RE_WORLD_NAME=RWG RE_WORLD_GEN_SIZE=4096 RE_WORLD_GEN_SEED=botpoi4k ./scripts/start_dedicated_prefab.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/python_env.sh
+source "$ROOT/scripts/python_env.sh"
 DS_DIR="${SEVENDTD_SERVER_DIR:-$HOME/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server}"
 USERDATA="${RE_DEDICATED_USERDATA:-$HOME/.cache/7dtd-loadgen}"
 # RWG = generate; otherwise must exist under Data/Worlds/
@@ -193,7 +195,7 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
     # ps-visible (same rule that keeps LOADGEN_KEY / LOADGEN_TELNET_PASSWORD
     # out of argv). The hashing helper is a proper script file.
     WEB_HASH="$(RE_ADMIN_WEB_PASSWORD="$RE_ADMIN_WEB_PASSWORD" \
-      python3 "$ROOT/scripts/webdash_password_hash.py")"
+      run_python "$ROOT/scripts/webdash_password_hash.py")"
     sed -i "s|pass=\"ISMvKXpXpadDiUoOSoAfww==\"|pass=\"${WEB_HASH}\"|" "$SERVERADMIN"
     unset WEB_HASH RE_ADMIN_WEB_PASSWORD
     WEB_NOTE="webuser pass from RE_ADMIN_WEB_PASSWORD"
