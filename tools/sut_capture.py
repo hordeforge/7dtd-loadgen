@@ -152,7 +152,7 @@ def telnet_snapshot(run_dir):
         if m:
             banner[key] = m.group(1).strip()
     entities = []
-    players = 0
+    players = []
     for line in text.splitlines():
         if "lifetime=" in line and "dead=" in line:
             m = ENTITY_ROW.match(line)
@@ -163,8 +163,9 @@ def telnet_snapshot(run_dir):
                                  "name": bm.group(1) if bm else name,
                                  "dead": m.group(4) == "True"})
         elif "deaths=" in line and "pos=" in line:
-            if PLAYER_ROW.match(line):
-                players += 1
+            m = PLAYER_ROW.match(line)
+            if m:
+                players.append({"id": int(m.group(2)), "name": m.group(3).strip()})
     totals = [int(n) for n in TOTAL_ROW.findall(text)]
     total = totals[-1] if totals else None
     types = {}
@@ -225,7 +226,7 @@ def telnet_snapshot(run_dir):
                      "alive": sum(1 for e in entities if not e["dead"]),
                      "dead": sum(1 for e in entities if e["dead"]),
                      "types": types},
-        "players": {"count": players},
+        "players": {"count": len(players), "rows": players},
         "gamestats": gamestats,
         "clockRateGameMinPerRealSec": rate,
         "reportedTotal": total,
@@ -395,12 +396,18 @@ def main():
         print(__doc__, file=sys.stderr)
         return 2
     run_dir, sut = sys.argv[1], sys.argv[2]
+    telnet = telnet_snapshot(run_dir)
+    if telnet is not None:
+        # The snapshot keeps the parsed player rows for in-process callers, but
+        # the surface is an artifact the harness keeps: per-player identity has
+        # no place in a committed comparison, so only the count crosses over.
+        telnet["players"] = {"count": telnet["players"]["count"]}
     surface = {
         "sut": sut,
         "meta": run_meta(run_dir),
         "log": log_categories(os.path.join(run_dir, "server.log"), sut),
         "join": join_outcome(os.path.join(run_dir, "loadgen.log")),
-        "telnet": telnet_snapshot(run_dir),
+        "telnet": telnet,
         "saves": save_inventory(run_dir, sut),
         "apm": zdtd_apm_summary(os.path.join(run_dir, "server.log")) if sut == "zdtd" else None,
         "apmStock": stock_apm_summary(run_dir) if sut == "stock" else None,

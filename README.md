@@ -395,12 +395,30 @@ Consumed by `scripts/start_dedicated_*.sh` (also listed in `make help`):
 `RE_ENEMY_DIFFICULTY` (1), `RE_TELNET_PORT` (8081), `RE_DYNAMIC_MESH`
 (false).
 
+Also read there, each with a format the start script enforces or refuses:
+`SANDBOX_ROOT` (sibling `7dtd-sandbox` checkout that renders the serverconfig;
+start fails by name when absent), `MONO_ENV_OPTIONS` (appended with
+`--jitmap` when it lacks one), `RE_ADMIN_STEAM_ID64` (17-digit Steam id64
+granted admin), `RE_ADMIN_EOS_ID` (32 hex chars), `RE_ADMIN_WEB_PASSWORD`
+(dashboard webuser secret; only its hash is written, plaintext is never
+logged and the variable is unset after use), `RE_SCENARIO_PACK` (RealEarth
+world pack, one of the names `start_dedicated_realearth.sh` accepts),
+`REALEARTH_ROOT`, `SEVENDTD_GAME_DIR`, `SEVENDTD_APM_DIR`.
+
 ### Comparison, bench, and stress lanes
 
 - SUT compare: `COMPARE_COUNT`, `COMPARE_TIMEOUT_MS`, `COMPARE_WORLD`,
   `COMPARE_HOST`, `COMPARE_ACTIONS`, `COMPARE_APM`, `COMPARE_APM_SECONDS`,
   `COMPARE_TELNET_PORT_STOCK` / `COMPARE_TELNET_PORT_ZDTD`,
   `COMPARE_TELNET_PASSWORD` (`SCENARIO` / `SUT` are make variables).
+- SUT compare spawn and snapshot knobs: `COMPARE_SPAWN_ENTITY`,
+  `COMPARE_SPAWN_PER_PLAYER`, `COMPARE_SPAWN_EVERY_MS`,
+  `COMPARE_SNAPSHOT_DELAY_MS`, `COMPARE_OUT`.
+- SUT under test (`scripts/sut_zdtd.sh`): `RE_SUT_PORT` (27120),
+  `RE_SUT_ADMIN_PORT` (8082), `RE_SUT_WORLD`, `RE_SUT_WORLD_NAME`,
+  `RE_SUT_GAME_DIR`, `RE_SUT_SERVERCONFIG`, `RE_SUT_LOGFILE`, plus `ZIG` and
+  the sibling `ZDTD_ROOT` checkout. Ports and the world name are range-checked
+  before anything is wiped or started.
 - Bench lane: `LAP` (make variable), `BENCH_LAPS_ONLY`, `BENCH_ADMIN_PORT`.
 - Blood-moon stress profile: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000),
   `BM_GAMESTAGE` (250), `BM_HOLD_S` (0); telnet credential honors

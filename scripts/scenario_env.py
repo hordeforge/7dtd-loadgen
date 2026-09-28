@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -63,6 +64,19 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     defs = doc.get("defaults", {})
     client = sc.get("client") or {}
     server = sc.get("server")
+    # The catalog names the variable that carries the admin telnet credential.
+    # It is never printed here (the export is data the reader turns into the
+    # environment), but an unset one means the client falls back to its own
+    # default, so say so instead of letting the console login fail later.
+    pw_env = defs.get("telnetPasswordEnv")
+    if pw_env:
+        if not ENV_KEY_RE.match(str(pw_env)):
+            print(f"ERROR: scenario {scenario_id}: refusing telnetPasswordEnv {pw_env!r} "
+                  "(not a POSIX env identifier)", file=sys.stderr)
+            return 1
+        if not os.environ.get(str(pw_env)):
+            print(f"WARN: {pw_env} is unset; the client uses its own telnet default",
+                  file=sys.stderr)
     mode = client.get("mode", "probe")
     port = int(client.get("port", defs.get("port", 26902)))  # bot data port = ServerPort+2
     host = str(client.get("host", defs.get("host", "127.0.0.1")))

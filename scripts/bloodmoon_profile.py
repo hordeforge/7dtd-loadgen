@@ -26,6 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import procs
+from loadgen_config import env_float, env_int, env_port, env_str
 
 # Teardown targets, matched as a cmdline substring by scripts/procs.py.
 BOT_PROC = "net8.0/7dtd-loadgen"
@@ -35,9 +36,9 @@ ROOT = Path(__file__).resolve().parent.parent
 # Run logs are regenerable one-off captures, so they land in the gitignored
 # scratch dir instead of the project root.
 SCRATCH = ROOT / ".scratch"
-HOST = os.environ.get("LOADGEN_HOST", "127.0.0.1")
-GAME_PORT = os.environ.get("LOADGEN_PORT", "26902")
-TELNET_PORT = int(os.environ.get("LOADGEN_TELNET_PORT", "8081"))
+HOST = env_str("LOADGEN_HOST", "127.0.0.1")
+GAME_PORT = env_str("LOADGEN_PORT", "26902")
+TELNET_PORT = env_port("LOADGEN_TELNET_PORT", 8081)
 # One name for the lab telnet credential across this repo's tools;
 # SEVENDTD_TELNET_PASSWORD stays as a legacy alias.
 TELNET_PW = (
@@ -50,15 +51,15 @@ APM_SNAP = Path(os.environ.get("APM_SNAPSHOT", str(
     Path.home() / ".local/share/Steam/steamapps/common/7 Days to Die Dedicated Server"
     / "Mods/7dtd-server-apm-bridge/telemetry/apm_app_latest.json")))
 
-PLAYERS = int(os.environ.get("BM_PLAYERS", "64"))
-ZOMBIES = int(os.environ.get("BM_ZOMBIES", "1000"))
-GAMESTAGE = int(os.environ.get("BM_GAMESTAGE", "250"))
-HOLD_S = int(os.environ.get("BM_HOLD_S", "0"))
+PLAYERS = env_int("BM_PLAYERS", 64, minimum=1)
+ZOMBIES = env_int("BM_ZOMBIES", 1000, minimum=1)
+GAMESTAGE = env_int("BM_GAMESTAGE", 250, minimum=0)
+HOLD_S = env_int("BM_HOLD_S", 0, minimum=0)
 # Frame-period budget for the "are we at 20 TPS" verdict (unityDeltaMs). 20 TPS
 # is a 50 ms period; 55 ms is the harness slack on top of it, the same default
 # capacity_sweep uses (SWEEP_BUDGET_MS), so the two profiles judge the same
 # load the same way.
-FRAME_BUDGET_MS = float(os.environ.get("BM_FRAME_BUDGET_MS", "55"))
+FRAME_BUDGET_MS = env_float("BM_FRAME_BUDGET_MS", 55.0, minimum=0.1)
 
 # Deterministic endgame composition (weights per 20-zombie cycle). ~15% exploders
 # (FatCop + Demolition), the rest radiated/feral tanks + a screamer. All names

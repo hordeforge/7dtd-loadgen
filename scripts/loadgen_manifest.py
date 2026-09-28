@@ -6,54 +6,65 @@ via the environment, and LOADGEN_MANIFEST_PATH is the output file. This is the
 wrapper's own record of the run (target, workload, exit code). The per-client
 run manifest (schema 7dtd.loadgen.run.v1) is written by the client itself via
 --run-manifest; the two carry different fields and must not share an id.
+
+Required inputs (mode, target, cohort size, timeout, exit code) must be set:
+scripts/run_loadgen.sh always exports them, and a missing one is a broken
+caller, not a run with a zero-sized cohort. Optional knobs stay null when
+unset, so the manifest records "client default" rather than a measured 0 that
+reads as evidence downstream.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from loadgen_config import MAX_PORT, MIN_PORT, env_int, env_optional_int
 
-def integer(name: str) -> int:
-    """Parse one LOADGEN_* integer. A non-numeric value aborts the manifest
-    write: substituting 0 would record port 0, count 0 or timeout 0 in the run
-    manifest, which reads as a measured value in every downstream lap summary.
-    run_loadgen.sh keeps the client's exit code and warns on this failure."""
-    raw = os.environ.get(name, "0")
-    try:
-        return int(raw)
-    except ValueError as e:
-        raise SystemExit(f"loadgen_manifest: {name}={raw!r} is not an integer") from e
 
+def required(name: str) -> str:
+    value = os.environ.get(name)
+    if not value:
+        raise SystemExit(f"loadgen_manifest: {name} is required")
+    return value
+
+
+mode = required("LOADGEN_MODE")
+rc = env_int("LOADGEN_RC", minimum=0)
 
 manifest = {
     "schema": "7dtd.loadgen.runner.v1",
     "endedAt": datetime.now(UTC).isoformat(),
-    "mode": os.environ["LOADGEN_MODE"],
+    "mode": mode,
     "scenarioId": os.environ.get("LOADGEN_SCENARIO_ID") or None,
-    "target": {"host": os.environ["LOADGEN_HOST"], "port": integer("LOADGEN_PORT")},
+    "target": {
+        "host": required("LOADGEN_HOST"),
+        "port": env_int("LOADGEN_PORT", minimum=MIN_PORT, maximum=MAX_PORT),
+    },
     "workload": {
-        "clients": integer("LOADGEN_COUNT"),
-        "concurrency": integer("LOADGEN_CONCURRENCY"),
-        "timeoutMs": integer("LOADGEN_TIMEOUT"),
-        "actionsPerClient": integer("LOADGEN_ACTIONS"),
-        "rampMs": integer("LOADGEN_RAMP_MS"),
+        "clients": env_int("LOADGEN_COUNT", minimum=1),
+        "concurrency": env_int("LOADGEN_CONCURRENCY", 0, minimum=0),
+        "timeoutMs": env_int("LOADGEN_TIMEOUT", minimum=1),
+        "actionsPerClient": env_int("LOADGEN_ACTIONS", minimum=0),
+        "rampMs": env_int("LOADGEN_RAMP_MS", 0, minimum=0),
         "botMode": os.environ.get("LOADGEN_BOT_MODE") or "auto",
         "botMix": os.environ.get("LOADGEN_BOT_MIX") or None,
         "deathMode": os.environ.get("LOADGEN_DEATH") or "auto",
         "seed": os.environ.get("LOADGEN_SEED") or "default",
         "maxDynamite": os.environ.get("LOADGEN_MAX_DYNAMITE") or "default",
         "spawnEntity": os.environ.get("LOADGEN_SPAWN_ENTITY") or "default",
-        "spawnPerPlayer": integer("LOADGEN_SPAWN_PER_PLAYER"),
-        "spawnEveryMs": integer("LOADGEN_SPAWN_EVERY_MS"),
+        "spawnPerPlayer": env_optional_int("LOADGEN_SPAWN_PER_PLAYER", minimum=0),
+        "spawnEveryMs": env_optional_int("LOADGEN_SPAWN_EVERY_MS", minimum=0),
     },
     "result": {
-        "exitCode": integer("LOADGEN_RC"),
-        "passed": integer("LOADGEN_RC") == 0,
+        "exitCode": rc,
+        "passed": rc == 0,
     },
 }
 
-Path(os.environ["LOADGEN_MANIFEST_PATH"]).write_text(
+Path(required("LOADGEN_MANIFEST_PATH")).write_text(
     json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")

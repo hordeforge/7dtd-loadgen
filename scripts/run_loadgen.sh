@@ -47,6 +47,30 @@ if [[ "$SELF_TEST" == "1" ]]; then
   MODE="self-test"
 fi
 
+# Fail on a knob that cannot mean what it says, before the build and the run.
+# An unknown LOADGEN_MODE would otherwise fall through the case below to the
+# probe branch, and a non-numeric COUNT aborts later inside an arithmetic
+# expansion with a bash error that names neither the variable nor the run.
+bad() { echo "ERROR: $1" >&2; exit 2; }
+case "$MODE" in
+  probe|join|self-test|self-test-join) ;;
+  *) bad "LOADGEN_MODE=$MODE is not one of probe|join|self-test|self-test-join" ;;
+esac
+int_in_range() {  # NAME VALUE MIN MAX
+  [[ "$2" =~ ^[0-9]+$ ]] || bad "$1=$2 is not a non-negative integer"
+  (( 10#$2 >= $3 && 10#$2 <= $4 )) || bad "$1=$2 is outside $3..$4"
+}
+int_in_range LOADGEN_PORT "$PORT" 1 65535
+int_in_range LOADGEN_COUNT "$COUNT" 1 1000
+int_in_range LOADGEN_TIMEOUT "$TIMEOUT" 1 2147483647
+int_in_range LOADGEN_ACTIONS "$ACTIONS" 0 2147483647
+int_in_range LOADGEN_RAMP_MS "$RAMP_MS" 0 3600000
+[[ -n "$CONCURRENCY" ]] && int_in_range LOADGEN_CONCURRENCY "$CONCURRENCY" 0 1000
+[[ -n "$TELNET_PORT" ]] && int_in_range LOADGEN_TELNET_PORT "$TELNET_PORT" 1 65535
+if ! [[ "$MIN_PASS" =~ ^([01](\.[0-9]+)?|0?\.[0-9]+|1(\.0+)?)$ ]]; then
+  bad "LOADGEN_MIN_PASS_RATE=$MIN_PASS is not a fraction in 0..1"
+fi
+
 # Overlap guard (rerun safety): two cohorts against the same target carry
 # identical bot names, so every login kicks the other cohort's session into its
 # rejoin loop for the full wall clock, both telnet pressure loops double the
