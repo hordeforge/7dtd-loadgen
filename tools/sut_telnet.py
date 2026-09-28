@@ -41,6 +41,21 @@ if isinstance(sys.stderr, io.TextIOWrapper):
 # only compares player counts, so the values never reach the transcript file
 # (transcripts are committed as run evidence).
 IDENTITY_FIELD = re.compile(r"\b(pltfmid|crossid|ip)=([^,\s]*)")
+# The connection lifecycle lines the stock server relays into the telnet
+# session carry the same identities as a listplayers row, quoted and
+# capitalized, so the lower-case key pattern above never matched them: a real
+# player's name and platform id reached the committed transcript through the
+# PlayerDisconnected / Player disconnected lines.
+QUOTED_IDENTITY_FIELD = re.compile(
+    r"\b(pltfmid|crossid|ownerid|playername)='([^']*)'", re.IGNORECASE)
+# The LiteNetLib connect/disconnect log line the stock server relays into the
+# session: the address is the connecting player's, and the port is the
+# session's.
+CLIENT_ADDRESS = re.compile(
+    r"^(\S+ \S+ (?:INF|WRN|DBG) .*LiteNetLib: (?:[^ ]+: )*Client (?:dis)?connect from: )\S+")
+# Platform account ids printed bare (a ban line, a command echo):
+# SteamID64 is 17 digits starting 76561, EOS id is 32 hex starting 0002.
+PLATFORM_ID = re.compile(r"\b(?:76561\d{12}|0002[0-9a-fA-F]{28})\b")
 # Stock listents wraps a player in "[type=EntityPlayer, name=<name>, id=N]".
 BRACKET_PLAYER_NAME = re.compile(r"(\[type=EntityPlayer[^,\]]*,\s*name=)([^,\]]+)(,)")
 # listplayers rows: "0. id=171, <name>, pos=(...)".
@@ -73,16 +88,31 @@ def mutating_command(cmd: str) -> bool:
     return bool(verb) and verb[0].lower() in MUTATING_VERBS
 
 
+def _quoted_identity(alias):
+    """Sub for a quoted identity field. The name keeps the session pseudonym so
+    a lifecycle line correlates with the rows it belongs to; every other field
+    is a platform id and takes the placeholder."""
+    def sub(m: "re.Match[str]") -> str:
+        key = m.group(1)
+        value = m.group(2)
+        if key.lower() == "playername":
+            return f"{key}='{alias(value)}'"
+        return f"{key}='{REDACTED}'"
+    return sub
+
+
 def redact_identities(text: str) -> str:
     """Strip the per-player identifiers out of a transcript before it is kept.
 
     A dedicated server is shared infrastructure: a real player who connects to
     a lab session puts their in-game name, platform id and IP in listplayers
-    and listents output, and the greeting puts the session host's own address
-    in every transcript. The comparisons read counts, class names and the
-    banner keys, never an identity, so the name is replaced by a
-    session-stable pseudonym (row-to-row correlation survives) and the
-    platform id, the address and the host address by a placeholder.
+    and listents output, in the connect/disconnect lines the server relays
+    into the session, and in a platform id echoed by a command, while the
+    greeting puts the session host's own address in every transcript. The
+    comparisons read counts, class names and the banner keys, never an
+    identity, so the name is replaced by a session-stable pseudonym
+    (row-to-row correlation survives) and the platform id, the address and
+    the host address by a placeholder.
     """
     aliases: dict[str, str] = {}
 
@@ -95,6 +125,7 @@ def redact_identities(text: str) -> str:
         return aliases.setdefault(key, f"player-{len(aliases) + 1}")
 
     out = []
+    quoted = _quoted_identity(alias)
     for line in text.splitlines(keepends=True):
         if "[type=" in line:
             line = BRACKET_PLAYER_NAME.sub(
@@ -102,6 +133,9 @@ def redact_identities(text: str) -> str:
         elif "deaths=" in line:
             line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
         line = BANNER_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
+        line = CLIENT_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
+        line = QUOTED_IDENTITY_FIELD.sub(quoted, line)
+        line = PLATFORM_ID.sub(REDACTED, line)
         out.append(IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", line))
     return "".join(out)
 

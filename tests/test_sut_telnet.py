@@ -104,6 +104,40 @@ def test_a_valueless_address_line_is_left_alone():
     assert "redacted" not in out
 
 
+def test_connection_lifecycle_lines_drop_name_ids_and_address():
+    # The stock server relays its own connect/disconnect log into the telnet
+    # session, quoted and capitalized where the listplayers row is not: these
+    # were the one path a real player's name, platform id and address took into
+    # a committed transcript.
+    out = sut_telnet.redact_identities(
+        "2026-08-12T23:11:28 45.9 INF NET: LiteNetLib: Client connect from: "
+        "10.1.2.3:50922 / 0 (Reason)\n"
+        "2026-08-12T23:11:28 45.9 INF NET: LiteNetLib: MT: Client disconnect from: "
+        "10.1.2.3:50922 / 0 (RemoteConnectionClose)\n"
+        "2026-08-12T23:11:28 45.9 INF [NET] PlayerDisconnected EntityID=177, "
+        "PltfmId='Local_Alice', CrossId='76561198021925107', "
+        "OwnerID='<unknown/none>', PlayerName='Alice', ClientNumber='1'\n"
+    )
+    assert "Alice" not in out and "Local_Alice" not in out
+    assert "76561198021925107" not in out
+    assert "10.1.2.3" not in out and "50922" not in out
+    assert "ClientNumber='1'" in out and "EntityID=177" in out
+    assert out.count("PlayerName='player-1'") == 1
+    assert "PltfmId='redacted'" in out and "OwnerID='redacted'" in out
+
+
+def test_bare_platform_ids_are_dropped():
+    # A command echo or a ban line carries the account id with no field name.
+    out = sut_telnet.redact_identities(
+        "INF banning 76561198021925107 for 10 minutes\n"
+        "INF 0002000000000000000000000000ABCD is banned\n"
+        "INF 1234 frames in 0.5s\n"
+    )
+    assert "76561198021925107" not in out
+    assert "0002000000000000000000000000ABCD" not in out
+    assert "1234 frames in 0.5s" in out
+
+
 def test_read_commands_are_not_mutating():
     for cmd in ("gettime", "getgamestat", "listents", "listplayers", "apm dump",
                 "GETTIME", "  listplayers  "):
