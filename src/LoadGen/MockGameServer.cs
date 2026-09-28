@@ -233,9 +233,17 @@ public sealed class MockGameServer : IDisposable
 
     public void Dispose()
     {
+        // Under _pollGate, like Poll: NetManager is single-threaded by contract
+        // here, and every caller reaches this while a poll task may still be
+        // running (the teardown wait in SelfTest/SelfTestJoin is bounded and
+        // its result is not checked). Stopping beside an in-flight PollEvents
+        // frees the peer queues the poller is dequeuing.
         // Same guard as every other stop site: release must never mask the
         // caller's result (a throw inside using-dispose would overwrite rc).
-        try { _net.Stop(); }
-        catch (Exception) { }
+        lock (_pollGate)
+        {
+            try { _net.Stop(); }
+            catch (Exception) { }
+        }
     }
 }

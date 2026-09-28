@@ -588,8 +588,12 @@ public static partial class Program
                 $"[{DateTime.UtcNow:O}] JOIN_LOAD count=1 concurrency=1 host={opt.Host}:{opt.Port} " +
                 $"mode={opt.Mode} death={opt.Death} actions={opt.ActionCount} seed={opt.ActionSeed} " +
                 $"timeoutMs={opt.TimeoutMs}{scenarioTag} bind={opt.LocalBindIp ?? "0.0.0.0"}");
-            var lines = new List<string>();
+            var lines = new RunLogBuffer();
             // --quiet drops the console echo only; --log still gets every line.
+            // The delegate is shared: the bot's loop calls it, and so does the
+            // telnet provisioner's worker (each life hands it the same delegate
+            // through OnLifeStarted), so the buffer is synchronized, not a bare
+            // list.
             Action<string> log = s =>
             {
                 if (!quiet) Console.WriteLine(s);
@@ -623,8 +627,14 @@ public static partial class Program
             spawnCts.Cancel();
             AwaitTeardown("zombie_spawn", spawnTask);
             AwaitTeardown("wandering_horde", hordeTask);
+            // Drain the shared provisioner before the artifacts are written:
+            // it is a background thread holding a reference to the same log
+            // delegate, and it exits only after the grants still queued have
+            // been executed, so this is what makes the log complete instead of
+            // a snapshot that races the last few PROVISION lines. Idempotent.
+            provisioner.Dispose();
             if (!string.IsNullOrEmpty(logPath))
-                RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, lines));
+                RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, lines.Snapshot()));
             // Single-bot runs still write stats-json (and the run manifest when
             // asked) so the bench lane evidence is uniform (probe-15s/join-fast/
             // join-probe/horde-lite are count=1).
@@ -750,6 +760,12 @@ public static partial class Program
         spawnCts.Cancel();
         AwaitTeardown("zombie_spawn", spawnTask);
         AwaitTeardown("wandering_horde", hordeTask);
+        // Drain the shared provisioner before the cohort artifacts are written:
+        // it outlives the bot tasks, holds a reference to the same log delegate
+        // it was handed per life, and only exits once its queued grants have
+        // been executed. Idempotent, and the using above still covers the early
+        // returns above.
+        provisioner.Dispose();
 
         int pass = results.Count(r => r.rc == 0);
         // One pass folds every bot's final snapshot (RunWithRejoin already
