@@ -343,4 +343,15 @@ def test_live_realearth_join_wander_when_server_up():
         timeout=120,
     )
     out = (r.stdout or "") + (r.stderr or "")
-    assert "JOIN_SUMMARY" in out or r.returncode == 0, out
+    # Both halves of the gate, not either: exit 0 alone says the run finished,
+    # not that a cohort actually joined. The summary line is the only place
+    # the per-client pass rate is reported, so a run that printed nothing
+    # would otherwise sail through.
+    assert r.returncode == 0, out
+    summary = next((ln for ln in out.splitlines() if ln.startswith("JOIN_SUMMARY")), "")
+    assert summary, f"no JOIN_SUMMARY in {out[-2000:]}"
+    fields = dict(kv.split("=", 1) for kv in summary.split()[1:])
+    assert int(fields["total"]) == 2, summary
+    assert int(fields["pass"]) >= 1, summary
+    assert fields["mode"].lower() == "wander", summary
+    assert int(fields["pass"]) + int(fields["fail"]) == int(fields["total"]), summary

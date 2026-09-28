@@ -19,6 +19,13 @@ under **Changed** with their migration path.
   was documented only inside `make help` prose.
 - `CONTRIBUTING.md`: setup, the one-command verification (`make test`, the lane
   CI runs), the edit-test loop, and where new tests and scenarios go.
+- Offline gates for four scripts whose output lands in published evidence and
+  had no test: `stats_pass_fail.py` (the `0 0` fallback must never read as a
+  measured all-fail run), `loadgen_manifest.py` (the `7dtd.loadgen.run.v1`
+  record and its placeholder defaults), `capacity_sweep.frame_alive` (lost
+  telemetry must stop the sweep, not report a perfect frame), and
+  `webdash_password_hash.py` (the game's `base64(MD5(utf8(pass)))` encoding).
+  `LoadRunner.ResolveConcurrency` gained a C# gate for its cohort clamp.
 
 ### Changed
 
@@ -53,6 +60,10 @@ under **Changed** with their migration path.
 - `make compare-consolidated` ran `tools/consolidated_report.py` with the system
   `python3`, bypassing the locked env every other Python lane uses. It now runs
   under `uv run --locked` like `make bench-report`.
+- The live RealEarth join-wander test asserted `"JOIN_SUMMARY" in out or
+  r.returncode == 0`, so a successful run that joined nobody passed on the exit
+  code alone. It now requires the summary line and checks total, pass, mode and
+  the pass/fail split.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the
