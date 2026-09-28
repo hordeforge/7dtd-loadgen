@@ -203,6 +203,10 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- `SelfTestJoin.Run` still set `Options.WanderUntilDeath`, an option the
+  provably-dead-option sweep removed from `GameJoinClient.Options`. The
+  self-test's move out of `Program` carried the stale initializer with it, so
+  `make build` failed with `CS0117` and no C# or Python gate could run.
 - `PackageCodec.ReadBoundedString` accumulated the 7-bit length prefix into an
   `int`, so a top group of `0x0F` (a prefix above `int.MaxValue`, reachable with
   five ordinary-looking continuation bytes) set the sign bit and reached

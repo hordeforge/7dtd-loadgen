@@ -34,7 +34,6 @@ public static class SelfTestJoin
             ClientId = 1,
             Mode = ActionLoop.BotMode.Wander,
             Death = ActionLoop.DeathMethod.Drown,
-            WanderUntilDeath = true,
             Respawn = true,
             MaxLives = 2,
             RespawnDelayMs = 100,

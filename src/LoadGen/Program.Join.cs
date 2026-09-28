@@ -661,18 +661,20 @@ public static partial class Program
         var benchCts = new CancellationTokenSource();
         Task? benchSampler = null;
         if (bench != null)
-            benchSampler = Task.Run(async () =>
         {
-            try
+            benchSampler = Task.Run(async () =>
             {
-                while (!benchCts.IsCancellationRequested)
+                try
                 {
-                    bench.SampleActive(running.Count);
-                    await Task.Delay(1000, benchCts.Token).ConfigureAwait(false);
+                    while (!benchCts.IsCancellationRequested)
+                    {
+                        bench.SampleActive(running.Count);
+                        await Task.Delay(1000, benchCts.Token).ConfigureAwait(false);
+                    }
                 }
-            }
-            catch (OperationCanceledException) { /* normal stop */ }
-        });
+                catch (OperationCanceledException) { /* normal stop */ }
+            });
+        }
         var tasks = Enumerable.Range(0, count).Select(i => Task.Run(async () =>
         {
             if (joinRampMs > 0 && count > 1)

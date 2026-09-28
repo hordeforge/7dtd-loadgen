@@ -13,14 +13,10 @@ namespace SevenDTD.LoadGen.Tests;
 [Collection("process-shutdown-sweep")]
 public sealed class MockGameServerConcurrentPollTests
 {
-    [Fact]
-    public async Task ConcurrentPollers_HandshakeSucceeds_CountersExact()
-    {
-        using var server = new MockGameServer();
-        server.Start(0);
-        var stop = new CancellationTokenSource();
-        var errors = new ConcurrentBag<Exception>();
-        var pollers = Enumerable.Range(0, 4).Select(_ => Task.Run(() =>
+    const int Pollers = 4;
+
+    private static Task[] StartPollers(MockGameServer server, CancellationTokenSource stop, ConcurrentBag<Exception> errors) =>
+        Enumerable.Range(0, Pollers).Select(_ => Task.Run(() =>
         {
             try
             {
@@ -35,6 +31,15 @@ public sealed class MockGameServerConcurrentPollTests
                 errors.Add(ex);
             }
         })).ToArray();
+
+    [Fact]
+    public async Task ConcurrentPollers_HandshakeSucceeds_CountersExact()
+    {
+        using var server = new MockGameServer();
+        server.Start(0);
+        var stop = new CancellationTokenSource();
+        var errors = new ConcurrentBag<Exception>();
+        var pollers = StartPollers(server, stop, errors);
 
         // LiteNetProbe only counts bytes; it never echoes the challenge, so the
         // handshake contract needs a real client. GameJoinClient performs
@@ -85,21 +90,7 @@ public sealed class MockGameServerConcurrentPollTests
         server.Start(0);
         var stop = new CancellationTokenSource();
         var errors = new ConcurrentBag<Exception>();
-        var pollers = Enumerable.Range(0, 4).Select(_ => Task.Run(() =>
-        {
-            try
-            {
-                while (!stop.IsCancellationRequested)
-                {
-                    server.Poll();
-                    Thread.Sleep(1);
-                }
-            }
-            catch (Exception ex)
-            {
-                errors.Add(ex);
-            }
-        })).ToArray();
+        var pollers = StartPollers(server, stop, errors);
 
         try
         {
