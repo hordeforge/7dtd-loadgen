@@ -5,6 +5,16 @@ PROJ := $(ROOT)/src/LoadGen/LoadGen.csproj
 EXE  := $(ROOT)/src/LoadGen/bin/Release/net8.0/7dtd-loadgen
 SCRIPTS := $(ROOT)/scripts
 
+# Reproducibility: the emitted assembly follows the ambient locale. Roslyn runs
+# on the host globalization settings, so the same source under LC_ALL=de_DE.UTF-8
+# or fr_FR.UTF-8 produces a different 7dtd-loadgen.dll and PDB than under the
+# C locale (verified: three hashes, one source tree, TZ held at UTC). Pin the
+# locale and the timezone for every recipe so the artifact depends on the
+# source and not on who ran make. A command-line assignment still wins, so a
+# caller who wants a different locale can ask for one.
+export LC_ALL := C
+export TZ := UTC
+
 # Prefer a local SDK if present. Only roots that actually ship a dotnet host
 # qualify (same check as tests/loadgen_cli.py): a stale ~/.dotnet with only
 # telemetry sentinels must not shadow PATH resolution and mask the real error.
@@ -189,7 +199,14 @@ test: lint build selftest unittest
 coverage:
 	rm -rf "$(ROOT)/TestResults"
 	cd "$(ROOT)" && dotnet test src/LoadGen.Tests/ -c Release --nologo -v q -p:RestoreLockedMode=true -p:GameDir= -p:PathMap= --collect:"XPlat Code Coverage" --results-directory TestResults
-	cp "$$(find "$(ROOT)/TestResults" -name coverage.cobertura.xml | head -1)" "$(ROOT)/TestResults/coverage.cobertura.xml"
+	@report="$$(find "$(ROOT)/TestResults" -name coverage.cobertura.xml -print -quit)"; \
+	if [ -z "$$report" ]; then \
+	  echo "ERROR: no coverage.cobertura.xml under $(ROOT)/TestResults; the" >&2; \
+	  echo "       collector did not run, so the badge would publish a blank" >&2; \
+	  echo "       badge instead of failing." >&2; \
+	  exit 1; \
+	fi; \
+	cp "$$report" "$(ROOT)/TestResults/coverage.cobertura.xml"
 
 dedicated dedicated-4k:
 	@chmod +x "$(SCRIPTS)/start_dedicated_prefab.sh"
@@ -221,7 +238,8 @@ scenarios:
 
 clean:
 	rm -rf "$(ROOT)/src/LoadGen/bin" "$(ROOT)/src/LoadGen/obj" \
-		"$(ROOT)/src/LoadGen.Tests/bin" "$(ROOT)/src/LoadGen.Tests/obj"
+		"$(ROOT)/src/LoadGen.Tests/bin" "$(ROOT)/src/LoadGen.Tests/obj" \
+		"$(ROOT)/TestResults"
 	@echo "OK clean"
 
 # Run the research corpus's round-trip checker over every probe save this rig

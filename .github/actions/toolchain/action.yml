@@ -21,3 +21,12 @@ runs:
         # The dev extras (pytest, ruff, mypy) are re-downloaded per run
         # otherwise; uv keys the cache on uv.lock, which is committed.
         enable-cache: true
+    # The Makefile pins LC_ALL/TZ for its own recipes; the steps that run
+    # outside make (the coverage badge renderer) get the same pin here, so a
+    # runner-locale change cannot alter an output either.
+    - name: Pin locale and timezone
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "LC_ALL=C" >> "$GITHUB_ENV"
+        echo "TZ=UTC" >> "$GITHUB_ENV"

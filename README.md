@@ -46,7 +46,15 @@ Default dedicated install path:
 
 Override with `-p:GameDir=...` or `SEVENDTD_SERVER_DIR`. To build against a
 game install's LiteNetLib instead of the pinned NuGet package:
-`make build GAME_DIR=/path/to/dedicated`.
+`make build GAME_DIR=/path/to/dedicated`, or
+`LOADGEN_GAME_DIR=/path/to/dedicated` for the load lanes (`scripts/run_loadgen.sh`
+and everything that calls it). Both default to empty, so a normal build compiles
+against the pinned package on every machine.
+
+`make` pins `LC_ALL=C` and `TZ=UTC` for every recipe. The emitted assembly
+follows the ambient locale, so without the pin a runner's `LANG` decides which
+binary a source tree produces. Both stay overridable:
+`make build LC_ALL=en_US.UTF-8`.
 
 ## Dependencies
 

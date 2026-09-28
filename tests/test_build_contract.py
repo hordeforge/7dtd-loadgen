@@ -53,6 +53,44 @@ def test_emit_is_deterministic_and_path_free():
     )
 
 
+def test_build_env_is_locale_and_timezone_pinned():
+    """The emitted assembly follows the ambient locale: the same source under
+    LC_ALL=de_DE.UTF-8 or fr_FR.UTF-8 yields a different DLL and PDB than under
+    the C locale, so a runner's LANG would decide what a build produces. The
+    Makefile pins it for every recipe; CI steps outside make are pinned by the
+    toolchain composite action."""
+    makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+    for pin in ("export LC_ALL := C", "export TZ := UTC"):
+        assert pin in makefile, (
+            f"Makefile must set `{pin}`, or the artifact depends on the locale "
+            "and timezone of whoever ran the build"
+        )
+
+    action = (ROOT / ".github/actions/toolchain/action.yml").read_text(encoding="utf-8")
+    for pin in ("LC_ALL=C", "TZ=UTC"):
+        assert f'"{pin}"' in action, (
+            f"the toolchain action must export {pin}, or a CI step that runs "
+            "outside make is unpinned"
+        )
+
+
+def test_every_build_lane_pins_the_client_dependency_source():
+    """LoadGen resolves LiteNetLib from the game install when GameDir is
+    non-empty and from the pinned NuGet package otherwise, so a build lane that
+    omits -p:GameDir= produces one binary here and another on a box with the
+    dedicated installed. Every lane names the source explicitly."""
+    lanes = [ROOT / "Makefile", *sorted((ROOT / "scripts").glob("*.sh"))]
+    for lane in lanes:
+        for line in lane.read_text(encoding="utf-8").splitlines():
+            if "dotnet build" not in line or line.lstrip().startswith("#"):
+                continue
+            assert "-p:GameDir=" in line, (
+                f"{lane.relative_to(ROOT)}: '{line.strip()}' does not pin "
+                "GameDir, so the client is compiled against whatever LiteNetLib "
+                "the host has"
+            )
+
+
 def test_sdk_is_pinned_in_tree():
     sdk = json.loads((ROOT / "global.json").read_text(encoding="utf-8"))["sdk"]
     assert "version" in sdk, "global.json must pin an SDK version"

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # LiteNetLib simulated-client probe (1..1000+ in one process).
 # Not a full game client: connectivity + handshake progress for CI / load.
+#
+# Env:    LOADGEN_GAME_DIR     build against this game install's LiteNetLib
+#                             instead of the pinned NuGet package (same opt-in
+#                             as `make build GAME_DIR=...`)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.cache/dotnet-sdk}"
@@ -112,7 +116,11 @@ if (( COUNT >= 100 )); then
   echo "ulimit -n = $(ulimit -n 2>/dev/null || echo unknown)"
 fi
 
-dotnet build "$PROJ" -c Release -v q
+# Empty GameDir pins the build to the NuGet LiteNetLib the CI graph restores,
+# the same as the Makefile build lane. Without it a machine with a game install
+# compiles against the dedicated's own LiteNetLib.dll and ships a different
+# binary for the same source. Opt back in with LOADGEN_GAME_DIR=<install>.
+dotnet build "$PROJ" -c Release -v q -p:GameDir="${LOADGEN_GAME_DIR:-}"
 # set -e would exit here silently when neither artifact exists; say what is missing.
 if [[ ! -f "$EXE" && ! -f "$OUT_DIR/7dtd-loadgen.dll" ]]; then
   echo "ERROR: built client not found at $EXE (build reported success?)" >&2
