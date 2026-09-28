@@ -6,6 +6,40 @@ namespace SevenDTD.LoadGen;
 /// CLI entry point (<see cref="Program"/>), which depends on them in turn.</summary>
 public static class RunReport
 {
+    /// <summary>Cap on a scrubbed remote-text snippet, in chars.</summary>
+    public const int MaxScrubbedChars = 160;
+
+    /// <summary>Remote text (wire packages, console output, player names) as
+    /// one printable log line: control characters become '?' and the snippet is
+    /// capped. A newline or an escape sequence inside server text would
+    /// otherwise forge log lines, or repaint the operator's terminal, in a
+    /// transcript that is kept as run evidence.</summary>
+    public static string SafeText(string? s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        var sb = new System.Text.StringBuilder(Math.Min(s.Length, MaxScrubbedChars));
+        foreach (char c in s)
+        {
+            // Stop at the snippet cap so a hostile oversized string cannot make
+            // the scrub loop itself the cost; Snippet still trims a split
+            // surrogate pair exactly as before.
+            if (sb.Length >= MaxScrubbedChars) break;
+            sb.Append(char.IsControl(c) ? '?' : c);
+        }
+        return Snippet(sb.ToString(), MaxScrubbedChars);
+    }
+
+    /// <summary>Truncate for logging without splitting a surrogate pair: chat
+    /// text is server-controlled and may end in emoji at the cut point.</summary>
+    public static string Snippet(string s, int maxChars)
+    {
+        if (s.Length <= maxChars) return s;
+        int len = maxChars;
+        if (char.IsHighSurrogate(s[len - 1]))
+            len--;
+        return s[..len];
+    }
+
     /// <summary>One line describing a swallowed fault: context, type, message
     /// and the top stack frame. A long cohort run catches per-bot and per-task
     /// faults by design (one bad bot must not end the run), so the message is

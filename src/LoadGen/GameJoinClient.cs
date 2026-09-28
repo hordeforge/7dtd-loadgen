@@ -829,14 +829,14 @@ public sealed class GameJoinClient
             try { opt.StateObserver.Observe(typeName, body); }
             catch (Exception ex)
             {
-                log($"OBSERVER parse_error type={typeName} bodyLen={body.Length} error={SafeText(ex.Message)}");
+                log($"OBSERVER parse_error type={typeName} bodyLen={body.Length} error={RunReport.SafeText(ex.Message)}");
             }
             // A dead events sink is evidence loss, not a parse problem: report it
             // once with the real cause (the observer latches and stays quiet).
             if (opt.StateObserver.SinkFaulted && !_observerSinkFaultLogged)
             {
                 _observerSinkFaultLogged = true;
-                log($"OBSERVER sink_fault events disabled error={SafeText(opt.StateObserver.SinkError)}");
+                log($"OBSERVER sink_fault events disabled error={RunReport.SafeText(opt.StateObserver.SinkError)}");
             }
         }
         if (!State.EverJoined)
@@ -908,8 +908,11 @@ public sealed class GameJoinClient
             {
                 using var ms = new MemoryStream(body);
                 using var r = new BinaryReader(ms, System.Text.Encoding.UTF8);
-                string key = r.ReadString();
-                log($"STAGE AuthState: {SafeText(key)}");
+                // Length-prefixed server text: the prefix is untrusted, so it is
+                // bounded before anything is allocated. ReadString here would
+                // build a multi-gigabyte string from a five-byte body.
+                string key = PackageCodec.ReadBoundedString(r, "AuthState key");
+                log($"STAGE AuthState: {RunReport.SafeText(key)}");
             }
             catch (Exception ex)
             {
@@ -925,11 +928,11 @@ public sealed class GameJoinClient
             try
             {
                 var (allowed, data) = PackageCodec.ParseLoginAnswerBody(body);
-                State.Advance(JoinStage.LoginAnswered, $"allowed={allowed} data={SafeText(data)}");
+                State.Advance(JoinStage.LoginAnswered, $"allowed={allowed} data={RunReport.SafeText(data)}");
                 log($"STAGE LoginAnswered: allowed={allowed} dataLen={data?.Length ?? 0}");
                 if (!allowed)
                 {
-                    State.Fail($"login_denied: {SafeText(data)}");
+                    State.Fail($"login_denied: {RunReport.SafeText(data)}");
                     return;
                 }
                 // Real client continues with RequestToEnterGame after PlayerAllowed
@@ -1237,37 +1240,6 @@ public sealed class GameJoinClient
             i = end;
         }
         return false;
-    }
-
-    /// <summary>Scrub server-controlled handshake text (auth keys, login-answer
-    /// data) before it reaches State/log lines: control characters would inject
-    /// newlines or terminal escapes into line-parsed logs. Each control char is
-    /// replaced by '?' so scrubbing stays visible; output bounded like chat.</summary>
-    static string SafeText(string? s)
-    {
-        const int MaxScrubbedChars = 160;
-        if (string.IsNullOrEmpty(s)) return "";
-        var sb = new System.Text.StringBuilder(Math.Min(s.Length, MaxScrubbedChars));
-        foreach (char c in s)
-        {
-            // Stop at the snippet cap so a hostile oversized string cannot make
-            // the scrub loop itself the cost; Snippet still trims a split
-            // surrogate pair exactly as before.
-            if (sb.Length >= MaxScrubbedChars) break;
-            sb.Append(char.IsControl(c) ? '?' : c);
-        }
-        return Snippet(sb.ToString(), MaxScrubbedChars);
-    }
-
-    /// <summary>Truncate for logging without splitting a surrogate pair: chat
-    /// text is server-controlled and may end in emoji at the cut point.</summary>
-    static string Snippet(string s, int maxChars)
-    {
-        if (s.Length <= maxChars) return s;
-        int len = maxChars;
-        if (char.IsHighSurrogate(s[len - 1]))
-            len--;
-        return s[..len];
     }
 
     /// <summary>Server-controlled chat/GMSG text for logging and death-word

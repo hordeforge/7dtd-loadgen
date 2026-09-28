@@ -112,9 +112,12 @@ public sealed class TelnetProvisioner : IDisposable
                 try
                 {
                     string response = admin.Exec(req.Command);
+                    // The console answer is remote text: a player name on the
+                    // shared lab server can carry newlines or terminal escapes,
+                    // and this line is run evidence parsed by the harness.
                     req.Log?.Invoke(
                         $"[{DateTime.UtcNow:O}] PROVISION entity={req.EntityId} "
-                        + $"cmd={req.Command} response={response.Trim()}");
+                        + $"cmd={req.Command} response={RunReport.SafeText(response.Trim())}");
                 }
                 catch (Exception ex)
                 {

@@ -172,6 +172,60 @@ public sealed class NetworkStateObserverTests
         Assert.Equal(before + 1, events.Count);
     }
 
+    [Fact]
+    public void CVarDelta_RejectsANameLengthTheBodyCannotHold()
+    {
+        // The cvar name is length-prefixed by an unauthenticated peer.
+        // BinaryReader.ReadString trusts that prefix: a five-byte body claims
+        // 2 GiB of name and the allocation takes the whole cohort down with an
+        // OutOfMemory no catch around Observe can make safe.
+        var observer = new NetworkStateObserver(1, new[] { "atomicProtection" }, Array.Empty<string>(), _ => { });
+        Assert.Throws<InvalidDataException>(
+            () => observer.Observe("NetPackageModifyCVar", CVarWithHugeName(171)));
+    }
+
+    [Fact]
+    public void BuffDelta_RejectsANameLengthTheBodyCannotHold()
+    {
+        var observer = new NetworkStateObserver(1, Array.Empty<string>(), new[] { "buffAtomicProtected" }, _ => { });
+        Assert.Throws<InvalidDataException>(
+            () => observer.Observe("NetPackageAddRemoveBuff", BuffWithHugeName(171)));
+    }
+
+    [Fact]
+    public void FullState_RejectsACVarNameLengthTheBodyCannotHold()
+    {
+        var observer = new NetworkStateObserver(1, new[] { "atomicProtection" }, Array.Empty<string>(), _ => { });
+        Assert.Throws<InvalidDataException>(
+            () => observer.Observe("NetPackageEntityStatsBuff", SnapshotWithHugeCVarName()));
+    }
+
+    /// <summary>7-bit length prefix, low group first, continuation bit set on
+    /// every group but the last. Matches BinaryWriter.Write(string).</summary>
+    static byte[] HugeNamePrefix() => new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x7F };
+
+    static byte[] CVarWithHugeName(int entityId) => Body(w =>
+    {
+        w.Write(entityId); w.Write(HugeNamePrefix());
+    });
+
+    static byte[] BuffWithHugeName(int entityId) => Body(w =>
+    {
+        w.Write(entityId); w.Write(HugeNamePrefix());
+    });
+
+    static byte[] SnapshotWithHugeCVarName()
+    {
+        byte[] data = Body(w =>
+        {
+            w.Write((byte)3);
+            w.Write((ushort)0);            // no buffs
+            w.Write((ushort)1);            // one cvar
+            w.Write(HugeNamePrefix());
+        });
+        return Body(w => { w.Write(55); w.Write(data.Length); w.Write(data); });
+    }
+
     static byte[] CVar(int entityId, string name, float value, short operation) => Body(w =>
     {
         w.Write(entityId); w.Write(name); w.Write(value); w.Write(operation);

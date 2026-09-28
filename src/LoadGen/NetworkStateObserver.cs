@@ -98,7 +98,7 @@ public sealed class NetworkStateObserver
     {
         using var reader = Reader(body);
         int entityId = reader.ReadInt32();
-        string name = reader.ReadString();
+        string name = PackageCodec.ReadBoundedString(reader, "CVar name");
         float operand = reader.ReadSingle();
         short operation = reader.ReadInt16();
         if (!_cvarFilters.Contains(name)) return;
@@ -114,7 +114,7 @@ public sealed class NetworkStateObserver
     {
         using var reader = Reader(body);
         int entityId = reader.ReadInt32();
-        string name = reader.ReadString();
+        string name = PackageCodec.ReadBoundedString(reader, "buff name");
         _ = reader.ReadSingle();
         bool adding = reader.ReadBoolean();
         _ = reader.ReadInt32();
@@ -151,7 +151,7 @@ public sealed class NetworkStateObserver
         var observedSnapshotCvars = new HashSet<string>(StringComparer.Ordinal);
         for (int i = 0; i < cvarCount; i++)
         {
-            string name = stateReader.ReadString();
+            string name = PackageCodec.ReadBoundedString(stateReader, "snapshot cvar name");
             float value = stateReader.ReadSingle();
             if (_cvarFilters.Contains(name))
             {
@@ -173,7 +173,7 @@ public sealed class NetworkStateObserver
     {
         if (version < 2)
             throw new InvalidDataException($"legacy EntityBuffs version {version} has hashed names and is unsupported");
-        string name = reader.ReadString();
+        string name = PackageCodec.ReadBoundedString(reader, "snapshot buff name");
         _ = reader.ReadByte();
         _ = reader.ReadUInt32();
         _ = reader.ReadInt32();
