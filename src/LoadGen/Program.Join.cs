@@ -803,6 +803,9 @@ public static partial class Program
                     ["activeAtWindowStart"] = b2.ActiveAtWindowStart,
                     ["activeAtWindowEnd"] = b2.ActiveAtWindowEnd,
                     ["activeCurve"] = b2.ActiveCurve().Select(s => new[] { s.Ms, s.Active }).ToList(),
+                    // 1 while the curve is under its cap; above it the retained
+                    // samples are every Nth one (see BenchClock.MaxCurveSamples).
+                    ["activeCurveStride"] = b2.ActiveCurveStride,
                 };
             }
             if (!string.IsNullOrEmpty(statsJsonPath))

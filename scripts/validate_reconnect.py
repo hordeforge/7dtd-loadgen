@@ -229,6 +229,11 @@ def main() -> int:
                 proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 proc.kill()
+                # The cohort is this process's own child: a kill with no
+                # following wait leaves it unreaped in the process table for
+                # the rest of the run, which is also the window the server
+                # teardown below runs in.
+                proc.wait(timeout=10)
         # A pre-existing server (SKIP_SERVER_START=1) belongs to its operator
         # and is left alone; anything this run booted, it stops.
         if not skip_start:

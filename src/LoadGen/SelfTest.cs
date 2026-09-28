@@ -54,22 +54,30 @@ static class SelfTest
         var hostLoop = Task.Run(() => { while (!cts.Token.IsCancellationRequested) { server.PollEvents(); Thread.Sleep(2); } });
 
         bool pass;
-        if (count == 1)
+        try
         {
-            var result = LiteNetProbe.Run("127.0.0.1", port, "", timeoutMs, 99, Console.WriteLine);
-            pass = result.Pass && (result.Connected || result.Stages.Contains("litenet_peer_connected"));
+            if (count == 1)
+            {
+                var result = LiteNetProbe.Run("127.0.0.1", port, "", timeoutMs, 99, Console.WriteLine);
+                pass = result.Pass && (result.Connected || result.Stages.Contains("litenet_peer_connected"));
+            }
+            else
+            {
+                var summary = LoadRunner.Run("127.0.0.1", port, "", Math.Max(timeoutMs, 6000), count, concurrency,
+                    rampMs: Math.Min(2000, count), quiet: true);
+                Console.WriteLine(summary.ToReport());
+                pass = Program.JoinGatePass(summary.Pass, summary.Total, minPassRate)
+                    && Program.JoinGatePass(summary.Connected, summary.Total, Math.Min(minPassRate, 0.90));
+            }
         }
-        else
+        finally
         {
-            var summary = LoadRunner.Run("127.0.0.1", port, "", Math.Max(timeoutMs, 6000), count, concurrency,
-                rampMs: Math.Min(2000, count), quiet: true);
-            Console.WriteLine(summary.ToReport());
-            pass = Program.JoinGatePass(summary.Pass, summary.Total, minPassRate)
-                && Program.JoinGatePass(summary.Connected, summary.Total, Math.Min(minPassRate, 0.90));
+            // Both releases run on every path: a fault out of the probe left the
+            // host's socket and its poll loop alive for the rest of the process.
+            cts.Cancel();
+            Program.AwaitTeardown("self_host", hostLoop);
+            try { server.Stop(); } catch (Exception) { /* release must not mask the result */ }
         }
-        cts.Cancel();
-        Program.AwaitTeardown("self_host", hostLoop);
-        server.Stop();
         if (!string.IsNullOrEmpty(logPath))
             RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
         // Verdict: the PASS line is the result a caller reads, the FAIL line is a

@@ -22,45 +22,56 @@ public static class SelfTestJoin
         });
 
         var client = new GameJoinClient();
-        // CI: die (client drown for mock), respawn, walk again. Live default is still no self-kill.
-        int rc = client.Run(new GameJoinClient.Options
-        {
-            Host = "127.0.0.1",
-            Port = server.Port,
-            PlayerName = "REFake",
-            TimeoutMs = 25_000,
-            ActionCount = Math.Max(actionCount, 12),
-            ActionSeed = seed,
-            ClientId = 1,
-            Mode = ActionLoop.BotMode.Wander,
-            Death = ActionLoop.DeathMethod.Drown,
-            Respawn = true,
-            MaxLives = 2,
-            RespawnDelayMs = 100,
-            CohortSize = 1,
-            PaceMs = 5, // fast for CI
-            Log = log,
-        });
-        sm = client.State;
-
-        // Drain (monotonic: immune to wall-clock steps during the window).
-        // Do NOT call server.Poll() here: the background poller below is still
-        // running, and concurrent PollEvents() on one NetManager would dispatch
-        // its receive handlers on both threads at once.
-        var drain = Stopwatch.StartNew();
-        while (drain.ElapsedMilliseconds < 300) { Thread.Sleep(5); }
-        cts.Cancel();
+        int rc;
         try
         {
-            poll.Wait(1000);
+            // CI: die (client drown for mock), respawn, walk again. Live default is still no self-kill.
+            rc = client.Run(new GameJoinClient.Options
+            {
+                Host = "127.0.0.1",
+                Port = server.Port,
+                PlayerName = "REFake",
+                TimeoutMs = 25_000,
+                ActionCount = Math.Max(actionCount, 12),
+                ActionSeed = seed,
+                ClientId = 1,
+                Mode = ActionLoop.BotMode.Wander,
+                Death = ActionLoop.DeathMethod.Drown,
+                Respawn = true,
+                MaxLives = 2,
+                RespawnDelayMs = 100,
+                CohortSize = 1,
+                PaceMs = 5, // fast for CI
+                Log = log,
+            });
+            sm = client.State;
+
+            // Drain (monotonic: immune to wall-clock steps during the window).
+            // Do NOT call server.Poll() here: the background poller below is
+            // still running, and concurrent PollEvents() on one NetManager would
+            // dispatch its receive handlers on both threads at once.
+            var drain = Stopwatch.StartNew();
+            while (drain.ElapsedMilliseconds < 300) { Thread.Sleep(5); }
         }
-        catch (AggregateException ex)
+        finally
         {
-            // A dead mock poller stalls the join (no challenge/login answer is
-            // ever serviced); the cause must be visible instead of surfacing as
-            // an unexplained 25s client timeout.
-            var baseEx = ex.GetBaseException();
-            log?.Invoke($"FAIL self-test poller faulted: {baseEx.GetType().Name}: {baseEx.Message}");
+            // Cancel the poller on every path, not just the clean one: a fault
+            // out of client.Run used to leave this thread spinning on a
+            // NetManager the using above is about to stop, for the rest of the
+            // process.
+            cts.Cancel();
+            try
+            {
+                poll.Wait(1000);
+            }
+            catch (AggregateException ex)
+            {
+                // A dead mock poller stalls the join (no challenge/login answer is
+                // ever serviced); the cause must be visible instead of surfacing as
+                // an unexplained 25s client timeout.
+                var baseEx = ex.GetBaseException();
+                log?.Invoke($"FAIL self-test poller faulted: {baseEx.GetType().Name}: {baseEx.Message}");
+            }
         }
 
         log?.Invoke(

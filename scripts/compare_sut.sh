@@ -229,6 +229,7 @@ for sut in $SUTS; do
         RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
         RE_TELNET_PORT="$TELNET_PORT" \
         bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
+      BOOT_PID=$!
       # Arm the cleanup trap BEFORE the ready wait: the boot script writes the
       # pidfile seconds in, and a timeout/Ctrl-C during boot must still reap the
       # half-booted server instead of orphaning it with the ports held.
@@ -250,8 +251,13 @@ for sut in $SUTS; do
       if [[ "$ready" != 1 ]]; then
         echo "  stock: not ready in 150s; see boot.log" >&2
         kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
+        reap_boot "$BOOT_PID" 30
         exit 1
       fi
+      # The boot script returns once the server is up; collect it. Nothing
+      # else waits on that pid, so it would sit in the process table as a
+      # zombie for the rest of the run.
+      reap_boot "$BOOT_PID"
       echo "  $sut ready (StartGame done in server log)"
       BOT_PORT=$((STOCK_SERVER_PORT + 2))
       # gettime first and last so the capture can derive the game-clock rate.
@@ -298,6 +304,7 @@ EOF
         RE_SUT_WORLD_NAME="$WORLD_NAME" RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
         RE_SUT_LOGFILE="$run_dir/server.log" \
         bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
+        BOOT_PID=$!
       # Arm the trap before the ready wait (see the stock branch): sut_zdtd.sh
       # writes the pidfile as soon as the binary launches, and a boot timeout
       # must tear the server down, not orphan it with 27120/admin held.
@@ -477,6 +484,11 @@ EOF
   if [[ -f "$PIDFILE" ]]; then
     kill -9 "$(cat "$PIDFILE")" 2>/dev/null || true
   fi
+  # Collect the boot wrapper now that its server is gone. The stock wrapper
+  # already returned and was reaped (reap_boot on an exited pid is a no-op);
+  # the zdtd wrapper holds `wait` open for the whole run, so this is the path
+  # that stops it ending this scenario as a zombie.
+  reap_boot "$BOOT_PID" 30
   # Disarm so a later failure exit cannot re-kill a stale pidfile entry (the
   # pid may already have been recycled by an unrelated process).
   CURRENT_PIDFILE=""

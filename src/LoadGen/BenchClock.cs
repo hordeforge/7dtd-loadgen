@@ -88,10 +88,43 @@ public sealed class BenchClock
             if (_activeCurve.Count > 0 && now - _activeCurve[_activeCurve.Count - 1].Ms < 500)
                 _activeCurve[_activeCurve.Count - 1] = (now, active);
             else
+            {
                 _activeCurve.Add((now, active));
+                DecimateCurve();
+            }
             if (active < _activeMin) _activeMin = active;
             if (active > _activeMax) _activeMax = active;
         }
+    }
+
+    /// <summary>Retained curve samples. The sampler adds up to two per second
+    /// for the whole run, so a bench over a long soak grew without limit and
+    /// wrote the same growth into the stats-json activeCurve array. Past the cap
+    /// the curve halves in place (every other sample) and the stride doubles,
+    /// so the retained set still covers the whole run at lower resolution -
+    /// the same decimation PingStats uses for its sample store.</summary>
+    internal const int MaxCurveSamples = 20_000;
+    private long _curveStride = 1;
+
+    /// <summary>One in <see cref="_curveStride"/> of the samples ever recorded is
+    /// retained. 1 while the curve is under the cap.</summary>
+    public long ActiveCurveStride
+    {
+        get { lock (_activeCurve) return _curveStride; }
+    }
+
+    void DecimateCurve()
+    {
+        if (_activeCurve.Count < MaxCurveSamples) return;
+        int keep = MaxCurveSamples / 2;
+        for (int i = 0; i < keep - 1; i++)
+            _activeCurve[i] = _activeCurve[i * 2];
+        // The newest sample is the run's end (ActiveAtWindowEnd and the curve
+        // shape both read it), and an even-index decimation would drop it: the
+        // last index is odd at an even cap.
+        _activeCurve[keep - 1] = _activeCurve[^1];
+        _activeCurve.RemoveRange(keep, _activeCurve.Count - keep);
+        _curveStride *= 2;
     }
 
     public (int Actions, int Deaths, int Respawns) WindowCounts =>

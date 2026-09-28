@@ -363,6 +363,11 @@ def teardown(bots, stop_server=False):
             bots.wait(timeout=15)
         except subprocess.TimeoutExpired:
             bots.kill()
+            # The cohort is this process's own child, so a kill without a
+            # following wait leaves a zombie table entry (and the pid) behind
+            # for the rest of the run. The profile holds here while the sweep
+            # finishes reading the cohort, so reap before returning.
+            bots.wait(timeout=15)
     procs.kill(BOT_PROC)
     if stop_server:
         procs.kill(SERVER_PROC)

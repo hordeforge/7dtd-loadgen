@@ -134,6 +134,7 @@ USERDATA="$OUT/userdata"
 RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="bench_stock_lap${LAP}" \
   RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 RE_TELNET_PORT="$ADMIN_PORT" \
   bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$OUT/boot.log" 2>&1 &
+BOOT_PID=$!
 # Arm the exit trap before the ready wait: the boot script writes the pidfile
 # seconds in, and a timeout/Ctrl-C during boot must reap the half-booted server
 # instead of orphaning it with the ports held.
@@ -149,8 +150,13 @@ done
 if [[ "$ready" != 1 ]]; then
   echo "ERROR: stock not ready in 150s; see $OUT/boot.log" >&2
   kill -9 "$(cat "$USERDATA/dedicated.pid" 2>/dev/null || echo 0)" 2>/dev/null || true
+  reap_boot "$BOOT_PID"
   exit 1
 fi
+# The boot script returns as soon as the server is up. Reap it here: nothing
+# else waits on that pid, so it would otherwise sit in the process table as a
+# zombie for the rest of the lap (the scenario matrix runs for minutes).
+reap_boot "$BOOT_PID"
 echo "  stock ready (StartGame done); hostLoad=$(hostload)"
 
 mapfile -t scenarios <<<"$SCEN_KEYS"

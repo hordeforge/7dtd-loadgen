@@ -120,6 +120,32 @@ public sealed class BenchClockTests
         Assert.Equal((0, 0), c.ActiveBounds);
     }
 
+    [Fact]
+    public void ActiveCurve_OverCap_DecimatesInPlaceAndKeepsTheRun()
+    {
+        // The sampler adds up to two samples a second for the whole run, so a
+        // long soak grew the curve (and the stats-json array built from it)
+        // without limit. Past the cap it must halve in place and report the
+        // stride, keeping samples from the start and the end of the run.
+        long now = 0;
+        var c = new BenchClock(0, 0, () => now);
+        for (int i = 0; i < BenchClock.MaxCurveSamples * 2; i++)
+        {
+            now += 1000;
+            c.SampleActive(i);
+        }
+        var curve = c.ActiveCurve();
+        Assert.Equal(BenchClock.MaxCurveSamples / 2, curve.Count);
+        Assert.Equal(8L, c.ActiveCurveStride);
+        // Still covers the run rather than the first window of it, and keeps
+        // the newest sample, which an even-index decimation alone would drop.
+        Assert.True(curve[0].Ms < now / 2);
+        Assert.Equal(now, curve[^1].Ms);
+        Assert.Equal(BenchClock.MaxCurveSamples * 2 - 1, c.ActiveAtWindowEnd);
+        // Min/max still describe every sample, not just the retained half.
+        Assert.Equal((0, BenchClock.MaxCurveSamples * 2 - 1), c.ActiveBounds);
+    }
+
     /// <summary>In a bench run one sampler thread feeds the curve while every
     /// bot thread counts window events, and the summary reads the bounds from
     /// the orchestrator thread. The bounds must arrive as one consistent pair
