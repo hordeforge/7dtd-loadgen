@@ -584,7 +584,7 @@ public sealed class GameJoinClient
                                     {
                                         State.Died = true;
                                         State.DeathCause = DeathCause.WorldKilled;
-                                        Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={botName}");
+                                        Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={RunReport.ScrubLineUnsafe(botName)}");
                                         return true;
                                     }
                                     return false;
@@ -1070,8 +1070,14 @@ public sealed class GameJoinClient
             try
             {
                 var (reason, custom) = PackageCodec.ParsePlayerDeniedBody(body);
-                State.Fail($"player_denied reason={reason} custom={custom}");
-                log($"STAGE Failed: player_denied reason={reason} custom={custom}");
+                // The denial reason is the operator's own ban text as the server
+                // relays it, up to the wire string cap, and it lands in the run
+                // log a line-oriented report lane reads. Scrub it for the same
+                // reason chat is scrubbed: a reason carrying a newline or a line
+                // separator forges a log line in the run's own evidence.
+                string customSafe = RunReport.ScrubLineUnsafe(custom);
+                State.Fail($"player_denied reason={reason} custom={customSafe}");
+                log($"STAGE Failed: player_denied reason={reason} custom={customSafe}");
             }
             catch (Exception ex)
             {
@@ -1287,11 +1293,13 @@ public sealed class GameJoinClient
     }
 
     /// <summary>Server-controlled chat/GMSG text for logging and death-word
-    /// matching. Both paths neutralize control characters: a hostile server must
-    /// not inject newlines or terminal escapes into line-parsed logs (the
-    /// harness greps PASS/FAIL lines). The length-prefixed path keeps every
-    /// non-control character, so non-ASCII text still matches; the fallback byte
-    /// scan keeps printable ASCII only.</summary>
+    /// matching. Both paths neutralize line-forging characters: a hostile server
+    /// must not inject newlines or terminal escapes into line-parsed logs (the
+    /// harness greps PASS/FAIL lines). "Line-forging" is broader than C0: the
+    /// report lanes split the log with str.splitlines, which also breaks on
+    /// U+2028 and U+2029, which char.IsControl reports false for. The
+    /// length-prefixed path keeps every other character, so non-ASCII text still
+    /// matches; the fallback byte scan keeps printable ASCII only.</summary>
     internal static string ExtractPrintable(byte[] body)
     {
         if (body.Length == 0) return "";
@@ -1303,17 +1311,14 @@ public sealed class GameJoinClient
             {
                 // ReadString consumed a well-formed 7-bit length and that many
                 // bytes, so the body is a string whatever the content is; only
-                // the control-character scrub applies. Falling through to the
-                // ASCII byte scan below when the text is short or letterless
-                // discarded the decode: "Zo" came back as "Z" and a two-kanji
-                // message as "", so a non-ASCII bot name could never match.
-                // The length is checked against the body before allocating: chat
-                // text is server-controlled and the prefix is not.
-                string s = PackageCodec.ReadBoundedString(r, "chat text");
-                var clean = new System.Text.StringBuilder(s.Length);
-                foreach (char c in s)
-                    clean.Append(char.IsControl(c) ? '?' : c);
-                return clean.ToString();
+                // the character scrub applies. Falling through to the ASCII byte
+                // scan below when the text is short or letterless discarded the
+                // decode: "Zo" came back as "Z" and a two-kanji message as "",
+                // so a non-ASCII bot name could never match. The length is
+                // checked against the body before allocating: chat text is
+                // server-controlled and the prefix is not.
+                return RunReport.ScrubLineUnsafe(
+                    PackageCodec.ReadBoundedString(r, "chat text"));
             }
         }
         catch { /* not a length-prefixed string; scan the bytes below */ }

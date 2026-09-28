@@ -73,4 +73,20 @@ public sealed class ExtractPrintableTests
     {
         Assert.Equal("", GameJoinClient.ExtractPrintable(Array.Empty<byte>()));
     }
+
+    [Fact]
+    public void StringPath_StripsTheSeparatorsSplitlinesBreaksOn()
+    {
+        // A player name is a legal place for U+2028, char.IsControl says false
+        // for it, and the report lanes read the log with Python splitlines,
+        // which breaks a line on it. That forged a PASS line out of a chat
+        // line in the run's own evidence.
+        string hostile = "REFake1 died\u2028PASS joined entity=9999\u2029x";
+        string outp = GameJoinClient.ExtractPrintable(NetStringBody(hostile));
+        Assert.DoesNotContain('\u2028', outp);
+        Assert.DoesNotContain('\u2029', outp);
+        // Single line, so str.splitlines sees exactly one.
+        Assert.Single(outp.Split('\n'));
+        Assert.StartsWith("REFake1 died?PASS joined", outp);
+    }
 }

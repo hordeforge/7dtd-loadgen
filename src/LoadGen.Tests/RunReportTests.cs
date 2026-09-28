@@ -36,4 +36,48 @@ public sealed class RunReportTests
         Assert.Equal("", RunReport.SafeText(null));
         Assert.Equal("", RunReport.SafeText(""));
     }
+
+    [Fact]
+    public void SafeText_ReplacesTheSeparatorsSplitlinesBreaksOn()
+    {
+        // U+2028 and U+2029 are Zl and Zp, so char.IsControl is false for
+        // both, and Python's str.splitlines (what the report lanes read the log
+        // with) breaks a line on either. A player name carrying one forged a
+        // second log line inside a transcript kept as run evidence.
+        string scrubbed = RunReport.SafeText("REFake1 died\u2028PASS joined entity=9999\u2029end");
+        Assert.Equal("REFake1 died?PASS joined entity=9999?end", scrubbed);
+    }
+
+    [Fact]
+    public void SafeText_ReplacesBidiControlsAndKeepsTheSurroundingText()
+    {
+        // A bidi override or isolate reorders what the operator reads, so the
+        // name on screen is not the name in the file.
+        string scrubbed = RunReport.SafeText("Zoe\u202Edrowssap");
+        Assert.Equal("Zoe?drowssap", scrubbed);
+        Assert.DoesNotContain('\u202E', scrubbed);
+    }
+
+    [Fact]
+    public void SafeText_KeepsTheZeroWidthJoinerInAnEmojiSequence()
+    {
+        // U+200D joins the emoji in a family sequence; scrubbing it would
+        // rewrite the one pictograph family the chat actually carries.
+        string family = "\U0001F468\u200D\U0001F469\u200D\U0001F467";
+        Assert.Equal(family, RunReport.SafeText(family));
+    }
+
+    [Fact]
+    public void SafeText_KeepsNonAsciiLettersForNameMatching()
+    {
+        Assert.Equal("Zoë 日本", RunReport.SafeText("Zoë 日本"));
+    }
+
+    [Fact]
+    public void Snippet_AtZeroCapIsEmptyRatherThanOutOfRange()
+    {
+        // A zero cap used to index s[-1] and throw, taking the caller with it.
+        Assert.Equal("", RunReport.Snippet("abc", 0));
+        Assert.Equal("", RunReport.Snippet("", 0));
+    }
 }

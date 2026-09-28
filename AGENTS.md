@@ -47,6 +47,17 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
     `runlock.py` separates contention (exit 4, the shell runner's code) from a
     lock file it could not open (exit 5): the guard is inert in the second
     case, so it must not be read as "wait for the other run".
+11. **Remote text into a log line goes through `RunReport.ScrubLineUnsafe`**
+    (or `RunReport.SafeText`, which caps as well). `char.IsControl` is not the
+    test: it is false for U+2028 and U+2029, and the Python report lanes read
+    the client log with `str.splitlines`, which breaks a line on either. A
+    player name or a ban reason carrying one forges a log line in the run's own
+    evidence. The bidi controls (U+061C, U+200E, U+200F, U+202A..U+202E,
+    U+2066..U+2069) are scrubbed for the same reason: they reorder what the
+    operator reads. Zero-width joiners and spaces are not; U+200D carries emoji
+    sequences. Everything else passes through, non-ASCII letters included, so
+    death-word and name matching still work. Player-name identity is compared in
+    NFC (`WorldDeathBus.NormalizeIdentity`); do not match it byte-wise.
 
 ## Build / test / run
 

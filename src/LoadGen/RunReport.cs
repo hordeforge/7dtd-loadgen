@@ -6,13 +6,57 @@ namespace SevenDTD.LoadGen;
 /// CLI entry point (<see cref="Program"/>), which depends on them in turn.</summary>
 public static class RunReport
 {
-    /// <summary>Cap on a scrubbed remote-text snippet, in chars.</summary>
+    /// <summary>Cap on a scrubbed remote-text snippet, in UTF-16 code units
+    /// (<see cref="Snippet"/> trims a pair the cut would split).</summary>
     public const int MaxScrubbedChars = 160;
 
+    // Line separator and paragraph separator. Written as code points because a
+    // raw U+2028 in a C# character literal is a compiler newline, so the source
+    // could not name the very character it has to reject.
+    const char LineSeparator = '\u2028';
+    const char ParagraphSeparator = '\u2029';
+
+    /// <summary>Characters that must not survive into a line-oriented artifact.
+    /// <see cref="char.IsControl"/> covers Cc and C1 (including U+0085 NEL) but
+    /// not the Unicode line and paragraph separators: both are Zl and Zp, so
+    /// char.IsControl is false for them, while Python's str.splitlines, which
+    /// every report lane reads the log with, breaks a line on either one. Server
+    /// chat carrying a line separator in a player name therefore forged a second
+    /// log line in a transcript kept as run evidence, the exact failure the C0
+    /// scrub exists to stop. The bidi controls cover the other half of the
+    /// hazard: an override or isolate in server text reorders what the operator
+    /// reads, so the name on screen is not the name in the file. Zero-width
+    /// joiners and spaces stay; they cannot break a line, and U+200D is
+    /// load-bearing in emoji sequences.</summary>
+    internal static bool IsLogUnsafe(char c)
+    {
+        if (char.IsControl(c)) return true;
+        if (c is LineSeparator or ParagraphSeparator) return true;
+        return c is '\u061C' or '\u200E' or '\u200F'   // ALM, LRM, RLM
+            || (c >= '\u202A' && c <= '\u202E')   // bidi embedding and override
+            || (c >= '\u2066' && c <= '\u2069');  // bidi isolates
+    }
+
+    /// <summary>Remote text (wire packages, console output, player names) with
+    /// every line-forging or display-reordering character replaced by '?'. The
+    /// rest is preserved, non-ASCII letters and emoji included, so name and
+    /// death-word matching still see the text the server sent.</summary>
+    public static string ScrubLineUnsafe(string s)
+    {
+        int first = 0;
+        while (first < s.Length && !IsLogUnsafe(s[first])) first++;
+        if (first == s.Length) return s;
+        var sb = new System.Text.StringBuilder(s.Length);
+        sb.Append(s, 0, first);
+        for (int i = first; i < s.Length; i++)
+            sb.Append(IsLogUnsafe(s[i]) ? '?' : s[i]);
+        return sb.ToString();
+    }
+
     /// <summary>Remote text (wire packages, console output, player names) as
-    /// one printable log line: control characters become '?' and the snippet is
-    /// capped. A newline or an escape sequence inside server text would
-    /// otherwise forge log lines, or repaint the operator's terminal, in a
+    /// one printable log line: line-forging characters become '?' and the
+    /// snippet is capped. A newline or an escape sequence inside server text
+    /// would otherwise forge log lines, or repaint the operator's terminal, in a
     /// transcript that is kept as run evidence.</summary>
     public static string SafeText(string? s)
     {
@@ -24,7 +68,7 @@ public static class RunReport
             // the scrub loop itself the cost; Snippet below still trims a cut
             // that lands inside a surrogate pair.
             if (sb.Length >= MaxScrubbedChars) break;
-            sb.Append(char.IsControl(c) ? '?' : c);
+            sb.Append(IsLogUnsafe(c) ? '?' : c);
         }
         return Snippet(sb.ToString(), MaxScrubbedChars);
     }
@@ -33,6 +77,7 @@ public static class RunReport
     /// text is server-controlled and may end in emoji at the cut point.</summary>
     public static string Snippet(string s, int maxChars)
     {
+        if (maxChars <= 0) return "";
         if (s.Length <= maxChars) return s;
         int len = maxChars;
         if (char.IsHighSurrogate(s[len - 1]))
