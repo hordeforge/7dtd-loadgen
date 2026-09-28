@@ -103,4 +103,30 @@ public sealed class WorldDeathBusTests
         }
         finally { WorldDeathBus.ResetForTests(); }
     }
+
+    [Fact]
+    public void ExpiredUnconsumedKill_IsEvictedByTheNextNotify()
+    {
+        // A kill the consumer never arrives for (the bot disconnected, or the
+        // kill landed between its polls and it left) has no path back: nothing
+        // but a later notify can take it out of the map.
+        long now = 5_000_000;
+        WorldDeathBus.MonotonicMs = () => now;
+        try
+        {
+            var abandoned = UniqueName("abandoned");
+            WorldDeathBus.NotifyKilled(abandoned);
+            now += WorldDeathBus.KillTtlMs;
+            var fresh = UniqueName("after-abandoned");
+            WorldDeathBus.NotifyKilled(fresh);
+
+            // Evicted, not merely rejected: a rejected-but-still-stored kill
+            // reads back its stamp, an evicted one reports no stamp at all.
+            Assert.False(WorldDeathBus.TryConsumeKill(abandoned, out var evictedAt));
+            Assert.Equal(0, evictedAt);
+            // The fresh kill next to it is untouched.
+            Assert.True(WorldDeathBus.TryConsumeKill(fresh, out _));
+        }
+        finally { WorldDeathBus.ResetForTests(); }
+    }
 }

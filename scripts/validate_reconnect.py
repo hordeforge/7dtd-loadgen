@@ -34,6 +34,12 @@ ROOT = Path(__file__).resolve().parent.parent
 GAME_PORT = 26900
 TELNET_PORT = 8081
 
+# Boot wrappers this run started, kept so teardown can reap them. A shell only
+# reaps a background child when it says so, so an un-waited wrapper sits in the
+# process table as a zombie for the rest of the run (this script restarts the
+# server once, so two per run).
+_SERVER_STARTS: list[subprocess.Popen[bytes]] = []
+
 
 class ServerPidLookupFailed(RuntimeError):
     """The server PID could not be determined, as opposed to being absent."""
@@ -115,11 +121,31 @@ def start_server(players: int) -> None:
         RE_GAME_NAME=f"ReconnectStd_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}",
         RE_SERVER_MAX_PLAYERS=str(max(players, 16)),
     )
-    subprocess.Popen(
+    _SERVER_STARTS.append(subprocess.Popen(
         ["bash", str(ROOT / "scripts/start_dedicated_navezgane.sh")],
         cwd=ROOT, env=env,
         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
-    )
+    ))
+
+
+def reap_server_starts() -> None:
+    """Wait out (or stop) every boot wrapper this run started.
+
+    The wrapper stays alive for the whole dedicated boot, waiting for
+    "StartGame done", so it outlives the telnet-ready wait that follows it. Left
+    un-waited it is a zombie for the rest of the run; a wrapper still booting at
+    teardown would also keep waiting on a server that is being stopped under it.
+    """
+    for proc in _SERVER_STARTS:
+        if proc.poll() is not None:
+            proc.wait(timeout=0)  # reaps the exited child
+            continue
+        proc.terminate()
+        try:
+            proc.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=15)
 
 
 def stop_server() -> None:
@@ -135,6 +161,8 @@ def stop_server() -> None:
         print(f"[reconnect] teardown: cannot look up the server pid ({e}); "
               "it may still be running", file=sys.stderr)
         return
+    finally:
+        reap_server_starts()
     if pid is None:
         print("[reconnect] teardown: server already down")
         return

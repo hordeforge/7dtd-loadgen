@@ -66,18 +66,21 @@ public static class LiteNetProbe
             if (reader.AvailableBytes > 0) stages.Add("protocol_bytes");
             reader.Recycle();
         };
-        if (!net.Start())
-        {
-            Log("STAGE litenet_start: fail");
-            return Fail(lines, stages, connected, disconnectReason, sw.ElapsedMilliseconds);
-        }
-        stages.Add("litenet_start");
-        Log("STAGE litenet_start: ok");
-        // Stop() must run on every exit path: LoadRunner drives up to thousands
-        // of probes in one process, so an exception skipping the stop would
-        // accumulate live UDP sockets + managers until process death.
+        // Stop() must run on every exit path, and the Start() call is inside
+        // that guarantee: LoadRunner drives up to thousands of probes in one
+        // process, so a failed Start (or an exception out of it) skipping the
+        // stop would accumulate live UDP sockets + managers until process
+        // death. LiteNetLib can bind the socket and still fail the rest of
+        // Start, and a throw escapes the method entirely.
         try
         {
+            if (!net.Start())
+            {
+                Log("STAGE litenet_start: fail");
+                return Fail(lines, stages, connected, disconnectReason, sw.ElapsedMilliseconds);
+            }
+            stages.Add("litenet_start");
+            Log("STAGE litenet_start: ok");
             var data = new NetDataWriter();
             if (!string.IsNullOrEmpty(key)) data.Put(key);
             var peer = net.Connect(host, port, data);

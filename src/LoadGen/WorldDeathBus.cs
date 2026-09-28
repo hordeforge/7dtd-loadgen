@@ -45,7 +45,25 @@ public static class WorldDeathBus
         // Monotonic ms-since-boot: producer and consumer share this process,
         // and a wall-clock step (NTP sync, VM resume) must neither expire a
         // fresh kill early nor keep a stale one.
-        KilledTickMs[NormalizeIdentity(playerName.Trim())] = MonotonicMs();
+        long now = MonotonicMs();
+        EvictExpired(now);
+        KilledTickMs[NormalizeIdentity(playerName.Trim())] = now;
+    }
+
+    /// <summary>Drop kills past <see cref="KillTtlMs"/> whose consumer never
+    /// arrived. Only TryConsumeKill removes an entry, so a kill for a bot that
+    /// disconnected, finished its life, or never polled again stayed in the map
+    /// for the life of the process: a wave that kills the whole cohort leaves
+    /// one dead entry per name behind, every wave. The table is keyed by player
+    /// name and stays bounded by the cohort, but the entries it holds are all
+    /// past their TTL by construction, so nothing can ever consume them.</summary>
+    /// <remarks>A negative age (a stamp written by a clock that jumped
+    /// forward of the current reading) is not an expired kill and is kept.</remarks>
+    static void EvictExpired(long now)
+    {
+        foreach (var (name, killedAt) in KilledTickMs)
+            if (now - killedAt >= KillTtlMs)
+                KilledTickMs.TryRemove(name, out _);
     }
 
     /// <summary>True if this name was killed recently (consumes the event).</summary>

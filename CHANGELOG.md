@@ -582,6 +582,25 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 - `webdash_password_hash.py` rejects stray arguments. It read the password from
   the environment and ignored argv, so a mistyped invocation silently hashed
   whatever `RE_ADMIN_WEB_PASSWORD` held.
+- `LiteNetProbe.Run` returned from the failed-`net.Start()` branch before the
+  `try` whose `finally` drives `net.Stop()`, so that branch (and a throw out of
+  `Start` itself) ended a probe with a manager that was never stopped. The probe
+  lane runs up to a thousand of them in one process, so the skipped release
+  turned into one live UDP socket per failed probe. `Start` now runs inside the
+  same `try`. Gated by `LiteNetProbeLifecycleTests`, which counts
+  `/proc/self/fd` across repeated probe runs.
+- `WorldDeathBus` removed a kill only when `TryConsumeKill` found it, so a
+  telnet kill whose bot disconnected, finished its life, or never polled again
+  stayed in the map for the life of the process, one dead entry per name per
+  pressure wave, with a TTL that nothing enforced. A notify now evicts the
+  entries already past `KillTtlMs`; a negative age (a stamp from a clock ahead of
+  the current reading) is kept.
+- `scripts/validate_reconnect.py` started the dedicated boot wrapper with
+  `Popen` and never waited for it. The wrapper lives for the whole boot, so both
+  the initial start and the restart left a zombie in the process table for the
+  rest of the run, and a wrapper still booting at teardown kept waiting on a
+  server being stopped under it. The handles are kept and reaped (terminated
+  first when still running) in `stop_server`.
 
 ## [0.4.2] - 2026-09-21
 
