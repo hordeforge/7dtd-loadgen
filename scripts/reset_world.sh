@@ -14,7 +14,16 @@ WORLD_NAME="${RE_WORLD_NAME:-RWG}"
 GAME_NAME="${RE_GAME_NAME:-BotPoi_${WORLD_NAME}_${WORLD_GEN_SIZE}}"
 
 start=0
-[[ "${1:-}" == "--start" ]] && start=1
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --start) start=1; shift ;;
+    -h|--help)
+      sed -n '2,5p;7,8p' "$0" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *) echo "ERROR: $0: unknown argument '$1' (see --help)" >&2; exit 2 ;;
+  esac
+done
 
 # Guard: GAME_NAME is a caller-supplied path component that reaches the rm -rf
 # below, so "../../.." retargets the delete outside the saves tree, and an

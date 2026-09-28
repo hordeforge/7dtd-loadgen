@@ -55,4 +55,40 @@ public sealed class BadValueFlagTests
         var args = new[] { "--join", "--bot-mode", "abc" };
         Assert.Equal("--bot-mode", Program.BadValueFlag(args, FormatMessage));
     }
+
+    [Theory]
+    [InlineData("--port")]
+    [InlineData("--count")]
+    [InlineData("--min-pass-rate")]
+    [InlineData("--profile")]
+    public void TrailingValueFlag_IsReportedRatherThanRunOnTheDefault(string flag)
+    {
+        // Every lane's parser reads a value only when a token follows the flag,
+        // so `--join --port` used to start a run on the default port and exit on
+        // the normal gate: the one malformed argv that changed the workload
+        // without an error.
+        var args = new[] { "--join", flag };
+        Assert.Equal(flag, Program.MissingFlagValue(args));
+    }
+
+    [Fact]
+    public void ValueFlagWithAValue_IsNotAMissingValue()
+    {
+        Assert.Null(Program.MissingFlagValue(new[] { "--join", "--port", "26902" }));
+    }
+
+    [Theory]
+    [InlineData("--join")]
+    [InlineData("--quiet")]
+    [InlineData("--no-spawn-zombies")]
+    public void TrailingSwitch_IsNotAValueFlag(string flag)
+    {
+        Assert.Null(Program.MissingFlagValue(new[] { "--join", flag }));
+    }
+
+    [Fact]
+    public void EmptyArgv_IsNotAMissingValue()
+    {
+        Assert.Null(Program.MissingFlagValue(Array.Empty<string>()));
+    }
 }

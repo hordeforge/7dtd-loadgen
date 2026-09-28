@@ -38,7 +38,7 @@ font-size="11"><text x="{lw / 2}" y="14">coverage</text>\
 
 
 def main(argv: list[str]) -> int:
-    if argv[1:] in (["-h"], ["--help"]):
+    if any(a in ("-h", "--help") for a in argv[1:]):
         print(f"{__doc__}\n\nusage: {argv[0]} COBERTURA_XML OUTPUT.svg")
         return 0
     if len(argv) != 3:

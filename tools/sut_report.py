@@ -183,7 +183,7 @@ def write_outputs(out_dir, report, payload):
 
 
 def main():
-    if sys.argv[1:] in (["-h"], ["--help"]):
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
         print(__doc__)
         return 0
     if len(sys.argv) != 2:
@@ -236,7 +236,11 @@ def main():
                                           f"(stock={sid}, zdtd={zid}); re-run --sut all")]})
         if rc:
             return rc
-        print(report, file=sys.stderr)
+        # The report document is the tool's output, whichever verdict it
+        # carries: a caller piping stdout gets the same artifact on every
+        # path, and only diagnostics (write failures, unreadable inputs) go
+        # to stderr.
+        print(report)
         return 0
 
     lines = [f"# Stock-vs-zdtd comparison: {scenario}\n"]
