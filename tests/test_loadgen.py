@@ -110,6 +110,23 @@ def test_credential_flags_are_rejected_without_echoing_the_secret():
         assert secret not in output, f"{flag} echoed the credential"
 
 
+def test_removed_mixed_actions_flag_fails_with_its_replacement():
+    """--mixed-actions was removed in 0.4.2 in favour of --mode mixed. The
+    parser ignores arguments it does not recognize, so without an explicit
+    rejection the flag became a silent no-op: the run still exited 0 and the
+    bots loaded the default wander workload instead of the requested mixed
+    one. Pin the loud failure, and that the message names the replacement."""
+    for args in (
+        ["--join", "--mixed-actions"],
+        ["--mixed-actions"],
+    ):
+        r = _run(args, timeout=20)
+        output = r.stdout + r.stderr
+        assert r.returncode == 2, (args, output[-2000:])
+        assert "--mixed-actions" in output
+        assert "--mode mixed" in output
+
+
 def test_help_documents_env_only_credentials():
     output = _run(["--help"], timeout=15).stdout
     assert "LOADGEN_KEY" in output

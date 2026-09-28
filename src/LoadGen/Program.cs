@@ -72,6 +72,19 @@ public static partial class Program
         return 2;
     }
 
+    /// <summary>Reject a flag removed from the CLI, naming its replacement.
+    /// The parser ignores arguments it does not recognize, so a script still
+    /// carrying a removed flag would otherwise start and run the default
+    /// workload instead of the requested one, with no error. For a load
+    /// generator that is a silent change in what the server is asked to
+    /// absorb, which invalidates a benchmark rather than failing it.</summary>
+    internal static int RemovedFlag(string flag, string replacement)
+    {
+        Console.Error.WriteLine(
+            $"FAIL: {flag} was removed in 0.4.2: use {replacement} instead (see --help).");
+        return 2;
+    }
+
     static int Main(string[] args)
     {
         // Game LiteNetLib logs via UnityEngine.Debug when Logger is null; pure .NET crashes
@@ -108,6 +121,11 @@ public static partial class Program
                 $"AliveFlags body={PackageCodec.GoldenBodySize.EntityAliveFlags}");
             return 0;
         }
+
+        // Before subcommand dispatch: the removed flag was join-only, but the
+        // parser's ignore-unknown behavior made it a silent no-op everywhere.
+        if (args.Any(a => a == "--mixed-actions"))
+            return RemovedFlag("--mixed-actions", "--mode mixed");
 
         string mode = "probe";
         if (args.Any(a => a == "--join")) mode = "join";

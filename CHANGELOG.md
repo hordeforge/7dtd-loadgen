@@ -14,13 +14,26 @@ under **Changed** with their migration path.
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the
   life of the run. The connect now waits on the `ConnectAsync` task.
+- The flag removed in 0.4.2 now fails loudly instead of silently doing
+  nothing. The argument parser ignores flags it does not recognize, so a
+  script still passing `--mixed-actions` after upgrading kept its exit code 0
+  and its bots ran the default wander workload rather than the mixed one. In a
+  load generator that is the worst failure shape: the run looks healthy and
+  only the generated load differs, which quietly invalidates a comparison.
+  `--mixed-actions` is now rejected with exit code 2 and a message naming
+  `--mode mixed`. Scripts that never passed the flag are unaffected.
 
 ## [0.4.2] - 2026-09-21
 
 ### Removed
 
-- The `--mixed-actions` flag, an alias of `--mode mixed`. Use
-  `--mode mixed` instead; behavior is identical.
+- **Breaking (CLI):** the `--mixed-actions` flag, an alias of `--mode mixed`
+  present since 0.1.0, is gone. Replace it with `--mode mixed`; the behavior
+  is identical, since the alias set exactly that mode. Note that on upgrade the
+  parser ignored the unknown flag rather than rejecting it, so an old
+  invocation did not fail: it ran the default wander workload. If you passed
+  `--mixed-actions` anywhere, change the invocation, and re-run any benchmark
+  captured between the upgrade and this fix.
 
 ## [0.4.1] - 2026-09-20
 
