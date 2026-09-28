@@ -34,12 +34,17 @@ select = [
     "ASYNC",  # async mistakes (no async code yet, so it stays free)
     "TID",  # tidy-imports: banned APIs
     "ERA",  # eradicate: commented-out code
-    "LOG",  # flake8-logging-format
-    "G",    # flake8-logging-format, format-string style
+    "LOG",  # flake8-logging: f-strings only, no % or .format in log calls
+    "G",    # flake8-logging-format: the .format and % variants G00x cover
     "A",    # flake8-builtins: shadowing a stdlib name
     "BLE",  # flake8-blind-except: bare except Exception
     "EXE",  # flake8-executable: shebang and exec permissions
     "ARG",  # flake8-unused-arguments
+    "FA",   # flake8-future-annotations: __future__ imports stay consistent
+    "FURB", # refurb: the rewrite ruff already knows, minus the preview rules
+    "DTZ",  # flake8-datetimez: a naive datetime is a bug waiting on a host TZ
+    "ISC",  # flake8-implicit-str-concat: silent line joins
+    "ICN",  # flake8-import-conventions: aliased stdlib imports stay conventional
 ]
 
 [tool.mypy]
@@ -53,6 +58,22 @@ mypy_path = "tools:scripts:tests"
 warn_unused_ignores = true
 warn_redundant_casts = true
 no_implicit_optional = true
+# Free strictness, proven by a clean run on the tree as it stands. Equality
+# that mypy could not disprove used to pass silently; a partially annotated
+# function used to be unchecked; a test decorator on an untyped fixture used
+# to leave the test itself untyped.
+strict_equality = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+# Dead code, not a style opinion: it fires where a signature claims more than
+# the parser can return. Two fuzz helpers had that (a snapshot annotated as
+# dict while telnet_snapshot yields dict | None, and a run-meta annotated as a
+# dict while the mutator hands back a hostile scalar); both are annotated now.
+warn_unreachable = true
+# Still off, with findings open: check_untyped_defs and disallow_any_generics
+# (the var-annotated and type-arg errors they raise), disallow_untyped_defs
+# (the ratchet below), no_implicit_reexport (the `import bloodmoon_profile as
+# B` alias tests monkeypatch through), and strict = true.
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -68,16 +89,21 @@ module = [
     "conftest",
     "consolidated_report",
     "coverage_badge",
+    "json_shape",
     "loadgen_cli",
+    "loadgen_config",
     "loadgen_manifest",
     "procs",
     "sbom",
     "scenario_env",
     "stats_pass_fail",
     "sut_catalog",
+    "test_bench_report_fuzz",
+    "test_sut_capture_fuzz",
+    "test_text_encoding",
+    "test_webdash_password_hash",
     "validate_reconnect",
     "webdash_password_hash",
 ]
 disallow_untyped_defs = true
-disallow_incomplete_defs = true
 check_untyped_defs = true

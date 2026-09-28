@@ -20,6 +20,7 @@ import math
 import random
 import time
 from pathlib import Path
+from typing import Any
 
 import pytest
 import sut_capture
@@ -74,7 +75,7 @@ def _mutate(rng: random.Random) -> str:
     return "\n".join(lines) * rng.randrange(1, 4)
 
 
-def _assert_invariants(snap: dict) -> None:
+def _assert_invariants(snap: dict[str, Any] | None) -> None:
     assert snap is None or set(snap) >= {"day", "banner", "entities", "players",
                                          "gamestats", "clockRateGameMinPerRealSec",
                                          "reportedTotal", "unknownCommands"}

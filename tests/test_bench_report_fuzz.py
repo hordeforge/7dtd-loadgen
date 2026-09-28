@@ -104,7 +104,9 @@ def _substitute(value: Any, rng: random.Random) -> Any:
     return rng.choice(HOSTILE)
 
 
-def _mutated(rng: random.Random) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+# meta is the first element because a run-meta that is not a JSON object is a
+# contracted input: _substitute may replace it with a hostile scalar or list.
+def _mutated(rng: random.Random) -> tuple[Any, dict[str, Any], dict[str, Any]]:
     return (
         _substitute(META_SEED, rng),
         _substitute(STATS_SEED, rng),
