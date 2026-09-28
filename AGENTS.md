@@ -139,6 +139,7 @@ path belongs behind the same options rather than a direct clock or `Random` call
 | Path | Role |
 |---|---|
 | `README.md` | Operator guide |
+| `CHANGELOG.md` | Release record; `tests/test_release_contract.py` gates it against the shipped version |
 | `TODO.md` | Protocol, workload, ops backlog |
 | `BLOODMOON.md` | Canonical worst-case load profile |
 | [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://github.com/hordeforge/.github/blob/main/MODDING_BEST_PRACTICES.md) | Workspace boundaries and EAC notes |

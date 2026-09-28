@@ -65,6 +65,56 @@ def test_changelog_has_current_release_and_unreleased():
     )
 
 
+# Keep a Changelog groups entries by impact, one heading per category, in this
+# order. A duplicated or out-of-order heading reads as one continuous list, so a
+# reader cannot find the breaking changes without reading the whole section:
+# [Unreleased] carried `### Changed` twice, split by an `### Added` block, and
+# the removals of the scenario env exports landed in neither.
+CHANGELOG_CATEGORY_ORDER = ("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security")
+
+
+def unreleased_categories() -> list[str]:
+    text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    # re.split on the same anchor the release headings use, so the section
+    # ends where the next `## ` begins.
+    parts = re.split(r"^## ", text, flags=re.MULTILINE)
+    unreleased = next(p for p in parts[1:] if p.startswith("[Unreleased]"))
+    return re.findall(r"^### (\w+)$", unreleased, flags=re.MULTILINE)
+
+
+def test_unreleased_sections_are_unique_and_ordered():
+    categories = unreleased_categories()
+    assert categories, "the [Unreleased] section has no ### category headings"
+    unknown = [c for c in categories if c not in CHANGELOG_CATEGORY_ORDER]
+    assert not unknown, f"[Unreleased] uses non-Keep-a-Changelog headings: {unknown}"
+    assert len(set(categories)) == len(categories), (
+        f"[Unreleased] repeats a category heading, so the entries are split: {categories}"
+    )
+    ranks = [CHANGELOG_CATEGORY_ORDER.index(c) for c in categories]
+    assert ranks == sorted(ranks), (
+        f"[Unreleased] categories are out of Keep a Changelog order "
+        f"({', '.join(CHANGELOG_CATEGORY_ORDER)}): {categories}"
+    )
+
+
+def test_every_released_section_has_a_link_reference():
+    """A release heading with no `[x.y.z]:` reference renders as plain text, and
+    an `[Unreleased]` reference left on an older tag silently compares against a
+    release that is no longer the newest. The link block stopped at 0.4.0: 0.4.1
+    and 0.4.2 shipped with no link at all, and Unreleased compared from v0.4.0.
+    """
+    text = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    refs = dict(re.findall(r"^\[([^\]]+)\]: (\S+)$", text, flags=re.MULTILINE))
+    releases = changelog_releases()
+    missing = [r for r in releases if r not in refs]
+    assert not missing, f"CHANGELOG release sections with no link reference: {missing}"
+    assert "Unreleased" in refs, "CHANGELOG.md has no [Unreleased] link reference"
+    assert refs["Unreleased"].endswith(f"compare/v{releases[0]}...HEAD"), (
+        f"[Unreleased] compares from {refs['Unreleased']}, but the newest release "
+        f"section is {releases[0]}"
+    )
+
+
 def test_binary_prints_declared_version():
     want = declared_version()
     r = _run(["--version"], timeout=30)

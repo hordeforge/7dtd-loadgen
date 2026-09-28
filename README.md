@@ -564,6 +564,10 @@ the sibling `7dtd-server-apm` project to decide whether a change improved perfor
 New contributors: [`CONTRIBUTING.md`](CONTRIBUTING.md) is the runnable path
 (setup, verification, edit-test loop, layout).
 
+Upgrading: [`CHANGELOG.md`](CHANGELOG.md) is the release record, and its
+`[Unreleased]` section names every breaking change with the replacement and the
+migration step.
+
 ```bash
 make selftest  # in-process mock join and respawn; no game server required
 make test      # lint + build + self-test-join + C# unit tests + pytest gates

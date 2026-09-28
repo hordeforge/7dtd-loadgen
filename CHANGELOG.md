@@ -3,56 +3,16 @@
 All notable changes to 7dtd-loadgen are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); releases are cut as
 annotated `vX.Y.Z` git tags and this file must list every released version.
-Until 1.0.0, breaking changes may land in a minor bump and are called out
-under **Changed** with their migration path.
+Each section carries one heading per category, in Keep a Changelog order
+(Added, Changed, Deprecated, Removed, Fixed, Security), and
+`tests/test_release_contract.py` fails on a duplicated or out-of-order heading
+in `[Unreleased]`.
+Until 1.0.0, breaking changes may land in a minor bump. Every one opens its
+bullet with `**Breaking (<surface>):**` and names the replacement and the
+migration step, and it is filed under **Changed** (a behavior change) or under
+**Removed** (a flag, option or env export that is gone).
 
 ## [Unreleased]
-
-### Fixed
-
-- A host that does not route `127.0.0.0/8` can run a cohort. The per-bot
-  preflight bind turned an unbindable `127.x.x.x` map address into a hard
-  `FAIL udp`, so every bot past the first died and the run reported a
-  pass-rate collapse. The client now probes the address, logs one
-  `NOTE loopback bind map unavailable` per bot and shares `127.0.0.1`, the
-  same throttle re-engagement documented for running past the end of the /8
-  map.
-
-### Changed
-
-- Latency percentiles cover the whole run. `PingStats` kept the first 200k RTT
-  samples and dropped everything after them, so a long soak reported the
-  opening window as the run and silently froze mid-run regressions. Past the
-  cap it now halves the retained set in place, keeps sampling at one in
-  `pingSampleStride` (new stats field), and scales the average and spike count
-  to every sample recorded. Memory stays bounded at 200k ints.
-- The run manifest's per-bot `deathCause` uses the `DeathCauseNames`
-  vocabulary. The raw enum serialized as `WorldKilled` while the stats JSON,
-  the deaths CSV and the console line all spelled `world_killed`.
-- `DEATH_STATS` and the stats JSON render from one cause table. `world_drown`,
-  `world_radiation`, `self_kill` and `exception` were computed and printed on
-  the console and then dropped from the artifact; `respawn_timeout` was in
-  neither.
-- `dynamite` is a session counter like every other action, so the per-life
-  dynamite cap is bounded by a number the reports can see. It appears in
-  `JOIN_ACTIONS`, the stats JSON and the deaths CSV, which gained a
-  `dynamite` column after `breaks`.
-- The action loop no longer keeps its own `Died` flag and death cause beside
-  the session state's. The duplicate was reconciled one way at a time, so
-  `ACTION_SUMMARY` could print a cause the reports disagreed with; both fields
-  now read the state machine, and the summary line prints one `cause=`.
-- Observed CVar state keys match their exact-name filter comparator. The map
-  was case-insensitive while `--observe-cvar` is documented as an exact match,
-  so a name that passed the filter could still be folded into another key.
-- Report cells and code spans render server text as text. A `|` in a world name
-  opened a phantom table column, a backtick closed a code span early and a
-  terminal escape in a log excerpt carried a line break out of the row, so a
-  report diff read a table shift as a behavior difference.
-- `sut_telnet.py` keys its player pseudonyms on the NFC form of a name, the
-  identity form the client uses. One player whose name reached the console in
-  two normalization forms got two pseudonyms in one transcript.
-- The self-test client no longer sets the removed `WanderUntilDeath` option,
-  which left `src/LoadGen` uncompilable.
 
 ### Added
 
@@ -113,6 +73,39 @@ under **Changed** with their migration path.
 
 ### Changed
 
+- Latency percentiles cover the whole run. `PingStats` kept the first 200k RTT
+  samples and dropped everything after them, so a long soak reported the
+  opening window as the run and silently froze mid-run regressions. Past the
+  cap it now halves the retained set in place, keeps sampling at one in
+  `pingSampleStride` (new stats field), and scales the average and spike count
+  to every sample recorded. Memory stays bounded at 200k ints.
+- The run manifest's per-bot `deathCause` uses the `DeathCauseNames`
+  vocabulary. The raw enum serialized as `WorldKilled` while the stats JSON,
+  the deaths CSV and the console line all spelled `world_killed`.
+- `DEATH_STATS` and the stats JSON render from one cause table. `world_drown`,
+  `world_radiation`, `self_kill` and `exception` were computed and printed on
+  the console and then dropped from the artifact; `respawn_timeout` was in
+  neither.
+- `dynamite` is a session counter like every other action, so the per-life
+  dynamite cap is bounded by a number the reports can see. It appears in
+  `JOIN_ACTIONS`, the stats JSON and the deaths CSV, which gained a
+  `dynamite` column after `breaks`.
+- The action loop no longer keeps its own `Died` flag and death cause beside
+  the session state's. The duplicate was reconciled one way at a time, so
+  `ACTION_SUMMARY` could print a cause the reports disagreed with; both fields
+  now read the state machine, and the summary line prints one `cause=`.
+- Observed CVar state keys match their exact-name filter comparator. The map
+  was case-insensitive while `--observe-cvar` is documented as an exact match,
+  so a name that passed the filter could still be folded into another key.
+- Report cells and code spans render server text as text. A `|` in a world name
+  opened a phantom table column, a backtick closed a code span early and a
+  terminal escape in a log excerpt carried a line break out of the row, so a
+  report diff read a table shift as a behavior difference.
+- `sut_telnet.py` keys its player pseudonyms on the NFC form of a name, the
+  identity form the client uses. One player whose name reached the console in
+  two normalization forms got two pseudonyms in one transcript.
+- The self-test client no longer sets the removed `WanderUntilDeath` option,
+  which left `src/LoadGen` uncompilable.
 - The two Python load profiles (`scripts/bloodmoon_profile.py`,
   `scripts/capacity_sweep.py`) refuse an overlapping run instead of
   replacing the first one. They boot the dedicated themselves, and boot is
@@ -220,8 +213,23 @@ under **Changed** with their migration path.
   less than two path components deep. It wipes that directory before booting,
   so a mistyped value previously removed whatever it named.
 
+### Removed
+
+- `scripts/scenario_env.py` no longer exports `LOADGEN_SCENARIO_CI`,
+  `LOADGEN_SCENARIO_OPTIONAL` and `LOADGEN_PRIORITY` into the generated
+  scenario env file. Nothing read them, so a scenario document carrying a
+  `ci`, `optional` or `priority` key is now simply not exported; no invocation
+  changes.
+
 ### Fixed
 
+- A host that does not route `127.0.0.0/8` can run a cohort. The per-bot
+  preflight bind turned an unbindable `127.x.x.x` map address into a hard
+  `FAIL udp`, so every bot past the first died and the run reported a
+  pass-rate collapse. The client now probes the address, logs one
+  `NOTE loopback bind map unavailable` per bot and shares `127.0.0.1`, the
+  same throttle re-engagement documented for running past the end of the /8
+  map.
 - `SelfTestJoin.Run` still set `Options.WanderUntilDeath`, an option the
   provably-dead-option sweep removed from `GameJoinClient.Options`. The
   self-test's move out of `Program` carried the stale initializer with it, so
@@ -739,7 +747,9 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.1
 [0.3.0]: https://github.com/hordeforge/7dtd-loadgen/releases/tag/v0.3.0
