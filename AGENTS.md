@@ -101,6 +101,21 @@ Common knobs: `--count`, `--concurrency`, `--timeout`, `--mode`, `--actions`,
 Exit code + cohort summary are the automation contract. Preserve client logs
 with server config and APM session IDs when comparing runs.
 
+## Deterministic replay
+
+`--seed` decides a bot's action stream, its think-time stream and its place in
+the cohort. Bot seeds are `actionSeed + clientId + life * 997`, and they pass
+through `BotRng.Decorrelate` before reaching `Random`: a seeded `Random` lays
+nearby seeds' opening values on a fixed lattice, which would start the cohort in
+near-lockstep.
+
+The action loop takes its clock (`ActionLoop.Options.ElapsedMs`) and its
+think-time wait (`ActionLoop.Options.Sleep`) from its options, defaulting to a
+real stopwatch and `Thread.Sleep`. A test injects both to replay a whole run on
+virtual time and diff the log stream against another execution of the same seed;
+`ActionLoopReplayTests` does exactly that. New time or randomness in the decision
+path belongs behind the same options rather than a direct clock or `Random` call.
+
 ## Docs / tracking
 
 | Path | Role |

@@ -130,21 +130,33 @@ public sealed class BenchClockTests
     {
         var c = new BenchClock(0, 60_000);
         var stop = new CancellationTokenSource();
+        // Every worker signals its first sample before the reads start. Without
+        // that rendezvous the main loop can finish its reads (and cancel) while
+        // the pool still has not run the higher-valued workers, and the test
+        // then asserts against a curve that only ever saw active=0.
+        using var sampled = new CountdownEvent(4);
         var workers = new List<Task>();
         for (int i = 0; i < 4; i++)
         {
             int active = i;
             workers.Add(Task.Run(() =>
             {
+                bool first = true;
                 while (!stop.IsCancellationRequested)
                 {
                     c.SampleActive(active);
                     c.OnAction();
                     c.OnDeath();
                     c.OnRespawn();
+                    if (first)
+                    {
+                        first = false;
+                        sampled.Signal();
+                    }
                 }
             }));
         }
+        Assert.True(sampled.Wait(TimeSpan.FromSeconds(5)), "samplers did not run");
         try
         {
             for (int i = 0; i < 200; i++)

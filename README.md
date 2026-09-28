@@ -239,7 +239,9 @@ The join runner accepts `--count` and `--concurrency` for cohort size, plus
 24.9 days). Bots default to wandering until death;
 `--mode`, `--actions`, `--pace-ms`, and `--seed` make shorter
 or deterministic action workloads possible. Use `--min-pass-rate` to require a
-minimum successful-client fraction.
+minimum successful-client fraction. The seed fixes every bot's action sequence
+and its think-time jitter, so two runs at the same seed issue the same packages
+in the same order; pacing still runs on real time, so step timestamps differ.
 
 Bot modes: `wander`, `mixed`, `chatty`, `combat`, `patrol`, `chaos`,
 `demolition`, `bait`, `kite`, and `traverse`. Demolition bots roam and repeatedly detonate

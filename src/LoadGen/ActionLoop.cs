@@ -121,6 +121,15 @@ public static class ActionLoop
         public Action<string>? Log { get; set; }
         /// <summary>Optional cohort bench clock; counts action iterations inside the window.</summary>
         public BenchClock? Bench { get; set; }
+        /// <summary>Simulation seam: milliseconds since <see cref="Run"/> began.
+        /// Defaults to a real stopwatch. A deterministic replay injects virtual
+        /// time so the lifetime cutoff and the reported elapsed value come out
+        /// the same on every run instead of depending on host speed.</summary>
+        public Func<long>? ElapsedMs { get; set; }
+        /// <summary>Simulation seam: the think-time wait. Defaults to
+        /// <see cref="Thread.Sleep(int)"/>; a deterministic replay advances
+        /// virtual time and returns immediately.</summary>
+        public Action<int>? Sleep { get; set; }
     }
 
     public static void Run(
@@ -139,11 +148,11 @@ public static class ActionLoop
         ResolveIds(sm, out ushort posId, out ushort relId, out ushort flagsId,
             out ushort dmgId, out ushort chatId, out ushort explosionId);
 
-        var rng = new Random(opt.Seed);
-        // Reseed the (thread-static) pace-jitter RNG deterministically per bot so
-        // runs are reproducible. opt.Seed already encodes ActionSeed + clientId +
-        // life, giving each bot a distinct but fixed think-time sequence.
-        _paceRng = new Random(opt.Seed ^ 0x5f3759df);
+        var rng = new Random(BotRng.Decorrelate(opt.Seed));
+        // The pace stream is a second, independent one for the same bot. opt.Seed
+        // already encodes ActionSeed + clientId + life, so the bot gets a fixed
+        // think-time sequence, decorrelated from the action stream above.
+        var paceRng = new Random(BotRng.Decorrelate(~opt.Seed));
         int entityId = sm.EntityId > 0 ? sm.EntityId : 1;
         float x = sm.PosX;
         float originX = sm.PosX;
@@ -197,7 +206,11 @@ public static class ActionLoop
         // Per-life packages-sent delta: sm.PackagesSent is the session total, so
         // capture the entry value and report the difference in ACTION_SUMMARY.
         int sentBefore = sm.PackagesSent;
-        var sw = System.Diagnostics.Stopwatch.StartNew();
+        long startTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+        Func<long> elapsedMs = opt.ElapsedMs ?? (() =>
+            (long)((System.Diagnostics.Stopwatch.GetTimestamp() - startTicks) * 1000.0
+                / System.Diagnostics.Stopwatch.Frequency));
+        Action<int> sleep = opt.Sleep ?? Thread.Sleep;
 
         log?.Invoke(
             $"ACTION start mode={opt.Mode} death={opt.Death} n={(endless ? "endless" : n.ToString())} " +
@@ -235,14 +248,14 @@ public static class ActionLoop
                         $"ACTION stop: should_stop stage={sm.Stage} cause={DeathCauseNames.Of(sm.DeathCause)}");
                 break;
             }
-            if (opt.MaxLifetimeMs > 0 && sw.ElapsedMilliseconds >= opt.MaxLifetimeMs)
+            if (opt.MaxLifetimeMs > 0 && elapsedMs() >= opt.MaxLifetimeMs)
             {
                 if (!stats.Died && !sm.Died)
                 {
                     stats.Cause = DeathCause.TimeoutAlive;
                     sm.DeathCause = DeathCause.TimeoutAlive;
                     log?.Invoke(
-                        $"ACTION timeout_alive after {sw.ElapsedMilliseconds}ms walks={stats.Walks} " +
+                        $"ACTION timeout_alive after {elapsedMs()}ms walks={stats.Walks} " +
                         $"pos=({x:0.#},{y:0.#},{z:0.#})");
                 }
                 break;
@@ -312,7 +325,7 @@ public static class ActionLoop
                             if (stats.Jumps <= 5 || stats.Jumps % 25 == 0)
                                 log?.Invoke($"ACTION jump#{stats.Jumps} entity={entityId} y={y:0.##}");
                         });
-                    Pace(paceMs, opt.Poll, opt.ShouldStop);
+                    Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                     y = surfaceY;
                     goto case ActionKind.Walk;
 
@@ -329,7 +342,7 @@ public static class ActionLoop
                             if (stats.Crouches <= 5 || stats.Crouches % 20 == 0)
                                 log?.Invoke($"ACTION crouch#{stats.Crouches} entity={entityId} on={crouching}");
                         });
-                    Pace(paceMs, opt.Poll, opt.ShouldStop);
+                    Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                     break;
 
                 case ActionKind.Aim:
@@ -345,7 +358,7 @@ public static class ActionLoop
                             if (stats.Aims <= 5 || stats.Aims % 20 == 0)
                                 log?.Invoke($"ACTION aim#{stats.Aims} entity={entityId} on={aiming}");
                         });
-                    Pace(paceMs, opt.Poll, opt.ShouldStop);
+                    Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                     break;
 
                 case ActionKind.BreakBlocks:
@@ -359,7 +372,7 @@ public static class ActionLoop
                             if (stats.BreakBlocks <= 3 || stats.BreakBlocks % 10 == 0)
                                 log?.Invoke($"ACTION break#{stats.BreakBlocks} entity={entityId}");
                         });
-                    Pace(paceMs, opt.Poll, opt.ShouldStop);
+                    Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                     break;
 
                 case ActionKind.Dynamite:
@@ -375,7 +388,7 @@ public static class ActionLoop
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
                         }
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
@@ -392,7 +405,7 @@ public static class ActionLoop
                             log?.Invoke($"ACTION turn#{stats.Turns} entity={entityId} yaw={yaw:0.#}");
                         Move(send, sm, posId, relId, entityId, ref x, ref y, ref z, surfaceY,
                             0f, 0f, yaw, crouching, () => { });
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
@@ -409,14 +422,14 @@ public static class ActionLoop
                                 if (stats.Strafes <= 3 || stats.Strafes % 25 == 0)
                                     log?.Invoke($"ACTION strafe#{stats.Strafes} entity={entityId}");
                             });
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
                 case ActionKind.Look:
                     stats.Looks++;
                     sm.LookActions++;
-                    Pace(paceMs, opt.Poll, opt.ShouldStop);
+                    Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                     break;
 
                 case ActionKind.Chat:
@@ -432,7 +445,7 @@ public static class ActionLoop
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION chat#{stats.Chats} entity={entityId} msg={msg}");
                         }
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
@@ -451,7 +464,7 @@ public static class ActionLoop
                             if (stats.Attacks <= 3 || stats.Attacks % 10 == 0)
                                 log?.Invoke($"ACTION attack#{stats.Attacks} entity={entityId}");
                         }
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
@@ -528,7 +541,7 @@ public static class ActionLoop
                                         $"ACTION walk#{stats.Walks} entity={entityId} " +
                                         $"-> ({x:0.##},{y:0.##},{z:0.##}) hdg={yaw:0.#}");
                             });
-                        Pace(paceMs, opt.Poll, opt.ShouldStop);
+                        Pace(paceMs, paceRng, opt.Poll, opt.ShouldStop, sleep);
                         break;
                     }
 
@@ -556,7 +569,7 @@ public static class ActionLoop
             $"aim={stats.Aims} turn={stats.Turns} strafe={stats.Strafes} look={stats.Looks} chat={stats.Chats} " +
             $"break={stats.BreakBlocks} dynamite={stats.Dynamite} attack={stats.Attacks} drowns={stats.Drowns} suicides={stats.Suicides} " +
             $"killed={stats.Killed} died={stats.Died} cause={DeathCauseNames.Of(stats.Cause)} " +
-            $"deathCause={DeathCauseNames.Of(sm.DeathCause)} elapsedMs={sw.ElapsedMilliseconds} sent={sm.PackagesSent - sentBefore}");
+            $"deathCause={DeathCauseNames.Of(sm.DeathCause)} elapsedMs={elapsedMs()} sent={sm.PackagesSent - sentBefore}");
     }
 
     static void SyncDeathFromState(JoinStateMachine sm, Stats stats)
@@ -829,8 +842,6 @@ public static class ActionLoop
         log?.Invoke($"ACTION killed entity={entityId}");
     }
 
-    [ThreadStatic] static Random? _paceRng;
-
     /// <summary>Step where a client-forced death lands: 80% into the planned
     /// steps, but never before step n-2 (for n >= 10 the n-2 bound wins, so
     /// realistic runs die two steps from the end). The multiply widens to long
@@ -852,7 +863,7 @@ public static class ActionLoop
         return (int)Math.Min(jittered, int.MaxValue);
     }
 
-    static void Pace(int paceMs, Action? poll, Func<bool>? shouldStop = null)
+    static void Pace(int paceMs, Random paceRng, Action? poll, Func<bool>? shouldStop, Action<int> sleep)
     {
         if (paceMs <= 0)
         {
@@ -861,14 +872,13 @@ public static class ActionLoop
         }
         // +/-20% think-time jitter so a cohort does not act in lockstep and
         // create synthetic synchronized load spikes (real players are async).
-        _paceRng ??= new Random(0x5f3759df);  // deterministic fallback if Run() did not seed
-        paceMs = JitteredPaceMs(paceMs, _paceRng);
+        paceMs = JitteredPaceMs(paceMs, paceRng);
         // Slice sleep so LiteNet keeps ticking on long-lived sessions.
         int left = paceMs;
         while (left > 0)
         {
             int slice = Math.Min(left, 20);
-            Thread.Sleep(slice);
+            sleep(slice);
             left -= slice;
             // Stop before polling: during process shutdown the caller must quit
             // within one slice instead of driving PollEvents/Send for the rest
