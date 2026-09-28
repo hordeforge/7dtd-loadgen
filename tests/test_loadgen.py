@@ -95,19 +95,25 @@ def test_credential_flags_are_rejected_without_echoing_the_secret():
     credentials from the environment only. A credential flag must fail loudly
     (exit 2, naming the env var) rather than be ignored: silently dropping
     --key would connect with no password and look like a server-side fault.
-    The refusal must not print the value it just refused."""
+    The refusal must not print the value it just refused.
+
+    Every lane refuses, not just join: the refusal is made once at the dispatch
+    point, so no parser can be left without a branch for a flag and accept it
+    silently."""
     secret = "hunter2-should-never-appear"
-    for flag, env_var in (
-        ("--key", "LOADGEN_KEY"),
-        ("--password", "LOADGEN_KEY"),
-        ("--telnet-password", "LOADGEN_TELNET_PASSWORD"),
-    ):
-        r = _run(["--join", flag, secret], timeout=20)
-        output = r.stdout + r.stderr
-        assert r.returncode == 2, (flag, output[-2000:])
-        assert flag in output
-        assert env_var in output
-        assert secret not in output, f"{flag} echoed the credential"
+    lanes = (["--join"], [], ["--self-test"], ["--self-test-join"], ["--help"])
+    for lane in lanes:
+        for flag, env_var in (
+            ("--key", "LOADGEN_KEY"),
+            ("--password", "LOADGEN_KEY"),
+            ("--telnet-password", "LOADGEN_TELNET_PASSWORD"),
+        ):
+            r = _run([*lane, flag, secret], timeout=20)
+            output = r.stdout + r.stderr
+            assert r.returncode == 2, (lane, flag, output[-2000:])
+            assert flag in output
+            assert env_var in output
+            assert secret not in output, f"{flag} echoed the credential"
 
 
 def test_removed_mixed_actions_flag_fails_with_its_replacement():

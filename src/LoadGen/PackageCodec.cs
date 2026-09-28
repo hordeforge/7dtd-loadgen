@@ -920,6 +920,43 @@ public static class PackageCodec
         return false;
     }
 
+    /// <summary>Upper bound on one length-prefixed wire string. Server strings
+    /// are player names, console text and a handful of tokens; a megabyte is
+    /// far past any real value and keeps a hostile length prefix from turning a
+    /// single package into a gigabyte allocation.</summary>
+    public const int MaxWireStringBytes = 1 << 20;
+
+    /// <summary>Read a 7-bit-length-prefixed UTF-8 string, rejecting a length
+    /// the body cannot hold before anything is allocated. BinaryReader.ReadString
+    /// trusts the prefix, and these bodies come off the wire from a peer the
+    /// client never authenticates: a 0x7FFFFFFF prefix made it allocate a
+    /// multi-gigabyte string and took the whole cohort down with the
+    /// OutOfMemory, which no catch around the parse can make safe.
+    /// <paramref name="field"/> names the field in the failure message.</summary>
+    public static string ReadBoundedString(BinaryReader r, string field)
+    {
+        long remaining = r.BaseStream.Length - r.BaseStream.Position;
+        int len = 0, shift = 0, b;
+        do
+        {
+            if (remaining <= 0)
+                throw new InvalidDataException($"{field}: string length prefix is truncated");
+            b = r.ReadByte();
+            remaining--;
+            // 5 groups of 7 bits is the int range; a 6th group, or a top group
+            // above 0x0F, is a prefix no valid sender writes.
+            if (shift > 28 || (shift == 28 && (b & 0x7F) > 0x0F))
+                throw new InvalidDataException($"{field}: string length prefix overflows int32");
+            len |= (b & 0x7F) << shift;
+            shift += 7;
+        } while ((b & 0x80) != 0);
+
+        long limit = Math.Min(MaxWireStringBytes, remaining);
+        if (len > limit)
+            throw new InvalidDataException($"{field}: string length {len} exceeds {limit} available bytes");
+        return Encoding.UTF8.GetString(r.ReadBytes(len));
+    }
+
     public static (VersionInfo version, string[] mappings, bool useEac) ParsePackageIdsBody(byte[] body)
     {
         using var ms = new MemoryStream(body);
@@ -932,7 +969,7 @@ public static class PackageCodec
             throw new InvalidDataException($"PackageIds mapping count {n} exceeds body or limit {MaxPackageMappings}");
         var maps = new string[n];
         for (int i = 0; i < n; i++)
-            maps[i] = r.ReadString();
+            maps[i] = ReadBoundedString(r, "PackageIds mapping");
         bool eac = r.ReadBoolean();
         bool hasHost = r.ReadBoolean();
         if (hasHost)
@@ -941,10 +978,10 @@ public static class PackageCodec
             if (r.ReadByte() != 0)
             {
                 r.ReadByte();
-                _ = r.ReadString();
-                _ = r.ReadString();
+                _ = ReadBoundedString(r, "PackageIds platform user");
+                _ = ReadBoundedString(r, "PackageIds platform token");
             }
-            _ = r.ReadString();
+            _ = ReadBoundedString(r, "PackageIds host");
         }
         return (ver, maps, eac);
     }
@@ -954,7 +991,7 @@ public static class PackageCodec
         using var ms = new MemoryStream(body);
         using var r = new BinaryReader(ms, Encoding.UTF8);
         bool allowed = r.ReadBoolean();
-        string data = r.ReadString();
+        string data = ReadBoundedString(r, "LoginAnswer data");
         return (allowed, data);
     }
 
@@ -966,7 +1003,7 @@ public static class PackageCodec
         int reason = r.ReadInt32();
         _ = r.ReadInt32();
         _ = r.ReadInt64();
-        string custom = r.ReadString();
+        string custom = ReadBoundedString(r, "PlayerDenied custom");
         return (reason, custom);
     }
 

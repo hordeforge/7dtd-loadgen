@@ -104,6 +104,30 @@ public static partial class Program
         return 2;
     }
 
+    /// <summary>Every credential flag, with the environment variable that
+    /// replaces it. The refusal runs at the one dispatch point in
+    /// <see cref="Main"/>, not per lane: a lane with no branch for a flag
+    /// ignores it, and an ignored credential both stays in world-readable argv
+    /// and connects with no password at all (which reads as a server fault).</summary>
+    static readonly (string Flag, string EnvVar)[] CredentialFlags =
+    {
+        ("--key", "LOADGEN_KEY"),
+        ("--password", "LOADGEN_KEY"),
+        ("--telnet-password", "LOADGEN_TELNET_PASSWORD"),
+    };
+
+    /// <summary>Exit code when argv carries a credential flag, or null when it
+    /// carries none. The refused value is never echoed.</summary>
+    static int? RefuseCredentialFlags(string[] args)
+    {
+        foreach (var (flag, envVar) in CredentialFlags)
+        {
+            if (Array.IndexOf(args, flag) >= 0)
+                return SecretFlagRemoved(flag, envVar);
+        }
+        return null;
+    }
+
     /// <summary>Every flag the parser accepts, in any mode. An argv token that
     /// looks like a flag and is not in this set is a usage error, never a
     /// silent no-op.</summary>
@@ -165,6 +189,12 @@ public static partial class Program
         AppDomain.CurrentDomain.ProcessExit += (_, _) => GameJoinClient.DisconnectAllActive();
 
         Console.CancelKeyPress += (_, _) => GameJoinClient.DisconnectAllActive();
+
+        // Before every other check, including --help: a credential in argv is
+        // exposed to `ps` for the life of the process whatever the run does.
+        var credentialFlag = RefuseCredentialFlags(args);
+        if (credentialFlag.HasValue)
+            return credentialFlag.Value;
 
         if (args.Any(a => a is "-h" or "--help"))
         {
@@ -264,7 +294,8 @@ public static partial class Program
             "  --respawn-timeout-ms N  max wait for server to confirm respawn (default 40000)\n" +
             "  --spawn-zombies     telnet-spawn zombies near bots (default on)\n" +
             "  --no-spawn-zombies  disable telnet spawns\n" +
-            "  --telnet-host/port/password  dedicated telnet (default 127.0.0.1:8081 retest)\n" +
+            "  --telnet-host/port  dedicated telnet (default 127.0.0.1:8081; password\n" +
+            "      from LOADGEN_TELNET_PASSWORD only)\n" +
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
             "  --bot-mix m1:w1,m2:w2  weighted per-bot modes; overrides --mode\n" +
             "  --max-dynamite N    dynamite charges per life (default 3, demolition 200)\n" +

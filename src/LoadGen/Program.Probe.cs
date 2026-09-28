@@ -23,7 +23,6 @@ public static partial class Program
         {
             if (args[i] == "--host" && i + 1 < args.Length) host = args[++i];
             else if (args[i] == "--port" && i + 1 < args.Length) port = int.Parse(args[++i]);
-            else if (args[i] == "--key") return SecretFlagRemoved(args[i], "LOADGEN_KEY");
             else if (args[i] == "--timeout" && i + 1 < args.Length)
             {
                 if (!TryParseTimeoutMs(args[++i], out int parsed))

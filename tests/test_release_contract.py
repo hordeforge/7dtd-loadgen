@@ -79,9 +79,9 @@ GAME_VERSION_RE = re.compile(
 
 
 def pinned_game_version() -> tuple[int, int, int, int]:
-    """PackageCodec.VersionInfo is (ReleaseType, Major, Minor, Build). The
-    release type is asserted and returned: the docs are gated against the
-    constructor form, which spells it out."""
+    """PackageCodec.VersionInfo is (ReleaseType, Major, Minor, Build), all four
+    returned; the release type is asserted here as well as unpacked. The docs
+    are gated against the constructor form, which spells it out."""
     text = (ROOT / "src" / "LoadGen" / "PackageCodec.cs").read_text(encoding="utf-8")
     match = GAME_VERSION_RE.search(text)
     assert match, "PackageCodec.GameVersion declaration not found"

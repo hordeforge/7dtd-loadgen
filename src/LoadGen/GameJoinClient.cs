@@ -1220,7 +1220,9 @@ public sealed class GameJoinClient
                 // ASCII byte scan below when the text is short or letterless
                 // discarded the decode: "Zo" came back as "Z" and a two-kanji
                 // message as "", so a non-ASCII bot name could never match.
-                string s = r.ReadString();
+                // The length is checked against the body before allocating: chat
+                // text is server-controlled and the prefix is not.
+                string s = PackageCodec.ReadBoundedString(r, "chat text");
                 var clean = new System.Text.StringBuilder(s.Length);
                 foreach (char c in s)
                     clean.Append(char.IsControl(c) ? '?' : c);

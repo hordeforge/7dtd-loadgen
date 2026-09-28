@@ -87,6 +87,19 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- `--key`, `--password` and `--telnet-password` were refused only in join mode
+  (and `--key` in probe). The other lanes had no branch for them, so the
+  credential and its value sat unused in world-readable argv while the run
+  proceeded without a password. The refusal now happens once, before mode
+  dispatch, so every lane rejects them and the README contract holds. `--help`
+  also stops printing the default telnet password; the value is documented in
+  the README and comes from `LOADGEN_TELNET_PASSWORD`.
+- `BinaryReader.ReadString` trusted the 7-bit length prefix on unauthenticated
+  server wire data, so one crafted package could make the client allocate a
+  multi-gigabyte string and take the cohort down with the OutOfMemory.
+  `PackageCodec.ReadBoundedString` checks the prefix against the body and a
+  1 MiB ceiling before allocating; PackageIds mappings, login answers, denial
+  text and chat extraction all read through it.
 - `scripts/stats_pass_fail.py` raised `AttributeError` out of `main()` on a
   `stats.json` holding valid JSON of the wrong shape, where every other
   malformed input takes the documented `0 0` fallback with a stderr note. A

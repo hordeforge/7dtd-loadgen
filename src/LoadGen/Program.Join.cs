@@ -123,7 +123,6 @@ public static partial class Program
         {
             if (args[i] == "--host" && i + 1 < args.Length) opt.Host = args[++i];
             else if (args[i] == "--port" && i + 1 < args.Length) opt.Port = int.Parse(args[++i]);
-            else if (args[i] is "--key" or "--password") return SecretFlagRemoved(args[i], "LOADGEN_KEY");
             else if (args[i] == "--timeout" && i + 1 < args.Length)
             {
                 if (!TryParseTimeoutMs(args[++i], out int timeoutMs))
@@ -196,7 +195,6 @@ public static partial class Program
             else if (args[i] == "--no-kill-fallback") killFallback = false;
             else if (args[i] == "--kill-fallback") killFallback = true;
             else if (args[i] == "--telnet-port" && i + 1 < args.Length) telnetPort = int.Parse(args[++i]);
-            else if (args[i] == "--telnet-password") return SecretFlagRemoved(args[i], "LOADGEN_TELNET_PASSWORD");
             else if (args[i] == "--telnet-host" && i + 1 < args.Length) telnetHost = args[++i];
             else if (args[i] == "--horde-every-ms" && i + 1 < args.Length) hordeEveryMs = int.Parse(args[++i]);
             else if (args[i] == "--horde-waves" && i + 1 < args.Length) hordeWaves = int.Parse(args[++i]);
