@@ -192,7 +192,7 @@ def join_ramped(target):
                              stdout=fh, stderr=fh)
     # wait for a STABLE cohort (tolerate ramp churn): count must hold >= 90% target twice.
     # Monotonic deadline: the ramp gate measures elapsed time, not wall time.
-    deadline = time.monotonic() + target * 1000 / 1000 + 180
+    deadline = time.monotonic() + target + 180
     hits = 0
     while time.monotonic() < deadline:
         # A cohort that already exited (build failure, gate FAIL, crash) cannot

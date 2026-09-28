@@ -631,8 +631,6 @@ public static class ActionLoop
         DeathMethod m = pref == DeathMethod.Random
             ? (DeathMethod)rng.Next(1, 4) // Drown..Killed
             : pref;
-        if (m == DeathMethod.None)
-            return ActionKind.Walk;
         if (step > 0)
             m = (DeathMethod)(1 + (((int)m - 1 + step) % 3));
         return m switch

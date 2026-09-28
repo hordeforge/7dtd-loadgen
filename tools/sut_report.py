@@ -208,7 +208,7 @@ def main():
         lines.append(f"- zdtd unknown commands: {zt['unknownCommands']}")
 
     # ---- zdtd APM (reported, not compared: stock has no equivalent) ----
-    za = zdtd.get("apm") if zdtd else None
+    za = zdtd.get("apm")
     if za:
         lines.append("\n## zdtd APM (last snapshot; no stock equivalent)\n")
         for k in ("ticks", "join_ok", "join_fail", "net_packets_in", "net_packets_out",
@@ -220,7 +220,7 @@ def main():
                          f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
 
     # ---- stock APM (7dtd-server-apm capture; reported, not compared: format differs) ----
-    sa = stock.get("apmStock") if stock else None
+    sa = stock.get("apmStock")
     if sa:
         lines.append("\n## stock APM (7dtd-server-apm capture window; no zdtd equivalent format)\n")
         if sa.get("session"):

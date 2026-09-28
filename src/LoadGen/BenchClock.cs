@@ -84,7 +84,7 @@ public sealed class BenchClock
         long now = ElapsedMs;
         lock (_activeCurve)
         {
-            // Do not duplicate a sample on the same second.
+            // Re-sample a sub-second gap instead of listing the same moment twice.
             if (_activeCurve.Count > 0 && now - _activeCurve[_activeCurve.Count - 1].Ms < 500)
                 _activeCurve[_activeCurve.Count - 1] = (now, active);
             else

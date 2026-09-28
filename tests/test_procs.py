@@ -30,12 +30,18 @@ def _wait_gone(proc: subprocess.Popen[bytes], timeout: float = 15.0) -> bool:
     return True
 
 
-def test_find_matches_cmdline_substring():
+def _running_sleeper() -> subprocess.Popen[bytes]:
+    """A _sleeper() already visible to the /proc walk."""
     proc = _sleeper()
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline and proc.pid not in procs.find(MARKER):
+        time.sleep(0.05)
+    return proc
+
+
+def test_find_matches_cmdline_substring():
+    proc = _running_sleeper()
     try:
-        deadline = time.monotonic() + 10
-        while time.monotonic() < deadline and proc.pid not in procs.find(MARKER):
-            time.sleep(0.05)
         assert proc.pid in procs.find(MARKER)
     finally:
         proc.kill()
@@ -53,10 +59,7 @@ def test_find_returns_empty_for_no_match():
 
 
 def test_kill_terminates_matches():
-    proc = _sleeper()
-    deadline = time.monotonic() + 10
-    while time.monotonic() < deadline and proc.pid not in procs.find(MARKER):
-        time.sleep(0.05)
+    proc = _running_sleeper()
     killed = procs.kill(MARKER)
     assert proc.pid in killed
     assert _wait_gone(proc), "process survived kill()"

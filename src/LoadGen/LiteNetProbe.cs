@@ -11,7 +11,7 @@ public static class LiteNetProbe
         string host, int port, string key, int timeoutMs, int clientId,
         Action<string>? writeLine = null, bool keepLines = true)
     {
-        var lines = keepLines ? new List<string>() : new List<string>(0);
+        var lines = new List<string>();
         var sw = Stopwatch.StartNew();
         void Log(string msg)
         {

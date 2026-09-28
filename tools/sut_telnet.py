@@ -90,10 +90,7 @@ def drain(sock, deadline):
         now = time.monotonic()
         if now >= deadline:
             break
-        remaining = deadline - now
-        if remaining <= 0:
-            break
-        r, _, _ = select.select([sock], [], [], min(0.4, remaining))
+        r, _, _ = select.select([sock], [], [], min(0.4, deadline - now))
         if not r:
             break
         try:

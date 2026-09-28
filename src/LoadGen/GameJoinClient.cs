@@ -218,7 +218,7 @@ public sealed class GameJoinClient
         var inbox = new Queue<byte[]>();
         object gate = new();
         const int MaxQueued = 2_000;
-        int verboseRecvLeft = 40; // throttle wire logs after join
+        int verboseRecvLeft = 40;
 
         // Shared queue plumbing for the join-phase main loop and the post-join
         // PollInbox: one enqueue cap, one drain, one flush, so the two phases
@@ -1133,17 +1133,18 @@ public sealed class GameJoinClient
     /// replaced by '?' so scrubbing stays visible; output bounded like chat.</summary>
     static string SafeText(string? s)
     {
+        const int MaxScrubbedChars = 160;
         if (string.IsNullOrEmpty(s)) return "";
-        var sb = new System.Text.StringBuilder(Math.Min(s.Length, 160));
+        var sb = new System.Text.StringBuilder(Math.Min(s.Length, MaxScrubbedChars));
         foreach (char c in s)
         {
             // Stop at the snippet cap so a hostile oversized string cannot make
             // the scrub loop itself the cost; Snippet still trims a split
             // surrogate pair exactly as before.
-            if (sb.Length >= 160) break;
+            if (sb.Length >= MaxScrubbedChars) break;
             sb.Append(char.IsControl(c) ? '?' : c);
         }
-        return Snippet(sb.ToString(), 160);
+        return Snippet(sb.ToString(), MaxScrubbedChars);
     }
 
     // Allocation-free letter probe (LINQ Any allocated an enumerator plus a

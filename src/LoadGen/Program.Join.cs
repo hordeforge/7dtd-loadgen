@@ -435,7 +435,7 @@ public static partial class Program
                 }
                 last = c.State;
                 totals.AddCounters(last);
-                if (attempt > 1) totals.RejoinCount++; // every retry past the first is a rejoin
+                if (attempt > 1) totals.RejoinCount++;
 
                 // Intentional end of budget (walked until timeout) or hard fail without join.
                 // Recompute remaining fresh: a join attempt can burn most of the
