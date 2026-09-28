@@ -71,7 +71,7 @@ static class SelfTest
         Program.AwaitTeardown("self_host", hostLoop);
         server.Stop();
         if (!string.IsNullOrEmpty(logPath))
-            Program.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
+            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
         // Verdict: the PASS line is the result a caller reads, the FAIL line is a
         // diagnostic and belongs on stderr so stdout carries the result alone.
         (pass ? Console.Out : Console.Error).WriteLine(

@@ -33,7 +33,7 @@ cohort from being aimed at a third-party host.
 | R6 | Server-derived text interpolated into admin console commands (`kill {name}`, `spawnentity {id} {type}`, `give {entityId}`) | game-server-to-client → admin channel | `src/LoadGen/TelnetAdmin.cs:376-378,397-400,418,456`; `src/LoadGen/Program.Join.cs:431-432` | **partial**: token allowlist drops unsafe rows (`TelnetAdmin.cs:185-189,223-229`), single-line guard enforced on every outbound command (`TelnetAdmin.cs:238-245,309-315`) and on the password (`:282-287`), overflow-checked id parse (`TelnetAdmin.cs:66-82`), `--spawn-entity` re-filtered (`TelnetAdmin.cs:346-353`). Residual: an allowlist-safe token naming a real player is still a valid `kill` target |
 | R7 | Throttle-bypass feature (unique `127.x.x.x` binds) makes abuse of third-party servers cheap; nothing stops a cohort being pointed off-lab | operator-to-tool | `src/LoadGen/GameJoinClient.cs:13,687-696,714-716`, bind selection `src/LoadGen/Program.Join.cs:429` | README/AGENTS policy statements only |
 | R8 | Unbounded cohort sizing (`--count`, thread-pool pre-provisioning at ~1 MB stack per bot) can exhaust the lab host itself | operator-to-tool | `src/LoadGen/Program.Join.cs:145,212,276-282,579-587,628` | documented practical ceilings (`README.md:433-454`); `--concurrency` below `--count` warns (`Program.Join.cs:276-282`) |
-| R9 | Evidence is unsigned: manifests, stats, and JSONL events are plain files at operator-chosen paths, so a modified `workspace/` tree cannot be distinguished from a real run | build-to-runtime | `src/LoadGen/Program.Join.cs:787-798,803-824`; `src/LoadGen/Program.Support.cs:32-45`; `src/LoadGen/JsonLineEventWriter.cs:22-36`; `scripts/loadgen_manifest.py:39-70` | none. No digest, HMAC, or signature in any layer |
+| R9 | Evidence is unsigned: manifests, stats, and JSONL events are plain files at operator-chosen paths, so a modified `workspace/` tree cannot be distinguished from a real run | build-to-runtime | `src/LoadGen/Program.Join.cs:787-798,803-824`; `src/LoadGen/RunReport.cs:43-71`; `src/LoadGen/JsonLineEventWriter.cs:22-36`; `scripts/loadgen_manifest.py:39-70` | none. No digest, HMAC, or signature in any layer |
 | R10 | CI holds a write-scoped token: the coverage-badge job uses `secrets.GITHUB_TOKEN` with `contents: write` and pushes to a `badges` branch | build-to-runtime | `.github/workflows/ci.yml:35-72` (token `:55`, remote `:58`, push `:72`) | workflow-level default is `contents: read` (`ci.yml:14-15`); all actions pinned to commit SHAs |
 | R11 | No `SECURITY.md`: no disclosure contact, supported-version statement, or documented fix path | org boundary | missing file | none |
 
@@ -94,7 +94,7 @@ CI (push to main) ──▶ write-scoped GITHUB_TOKEN ──▶ badges branch
   `--log` / `--stats-json` / `--run-manifest` / `--events-jsonl` paths, including
   a derived `_deaths.csv` sibling
   (`src/LoadGen/Program.Join.cs:131-136,555-565,748-774,760`;
-  `Program.Support.cs:32-45`; `JsonLineEventWriter.cs:22-36`). The JSONL sink
+  `RunReport.cs:43-71`; `JsonLineEventWriter.cs:22-36`). The JSONL sink
   truncates on open (`JsonLineEventWriter.cs:26`), so an existing file at a
   chosen path is destroyed without warning.
 - **Game server → client (UDP):** crosses with no validation point other than the

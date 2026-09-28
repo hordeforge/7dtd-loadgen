@@ -3,8 +3,8 @@ using System.Diagnostics;
 namespace SevenDTD.LoadGen;
 
 // Everything join mode needs: the cohort run itself plus the workload blocks
-// and artifact writers only it calls. Helpers more than one mode uses
-// (WriteArtifact, AwaitTeardown) live in Program.Support.cs.
+// and artifact writers only it calls. AwaitTeardown lives in Program.Support.cs;
+// the fault and artifact IO is RunReport's, shared with the non-CLI layers.
 public static partial class Program
 {
     static int RunJoin(string[] args)
@@ -471,7 +471,7 @@ public static partial class Program
                     // log is null for most cohort members; route to stderr so the
                     // fault is never invisible (summary only carries the count).
                     (log ?? Console.Error.WriteLine)(
-                        FaultLine($"join#{clientId} attempt {attempt}", ex));
+                        RunReport.FaultLine($"join#{clientId} attempt {attempt}", ex));
                 }
                 last = c.State;
                 totals.AddCounters(last);
@@ -591,13 +591,13 @@ public static partial class Program
             AwaitTeardown("zombie_spawn", spawnTask);
             AwaitTeardown("wandering_horde", hordeTask);
             if (!string.IsNullOrEmpty(logPath))
-                WriteArtifact("log", logPath, () => WriteLines(logPath, lines));
+                RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, lines));
             // Single-bot runs still write stats-json (and the run manifest when
             // asked) so the bench lane evidence is uniform (probe-15s/join-fast/
             // join-probe/horde-lite are count=1).
             var payload1 = BuildStatsPayload(1, rc == 0 ? 1 : 0, CohortCounters.FromState(sm), new[] { sm.JoinMs });
             if (!string.IsNullOrEmpty(statsJsonPath))
-                WriteArtifact("stats", statsJsonPath, () =>
+                RunReport.WriteArtifact("stats", statsJsonPath, () =>
                     File.WriteAllText(statsJsonPath,
                         System.Text.Json.JsonSerializer.Serialize(payload1, ArtifactJsonOpts) + "\n"));
             if (!string.IsNullOrEmpty(runManifestPath))
@@ -683,7 +683,7 @@ public static partial class Program
                 {
                     // Unconditional: a cohort-wide fault must never be invisible
                     // just because the bot's console log was throttled off.
-                    Console.Error.WriteLine(FaultLine($"join#{id} session", ex));
+                    Console.Error.WriteLine(RunReport.FaultLine($"join#{id} session", ex));
                     var failState = new JoinStateMachine
                     {
                         EntityId = -1,
@@ -789,7 +789,7 @@ public static partial class Program
             }
             if (!string.IsNullOrEmpty(statsJsonPath))
             {
-                WriteArtifact("stats", statsJsonPath, () =>
+                RunReport.WriteArtifact("stats", statsJsonPath, () =>
                     File.WriteAllText(statsJsonPath,
                         System.Text.Json.JsonSerializer.Serialize(payload, ArtifactJsonOpts) + "\n"));
             }
@@ -798,7 +798,7 @@ public static partial class Program
         }
         if (!string.IsNullOrEmpty(logPath))
         {
-            WriteArtifact("log", logPath, () => File.WriteAllText(logPath, report + "\n"));
+            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, report + "\n"));
             var csvPath = Path.ChangeExtension(logPath, "_deaths.csv");
             var csv = new System.Text.StringBuilder();
             csv.Append(
@@ -812,7 +812,7 @@ public static partial class Program
                     $"{r.s.BreakBlockActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions},{r.s.KilledActions},{r.s.Died}," +
                     $"{DeathCauseNames.Of(r.s.DeathCause)},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}\n");
             }
-            WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
+            RunReport.WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }
         // Verdict, same shape as the single-bot lane: the pass line is the
         // result a caller reads, the fail line is a diagnostic for stderr.
@@ -860,7 +860,7 @@ public static partial class Program
                 ["notes"] = "Tall Y + inject soak when dedicated expanded",
             },
         };
-        WriteArtifact("run_manifest", path, () =>
+        RunReport.WriteArtifact("run_manifest", path, () =>
             File.WriteAllText(path,
                 System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));
     }
@@ -930,7 +930,7 @@ public static partial class Program
                 catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
                     Console.Error.WriteLine(
-                        $"[{DateTime.UtcNow:O}] TELNET {label} err {FaultText(label, ex)}");
+                        $"[{DateTime.UtcNow:O}] TELNET {label} err {RunReport.FaultText(label, ex)}");
                     if (!NappableDelay(errorBackoffMs, ct)) break;
                 }
             }

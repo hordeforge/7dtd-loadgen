@@ -88,6 +88,18 @@ under **Changed** with their migration path.
   `sut_report.py` now reports such a pair as `compared: false`,
   `stale: true`, and `consolidated_report.py` classes it STALE, so a mixed
   pair is never published as CLEAN, DELTAS or a comparison.
+- `RunReport` takes the cross-cutting fault and artifact IO (the stderr fault
+  line, the LF-only line sink, the artifact writer) out of `Program`. The
+  networking and IO layers used to call `Program.FaultLine` / `Program.WriteArtifact`,
+  so `GameJoinClient` and `JsonLineEventWriter` depended on the CLI entry point
+  that depends on them in turn. `Program.Support.cs` keeps what is shared
+  between CLI modes: the artifact serializer options and `AwaitTeardown`.
+  No behavior change; `THREAT_MODEL.md` R9's evidence refs now name
+  `RunReport.cs`.
+- The `--self-test-join` harness moves off `GameJoinClient` into
+  `SelfTestJoin.Run`, next to the `MockGameServer` it drives. It was the last
+  member of a 1359-line class and shared its name with the `Program` mode entry
+  point of the same mode.
 - `git_short`, `git_dirty` and `hostload` move to `scripts/harness_lib.sh`,
   sourced by `bench_stock.sh` and `compare_sut.sh`. `compare_sut.sh` had
   inlined the first two and read load average with `cut` where

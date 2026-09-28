@@ -63,7 +63,7 @@ public static partial class Program
             Action<string>? log = quiet ? null : Console.WriteLine;
             var result = LiteNetProbe.Run(host, port, key, timeoutMs, clientId, log);
             if (!string.IsNullOrEmpty(logPath))
-                WriteArtifact("log", logPath, () => WriteLines(logPath, result.Lines));
+                RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, result.Lines));
             if (!result.Pass)
                 Console.Error.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
             else
@@ -81,7 +81,7 @@ public static partial class Program
             $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={minPassRate:P0}");
         var summary = LoadRunner.Run(host, port, key, timeoutMs, count, concurrency, rampMs, quiet, idBase: clientId);
         if (!string.IsNullOrEmpty(logPath))
-            WriteArtifact("log", logPath, () => File.WriteAllText(logPath, summary.ToReport()));
+            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, summary.ToReport()));
         Console.WriteLine(summary.ToReport());
         if (!Program.JoinGatePass(summary.Pass, summary.Total, minPassRate))
         {

@@ -41,7 +41,7 @@ public static partial class Program
         int rc;
         try
         {
-            rc = GameJoinClient.RunSelfTestJoin(actions, seed, Log, out sm);
+            rc = SelfTestJoin.Run(actions, seed, Log, out sm);
         }
         catch (InvalidOperationException ex)
         {
@@ -58,7 +58,7 @@ public static partial class Program
             $"deaths={sm.DeathCount} respawns={sm.RespawnCount} " +
             $"died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
         if (!string.IsNullOrEmpty(logPath))
-            WriteArtifact("log", logPath, () => WriteLines(logPath, lines.Concat(sm.Log)));
+            RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, lines.Concat(sm.Log)));
         Verdict(rc == 0 ? "PASS: self-test-join joined + actions" : "FAIL: self-test-join", rc == 0);
 
         if (!string.IsNullOrEmpty(runManifestPath))
@@ -85,7 +85,7 @@ public static partial class Program
                     ["offlineGate"] = true,
                 },
             };
-            WriteArtifact("run_manifest", runManifestPath, () =>
+            RunReport.WriteArtifact("run_manifest", runManifestPath, () =>
                 File.WriteAllText(
                     runManifestPath,
                     System.Text.Json.JsonSerializer.Serialize(run, ArtifactJsonOpts) + "\n"));

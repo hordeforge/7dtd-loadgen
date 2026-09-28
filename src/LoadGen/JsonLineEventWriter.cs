@@ -75,7 +75,7 @@ public sealed class JsonLineEventWriter : IDisposable
             {
                 // A fault here costs the run the tail of its event evidence, so
                 // it goes on stderr in the same shape as every other fault.
-                Console.Error.WriteLine(Program.FaultLine($"closing events sink {TargetPath}", ex));
+                Console.Error.WriteLine(RunReport.FaultLine($"closing events sink {TargetPath}", ex));
             }
         }
     }
