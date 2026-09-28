@@ -24,6 +24,7 @@ Usage: python3 tools/sut_report.py <scenario_dir>
 import io
 import json
 import os
+import re
 import sys
 
 from json_shape import as_count, as_dict, as_int, as_number
@@ -74,6 +75,66 @@ def _dirty(side_meta):
     if count is None and isinstance(value, str) and value.isdigit():
         count = int(value)
     return bool(count)
+
+
+# Every value rendered below comes from a server or a run directory, not from
+# this tool: banner names, entity types, gamestat keys, save-file names and log
+# excerpts are text the dedicated wrote. Markdown gives them structure they did
+# not have: a '|' in a world name ("Navezgane|lane-2") opened a phantom column,
+# so a report diff read a table-shift as a behavior difference, and a backtick
+# or a control escape in a log excerpt closed the code span (or the line) it was
+# quoted in. These two renderers keep the evidence inside its cell.
+
+CELL_ESCAPES = str.maketrans({"|": r"\|", "\\": "\\\\"})
+
+# Terminal escape sequences a dedicated's log can carry: CSI ("ESC [ 31 m"),
+# OSC ("ESC ] 0 ; title BEL") and the two-character Fe forms. Stripping the
+# whole sequence, not just ESC, is what keeps "[31 m" out of a report cell.
+ANSI_ESCAPE = re.compile(
+    r"\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)"
+    r"|\x1b\[[0-?]*[ -/]*[@-~]"
+    r"|\x1b[@-Z\\-_]"
+)
+
+
+def _oneline(text):
+    """Collapse a value to a single line: escape sequences go, whitespace runs
+    become one space, and the C0/C1 control characters left over are dropped.
+    None of them is evidence, and a raw escape in a report is a report nobody
+    can read."""
+    plain = ANSI_ESCAPE.sub("", str(text))
+    # A line break between two words keeps a space; the rest of the controls go.
+    return " ".join("".join(
+        ch if ch.isprintable() or ch == " " else (" " if ch in "\t\n\v\f\r" else "")
+        for ch in plain
+    ).split())
+
+
+def cell(value, limit=None):
+    """Render a server-supplied value as a markdown table cell.
+
+    `limit` is in code points, the unit the capture truncated log excerpts in;
+    it is applied after the escaping so a cut cannot land inside the escape."""
+    text = _oneline(value).translate(CELL_ESCAPES)
+    if limit is not None and len(text) > limit:
+        text = text[:limit - 1] + "…"
+    return text
+
+
+def code(value, limit=None):
+    """Render a server-supplied value as a markdown code span.
+
+    A code span has no escape syntax, so '|' and '&' become HTML entities
+    (which GFM resolves inside the span) and the fence is one backtick longer
+    than the longest run in the value, so a value carrying backticks cannot
+    close its own span early."""
+    text = _oneline(value).replace("&", "&amp;").replace("|", "&#124;")
+    if limit is not None and len(text) > limit:
+        text = text[:limit - 1] + "…"
+    longest = max((len(run) for run in re.findall(r"`+", text)), default=0)
+    fence = "`" * (longest + 1)
+    pad = " " if text.startswith("`") or text.endswith("`") else ""
+    return f"{fence}{pad}{text}{pad}{fence}"
 
 
 def save_summary(s):
@@ -224,8 +285,8 @@ def main():
     lines.append(f"| PASS joined | {sj.get('pass')} | {zj.get('pass')} |")
     lines.append(f"| FAIL | {sj.get('fail')} | {zj.get('fail')} |")
     if sj.get("pass") and zj.get("pass"):
-        lines.append(f"| first pass | `{str(sj.get('firstPass'))[:64]}` | "
-                     f"`{str(zj.get('firstPass'))[:64]}` |")
+        lines.append(f"| first pass | {code(sj.get('firstPass'), 64)} | "
+                     f"{code(zj.get('firstPass'), 64)} |")
     if sj.get("pass", 0) != zj.get("pass", 0):
         findings.append(f"join: PASS count differs (stock={sj.get('pass')} "
                         f"zdtd={zj.get('pass')})")
@@ -245,7 +306,7 @@ def main():
     lines.append("|---|---|---|")
     sevs = sorted(set(sl.get("severity", {})) | set(zl.get("severity", {})))
     for k in sevs:
-        lines.append(f"| {k} lines | {sl.get('severity', {}).get(k, 0)} | "
+        lines.append(f"| {cell(k)} lines | {sl.get('severity', {}).get(k, 0)} | "
                      f"{zl.get('severity', {}).get(k, 0)} |")
     if "exec" in sl:
         lines.append(f"| telnet commands | {sl.get('exec', 0)} | n/a |")
@@ -259,7 +320,7 @@ def main():
     lines.append("\nBoot evidence per side:")
     for side, s in (("stock", sl), ("zdtd", zl)):
         for k, v in s.get("boot", {}).items():
-            lines.append(f"- `{side}.{k}` = `{v[:100]}`")
+            lines.append(f"- `{side}.{cell(k)}` = {code(v, 100)}")
     if sl.get("severity", {}).get("ERR", 0) != zl.get("severity", {}).get("ERR", 0):
         findings.append(f"log: ERR line count differs (stock={sl['severity'].get('ERR', 0)} "
                         f"zdtd={zl['severity'].get('ERR', 0)})")
@@ -316,7 +377,7 @@ def main():
         lines.append("| field | stock | zdtd |")
         lines.append("|---|---|---|")
         for k in ("Server port", "Max players", "Game mode", "World", "Game name", "Difficulty"):
-            lines.append(f"| {k} | {sb.get(k, 'n/a')} | {zb.get(k, 'n/a')} |")
+            lines.append(f"| {k} | {cell(sb.get(k, 'n/a'))} | {cell(zb.get(k, 'n/a'))} |")
         for k, label in (("Max players", "max players"),
                          ("Difficulty", "difficulty"), ("World", "world")):
             if k in sb and k in zb and sb[k] != zb[k]:
@@ -370,7 +431,7 @@ def main():
             lines.append("| stat | stock | zdtd |")
             lines.append("|---|---|---|")
             for k in shared:
-                lines.append(f"| {k} | {sg[k]} | {zg[k]} |")
+                lines.append(f"| {cell(k)} | {cell(sg[k])} | {cell(zg[k])} |")
             diffs = [k for k in shared if sg[k] != zg[k]]
             if diffs:
                 sample = ", ".join(f"{k}: {sg[k]} vs {zg[k]}" for k in diffs[:6])

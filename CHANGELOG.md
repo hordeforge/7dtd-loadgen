@@ -34,6 +34,15 @@ under **Changed** with their migration path.
 - Observed CVar state keys match their exact-name filter comparator. The map
   was case-insensitive while `--observe-cvar` is documented as an exact match,
   so a name that passed the filter could still be folded into another key.
+- Report cells and code spans render server text as text. A `|` in a world name
+  opened a phantom table column, a backtick closed a code span early and a
+  terminal escape in a log excerpt carried a line break out of the row, so a
+  report diff read a table shift as a behavior difference.
+- `sut_telnet.py` keys its player pseudonyms on the NFC form of a name, the
+  identity form the client uses. One player whose name reached the console in
+  two normalization forms got two pseudonyms in one transcript.
+- The self-test client no longer sets the removed `WanderUntilDeath` option,
+  which left `src/LoadGen` uncompilable.
 
 ### Added
 

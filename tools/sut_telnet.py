@@ -26,6 +26,7 @@ import select
 import socket
 import sys
 import time
+import unicodedata
 
 # Locale-independent text boundary. The transcript is the game's own console
 # output (player names, world and game name) decoded as UTF-8, so writing it
@@ -86,7 +87,12 @@ def redact_identities(text: str) -> str:
     aliases: dict[str, str] = {}
 
     def alias(name: str) -> str:
-        return aliases.setdefault(name, f"player-{len(aliases) + 1}")
+        # Fold to NFC before keying, the identity form the client uses for
+        # player names (WorldDeathBus.NormalizeIdentity). A name that reaches
+        # the console in two normalization forms is one player, and keying on
+        # the raw bytes gave them two pseudonyms in the same transcript.
+        key = unicodedata.normalize("NFC", name)
+        return aliases.setdefault(key, f"player-{len(aliases) + 1}")
 
     out = []
     for line in text.splitlines(keepends=True):
