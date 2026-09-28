@@ -206,8 +206,11 @@ def main():
     # a mismatch names exactly that.
     stale_invocations = None
     if stock is not None and zdtd is not None:
-        smeta = (stock.get("meta") or {})
-        zmeta = (zdtd.get("meta") or {})
+        # Coerced like every other axis below: a well-formed surface.json whose
+        # meta is a list or a string would raise AttributeError out of .get and
+        # take the whole report down before a single axis was scored.
+        smeta = as_dict(stock.get("meta"))
+        zmeta = as_dict(zdtd.get("meta"))
         sid, zid = smeta.get("runId"), zmeta.get("runId")
         if sid and zid and sid != zid:
             stale_invocations = (sid, zid)
@@ -314,42 +317,57 @@ def main():
     # ---- Log categories ----
     sl, zl = as_dict(stock.get("log")), as_dict(zdtd.get("log"))
     axes["log"] = {"stock": sl, "zdtd": zl}
+    # Coerced once, like every other axis: a well-formed capture whose
+    # `severity` is null or a list raised out of set()/dict.get() and took the
+    # whole report down, losing every axis already compared and the exit code
+    # with it. A log block of the wrong shape is an axis this run cannot read,
+    # not a reason to publish nothing.
+    ssev, zsev = as_dict(sl.get("severity")), as_dict(zl.get("severity"))
     lines.append("\n## Server log (normalized; stock skips [ScriptOrder] frame noise)\n")
     lines.append("| axis | stock | zdtd |")
     lines.append("|---|---|---|")
-    sevs = sorted(set(sl.get("severity", {})) | set(zl.get("severity", {})))
+    sevs = sorted(set(ssev) | set(zsev))
     for k in sevs:
-        lines.append(f"| {cell(k)} lines | {sl.get('severity', {}).get(k, 0)} | "
-                     f"{zl.get('severity', {}).get(k, 0)} |")
+        lines.append(f"| {cell(k)} lines | {ssev.get(k, 0)} | {zsev.get(k, 0)} |")
     if "exec" in sl:
         lines.append(f"| telnet commands | {sl.get('exec', 0)} | n/a |")
     if sl.get("telnetCloseErrors"):
         lines.append(f"- stock: {sl['telnetCloseErrors']} telnet-close IOExceptions "
                      f"(harness snapshot sessions; excluded from the ERR count)")
-    for side, s in (("stock", sl), ("zdtd", zl)):
-        if s.get("severity", {}).get("ERR", 0) or s.get("severity", {}).get("EXC", 0):
-            lines.append(f"- {side} ERR/EXC lines: ERR={s.get('severity', {}).get('ERR', 0)} "
-                         f"EXC={s.get('severity', {}).get('EXC', 0)}")
+    for side, sev in (("stock", ssev), ("zdtd", zsev)):
+        if sev.get("ERR", 0) or sev.get("EXC", 0):
+            lines.append(f"- {side} ERR/EXC lines: ERR={sev.get('ERR', 0)} "
+                         f"EXC={sev.get('EXC', 0)}")
     lines.append("\nBoot evidence per side:")
     for side, s in (("stock", sl), ("zdtd", zl)):
-        for k, v in s.get("boot", {}).items():
+        for k, v in as_dict(s.get("boot")).items():
             lines.append(f"- `{side}.{cell(k)}` = {code(v, 100)}")
-    if sl.get("severity", {}).get("ERR", 0) != zl.get("severity", {}).get("ERR", 0):
-        findings.append(f"log: ERR line count differs (stock={sl['severity'].get('ERR', 0)} "
-                        f"zdtd={zl['severity'].get('ERR', 0)})")
-    if sl.get("severity", {}).get("EXC", 0) != zl.get("severity", {}).get("EXC", 0):
+    if ssev.get("ERR", 0) != zsev.get("ERR", 0):
+        findings.append(f"log: ERR line count differs (stock={ssev.get('ERR', 0)} "
+                        f"zdtd={zsev.get('ERR', 0)})")
+    if ssev.get("EXC", 0) != zsev.get("EXC", 0):
         findings.append(f"log: EXC (exception) line count differs "
-                        f"(stock={sl['severity'].get('EXC', 0)} "
-                        f"zdtd={zl['severity'].get('EXC', 0)})")
+                        f"(stock={ssev.get('EXC', 0)} "
+                        f"zdtd={zsev.get('EXC', 0)})")
 
     # ---- Entity counts ----
     st, zt = as_dict(stock.get("telnet")) or None, as_dict(zdtd.get("telnet")) or None
     axes["telnet"] = {"stock": st, "zdtd": zt}
     lines.append("\n## Telnet snapshot (gettime / listents / listplayers)\n")
-    if st and st.get("day"):
-        lines.append(f"- stock day/time: Day {st['day'][0]}, {st['day'][1]}:{st['day'][2]}")
-    if zt and zt.get("day"):
-        lines.append(f"- zdtd day/time: Day {zt['day'][0]}, {zt['day'][1]}:{zt['day'][2]}")
+    # A `day` this reader cannot index is an unreadable axis, not a crash: the
+    # capture is written by a foreign process, and a short or scalar value took
+    # the report down with an IndexError/TypeError after the join axis was
+    # already scored.
+    def day_cell(side):
+        day = (side or {}).get("day")
+        if not isinstance(day, (list, tuple)) or len(day) < 3:
+            return None
+        return f"Day {day[0]}, {day[1]}:{day[2]}"
+
+    for label, side in (("stock", st), ("zdtd", zt)):
+        rendered = day_cell(side)
+        if rendered is not None:
+            lines.append(f"- {label} day/time: {rendered}")
     # A rate that is not a number is a capture this reader cannot compare, not
     # an axis to subtract: abs() on two strings would take the report down
     # after the comparison was computed.

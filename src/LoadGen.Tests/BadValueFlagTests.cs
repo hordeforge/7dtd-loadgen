@@ -43,4 +43,16 @@ public sealed class BadValueFlagTests
         var args = new[] { "--name", "abc", "--port", "26902" };
         Assert.Null(Program.BadValueFlag(args, "something else went wrong"));
     }
+
+    [Fact]
+    public void BotModeAlias_AttributesLikeTheFlagItAliases()
+    {
+        // --help documents --bot-mode as an alias for --mode and the parser
+        // reads both from one branch, so --bot-mode has to be in the
+        // value-flag set too. Without it a bad value there blamed no flag and
+        // fell back to "bad argument value", sending the operator to scan
+        // every other numeric flag on a cohort command line.
+        var args = new[] { "--join", "--bot-mode", "abc" };
+        Assert.Equal("--bot-mode", Program.BadValueFlag(args, FormatMessage));
+    }
 }

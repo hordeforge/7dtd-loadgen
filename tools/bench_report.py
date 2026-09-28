@@ -198,7 +198,15 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
             aps = f"{b.get('actionsPerSec', 0):.1f}" if b else "n/a"
             active = f"{b.get('activeMin', '?')}/{b.get('activeMax', '?')}" if b else "n/a"
             wall = f"{s['wallS']}" if s["wallS"] is not None else "n/a"
-            lines.append(f"| {name} | {sc} | {s['joinsPass']}/{s['joinsFail']} | "
+            # A count the capture did not report is n/a, like every other cell
+            # in the row. The bare f-string interpolation published Python's
+            # None into the table, so a lap whose stats.json and run-meta
+            # summary both lack the counts read as a measured "None/None"
+            # cohort rather than as missing evidence.
+            joins = (f"{s['joinsPass']}/{s['joinsFail']}"
+                     if s["joinsPass"] is not None and s["joinsFail"] is not None
+                     else "n/a")
+            lines.append(f"| {name} | {sc} | {joins} | "
                          f"{wall} | {s['hostLoad']} | {win} | {aps} | {active} | "
                          f"{s['apm']} |")
     degraded = [f"{name}/{sc}" for name, lap in laps
