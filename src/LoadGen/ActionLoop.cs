@@ -75,7 +75,10 @@ public static class ActionLoop
         Killed,
     }
 
-    /// <summary>Per-run action counters; loop control + ACTION_SUMMARY evidence.</summary>
+    /// <summary>Per-run action counters; loop control + ACTION_SUMMARY evidence.
+    /// Whether the bot died and why is not here: the session state owns that
+    /// pair, and a second copy reconciled one way at a time could disagree with
+    /// the value the reports read.</summary>
     sealed class Stats
     {
         public int Walks { get; set; }
@@ -92,8 +95,6 @@ public static class ActionLoop
         public int Drowns { get; set; }
         public int Suicides { get; set; }
         public int Killed { get; set; }
-        public bool Died { get; set; }
-        public DeathCause Cause { get; set; } = DeathCause.None;
     }
 
     public sealed class Options
@@ -221,38 +222,26 @@ public static class ActionLoop
         {
             opt.Poll?.Invoke();
 
-            if (stats.Died || sm.Died)
-            {
-                SyncDeathFromState(sm, stats);
+            if (sm.Died)
                 break;
-            }
             if (opt.ShouldStop?.Invoke() == true)
             {
-                if (!stats.Died && sm.Died)
-                    SyncDeathFromState(sm, stats);
-                else if (!stats.Died && sm.Stage == JoinStage.Disconnected)
+                if (sm.Stage == JoinStage.Disconnected)
                 {
-                    stats.Died = sm.Died;
                     if (sm.DeathCause == DeathCause.None)
-                    {
                         sm.DeathCause = DeathCause.ServerDisconnect;
-                        stats.Cause = DeathCause.ServerDisconnect;
-                    }
-                    else
-                        SyncDeathFromState(sm, stats);
                     log?.Invoke(
                         $"ACTION stop: disconnect cause={DeathCauseNames.Of(sm.DeathCause)}");
                 }
-                else if (!stats.Died)
+                else
                     log?.Invoke(
                         $"ACTION stop: should_stop stage={sm.Stage} cause={DeathCauseNames.Of(sm.DeathCause)}");
                 break;
             }
             if (opt.MaxLifetimeMs > 0 && elapsedMs() >= opt.MaxLifetimeMs)
             {
-                if (!stats.Died && !sm.Died)
+                if (!sm.Died)
                 {
-                    stats.Cause = DeathCause.TimeoutAlive;
                     sm.DeathCause = DeathCause.TimeoutAlive;
                     log?.Invoke(
                         $"ACTION timeout_alive after {elapsedMs()}ms walks={stats.Walks} " +
@@ -385,6 +374,7 @@ public static class ActionLoop
                         if (send(pkt))
                         {
                             stats.Dynamite++;
+                            sm.DynamiteActions++;
                             sm.PackagesSent++;
                             log?.Invoke($"ACTION dynamite#{stats.Dynamite} entity={entityId} target=({tx:0.#},{surfaceY:0.#},{tz:0.#}) fuse=4s");
                         }
@@ -558,26 +548,15 @@ public static class ActionLoop
         }
 
         // Only client-forced death paths end with suicide fallback.
-        if (clientDeath && !stats.Died && !sm.Died && !endless)
+        if (clientDeath && !sm.Died && !endless)
             DoSuicide(send, sm, stats, dmgId, entityId, log, fallback: true);
-
-        if (!stats.Died && sm.Died)
-            SyncDeathFromState(sm, stats);
 
         log?.Invoke(
             $"ACTION_SUMMARY mode={opt.Mode} walks={stats.Walks} jumps={stats.Jumps} crouch={stats.Crouches} " +
             $"aim={stats.Aims} turn={stats.Turns} strafe={stats.Strafes} look={stats.Looks} chat={stats.Chats} " +
             $"break={stats.BreakBlocks} dynamite={stats.Dynamite} attack={stats.Attacks} drowns={stats.Drowns} suicides={stats.Suicides} " +
-            $"killed={stats.Killed} died={stats.Died} cause={DeathCauseNames.Of(stats.Cause)} " +
-            $"deathCause={DeathCauseNames.Of(sm.DeathCause)} elapsedMs={elapsedMs()} sent={sm.PackagesSent - sentBefore}");
-    }
-
-    static void SyncDeathFromState(JoinStateMachine sm, Stats stats)
-    {
-        stats.Died = sm.Died || stats.Died;
-        if (stats.Cause != DeathCause.None) return;
-        // The state already holds the cause; only the flag is a second fact.
-        stats.Cause = sm.Died ? sm.DeathCause : DeathCause.None;
+            $"killed={stats.Killed} died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} " +
+            $"elapsedMs={elapsedMs()} sent={sm.PackagesSent - sentBefore}");
     }
 
     static void ResolveIds(
@@ -800,9 +779,7 @@ public static class ActionLoop
         if (send(fatal))
         {
             sm.PackagesSent++;
-            stats.Died = true;
             sm.Died = true;
-            stats.Cause = DeathCause.DrownFatal;
             sm.DeathCause = DeathCause.DrownFatal;
             log?.Invoke($"ACTION drown_fatal entity={entityId}");
         }
@@ -818,10 +795,8 @@ public static class ActionLoop
         stats.Suicides++;
         sm.SuicideActions++;
         sm.PackagesSent++;
-        stats.Died = true;
         sm.Died = true;
-        stats.Cause = fallback ? DeathCause.SuicideFallback : DeathCause.Suicide;
-        sm.DeathCause = stats.Cause;
+        sm.DeathCause = fallback ? DeathCause.SuicideFallback : DeathCause.Suicide;
         log?.Invoke($"ACTION suicide entity={entityId} fallback={fallback}");
     }
 
@@ -835,9 +810,7 @@ public static class ActionLoop
         stats.Killed++;
         sm.KilledActions++;
         sm.PackagesSent++;
-        stats.Died = true;
         sm.Died = true;
-        stats.Cause = DeathCause.KilledExternal;
         sm.DeathCause = DeathCause.KilledExternal;
         log?.Invoke($"ACTION killed entity={entityId}");
     }

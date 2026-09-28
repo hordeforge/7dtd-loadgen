@@ -102,6 +102,7 @@ public sealed class JoinStateMachine
         public int LookActions;
         public int ChatActions;
         public int BreakBlockActions;
+        public int DynamiteActions;
         public int AttackActions;
         public int DrownActions;
         public int SuicideActions;
@@ -128,6 +129,7 @@ public sealed class JoinStateMachine
             LookActions += o.LookActions;
             ChatActions += o.ChatActions;
             BreakBlockActions += o.BreakBlockActions;
+            DynamiteActions += o.DynamiteActions;
             AttackActions += o.AttackActions;
             DrownActions += o.DrownActions;
             SuicideActions += o.SuicideActions;
@@ -152,6 +154,7 @@ public sealed class JoinStateMachine
     public int LookActions { get => _counters.LookActions; set => _counters.LookActions = value; }
     public int ChatActions { get => _counters.ChatActions; set => _counters.ChatActions = value; }
     public int BreakBlockActions { get => _counters.BreakBlockActions; set => _counters.BreakBlockActions = value; }
+    public int DynamiteActions { get => _counters.DynamiteActions; set => _counters.DynamiteActions = value; }
     public int AttackActions { get => _counters.AttackActions; set => _counters.AttackActions = value; }
     public int DrownActions { get => _counters.DrownActions; set => _counters.DrownActions = value; }
     public int SuicideActions { get => _counters.SuicideActions; set => _counters.SuicideActions = value; }

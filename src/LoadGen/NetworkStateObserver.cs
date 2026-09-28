@@ -257,8 +257,11 @@ public sealed class NetworkStateObserver
 
     /// <summary>Test seam: distinct entity ids currently holding cvar state.</summary>
     internal int TrackedCvarEntitiesForTests => _cvars.Count;
+    // The filter is an exact-name match (README), so the state it writes into
+    // uses the same rule as the buff table. A case-insensitive map here could
+    // only ever fold two names that already matched the filter exactly.
     Dictionary<string, float> CvarsFor(int entityId) =>
-        _cvars.TryGetValue(entityId, out var value) ? value : _cvars[entityId] = new(StringComparer.OrdinalIgnoreCase);
+        _cvars.TryGetValue(entityId, out var value) ? value : _cvars[entityId] = new(StringComparer.Ordinal);
     HashSet<string> BuffsFor(int entityId) =>
         _buffs.TryGetValue(entityId, out var value) ? value : _buffs[entityId] = new(StringComparer.Ordinal);
     static BinaryReader Reader(ReadOnlySpan<byte> body) =>

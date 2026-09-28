@@ -547,6 +547,7 @@ public static partial class Program
                 ["looks"] = c.Looks,
                 ["chats"] = c.Chats,
                 ["breaks"] = c.Breaks,
+                ["dynamite"] = c.Dynamite,
                 ["attacks"] = c.Attacks,
                 ["drowns"] = c.Drowns,
                 ["suicides"] = c.Suicides,
@@ -563,6 +564,9 @@ public static partial class Program
                     spawnZombies, killFallback, spawnEntity, spawnPerPlayer,
                     spawnEveryMs, hordeEveryMs, hordeWaves),
                 ["pingSamples"] = ping.count,
+                // Above 1 the ping percentiles below come from one sample in
+                // pingSampleStride, scaled to the whole run.
+                ["pingSampleStride"] = ping.stride,
                 ["joinMsSamples"] = joinCount,
                 ["joinMsP50"] = joinP50,
                 ["joinMsP95"] = joinP95,
@@ -721,28 +725,36 @@ public static partial class Program
             .OrderByDescending(g => g.Count())
             .Select(g => $"{DeathCauseNames.Of(g.Key)}={g.Count()}")
             .ToList();
-        int worldKilled = results.Count(r =>
-            r.s.DeathCause is DeathCause.WorldKilled or DeathCause.WorldDeath);
-        int worldDrown = results.Count(r => r.s.DeathCause == DeathCause.WorldDrown);
-        int worldRad = results.Count(r => r.s.DeathCause == DeathCause.WorldRadiation);
-        int timedOut = results.Count(r => r.s.DeathCause == DeathCause.TimeoutAlive);
-        int disc = results.Count(r => r.s.DeathCause == DeathCause.ServerDisconnect);
-        int selfKill = results.Count(r => r.s.DeathCause
-            is DeathCause.DrownFatal or DeathCause.Suicide
-            or DeathCause.SuicideFallback or DeathCause.KilledExternal);
-        int diedEx = results.Count(r => r.s.DeathCause == DeathCause.Exception);
+        // One cause table for both renderings. The console line and the stats
+        // JSON used to name their buckets separately, so four causes the
+        // console reported were computed and then dropped from the artifact.
+        // Keys are stable report-schema names; every DeathCause lands in one.
+        var deathBuckets = new (string Key, int Count)[]
+        {
+            ("world_killed", results.Count(r =>
+                r.s.DeathCause is DeathCause.WorldKilled or DeathCause.WorldDeath)),
+            ("world_drown", results.Count(r => r.s.DeathCause == DeathCause.WorldDrown)),
+            ("world_radiation", results.Count(r => r.s.DeathCause == DeathCause.WorldRadiation)),
+            ("timeout_alive", results.Count(r => r.s.DeathCause == DeathCause.TimeoutAlive)),
+            ("disconnect", results.Count(r => r.s.DeathCause == DeathCause.ServerDisconnect)),
+            ("self_kill", results.Count(r => r.s.DeathCause
+                is DeathCause.DrownFatal or DeathCause.Suicide
+                or DeathCause.SuicideFallback or DeathCause.KilledExternal)),
+            ("respawn_timeout", results.Count(r => r.s.DeathCause == DeathCause.RespawnTimeout)),
+            ("exception", results.Count(r => r.s.DeathCause == DeathCause.Exception)),
+        };
 
         var (joinCount, joinP50, joinP95, joinMax) = JoinLatency.Summary(results.Select(r => r.s.JoinMs));
         var report =
             $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
             $"JOIN_LATENCY joined={joinCount} p50Ms={joinP50} p95Ms={joinP95} maxMs={joinMax}\n" +
             $"JOIN_ACTIONS walks={cohort.Walks} jumps={cohort.Jumps} crouch={cohort.Crouches} aim={cohort.Aims} turn={cohort.Turns} " +
-            $"strafe={cohort.Strafes} look={cohort.Looks} chat={cohort.Chats} break={cohort.Breaks} attack={cohort.Attacks} " +
+            $"strafe={cohort.Strafes} look={cohort.Looks} chat={cohort.Chats} break={cohort.Breaks} " +
+            $"dynamite={cohort.Dynamite} attack={cohort.Attacks} " +
             $"diedClients={cohort.DiedClients} totalDeaths={cohort.TotalDeaths} totalRespawns={cohort.TotalRespawns} " +
             $"totalRejoins={cohort.TotalRejoins}\n" +
             $"DEATH_STATS total={count} died={cohort.DiedClients} alive={count - cohort.DiedClients} " +
-            $"world_killed={worldKilled} world_drown={worldDrown} world_radiation={worldRad} " +
-            $"timeout_alive={timedOut} disconnect={disc} self_kill={selfKill} exception={diedEx}\n" +
+            string.Join(" ", deathBuckets.Select(b => $"{b.Key}={b.Count}")) + "\n" +
             $"DEATH_HISTOGRAM {string.Join(" ", byCause)}\n" +
             string.Join("\n", results.OrderBy(r => r.id).Take(30).Select(r =>
                 $"  id={r.id} rc={r.rc} mode={r.s.BotModeName} entity={r.s.EntityId} joinMs={r.s.JoinMs} w={r.s.WalkActions} j={r.s.JumpActions} " +
@@ -766,9 +778,8 @@ public static partial class Program
         if (!string.IsNullOrEmpty(statsJsonPath) || !string.IsNullOrEmpty(runManifestPath))
         {
             var payload = BuildStatsPayload(count, pass, cohort, results.Select(r => r.s.JoinMs));
-            payload["world_killed"] = worldKilled;
-            payload["timeout_alive"] = timedOut;
-            payload["disconnect"] = disc;
+            foreach (var (key, causeCount) in deathBuckets)
+                payload[key] = causeCount;
             if (bench is { } b2)
             {
                 var (wStart, wEnd) = b2.WindowBounds;
@@ -808,13 +819,14 @@ public static partial class Program
             var csv = new System.Text.StringBuilder();
             csv.Append(
                 "id,rc,mode,stage,entityId,walks,jumps,crouches,aims,turns,strafes,looks,chats," +
-                "breaks,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount,rejoinCount\n");
+                "breaks,dynamite,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount,rejoinCount\n");
             foreach (var r in results.OrderBy(x => x.id))
             {
                 csv.Append(
                     $"{r.id},{r.rc},{r.s.BotModeName},{r.s.Stage},{r.s.EntityId},{r.s.WalkActions},{r.s.JumpActions}," +
                     $"{r.s.CrouchActions},{r.s.AimActions},{r.s.TurnActions},{r.s.StrafeActions},{r.s.LookActions},{r.s.ChatActions}," +
-                    $"{r.s.BreakBlockActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions},{r.s.KilledActions},{r.s.Died}," +
+                    $"{r.s.BreakBlockActions},{r.s.DynamiteActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions}," +
+                    $"{r.s.KilledActions},{r.s.Died}," +
                     $"{DeathCauseNames.Of(r.s.DeathCause)},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}\n");
             }
             RunReport.WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
@@ -841,7 +853,10 @@ public static partial class Program
         ["deaths"] = s.DeathCount,
         ["respawns"] = s.RespawnCount,
         ["died"] = s.Died,
-        ["deathCause"] = s.DeathCause,
+        // The report's cause vocabulary is the DeathCauseNames table; the raw
+        // enum would serialize as a PascalCase identifier every other artifact
+        // spells in snake_case.
+        ["deathCause"] = DeathCauseNames.Of(s.DeathCause),
     };
 
     /// <summary>Join run manifest (schema 7dtd.loadgen.run.v1): cohort payload

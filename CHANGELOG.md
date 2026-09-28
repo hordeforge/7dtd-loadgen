@@ -8,6 +8,33 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+### Changed
+
+- Latency percentiles cover the whole run. `PingStats` kept the first 200k RTT
+  samples and dropped everything after them, so a long soak reported the
+  opening window as the run and silently froze mid-run regressions. Past the
+  cap it now halves the retained set in place, keeps sampling at one in
+  `pingSampleStride` (new stats field), and scales the average and spike count
+  to every sample recorded. Memory stays bounded at 200k ints.
+- The run manifest's per-bot `deathCause` uses the `DeathCauseNames`
+  vocabulary. The raw enum serialized as `WorldKilled` while the stats JSON,
+  the deaths CSV and the console line all spelled `world_killed`.
+- `DEATH_STATS` and the stats JSON render from one cause table. `world_drown`,
+  `world_radiation`, `self_kill` and `exception` were computed and printed on
+  the console and then dropped from the artifact; `respawn_timeout` was in
+  neither.
+- `dynamite` is a session counter like every other action, so the per-life
+  dynamite cap is bounded by a number the reports can see. It appears in
+  `JOIN_ACTIONS`, the stats JSON and the deaths CSV, which gained a
+  `dynamite` column after `breaks`.
+- The action loop no longer keeps its own `Died` flag and death cause beside
+  the session state's. The duplicate was reconciled one way at a time, so
+  `ACTION_SUMMARY` could print a cause the reports disagreed with; both fields
+  now read the state machine, and the summary line prints one `cause=`.
+- Observed CVar state keys match their exact-name filter comparator. The map
+  was case-insensitive while `--observe-cvar` is documented as an exact match,
+  so a name that passed the filter could still be folded into another key.
+
 ### Added
 
 - `make sbom` writes a CycloneDX 1.6 inventory of both lock files

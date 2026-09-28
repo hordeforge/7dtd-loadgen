@@ -20,7 +20,7 @@ public sealed class PingStatsTests
         PingStats.ResetForTests();
         try
         {
-            Assert.Equal((0, 0.0, 0, 0, 0, 0), PingStats.Summary());
+            Assert.Equal((0, 0.0, 0, 0, 0, 0, 1), PingStats.Summary());
         }
         finally { PingStats.ResetForTests(); }
     }
@@ -36,13 +36,14 @@ public sealed class PingStatsTests
 
             // sorted=[10,20,30,40]: P50 -> idx (int)(0.5*3)=1 => 20,
             // P95 -> idx (int)(0.95*3)=2 => 30, max=40.
-            var (count, avg, p50, p95, max, spikes) = PingStats.Summary();
+            var (count, avg, p50, p95, max, spikes, stride) = PingStats.Summary();
             Assert.Equal(4, count);
             Assert.Equal(25.0, avg);
             Assert.Equal(20, p50);
             Assert.Equal(30, p95);
             Assert.Equal(40, max);
             Assert.Equal(0, spikes);
+            Assert.Equal(1, stride);
         }
         finally { PingStats.ResetForTests(); }
     }
@@ -62,14 +63,41 @@ public sealed class PingStatsTests
     }
 
     [Fact]
-    public void SampleCap_StopsAt200k()
+    public void PastTheCap_TheStoreHalvesAndKeepsCoveringTheRun()
     {
         PingStats.ResetForTests();
         try
         {
-            for (int i = 0; i < 200_500; i++)
-                PingStats.Record(i);
-            Assert.Equal(200_000, PingStats.Summary().count);
+            for (int i = 0; i < 200_000; i++)
+                PingStats.Record(1);
+            for (int i = 0; i < 500; i++)
+                PingStats.Record(9000);
+
+            var summary = PingStats.Summary();
+            Assert.Equal(200_500, summary.count);
+            Assert.Equal(2, summary.stride);
+            Assert.True(PingStats.RetainedForTests <= PingStats.MaxSamples);
+            // The tail is what a soak's regression looks like. Dropping arrivals
+            // at the cap would pin every statistic to the first window.
+            Assert.Equal(9000, summary.max);
+        }
+        finally { PingStats.ResetForTests(); }
+    }
+
+    [Fact]
+    public void Decimation_ScalesSpikeCountToTheRun()
+    {
+        PingStats.ResetForTests();
+        try
+        {
+            for (int i = 0; i < 200_000; i++)
+                PingStats.Record(1);
+            for (int i = 0; i < 500; i++)
+                PingStats.Record(5000);
+
+            var summary = PingStats.Summary();
+            // 500 spikes recorded, 250 retained, stride 2.
+            Assert.Equal(500, summary.spikes);
         }
         finally { PingStats.ResetForTests(); }
     }
