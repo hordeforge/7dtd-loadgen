@@ -56,6 +56,13 @@ public static class LoadRunner
                     {
                         var lines = new List<string>();
                         if (keepLines) lines.Add($"[{DateTime.UtcNow:O}] [fake#{id}] EX {RunReport.FaultText("session", ex)}");
+                        // A faulted probe is booked as a plain fail below, and
+                        // keepLines is false for every quiet run and every
+                        // probe past the logged window, so without this the
+                        // count says "failed to probe" with the cause only
+                        // reachable by rerunning.
+                        Console.Error.WriteLine(
+                            RunReport.FaultLine($"probe #{id} session", ex));
                         r = new ProbeResult
                         {
                             Pass = false,
@@ -70,7 +77,17 @@ public static class LoadRunner
                 finally { gate.Release(); }
             });
         }
-        Task.WaitAll(tasks);
+        try
+        {
+            Task.WaitAll(tasks);
+        }
+        catch (AggregateException ex)
+        {
+            // A fault outside a probe body (ramp delay, semaphore) must not
+            // skip the summary below: the run would end with no per-probe table
+            // and no pass-rate line for the probes that did finish.
+            Console.Error.WriteLine(RunReport.FaultLine("cohort wait", ex));
+        }
         swAll.Stop();
         // Id order, not completion order: the cohort transcript is a replay
         // artifact, and a bag enumerates in whatever order probes finished.

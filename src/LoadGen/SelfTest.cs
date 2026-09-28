@@ -13,9 +13,28 @@ static class SelfTest
         {
             if (args[i] == "--port" && i + 1 < args.Length) port = int.Parse(args[++i]);
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];
-            else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
+            else if (args[i] == "--count" && i + 1 < args.Length)
+            {
+                count = int.Parse(args[++i]);
+                // Rejected, not clamped: every other lane refuses a cohort
+                // below 1, and silently raising --count 0 to 1 would make this
+                // lane's PASS line describe a run the operator never asked for.
+                if (!Program.IsValidCount(count))
+                    return Program.InvalidArg("--count", count.ToString(),
+                        "an integer 1 or more (probes in the cohort)");
+            }
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
-            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
+            else if (args[i] == "--min-pass-rate" && i + 1 < args.Length)
+            {
+                // Same invariant-culture parse as the other lanes: double.Parse
+                // reads through the current culture, so a comma-decimal locale
+                // rejected the documented "0.95" spelling and read "0,95" as the
+                // gate value, giving the same run config two different verdicts.
+                if (!Program.TryParseMinPassRate(args[++i], out double rate))
+                    return Program.InvalidArg("--min-pass-rate", args[i],
+                        "a fraction between 0 and 1");
+                minPassRate = rate;
+            }
             else if (args[i] == "--timeout" && i + 1 < args.Length)
             {
                 if (!Program.TryParseTimeoutMs(args[++i], out int parsed))
@@ -24,7 +43,9 @@ static class SelfTest
                 timeoutMs = parsed;
             }
         }
-        if (count < 1) count = 1;
+        if (!Program.IsValidCount(count))
+            return Program.InvalidArg("--count", count.ToString(),
+                "an integer 1 or more (probes in the cohort)");
         // Port 0 = pick an ephemeral port for the in-process host.
         if (port != 0 && !Program.IsValidPort(port))
             return Program.InvalidArg("--port", port.ToString(), "0 (ephemeral) or an integer 1..65535");

@@ -39,7 +39,10 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
     and both then report numbers from a world neither measured.
     `LOADGEN_ALLOW_OVERLAP=1` is the deliberate opt-out; the profiles pass it
     to the `run_loadgen.sh` they start internally, which is the one nested
-    case where the overlap is the intent.
+    case where the overlap is the intent. `runlock.py` separates contention
+    (exit 4, the shell runner's code) from a lock file it could not open
+    (exit 5): the guard is inert in the second case, so it must not be read
+    as "wait for the other run".
 
 ## Build / test / run
 

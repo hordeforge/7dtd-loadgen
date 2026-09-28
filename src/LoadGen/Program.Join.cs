@@ -595,7 +595,31 @@ public static partial class Program
                 if (!quiet) Console.WriteLine(s);
                 lines.Add(s);
             };
-            var (rc, sm) = RunWithRejoin(opt.ClientId, log);
+            int rc;
+            JoinStateMachine sm;
+            try
+            {
+                (rc, sm) = RunWithRejoin(opt.ClientId, log);
+            }
+            catch (Exception ex)
+            {
+                // Same shape as the multi-bot lane below: a faulting session is
+                // booked as a failed bot, not allowed to skip the teardown, the
+                // stats json and the PASS/FAIL line that are this lane's
+                // automation contract. The breadcrumb goes to the artifact too,
+                // because --quiet drops the console echo.
+                string fault = RunReport.FaultText("join session", ex);
+                log($"FAIL session: {fault}");
+                Console.Error.WriteLine(RunReport.FaultLine("join session", ex));
+                sm = new JoinStateMachine
+                {
+                    EntityId = -1,
+                    DeathCause = DeathCause.Exception,
+                    BotModeName = opt.Mode.ToString(),
+                };
+                sm.Fail("exception");
+                rc = 1;
+            }
             spawnCts.Cancel();
             AwaitTeardown("zombie_spawn", spawnTask);
             AwaitTeardown("wandering_horde", hordeTask);
@@ -707,7 +731,19 @@ public static partial class Program
             }
             finally { running.TryRemove(id, out _); gate.Release(); }
         })).ToArray();
-        Task.WaitAll(tasks);
+        try
+        {
+            Task.WaitAll(tasks);
+        }
+        catch (AggregateException ex)
+        {
+            // Every per-bot body catches and records its own fault, so reaching
+            // here means the fault was outside it (ramp delay, semaphore). The
+            // teardown and the artifact writes below must still run: skipping
+            // them ends the process on a stack trace with no PASS/FAIL line and
+            // leaves the spawn, horde and bench tasks running.
+            Console.Error.WriteLine(RunReport.FaultLine("cohort wait", ex));
+        }
         benchCts.Cancel();
         AwaitTeardown("bench_sampler", benchSampler);
         bench?.SampleActive(0); // final sample so the curve shows the ramp-down

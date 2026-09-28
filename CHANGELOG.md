@@ -538,6 +538,31 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   command injection) is partially mitigated by the token allowlist and
   single-line guard, and the credential-flag finding (R2) is fixed as described
   above.
+- A failed packet send, a dropped telnet console and a faulted probe are
+  reported. `peer.Send` swallowed its exception and a bot with a dead peer then
+  paced silently for the rest of its budget; the zombie and horde waves logged
+  nothing at all when `listplayers` came back empty, so a round that applied no
+  pressure read like a round the server absorbed; and a faulted probe was
+  booked as a plain fail with no cause under `--quiet` or past the logged
+  window.
+- The post-join `login_answer_parse` and `spawn_parse` faults log their cause.
+  `JoinStateMachine.Fail` is inert once a bot has joined, so a respawning bot
+  lost the reason and the run booked it as a respawn timeout.
+- A cohort-wide fault no longer skips the run's teardown and artifacts. The
+  single-bot `--join` lane called `RunWithRejoin` unguarded where the cohort
+  lane already recorded the fault, and `Task.WaitAll` was unguarded in both
+  join and probe lanes, ending the process on a stack trace with no PASS/FAIL
+  line and the spawn, horde and bench tasks still running.
+- `JsonLineEventWriter` releases its file handle when the `StreamWriter`
+  constructor faults instead of leaking it for the life of the process.
+- `--self-test` validates `--count` and parses `--min-pass-rate` in the
+  invariant culture, like every other lane. A `--count 0` ran as a one-probe
+  self-test, and a comma-decimal locale read `0,95` as the gate value and
+  rejected the documented `0.95` spelling.
+- The Python profiles' overlap guard distinguishes "another run holds this
+  target" (exit 4) from "the lock file could not be opened" (exit 5). Both
+  returned the same message, so an unwritable `XDG_RUNTIME_DIR` sent the
+  operator to wait for a run that was not there, with the guard inert.
 
 ## [0.4.2] - 2026-09-21
 

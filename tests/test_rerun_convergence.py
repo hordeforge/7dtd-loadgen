@@ -331,6 +331,28 @@ def test_runlock_refuses_a_second_holder_then_frees_on_release(tmp_path, monkeyp
     os.close(again)
 
 
+def test_runlock_unopenable_lock_is_not_reported_as_contention(tmp_path, monkeypatch,
+                                                              capsys):
+    """An unopenable lock file is an environment fault, not another run.
+
+    Reporting it as contention tells the operator to wait for a run that is
+    not there, and the guard is meanwhile inert, so a second profile would go
+    ahead and kill the first one's dedicated.
+    """
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path / "ro"))
+    (tmp_path / "ro").write_text("not a directory", encoding="utf-8")
+
+    with pytest.raises(runlock.LockUnavailable):
+        runlock.acquire("127.0.0.1", "26902")
+
+    with pytest.raises(SystemExit) as exc:
+        runlock.acquire_or_exit("127.0.0.1", "26902", "blood-moon profile")
+    assert exc.value.code == runlock.LOCK_UNAVAILABLE_EXIT
+    err = capsys.readouterr().err
+    assert "another loadgen run holds" not in err
+    assert "XDG_RUNTIME_DIR" in err
+
+
 def test_runlock_path_matches_the_shell_runner(tmp_path, monkeypatch):
     """The Python guard and scripts/run_loadgen.sh must contend for ONE lock
     file, or a profile and a shell-launched cohort both proceed against the

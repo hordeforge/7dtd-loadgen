@@ -239,6 +239,11 @@ public sealed class GameJoinClient
         var inbox = new Queue<byte[]>();
         object gate = new();
         const int MaxQueued = 2_000;
+        // Send faults on the current life. Only the first is reported: the pace
+        // loop and the poll flush both call into peer.Send many times a second
+        // per bot, so an unthrottled breadcrumb would bury the transcript of a
+        // bot whose peer died in its first second.
+        int sendFaults = 0;
         int verboseRecvLeft = 40;
 
         // Shared queue plumbing for the join-phase main loop and the post-join
@@ -267,8 +272,17 @@ public sealed class GameJoinClient
                     // not escape past the PASS/FAIL summary. The next
                     // PollEvents dispatches PeerDisconnectedEvent, which
                     // terminates the join through the normal terminal path.
+                    // Reported, throttled the same way as the action loop's
+                    // sends: the queue drains on every poll, so an unthrottled
+                    // line repeats until the disconnect lands.
                     try { peer.Send(pkt, DeliveryMethod.ReliableOrdered); }
-                    catch { break; }
+                    catch (Exception ex)
+                    {
+                        if (sendFaults++ == 0)
+                            Log($"FAIL flush_send: {ex.GetType().Name}: {ex.Message} "
+                                + "(further send faults on this life are counted only)");
+                        break;
+                    }
                     State.PackagesSent++;
                 }
             }
@@ -516,7 +530,13 @@ public sealed class GameJoinClient
                             peer.Send(pkt, DeliveryMethod.ReliableOrdered);
                             return true;
                         }
-                        catch { return false; }
+                        catch (Exception ex)
+                        {
+                            if (sendFaults++ == 0)
+                                Log($"FAIL send_packet: {ex.GetType().Name}: {ex.Message} "
+                                    + "(further send faults on this life are counted only)");
+                            return false;
+                        }
                     }
 
                     int life = 0;
@@ -530,6 +550,7 @@ public sealed class GameJoinClient
 
                         // Each life gets a fresh death flag (respawn path clears it).
                         State.Died = false;
+                        sendFaults = 0;
                         if (State.DeathCause == DeathCause.TimeoutAlive)
                             State.DeathCause = DeathCause.None;
                         opt.OnLifeStarted?.Invoke(State.EntityId);
@@ -948,6 +969,11 @@ public sealed class GameJoinClient
             catch (Exception ex)
             {
                 State.Fail($"login_answer_parse: {ex.Message}");
+                // Fail() is a no-op once the bot has joined, and a respawning
+                // bot re-enters this path, so the log is the only place the
+                // cause survives: without it the run books the bot as a
+                // respawn timeout and the real fault is nowhere.
+                log($"FAIL login_answer_parse: {ex.GetType().Name}: {ex.Message}");
             }
             return;
         }
@@ -982,6 +1008,9 @@ public sealed class GameJoinClient
             catch (Exception ex)
             {
                 State.Fail($"spawn_parse: {ex.Message}");
+                // See login_answer_parse: Fail() is inert after Joined, so the
+                // log line is what keeps the cause attributable.
+                log($"FAIL spawn_parse: {ex.GetType().Name}: {ex.Message}");
             }
             return;
         }

@@ -24,15 +24,26 @@ public sealed class JsonLineEventWriter : IDisposable
     {
         string fullPath = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
-        _writer = new StreamWriter(new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.Read),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))
+        // The FileStream is held in a local so a StreamWriter constructor
+        // fault releases the handle it was handed instead of leaving an open
+        // file behind for the rest of the process.
+        var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+        try
         {
-            AutoFlush = false,
-            // LF, not Environment.NewLine: the JSONL sink is read by the
-            // report lanes and diffed as run evidence, so its bytes must not
-            // depend on the host OS.
-            NewLine = "\n",
-        };
+            _writer = new StreamWriter(fs, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))
+            {
+                AutoFlush = false,
+                // LF, not Environment.NewLine: the JSONL sink is read by the
+                // report lanes and diffed as run evidence, so its bytes must not
+                // depend on the host OS.
+                NewLine = "\n",
+            };
+        }
+        catch
+        {
+            fs.Dispose();
+            throw;
+        }
         _lastFlushTicks = System.Diagnostics.Stopwatch.GetTimestamp();
         TargetPath = fullPath;
     }

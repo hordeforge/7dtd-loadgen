@@ -432,6 +432,13 @@ public sealed partial class TelnetAdmin : IDisposable
             _log?.Invoke($"TELNET spawnentity/spawnscouts failed (no spawn point); kill fallback off, livePlayers={ids.Count}");
         else if (spawned > 0 || ids.Count > 0)
             _log?.Invoke($"TELNET pressure livePlayers={ids.Count} units~={spawned} type={entityName}");
+        else
+            // A console that stopped answering mid-run returns "" from every
+            // Exec, so ids and names are empty and none of the branches above
+            // fires: the round applied no pressure and said nothing, which
+            // reads exactly like a round the server absorbed.
+            _log?.Invoke("TELNET pressure NOT APPLIED: listplayers returned no living "
+                + "rows (console down or auth failed); 0 units this round");
         return spawned + killed;
     }
 
@@ -446,7 +453,16 @@ public sealed partial class TelnetAdmin : IDisposable
     {
         string outp = Exec("listplayers");
         var ids = ParseLivingPlayerIds(outp);
-        if (ids.Count == 0) return 0;
+        if (ids.Count == 0)
+        {
+            // Exec returns "" on a dropped console, so an empty list is both
+            // "nobody is connected" and "the console stopped answering". Name
+            // it: a horde wave that silently did nothing is indistinguishable
+            // from one the server absorbed.
+            _log?.Invoke("TELNET wandering_horde NOT APPLIED: listplayers returned no "
+                + "living rows (console down or auth failed)");
+            return 0;
+        }
         int spawned = 0;
         int hit = Math.Min(targets, ids.Count);
         for (int t = 0; t < hit; t++)

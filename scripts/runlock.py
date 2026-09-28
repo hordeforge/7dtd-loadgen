@@ -34,6 +34,19 @@ _UNSAFE = re.compile(r"[^A-Za-z0-9._-]")
 # The shell runner's exit code for "another run holds this target". Callers and
 # operators already key automation off it, so the Python guard reuses it.
 LOCK_BUSY_EXIT = 4
+# The guard's own exit code. Distinct from LOCK_BUSY_EXIT because it is an
+# environment fault, not contention, and a harness keying on 4 would read it
+# as "wait for the other run".
+LOCK_UNAVAILABLE_EXIT = 5
+
+
+class LockUnavailable(RuntimeError):
+    """The lock file could not be opened or created, so the guard never ran.
+
+    Distinct from "another run holds it": with no lock in place the overlap
+    protection is simply absent, and reporting that as contention sends the
+    operator to wait for a run that is not there.
+    """
 
 
 def lock_path(host: str, port: str | int) -> Path:
@@ -46,6 +59,9 @@ def lock_path(host: str, port: str | int) -> Path:
 def acquire(host: str, port: str | int) -> int | None:
     """Take the target's lock, or return None when another run holds it.
 
+    Raises LockUnavailable when the lock file itself cannot be opened, so a
+    broken guard never reads as a busy one.
+
     The returned fd must stay open for the life of the run: closing it (or
     exiting) releases the lock.
     """
@@ -54,11 +70,10 @@ def acquire(host: str, port: str | int) -> int | None:
         path.parent.mkdir(parents=True, exist_ok=True)
         fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
     except OSError as e:
-        # An unwritable runtime dir must not read as "no other run is going":
-        # say why the guard is inert and let the operator decide.
-        print(f"runlock: cannot open {path} ({e}); overlap guard is INACTIVE",
-              file=sys.stderr)
-        return None
+        raise LockUnavailable(
+            f"cannot open {path} ({e.__class__.__name__}: {e}); the overlap "
+            f"guard is INACTIVE, so a second run on {host}:{port} would not "
+            f"be refused") from e
     try:
         fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
@@ -73,9 +88,20 @@ def acquire_or_exit(host: str, port: str | int, what: str) -> int:
     """Acquire, or exit LOCK_BUSY_EXIT naming the holder's target.
 
     Refusing loudly is the whole point: a second profile silently replacing the
-    first one produces two plausible-looking reports and no error.
+    first one produces two plausible-looking reports and no error. A lock file
+    that cannot be opened is a different fault and gets its own exit code and
+    message, because "another run holds this target" is the wrong thing to tell
+    an operator whose runtime dir is unwritable.
     """
-    fd = acquire(host, port)
+    try:
+        fd = acquire(host, port)
+    except LockUnavailable as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        print(f"       Refusing to run the {what} without the overlap guard.",
+              file=sys.stderr)
+        print("       Set XDG_RUNTIME_DIR (or TMPDIR) to a writable directory "
+              "and re-run.", file=sys.stderr)
+        raise SystemExit(LOCK_UNAVAILABLE_EXIT) from None
     if fd is None:
         print(
             f"ERROR: another loadgen run holds {lock_path(host, port)} "

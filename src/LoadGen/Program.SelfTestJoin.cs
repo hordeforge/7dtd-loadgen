@@ -19,8 +19,6 @@ public static partial class Program
             else if (args[i] == "--scenario-id" && i + 1 < args.Length) scenarioId = args[++i];
             else if (args[i] == "--quiet") quiet = true;
         }
-        if (actions < 6) actions = 6;
-
         var lines = new List<string>();
         // --quiet drops the console echo of progress lines only; --log still
         // gets every line, and the verdict always reaches the console.
@@ -28,6 +26,15 @@ public static partial class Program
         {
             if (!quiet) Console.WriteLine(m);
             lines.Add(m);
+        }
+
+        if (actions < 6)
+        {
+            // The self-test needs one action of every kind it asserts on, so 6
+            // is a floor, not a default. The clamp is named in the log so a
+            // raised run is not mistaken for the one that was asked for.
+            Log("NOTE: --actions below the 6-action self-test floor, raised to 6");
+            actions = 6;
         }
 
         void Verdict(string m, bool ok)
@@ -43,12 +50,17 @@ public static partial class Program
         {
             rc = SelfTestJoin.Run(actions, seed, Log, out sm);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
-            // The in-process mock host failed to bind its UDP socket (port
-            // exhaustion, sandboxed CI): report it like every other startup
-            // failure instead of an unhandled-exception stack trace.
-            Verdict($"FAIL: in-process mock join host could not start: {ex.Message}", false);
+            // The mock host failed to come up, or the session faulted under it
+            // (port exhaustion, a sandboxed CI with no loopback UDP, a defect
+            // in the client path). Catch the whole family: this lane is the CI
+            // gate, and a type the catch misses ends the gate on a stack trace
+            // with no PASS/FAIL line, which reads as a crash rather than a
+            // verdict. The type and the top frame go in the line so the cause
+            // survives the console being gone.
+            Verdict($"FAIL: in-process mock join host could not run: "
+                + RunReport.FaultText("self-test-join session", ex), false);
             return 1;
         }
         Log($"SUMMARY stage={sm.Stage} joined={sm.IsJoined} mode={sm.BotModeName} " +
