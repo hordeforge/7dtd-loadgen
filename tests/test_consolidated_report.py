@@ -92,3 +92,29 @@ def test_non_object_evidence_is_unreadable(tmp_path):
     (pt / "playtest-compare.json").write_text("[1, 2, 3]", encoding="utf-8")
     rows = collect_playtest(tmp_path / "pt")
     assert [r["verdict"] for r in rows] == ["UNREADABLE"]
+
+
+def test_one_sided_evidence_without_a_diff_is_stale_not_dropped(tmp_path):
+    """A `make compare-sut SUT=zdtd` run leaves <scenario>/zdtd/ evidence but
+    no diff.json. The scenario is missing its comparison, not missing its run,
+    so it must be listed as STALE naming the side that ran; a directory with
+    neither side is the absence of evidence and is dropped."""
+    lg = tmp_path / "lg"
+    (lg / "scen-stale" / "zdtd").mkdir(parents=True)
+    (lg / "scen-empty").mkdir(parents=True)
+    (lg / "scen-clean").mkdir(parents=True)
+    _write(lg / "scen-clean" / "diff.json", {"compared": True, "findings": []})
+
+    rows = collect_loadgen(lg)
+    by_id = {r["id"]: r for r in rows}
+    assert set(by_id) == {"scen-stale", "scen-clean"}
+    stale = by_id["scen-stale"]
+    assert stale["verdict"] == "STALE"
+    assert stale["compared"] is False
+    assert stale["ran"] == ["zdtd"]
+    assert stale["missing"] == ["stock"]
+
+    md = render(rows)
+    assert "1 STALE" in md
+    assert "## loadgen/scen-stale - STALE" in md
+    assert "ran: ['zdtd']" in md

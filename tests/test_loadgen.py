@@ -5,10 +5,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import pytest
 from loadgen_cli import run as _run
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRATCH = Path(os.environ.get("RE_SCRATCH", Path.home() / ".cache" / "7dtd-loadgen" / "test"))
 
 GOLDEN_POS_BODY = 30
 GOLDEN_REL_BODY = 20
@@ -16,11 +16,23 @@ GOLDEN_REL_CONTENT_LEN = 22
 GOLDEN_FLAGS_BODY = 6
 
 
-def test_golden_wire_cli():
-    SCRATCH.mkdir(parents=True, exist_ok=True)
+@pytest.fixture(scope="session")
+def scratch(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Where the client artifacts from these gates are kept. A per-run
+    directory, not a fixed path under $HOME: two lanes (or two checkouts) running
+    the suite at once would otherwise share golden_wire.txt and the
+    events_jsonl_blocked file, and the leftovers outlive the run that made
+    them. RE_SCRATCH still wins so an operator can keep the artifacts."""
+    override = os.environ.get("RE_SCRATCH")
+    path = Path(override) if override else tmp_path_factory.mktemp("loadgen-client")
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def test_golden_wire_cli(scratch: Path):
     r = _run(["--golden-wire"], timeout=30)
     out = r.stdout + r.stderr
-    (SCRATCH / "golden_wire.txt").write_text(out, encoding="utf-8")
+    (scratch / "golden_wire.txt").write_text(out, encoding="utf-8")
     assert r.returncode == 0, out
     assert "PASS golden-wire" in out
     assert f"RelPos body={GOLDEN_REL_BODY}" in out
@@ -34,11 +46,10 @@ def test_relpos_constants_in_source():
     assert "EntityRelPosAndRotNoQ = 36" not in src
 
 
-def test_self_test_join_respawn_loop():
-    SCRATCH.mkdir(parents=True, exist_ok=True)
+def test_self_test_join_respawn_loop(scratch: Path):
     r = _run(["--self-test-join", "--actions", "24", "--seed", "7"], timeout=40)
     full = (r.stdout or "") + (r.stderr or "")
-    (SCRATCH / "self_test_join.txt").write_text(full, encoding="utf-8")
+    (scratch / "self_test_join.txt").write_text(full, encoding="utf-8")
     assert r.returncode == 0, full
     assert "PASS: self-test-join" in full
     assert "ACTION walk#" in full
@@ -73,11 +84,10 @@ def test_observer_flags_are_documented_and_require_jsonl_output():
     assert "invalid --events-jsonl 'missing'" in output
 
 
-def test_unwritable_events_jsonl_fails_clean():
+def test_unwritable_events_jsonl_fails_clean(scratch: Path):
     """An unwritable --events-jsonl path is a usage error (exit 2, named flag),
     not an unhandled-exception crash after validation."""
-    SCRATCH.mkdir(parents=True, exist_ok=True)
-    blocked = SCRATCH / "events_jsonl_blocked"
+    blocked = scratch / "events_jsonl_blocked"
     blocked.write_text("", encoding="utf-8")  # a file where a directory is needed
     r = _run(
         ["--join", "--observe-cvar", "atomicProtection", "--no-spawn-zombies",

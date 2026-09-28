@@ -44,11 +44,19 @@ public sealed class RampDelayTests
     [Fact]
     public void Clamp_ProtectsTaskDelayCast()
     {
-        // 1e6 bots at 3_600_000 ms: bot 999999 would need 3.6e6 ms (fits int),
-        // but a larger count x ramp product that exceeds int.MaxValue clamps.
-        // 3_600_000 * 999_999 / 999_999 = 3_600_000, still fits; prove the clamp
-        // only engages at true overflow: use a ramp that would overflow directly.
-        Assert.Equal(int.MaxValue, Program.RampDelayMs(999_999, 1_000_000, int.MaxValue));
+        // The quotient is only clamped when the ramp spreads so far that a
+        // single bot's delay exceeds int.MaxValue: 1000 * 2^31 / 1. Without the
+        // Math.Min the (int) cast of that long wraps to a negative delay.
+        Assert.Equal(int.MaxValue, Program.RampDelayMs(1_000, 2, int.MaxValue));
+        Assert.Equal(int.MaxValue, Program.RampDelayMs(100_000, 1_000, 100_000_000));
+    }
+
+    [Fact]
+    public void LargeRampThatStillFits_IsNotClamped()
+    {
+        // 1e6 bots at 3.6e6 ms: the last bot needs 3_600_000 ms, far inside
+        // int, so the clamp must not engage on the bot count alone.
+        Assert.Equal(3_600_000, Program.RampDelayMs(999_999, 1_000_000, 3_600_000));
     }
 }
 

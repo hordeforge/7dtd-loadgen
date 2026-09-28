@@ -42,11 +42,15 @@ public sealed class ShutdownSweepTests
             Assert.True(sw.ElapsedMilliseconds >= 450,
                 $"sweep returned too early ({sw.ElapsedMilliseconds}ms); grace/drain sleeps missing");
 
-            // One-shot guard: the second pass must not re-drive managers.
+            // One-shot guard: the second pass must not re-drive managers, so it
+            // must not pay the grace/drain sleeps again. The bound sits under
+            // that 500ms (a real second sweep) but well above what an empty
+            // sweep costs, which is a lock plus scheduler wakeup: a 100ms bound
+            // only measured how loaded the runner was.
             var sw2 = Stopwatch.StartNew();
             GameJoinClient.DisconnectAllActive();
             sw2.Stop();
-            Assert.True(sw2.ElapsedMilliseconds < 100,
+            Assert.True(sw2.ElapsedMilliseconds < 300,
                 $"second sweep took {sw2.ElapsedMilliseconds}ms; one-shot guard broken");
         }
         finally

@@ -64,17 +64,29 @@ public sealed class PackageCodecAllocationTests
     [Fact]
     public void ParseChannelPayload_ResultIsValidUntilNextParseOnSameThread()
     {
-        // Pins the reuse contract: bodies survive into the next call window,
-        // only the list identity is transient. Callers rely on copied arrays.
+        // Pins the reuse contract: the list itself is transient (one per
+        // thread), the body arrays are not. A second parse over a DIFFERENT
+        // frame rewrites the reused list, so a body handed out as a slice of
+        // the receive buffer would show up here as the second frame's bytes.
         var first = PackageCodec.ParseChannelPayload(BuildTwoPackageFrame());
         Assert.Equal(2, first.Count);
-        var second = PackageCodec.ParseChannelPayload(BuildTwoPackageFrame());
-        Assert.Equal((ushort)3, first[0].id);      // drained before next parse
-        Assert.Equal(new byte[] { 9, 8, 7 }, first[0].body);
-        Assert.Equal((ushort)4, second[1].id);
+        byte[] firstBody = first[0].body;
+        var firstBodyId = first[0].id;
+
+        var second = PackageCodec.ParseChannelPayload(
+            BuildTwoPackageFrame(idA: 41, bodyA: new byte[] { 1, 2 }, idB: 42, bodyB: new byte[] { 3 }));
+
+        // List identity is the reuse, by contract.
+        Assert.Same(first, second);
+        Assert.Equal((ushort)41, second[0].id);
+        // The first parse's body is an independent copy: still the first frame's.
+        Assert.Equal((ushort)3, firstBodyId);
+        Assert.Equal(new byte[] { 9, 8, 7 }, firstBody);
+        Assert.NotSame(firstBody, second[0].body);
     }
 
-    internal static byte[] BuildTwoPackageFrame()
+    internal static byte[] BuildTwoPackageFrame(
+        ushort idA = 3, byte[]? bodyA = null, ushort idB = 4, byte[]? bodyB = null)
     {
         // Inner package: [contentLen:i32][pkgId:u16][body...]
         static void Inner(List<byte> buf, ushort pkgId, byte[] body)
@@ -87,8 +99,8 @@ public sealed class PackageCodecAllocationTests
             buf.AddRange(body);
         }
         var payload = new List<byte>();
-        Inner(payload, 3, new byte[] { 9, 8, 7 });
-        Inner(payload, 4, new byte[] { 5, 4, 3, 2 });
+        Inner(payload, idA, bodyA ?? new byte[] { 9, 8, 7 });
+        Inner(payload, idB, bodyB ?? new byte[] { 5, 4, 3, 2 });
         // Outer frame: [channel:1][payloadSize:i32][comp:1][enc:1][count:u16]
         var frame = new List<byte> { 0 };
         Span<byte> word = stackalloc byte[4];

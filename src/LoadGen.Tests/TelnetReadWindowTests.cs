@@ -176,7 +176,11 @@ public sealed class TelnetReadWindowTests
         Assert.Equal("", admin.Exec("givespawn"));
         sw.Stop();
 
-        Assert.True(sw.ElapsedMilliseconds < 600, $"silent command took {sw.ElapsedMilliseconds}ms");
+        // Lower bound is the point: an implementation that returned "" as soon
+        // as the console stayed quiet would pass an upper bound alone. The
+        // window is 500 ms, so anything under 400 means quiescence was taken as
+        // a reason to cut a window that had seen nothing at all.
+        Assert.InRange(sw.ElapsedMilliseconds, 400, 1_500);
     }
 }
 
@@ -216,10 +220,13 @@ public sealed class TelnetProvisionerTests
         // grants costs one TCP round trip each, so an enqueue loop that blocked
         // on the console could not finish materially sooner than delivery. A
         // millisecond threshold would only measure how loaded the runner is.
-        Assert.True(enqueue.ElapsedMilliseconds * EnqueueLeadOverDelivery
-                    < delivery.ElapsedMilliseconds,
-            $"enqueueing {Grants} grants took {enqueue.ElapsedMilliseconds}ms against "
-            + $"{delivery.ElapsedMilliseconds}ms of delivery: the bot loop is blocking on the console");
+        // Compared as TimeSpan, not ElapsedMilliseconds: 40 lock-and-add calls
+        // finish in well under a millisecond, and the integer form truncates
+        // that to 0, which satisfies the ratio for any delivery time.
+        Assert.True(enqueue.Elapsed.TotalMilliseconds * EnqueueLeadOverDelivery
+                    < delivery.Elapsed.TotalMilliseconds,
+            $"enqueueing {Grants} grants took {enqueue.Elapsed.TotalMilliseconds:F3}ms against "
+            + $"{delivery.Elapsed.TotalMilliseconds:F1}ms of delivery: the bot loop is blocking on the console");
 
         int give = console.Received.Count(c => c.StartsWith("give ", StringComparison.Ordinal));
         Assert.Equal(Grants, give);

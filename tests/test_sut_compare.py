@@ -171,7 +171,12 @@ def test_full_comparison_pipeline(tmp_path):
     report = r.stdout
     assert "loadgen abc1234" in report
     assert "zdtd def5678 (dirty)" in report
-    assert "compared" in report.lower() or "findings" in report.lower()
+    # Both sides parsed, so the report must not take the one-sided status
+    # branch, and the rendered findings must carry the entity-count delta
+    # rather than the empty-surface placeholder.
+    assert "## Status: NOT COMPARED" not in report
+    assert "- no axis-level differences" not in report
+    assert "- telnet: entity count differs" in report
     # A trailing slash must not empty the scenario name (regression guard).
     r2 = _py([str(TOOLS / "sut_report.py"), str(tmp_path / "scenario") + os.sep])
     assert r2.returncode == 0, r2.stderr
