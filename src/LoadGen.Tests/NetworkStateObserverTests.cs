@@ -49,6 +49,31 @@ public sealed class NetworkStateObserverTests
     }
 
     [Fact]
+    public void SameClocks_SamePackages_ProduceAByteIdenticalEventFile()
+    {
+        // The event file is the replay artifact a diverged run is diffed
+        // against, so two observers fed the same package sequence under the
+        // same clock must emit the same bytes: the utc stamp and the elapsed
+        // value are the only two fields a wall clock reaches.
+        static List<string> Replay()
+        {
+            var events = new List<string>();
+            long now = 0;
+            var observer = new NetworkStateObserver(
+                3, new[] { "atomicProtection" }, new[] { "buffAtomicProtected" }, events.Add,
+                utcNow: () => new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                elapsedMs: () => now += 10);
+            observer.Joined(171);
+            observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", 0.5f, 0));
+            observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", 0.25f, 2));
+            observer.Observe("NetPackageAddRemoveBuff", Buff(171, "buffAtomicProtected", true));
+            return events;
+        }
+
+        Assert.Equal(Replay(), Replay());
+    }
+
+    [Fact]
     public void Joined_EmitsExplicitStateForInactiveWatchedBuff()
     {
         var events = new List<string>();

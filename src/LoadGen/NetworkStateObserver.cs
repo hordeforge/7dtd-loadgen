@@ -17,7 +17,11 @@ public sealed class NetworkStateObserver
     readonly Dictionary<int, Dictionary<string, float>> _cvars = new();
     readonly Dictionary<int, HashSet<string>> _buffs = new();
     readonly HashSet<int> _joinedEntities = new();
-    readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+    // Both stamps are injected: a real clock is the default, and a replay feeds
+    // the same virtual pair so the emitted file is byte-identical between two
+    // runs of the same package sequence.
+    readonly Func<DateTime> _utcNow;
+    readonly Func<long> _elapsedMs;
     long _sequence;
 
     /// <summary>True once the event sink failed. Emission stops permanently so
@@ -30,12 +34,21 @@ public sealed class NetworkStateObserver
 
     public NetworkStateObserver(
         int botId, IEnumerable<string> cvarFilters, IEnumerable<string> buffFilters,
-        Action<string> emit)
+        Action<string> emit,
+        Func<DateTime>? utcNow = null, Func<long>? elapsedMs = null)
     {
         _botId = botId;
         _cvarFilters = new HashSet<string>(cvarFilters, StringComparer.Ordinal);
         _buffFilters = new HashSet<string>(buffFilters, StringComparer.Ordinal);
         _emit = emit;
+        _utcNow = utcNow ?? (() => DateTime.UtcNow);
+        if (elapsedMs != null)
+            _elapsedMs = elapsedMs;
+        else
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            _elapsedMs = () => clock.ElapsedMilliseconds;
+        }
     }
 
     public bool Enabled => _cvarFilters.Count > 0 || _buffFilters.Count > 0;
@@ -72,8 +85,8 @@ public sealed class NetworkStateObserver
             // without a clock an event file cannot be lined up against the
             // console transcript or a server-side capture, which is what tells
             // a bot-side state change from a server-side one.
-            t = $"{DateTime.UtcNow:O}",
-            elapsedMs = _clock.ElapsedMilliseconds,
+            t = $"{_utcNow():O}",
+            elapsedMs = _elapsedMs(),
         });
         var buffs = BuffsFor(entityId);
         foreach (string name in _buffFilters)
@@ -220,8 +233,8 @@ public sealed class NetworkStateObserver
         active,
         source,
         seq = NextSequence(),
-        t = $"{DateTime.UtcNow:O}",
-        elapsedMs = _clock.ElapsedMilliseconds,
+        t = $"{_utcNow():O}",
+        elapsedMs = _elapsedMs(),
     });
 
     void Emit(object value)
