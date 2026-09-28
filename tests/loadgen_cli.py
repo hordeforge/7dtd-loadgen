@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJ = ROOT / "src" / "LoadGen" / "LoadGen.csproj"
@@ -37,6 +40,14 @@ def build() -> None:
     # a failed build still surfaces on the next attempt.
     if _BUILT:
         return
+    # No dotnet anywhere: every CLI test would otherwise fail on a missing
+    # executable, which reads as a code failure rather than an absent SDK.
+    if not (shutil.which("dotnet") or any(
+        Path(r, "dotnet").is_file()
+        for r in (os.environ.get("DOTNET_ROOT", ""), str(Path.home() / ".cache" / "dotnet-sdk"))
+        if r
+    )):
+        pytest.skip("no dotnet SDK on this host; run `make build` first")
     r = subprocess.run(
         # -p:GameDir= pins the NuGet LiteNetLib, as every make and shell lane
         # does: without it a dev box with the dedicated installed builds a
@@ -48,7 +59,10 @@ def build() -> None:
         text=True,
         encoding="utf-8",
         errors="replace",
-        timeout=120,
+        # A cold NuGet restore of the whole LiteNetLib graph takes well over
+        # the old 120s on a cold cache, and a timeout here kills the run with
+        # a truncated log that reads as a build break.
+        timeout=600,
         check=False,
     )
     assert r.returncode == 0, f"build failed:\n{r.stdout}\n{r.stderr}"

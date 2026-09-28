@@ -88,11 +88,15 @@ def test_shell_metacharacters_survive_verbatim(tmp_path):
     # Every one of these is a command substitution, a redirect, a glob, or a
     # quote. Under the old eval they were a code-execution surface; under the
     # reader they are just bytes in a variable.
-    hostile = "$(touch /nonexistent-pwned); `id` && rm -rf / ; * ' \" \\ | > <"
+    # The canary names a path under tmp_path, not a path under /: a test
+    # process that cannot write / would see the file absent either way, so a
+    # /-rooted sentinel passes whether or not the substitution ran.
+    canary = tmp_path / "pwned"
+    hostile = f"$(touch {canary}); `id` && rm -rf / ; * ' \" \\ | > <"
     r = _export(_catalog(tmp_path, {"RE_WORLD_NAME": hostile}))
     assert r.returncode == 0, r.stderr
     assert _read_back(r.stdout, "RE_WORLD_NAME") == hostile
-    assert not Path("/nonexistent-pwned").exists()
+    assert not canary.exists(), f"the value was evaluated: {canary} was created"
 
 
 @requires_bash
@@ -125,19 +129,23 @@ def _client_catalog(tmp_path: Path, client: dict) -> Path:
     return path
 
 
-@pytest.mark.parametrize("host", [
-    "127.0.0.1; touch /nonexistent-pwned",
-    "127.0.0.1 $(id)",
+@pytest.mark.parametrize("payload", [
+    "127.0.0.1; touch {canary}",
+    "127.0.0.1 $(touch {canary})",
     "host name",
     "../../etc",
 ])
-def test_host_that_could_escape_the_tcp_probe_is_refused(tmp_path, host):
+def test_host_that_could_escape_the_tcp_probe_is_refused(tmp_path, payload):
     # run_scenario.sh opens /dev/tcp/<host>/<port>; a host with separators or
-    # whitespace is no longer a host there.
+    # whitespace is no longer a host there. The first two carry a canary
+    # inside tmp_path, so a host that reached the reader as shell source would
+    # create it rather than merely be refused.
+    canary = tmp_path / "pwned"
+    host = payload.format(canary=canary)
     r = _export(_client_catalog(tmp_path, {"mode": "probe", "host": host}))
     assert r.returncode == 1
     assert "refusing host" in r.stderr
-    assert not Path("/nonexistent-pwned").exists()
+    assert not canary.exists(), f"{host!r} reached the reader as shell source"
 
 
 @requires_bash

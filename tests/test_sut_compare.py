@@ -13,10 +13,41 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
+
+# Non-ASCII beyond Latin-1, for the same reason test_text_encoding.py uses one:
+# a name that exists in Latin-1 is still escaped by json.dumps' default
+# ensure_ascii, so an ASCII fixture name would let a leak through the check
+# below while reading as a real player name in the transcript.
+PLAYER = "Zoé\U0001f600Player"
+ACCOUNT = "däna"
+
+
+def _strings(node: object) -> list[str]:
+    """Every string in a parsed document, keys included.
+
+    A leak check that runs against json.dumps output only sees the ASCII
+    characters: ensure_ascii escapes everything else into \\uXXXX, so a leaked
+    non-ASCII player name or account name never matches the substring being
+    looked for. Walking the parsed structure sees the real text.
+    """
+    if isinstance(node, dict):
+        return [s for k, v in node.items() for s in _strings(k) + _strings(v)]
+    if isinstance(node, list):
+        return [s for v in node for s in _strings(v)]
+    if isinstance(node, str):
+        return [node]
+    return []
+
+
+def _assert_absent(document: object, *forbidden: str) -> None:
+    blob = "\n".join(_strings(document))
+    for value in forbidden:
+        assert value not in blob, f"{value!r} leaked into the captured artifact"
 
 
 def _py(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -79,7 +110,7 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
         "# ts=2026-08-12T00:00:02Z cmd=listents\n"
         + listents +
         "# ts=2026-08-12T00:00:04Z cmd=listplayers\n"
-        "0. id=171, Alice, pos=(1.0, 2.0, 3.0), rot=(0.0, 0.0, 0.0), remote=True, "
+        f"0. id=171, {PLAYER}, pos=(1.0, 2.0, 3.0), rot=(0.0, 0.0, 0.0), remote=True, "
         "health=100, deaths=0, zombies=0, players=0, score=0, level=1, "
         "pltfmid=Local_X, crossid=Local_X, ip=127.0.0.1, ping=0\n"
         "Total of 1 in the game\n"
@@ -154,8 +185,10 @@ def test_full_comparison_pipeline(tmp_path):
                                        "types": {"EntityZombie": 1}}
     assert s["telnet"]["players"] == {"count": 1}
     # The listplayers row names a player; the surface keeps the count only, so
-    # no per-player identity lands in an artifact the harness commits.
-    assert "Alice" not in json.dumps(s)
+    # no per-player identity lands in an artifact the harness commits. The
+    # fixture name is non-ASCII, so a json.dumps check would have escaped it
+    # into \uXXXX and passed regardless.
+    _assert_absent(s, PLAYER, "Alice")
     assert s["telnet"]["clockRateGameMinPerRealSec"] == 0.4
     assert s["saves"]["count"] == 2
 
@@ -202,15 +235,15 @@ def test_boot_evidence_drops_the_operators_home_directory(tmp_path):
     run_dir = tmp_path / "run"
     run_dir.mkdir(parents=True)
     (run_dir / "server.log").write_text(
-        "zdtd: config port=27120 max_players=64\n"
-        "  map=/home/dana/.local/share/Steam/steamapps/common/7 Days to Die\n"
-        "  save=/Users/dana/Desktop/loadgen/workspace/run/zdtd/world\n",
+        f"zdtd: config port=27120 max_players=64\n"
+        f"  map=/home/{ACCOUNT}/.local/share/Steam/steamapps/common/7 Days to Die\n"
+        f"  save=/Users/{ACCOUNT}/Desktop/loadgen/workspace/run/zdtd/world\n",
         encoding="utf-8",
     )
     r = _py([str(TOOLS / "sut_capture.py"), str(run_dir), "zdtd"])
     assert r.returncode == 0, r.stderr
     surface = json.loads(r.stdout)
-    assert "dana" not in json.dumps(surface)
+    _assert_absent(surface, ACCOUNT, "dana")
     assert surface["log"]["boot"]["map="] == (
         "  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die")
     assert surface["log"]["boot"]["save="] == (
@@ -401,3 +434,65 @@ def test_report_write_failure_exits_nonzero(tmp_path):
     r = _py([str(TOOLS / "sut_report.py"), str(scenario)])
     assert r.returncode == 1
     assert "cannot write report" in r.stderr
+
+
+def test_telnet_transcript_round_trips_through_the_capture_reader(tmp_path):
+    """The writer and the reader have to agree on the marker line.
+
+    sut_telnet emits `# ts=... mono=... cmd=gettime` and sut_capture parses
+    exactly that shape to derive the game-clock rate. Every test here
+    hand-writes the marker into a fixture, so a change to the emitter (dropping
+    the monotonic component, reordering the fields) would break every live
+    capture while the whole suite stayed green. This drives the real writer
+    against the real reader.
+
+    The fake console answers each command with a reading 5 game minutes apart,
+    and the two markers are stamped 10 real seconds apart, so the derived rate
+    is 0.5 game minutes per real second. Any drift in the marker format drops
+    the rate to None rather than computing a different number.
+    """
+    import re as _re
+    import socket
+    import threading
+
+    console = socket.socket()
+    console.bind(("127.0.0.1", 0))
+    console.listen(1)
+    port = console.getsockname()[1]
+
+    def serve() -> None:
+        try:
+            conn, _ = console.accept()
+            with conn:
+                conn.sendall(b"Server port: 26900\nWorld: Navezgane\n")
+                for i in range(2):
+                    conn.recv(256)
+                    conn.sendall(f"Day 1, 07:{i * 5:02d}\n".encode())
+                    time.sleep(0.05)
+        except OSError:
+            pass
+        finally:
+            console.close()
+
+    thread = threading.Thread(target=serve, daemon=True)
+    thread.start()
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    try:
+        r = _py([str(TOOLS / "sut_telnet.py"), "127.0.0.1", str(port),
+                 "--commands", "gettime,gettime", "--settle-ms", "0",
+                 "--tail-sleep", "0", "--out", str(run_dir / "telnet.txt")])
+    finally:
+        thread.join(timeout=20)
+    assert r.returncode == 0, r.stderr
+    transcript = (run_dir / "telnet.txt").read_text(encoding="utf-8")
+    assert transcript.count("cmd=gettime") == 2, transcript
+    markers = _re.findall(r"^# ts=(\S+) mono=(\d+) cmd=gettime$", transcript,
+                          _re.MULTILINE)
+    assert len(markers) == 2, f"the writer's marker changed shape:\n{transcript}"
+
+    r = _py([str(TOOLS / "sut_capture.py"), str(run_dir), "stock"])
+    assert r.returncode == 0, r.stderr
+    surface = json.loads(r.stdout)
+    assert surface["telnet"]["clockRateGameMinPerRealSec"] is not None, (
+        "the reader could not derive a rate from the writer's own transcript")

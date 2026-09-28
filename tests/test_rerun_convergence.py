@@ -123,10 +123,13 @@ def _runner_env(tmp_path: Path) -> tuple[dict[str, str], Path]:
     xdg.mkdir()
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
+    # Every one of these is required, and a silently skipped symlink would leave
+    # the runner failing somewhere the assertions below do not name.
+    missing = [t for t in ("tr", "flock", "dirname") if not shutil.which(t)]
+    if missing:
+        pytest.skip(f"fixture needs {missing} on PATH to build the fake bin")
     for tool in ("tr", "flock", "dirname"):
-        tool_path = shutil.which(tool)
-        if tool_path:
-            (fake_bin / tool).symlink_to(tool_path)
+        (fake_bin / tool).symlink_to(str(shutil.which(tool)))
     env = os.environ.copy()
     env["XDG_RUNTIME_DIR"] = str(xdg)
     env["PATH"] = str(fake_bin)

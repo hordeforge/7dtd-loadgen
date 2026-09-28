@@ -31,12 +31,29 @@ def _wait_gone(proc: subprocess.Popen[bytes], timeout: float = 15.0) -> bool:
 
 
 def _running_sleeper() -> subprocess.Popen[bytes]:
-    """A _sleeper() already visible to the /proc walk."""
+    """A _sleeper() already visible to the /proc walk.
+
+    Asserts the process appeared rather than returning a sleeper the walk may
+    never have seen: otherwise a slow /proc read surfaces as a failure of the
+    caller's kill/find assertion, which points at the wrong thing.
+    """
     proc = _sleeper()
     deadline = time.monotonic() + 10
     while time.monotonic() < deadline and proc.pid not in procs.find(MARKER):
         time.sleep(0.05)
+    try:
+        assert proc.pid in procs.find(MARKER), (
+            "the sleeper never became visible to the /proc walk")
+    except AssertionError:
+        proc.kill()
+        proc.wait(timeout=10)
+        raise
     return proc
+
+
+def _reap(proc: subprocess.Popen[bytes]) -> None:
+    proc.kill()
+    proc.wait(timeout=10)
 
 
 def test_find_matches_cmdline_substring():
@@ -44,8 +61,7 @@ def test_find_matches_cmdline_substring():
     try:
         assert proc.pid in procs.find(MARKER)
     finally:
-        proc.kill()
-        proc.wait(timeout=10)
+        _reap(proc)
 
 
 def test_find_skips_self_and_parent():
@@ -59,10 +75,15 @@ def test_find_returns_empty_for_no_match():
 
 
 def test_kill_terminates_matches():
+    # The sleeper sleeps 120s; without the finally a failing assertion here
+    # leaves it running for the rest of the session.
     proc = _running_sleeper()
-    killed = procs.kill(MARKER)
-    assert proc.pid in killed
-    assert _wait_gone(proc), "process survived kill()"
+    try:
+        killed = procs.kill(MARKER)
+        assert proc.pid in killed
+        assert _wait_gone(proc), "process survived kill()"
+    finally:
+        _reap(proc)
 
 
 def test_kill_with_no_matches_is_not_an_error():

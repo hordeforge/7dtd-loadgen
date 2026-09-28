@@ -310,7 +310,18 @@ def test_live_realearth_probe_when_server_up():
         timeout=40,
     )
     out = (r.stdout or "") + (r.stderr or "")
+    # Exit 0 alone says the run finished, not that a probe cohort joined: the
+    # gate passes 3 of 4 at --min-pass-rate 0.75, and a run that reported
+    # nothing at all still exits 0. The cohort summary is the only place the
+    # per-probe counts are reported.
     assert r.returncode == 0, out
+    assert "PASS: load 4 clients" in out, out[-2000:]
+    summary = next((ln for ln in out.splitlines() if ln.startswith("JOIN_SUMMARY")), "")
+    assert summary, f"no JOIN_SUMMARY in {out[-2000:]}"
+    fields = dict(kv.split("=", 1) for kv in summary.split()[1:])
+    assert int(fields["total"]) == 4, summary
+    assert int(fields["pass"]) >= 3, summary
+    assert int(fields["pass"]) + int(fields["fail"]) == int(fields["total"]), summary
 
 
 @pytest.mark.skipif(

@@ -14,7 +14,15 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from loadgen_config import env_bool, env_float, env_host, env_int, env_port, env_str
+from loadgen_config import (
+    env_bool,
+    env_float,
+    env_host,
+    env_int,
+    env_optional_int,
+    env_port,
+    env_str,
+)
 
 
 @pytest.mark.parametrize("raw", ["1", "true", "TRUE", "yes", "on"])
@@ -124,3 +132,67 @@ def test_host_rejects_anything_that_is_not_a_host(
     with pytest.raises(SystemExit) as excinfo:
         env_host("K")
     assert "K=" in str(excinfo.value)
+
+
+def test_int_minimum_is_enforced_and_names_the_bound(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # SWEEP_STEP (minimum=1) and BM_PLAYERS (minimum=1) depend on this arm; a
+    # SWEEP_STEP of 0 would loop the sweep round on a single zombie count.
+    monkeypatch.setenv("K", "0")
+    with pytest.raises(SystemExit) as excinfo:
+        env_int("K", 64, minimum=1)
+    assert "below the minimum 1" in str(excinfo.value)
+
+
+def test_int_maximum_is_enforced_and_names_the_bound(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("K", "99")
+    with pytest.raises(SystemExit) as excinfo:
+        env_int("K", 8, maximum=64)
+    assert "above the maximum 64" in str(excinfo.value)
+
+
+def test_float_minimum_is_enforced(monkeypatch: pytest.MonkeyPatch) -> None:
+    # SWEEP_BUDGET_MS (minimum=0.1): a zero budget marks every frame
+    # over-budget and stops the sweep on its first round.
+    monkeypatch.setenv("K", "0.0")
+    with pytest.raises(SystemExit) as excinfo:
+        env_float("K", 55.0, minimum=0.1)
+    assert "below the minimum 0.1" in str(excinfo.value)
+
+
+def test_str_falls_back_on_an_empty_export(monkeypatch: pytest.MonkeyPatch) -> None:
+    # An exported-but-empty LOADGEN_PORT is an unset knob, not the empty
+    # string: `os.environ.get(name)` alone would hand the runner a target with
+    # no port in it.
+    monkeypatch.setenv("K", "")
+    assert env_str("K", "26902") == "26902"
+    monkeypatch.delenv("K")
+    assert env_str("K", "26902") == "26902"
+    assert env_str("K") == ""
+
+
+def test_optional_int_is_none_when_unset_not_zero(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The manifest records "client default" for this knob; a substituted 0
+    # would read as a measured zero downstream.
+    monkeypatch.delenv("K", raising=False)
+    assert env_optional_int("K") is None
+    monkeypatch.setenv("K", "")
+    assert env_optional_int("K") is None
+    monkeypatch.setenv("K", "0")
+    assert env_optional_int("K", minimum=0) == 0
+    monkeypatch.setenv("K", "3")
+    assert env_optional_int("K", minimum=0) == 3
+
+
+def test_optional_int_still_enforces_its_minimum(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("K", "-1")
+    with pytest.raises(SystemExit) as excinfo:
+        env_optional_int("K", minimum=0)
+    assert "below the minimum 0" in str(excinfo.value)

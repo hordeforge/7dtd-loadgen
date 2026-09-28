@@ -62,5 +62,12 @@ def test_bench_report_artifacts_are_lf_only(tmp_path: Path) -> None:
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         timeout=30, check=False)
     assert proc.returncode == 0, proc.stderr
+    # Content first: an empty report has no CR in it either, so the byte check
+    # below would pass on a tool that wrote nothing at all.
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+    assert "| bench |" in md
+    payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
+    assert payload["schema"] == "7dtd.loadgen.benchstock.v1"
+    assert sorted(payload["laps"]) == ["lap1"]
     for name in ("bench-stock.md", "bench-stock.json"):
         assert b"\r" not in (out / name).read_bytes(), f"{name} carries CR: host newlines leaked"

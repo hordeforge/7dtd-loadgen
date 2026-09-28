@@ -66,6 +66,31 @@ def test_string_frame_time_is_coerced(snapshot):
     assert capacity_sweep.frame_alive() == (57.25, 900)
 
 
+def test_joined_cohort_is_subtracted_from_the_ceiling(snapshot):
+    # The published number is a zombie ceiling, not a live-entity count: the
+    # sweep's own joined players are in entityAlives too, and leaving them in
+    # inflates every row by the cohort size.
+    snapshot({"world": {"unityDeltaMs": 41.5, "entityAlives": 812, "players": 12}})
+    assert capacity_sweep.frame_alive() == (41.5, 800)
+
+
+def test_a_player_count_above_the_entity_count_clamps_at_zero(snapshot):
+    # A capture where the two disagree (players joined after the entity count
+    # was taken) must not report a negative zombie count.
+    snapshot({"world": {"unityDeltaMs": 10.0, "entityAlives": 4, "players": 9}})
+    assert capacity_sweep.frame_alive() == (10.0, 0)
+
+
+def test_unavailable_snapshot_is_no_reading(monkeypatch):
+    # A raising snapshot is a different failure from an empty document, and the
+    # sweep loop must stop on it the same way rather than propagate.
+    def boom():
+        raise capacity_sweep.B.SnapshotUnavailable("no apm session")
+
+    monkeypatch.setattr(capacity_sweep.B, "snapshot", boom)
+    assert capacity_sweep.frame_alive() is None
+
+
 def test_row_verdict_uses_the_raw_reading():
     inside = capacity_sweep.sample_row(zombies=40, frame_ms=54.96, budget=55.0)
     assert inside["frame_ms"] == 55.0  # rounded for the report
