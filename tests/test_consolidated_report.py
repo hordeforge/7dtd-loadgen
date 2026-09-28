@@ -1,8 +1,8 @@
 """Offline gate for the consolidated comparison report (tools/consolidated_report.py).
 
 Feeds synthetic loadgen diff.json + playtest playtest-compare.json trees and
-asserts the honest classification: CLEAN / DELTAS / ONE-SIDE / UNREADABLE, plus the
-regenerated CONSISTENT output. No servers required.
+asserts the honest classification: CLEAN / DELTAS / ONE-SIDE / UNREADABLE, plus
+the regenerated CONSOLIDATED output. No servers required.
 """
 
 from __future__ import annotations

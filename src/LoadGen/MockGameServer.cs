@@ -193,11 +193,12 @@ public sealed class MockGameServer : IDisposable
             {
                 Interlocked.Increment(ref _lookPackages);
             }
-            else if (name == "NetPackageDamageEntity" && body.Length >= 8)
+            else if (name == "NetPackageDamageEntity" && body.Length >= 10)
             {
-                // entityId i32, src u8, typ u8, ...
-                byte src = body[4];
-                byte typ = body[5];
+                // entityId i32, packed flags u32, damageSource u8, damageType u8
+                // (V3.2.0 layout, see PackageCodec.BuildDamageEntity).
+                byte src = body[8];
+                byte typ = body[9];
                 if (typ == PackageCodec.DamageTypeSuicide)
                     Interlocked.Increment(ref _suicidePackages);
                 else if (typ == PackageCodec.DamageTypeSuffocation)

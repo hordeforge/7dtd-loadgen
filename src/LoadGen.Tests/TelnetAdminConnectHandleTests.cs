@@ -4,10 +4,11 @@ using Xunit;
 namespace SevenDTD.LoadGen.Tests;
 
 /// <summary>
-/// Connect runs once per pressure wave and once per bot life (the dynamite
-/// give), so a handle it fails to release accumulates for the whole run. The
-/// socket itself is released by Dispose; this pins the other acquisition on the
-/// same path, the connect wait.
+/// Connect runs once per pressure wave, and the per-life dynamite grant used to
+/// add a connection per bot life until TelnetProvisioner gave the cohort one
+/// shared console. A handle Connect fails to release accumulates for the whole
+/// run either way. The socket itself is released by Dispose; this pins the other
+/// acquisition on the same path, the connect wait.
 /// </summary>
 public sealed class TelnetAdminConnectHandleTests
 {

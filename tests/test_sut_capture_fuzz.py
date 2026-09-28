@@ -85,12 +85,12 @@ def _assert_invariants(snap: dict) -> None:
     entities = snap["entities"]
     assert entities["alive"] + entities["dead"] == entities["count"]
     assert sum(entities["types"].values()) == entities["count"]
-    # The player axis is a count and nothing else: player names are typed by
-    # humans and the evidence is kept, so no row may survive parsing and no
-    # per-player identity reaches a committed surface.json, mutated transcript
-    # or not (see test_sut_compare). The fuzz welds rows onto other lines, so a
-    # banner value can still carry the name a mutation put there; the
-    # redaction contract itself is asserted on a well-formed transcript below.
+    # Player rows are counted and discarded, so the player axis is a count and
+    # nothing else: per-player identifiers must not reach kept evidence, and the
+    # absence of "rows" is the contract, not a gap. The fuzz welds rows onto
+    # other lines, so a banner value can still carry the name a mutation put
+    # there; the redaction contract itself is asserted on a well-formed
+    # transcript below.
     assert set(snap["players"]) == {"count"}
     assert snap["players"]["count"] >= 0
     total = snap["reportedTotal"]

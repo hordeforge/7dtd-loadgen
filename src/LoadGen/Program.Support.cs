@@ -1,12 +1,12 @@
 namespace SevenDTD.LoadGen;
 
-// Artifact IO, task teardown, and the serializer options shared by every mode
-// (probe, join, self-test, self-test-join). Anything a single mode calls alone
+// Artifact IO, task teardown, and the serializer options shared by the modes
+// that emit JSON (join, self-test-join). Anything a single mode calls alone
 // belongs in that mode's own Program.*.cs file.
 public static partial class Program
 {
-    /// <summary>Shared JSON options for every run artifact (stats-json, run
-    /// manifest): one instance so the artifact schemas serialize identically.</summary>
+    /// <summary>Shared JSON options for the run artifacts that exist (stats-json,
+    /// run manifest): one instance so the artifact schemas serialize identically.</summary>
     static readonly System.Text.Json.JsonSerializerOptions ArtifactJsonOpts = new() { WriteIndented = true };
 
     /// <summary>Write line-oriented artifact text with LF terminators and no

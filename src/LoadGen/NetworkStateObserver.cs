@@ -74,6 +74,11 @@ public sealed class NetworkStateObserver
             EmitState("buff", entityId, name, null, buffs.Contains(name), "joined-default");
     }
 
+    /// <summary>Feed one received package to the decoder. Runs on the client's
+    /// receive thread and throws <see cref="InvalidDataException"/> on a
+    /// malformed filtered body (bad length, or a legacy EntityBuffs version
+    /// whose names are hashed), so the caller must catch: a decode fault is
+    /// observation-only and must not take the join down.</summary>
     public void Observe(string packageType, ReadOnlySpan<byte> body)
     {
         if (!Enabled) return;

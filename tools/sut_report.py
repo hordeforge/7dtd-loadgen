@@ -5,7 +5,7 @@ Reads the two per-run surface.json files produced by scripts/compare_sut.sh and
 writes REPORT.md (human) + diff.json (machine) for the scenario directory.
 
 Diff axes (the comparable observable surface):
-  - join outcome (pass/fail counts, join window)
+  - join outcome (pass/fail counts, first passing client line)
   - server log severity/category counts (normalized)
   - entity counts from telnet listents (total/alive) and listplayers
   - game day/time (gettime)
@@ -299,7 +299,7 @@ def main():
         lines.append("- no axis-level differences on the compared surface")
     lines.append("\n*Triage each finding: zdtd bug vs harness artifact vs known "
                  "divergence. Known divergences are recorded in "
-                 "zdtd-server/docs/PROVENANCE.md (divergence register).*")
+                 "../zdtd-server/docs/PROVENANCE.md (divergence register).*")
 
     report = "\n".join(lines)
     with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:

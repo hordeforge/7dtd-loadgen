@@ -238,6 +238,9 @@ public sealed partial class TelnetAdmin : IDisposable
         return true;
     }
 
+    /// <summary>Open the console session, replacing any existing one. Returns
+    /// false (after logging) on bind, connect, or login failure; the object is
+    /// left disposed in that case.</summary>
     public bool Connect(int timeoutMs = 5000)
     {
         Dispose();
@@ -290,6 +293,10 @@ public sealed partial class TelnetAdmin : IDisposable
         }
     }
 
+    /// <summary>Send one admin command and return the accumulated console text.
+    /// Not just this command's reply: the console buffer is drained, so a caller
+    /// may still see output from earlier commands. Parsers must therefore match
+    /// what they need and ignore the rest. Returns "" when not connected.</summary>
     public string Exec(string cmd)
     {
         if (_stream == null || _tcp is not { Connected: true }) return "";
@@ -318,7 +325,7 @@ public sealed partial class TelnetAdmin : IDisposable
         }
     }
 
-    /// <summary>When true, if se fails (no spawn point), fall back to server kill.</summary>
+    /// <summary>When true, if the spawn commands fail (no spawn point), fall back to server kill.</summary>
     public bool KillFallback { get; set; } = true;
 
     static readonly string[] DefaultSpawnEntityTypes =
@@ -340,7 +347,7 @@ public sealed partial class TelnetAdmin : IDisposable
     }
 
     /// <summary>
-    /// Apply world pressure: try zombie se first; optional kill fallback for worlds
+    /// Apply world pressure: spawnscouts then spawnentity per player; optional kill fallback for worlds
     /// without AI spawn points (empty height-test maps).
     /// </summary>
     public int SpawnZombiesNearPlayers(string entityName = "zombieBoe", int perPlayer = 3)
@@ -359,7 +366,7 @@ public sealed partial class TelnetAdmin : IDisposable
 
         int spawned = 0;
         bool anySpawnPoint = false;
-        // Prefer AIDirector scouts (works on Navezgane even when se can't find a grid cell).
+        // Prefer AIDirector scouts (works on Navezgane even when spawnentity cannot find a grid cell).
         foreach (int id in ids.Take(8))
         {
             string r = Exec($"spawnscouts {id}");
@@ -395,7 +402,7 @@ public sealed partial class TelnetAdmin : IDisposable
             }
         }
 
-        // Height-test / broken ground: se says "No spawn point found near player".
+        // Height-test / broken ground: spawnentity says "No spawn point found near player".
         // Optional kill so death+respawn still exercises on those maps.
         int killed = 0;
         if (!anySpawnPoint && KillFallback && names.Count > 0)
@@ -412,10 +419,10 @@ public sealed partial class TelnetAdmin : IDisposable
             }
             _log?.Invoke(
                 $"TELNET world_kill players={names.Count} killed={killed} " +
-                $"(se spawn-point missing on this world)");
+                $"(spawn point missing on this world)");
         }
         else if (!anySpawnPoint && !KillFallback)
-            _log?.Invoke($"TELNET se/scouts failed (no spawn point); kill fallback off, livePlayers={ids.Count}");
+            _log?.Invoke($"TELNET spawnentity/spawnscouts failed (no spawn point); kill fallback off, livePlayers={ids.Count}");
         else if (spawned > 0 || ids.Count > 0)
             _log?.Invoke($"TELNET pressure livePlayers={ids.Count} units~={spawned} type={entityName}");
         return spawned + killed;

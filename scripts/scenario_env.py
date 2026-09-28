@@ -2,7 +2,8 @@
 """Scenario registry helpers for run_scenario.sh (realearth.json catalog).
 
 Subcommands:
-  --list [FILE]          print one "<id> <title>" line per scenario
+  --list [FILE]          print one "<id padded to 28> <title>" line per
+                         scenario, with " [ci]" / " [optional]" markers
   export FILE ID         print one KEY=VALUE line per env var for the scenario
 
 The export format is data, not shell source: the caller reads it line by line

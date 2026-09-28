@@ -106,6 +106,48 @@ under **Changed** with their migration path.
   `players.rows` shape, so every transcript raised `KeyError: 'rows'`. It pins
   the count-only player axis now, and asserts the player name from a matched
   row never reaches the snapshot.
+- The in-process mock server decoded `NetPackageDamageEntity` at the pre-3.2.0
+  offsets, reading `damageSource` and `damageType` out of the packed `flags`
+  word. Both bytes are constants (`0x10` and `0x01`), so `drownsRecv`,
+  `suicidesRecv` and `killsRecv` in the self-test summary were always 0 and
+  the self-test passed while proving nothing about the damage layout. The
+  offsets are now the ones `PackageCodec.BuildDamageEntity` writes, and the
+  self-test asserts the drown counter reaches the death count, which fails on
+  the old offsets.
+- `tests/test_sut_capture_fuzz.py` still asserted `players.rows` in the
+  telnet snapshot, a field the evidence-redaction change removed. Five fuzz
+  gates were red on the removed contract; they now assert the count-only shape
+  and that no `rows` key comes back.
+- `TelnetAdminConnectHandleTests` still described the per-life dynamite
+  connect, which the shared console (`TelnetProvisioner`) replaced.
+- `docs/`: the `Verified game builds` section still described the V3.1.0 b14
+  pin that 0.4.0 moved to V3.2.0 b10, and `TODO.md` still carried the old
+  `(1,3,10,14)` value.
+- The admin `kill` fallback was documented as firing "when scouts/`se` cannot
+  place zombies". No `se` command exists in this codebase or on the server
+  console; the fallback triggers on `spawnscouts` / `spawnentity` reporting no
+  spawn point.
+- `tools/bench_report.py` claimed to read the `BENCH_SUMMARY` console line
+  (deleted parser); `tools/consolidated_report.py` documented a `STALE` verdict
+  the code never emits and wrote "CONSISTENT" for artifacts named
+  `CONSOLIDATED.*`; `tools/sut_report.py` listed a "join window" axis it does
+  not compute and pointed at `zdtd-server/` instead of `../zdtd-server/`;
+  `tools/sut_capture.py` named zdtd save files it never filters by.
+- Usage lines omitted flags the harness actually passes:
+  `tools/sut_telnet.py --settle-ms/--tail-sleep`,
+  `scripts/validate_reconnect.py --hold-after-restart`, and the real
+  `scripts/scenario_env.py --list` column format.
+- Docstrings that no longer matched the code: the `TryInflate` summary was
+  attached to the `MaxInflatedBytes` constant it guards,
+  `Options.WanderUntilDeath` said `Mode` overrides it (it is the reverse),
+  `Options.MaxDynamitePerLife` and `DefaultMaxDynamitePerLife` promised a
+  Demolition auto-raise that lives in the CLI, `JitteredPaceMs` still told a
+  `double`->`int` overflow story the `long` widening removed, and the abs
+  keyframe path pointed at the rel-position path as being "above" it.
+- `TelnetAdmin.Connect` / `Exec` and `GameJoinClient.Run` / `Run`'s
+  `NetworkStateObserver.Observe` now document their contracts: `Exec` returns
+  the whole drained console buffer, and `Observe` throws on a malformed
+  filtered body, so the caller must catch on the receive thread.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the

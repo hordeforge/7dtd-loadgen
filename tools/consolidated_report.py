@@ -2,11 +2,11 @@
 """Consolidated stock-vs-zdtd comparison report (repeatable, machine-readable).
 
 Walks the comparison workspaces of 7dtd-loadgen (per-scenario diff.json) and
-7dtd-playtest (per-suite playtest-compare.json) and emits one CONSISTENT
-overview: every scenario/suite that was compared, its verdict, and its
-findings/deltas. This replaces the hand-maintained consolidated ledger - the
-output is regenerated from committed evidence, so the view cannot drift from
-the runs.
+7dtd-playtest (per-suite playtest-compare.json) and emits one CONSOLIDATED
+overview (CONSOLIDATED.md + .json): every scenario/suite that was compared, its
+verdict, and its findings/deltas. This replaces the hand-maintained consolidated
+ledger - the output is regenerated from committed evidence, so the view cannot
+drift from the runs.
 
 A suite/scenario is HONESTLY classified:
   - CLEAN       both sides ran, no per-case/axis differences, no findings

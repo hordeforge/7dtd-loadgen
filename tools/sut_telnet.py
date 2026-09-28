@@ -12,7 +12,8 @@ accepted as legacy alias). There is no flag for it: argv is world-readable in
 the process table.
 
 Usage:
-  sut_telnet.py <host> <port> [--commands gettime,listents,listplayers] [--out PATH]
+  sut_telnet.py <host> <port> [--commands gettime,listents,listplayers]
+                [--out PATH] [--settle-ms N] [--tail-sleep SECONDS]
   sut_telnet.py <host> <port> --commands spawnentity,0,zombieBoe --allow-mutating
 """
 

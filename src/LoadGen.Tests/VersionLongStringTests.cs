@@ -4,15 +4,14 @@ using Xunit;
 namespace SevenDTD.LoadGen.Tests;
 
 /// <summary>
-/// L12: PackageCodec.VersionLongString packs Minor as Major.(Minor/10).(Minor%10)
+/// PackageCodec.VersionLongString packs Minor as Major.(Minor/10).(Minor%10)
 /// for EGameReleaseType.V with Major &gt;= 3 (VersionInformation.LongStringNoBuild).
 ///
-/// LIMITATION: I could not source authoritative expected strings from a real
-/// VersionInformation build for the Minor &gt;= 10 cases, so those are not verified
-/// against a ground truth. Minor=1 -&gt; "V 3.0.1" is the one anchor documented in
-/// the codec (and already checked by --golden-wire). For Minor=10 and Minor=11 the
-/// tests assert the divisor logic actually distinguishes the three Minors, which is
-/// what the single existing Minor=1 test never exercised.
+/// The Minor &gt;= 10 strings here are not sourced from a real VersionInformation
+/// build: the only live-observed accepted display forms are "V 3.0.1", "V 3.1.0"
+/// and the current pin "V 3.2.0" (the latter two checked against a stock
+/// VersionAuthorizer, the last by --golden-wire). The Minor=11 case asserts
+/// that the divisor logic separates the three Minors, not a captured value.
 /// </summary>
 public sealed class VersionLongStringTests
 {
@@ -40,8 +39,8 @@ public sealed class VersionLongStringTests
     [Fact]
     public void Minor10_And_11_FollowDocumentedDivisorLayout()
     {
-        // Derived from the documented Major.(Minor/10).(Minor%10) packing, not from
-        // a real VersionInformation build (see class LIMITATION note).
+        // Derived from the documented Major.(Minor/10).(Minor%10) packing, not
+        // from a real VersionInformation build (see the class note).
         Assert.Equal("V 3.1.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 10, 0)));
         Assert.Equal("V 3.1.1", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 11, 0)));
         // V3.2.0 pin: Minor 20 packs to the display form the login gate accepts.

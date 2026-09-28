@@ -211,7 +211,7 @@ public static partial class Program
             "      comma entity classes spawned near bots via telnet (default zombieBoe)\n" +
             "  --horde-every-ms N --horde-waves N  wandering-horde bursts (0 = off)\n" +
             "  --kill-fallback / --no-kill-fallback\n" +
-            "      admin kill when se finds no spawn point (default on)\n" +
+            "      admin kill when the spawn commands find no spawn point (default on)\n" +
             "  --stats-json PATH   cohort summary (schema 7dtd.loadgen.stats.v1)\n" +
             "  --run-manifest PATH run manifest (schema 7dtd.loadgen.run.v1)\n" +
             "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +

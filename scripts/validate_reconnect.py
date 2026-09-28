@@ -10,6 +10,7 @@ real restart, not just the unit-tested state machine.
 
 Usage:
   python3 scripts/validate_reconnect.py [--players 8] [--hold-before-kill 40]
+                                         [--hold-after-restart 30]
 
 Env:
   SKIP_SERVER_START=1 to reuse a running dedicated server (then the script

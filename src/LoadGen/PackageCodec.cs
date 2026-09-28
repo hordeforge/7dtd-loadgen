@@ -219,8 +219,8 @@ public static class PackageCodec
         float qX = 0f, float qY = 0f, float qZ = 0f, float qW = 1f)
     {
         // Abs keyframe path (every AbsKeyframeInterval-th move): direct write
-        // like the rel-position hot path above; quaternion variant split out
-        // for the same display-class reason.
+        // like the rel-position hot path in BuildEntityRelPosAndRot below;
+        // quaternion variant split out for the same display-class reason.
         if (!useQRotation)
         {
             const int bodyLen = GoldenBodySize.EntityPosAndRotNoQ; // 30
@@ -865,13 +865,13 @@ public static class PackageCodec
         return list;
     }
 
-    /// <summary>Try raw DEFLATE then zlib wrapper (Noemax DeflateOutputStream is raw DEFLATE).</summary>
     // Real server packages are well under a megabyte; the cap only exists so a
     // malformed or hostile compressed frame cannot decompression-bomb the host
     // (a few KB expanding to gigabytes would OOM all bots at once). Overshoot =
     // treat as a failed decode.
     private const int MaxInflatedBytes = 64 * 1024 * 1024;
 
+    /// <summary>Try raw DEFLATE then zlib wrapper (Noemax DeflateOutputStream is raw DEFLATE).</summary>
     public static bool TryInflate(byte[] compressed, out byte[]? inflated)
     {
         inflated = null;

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Consolidate bench-stock lap evidence into a machine-readable report.
 
-Walks workspace/bench/lap<N>/<scenario>/ run-meta.json + stats.json (and the
-BENCH_SUMMARY line) and emits bench-stock.md + bench-stock.json at the laps
-root. A repeatability section compares per-scenario wall across laps
-(+-20% threshold) so the 2-lap claim is computed, not asserted.
+Walks workspace/bench/lap<N>/<scenario>/ run-meta.json + stats.json and emits
+bench-stock.md + bench-stock.json at the laps root. The bench numbers come from
+the stats-json `bench` block (the same counts the client also prints as its
+BENCH_SUMMARY console line). A repeatability section compares per-scenario wall
+across laps (+-20% threshold) so the 2-lap claim is computed, not asserted.
 
 Usage:
   bench_report.py --laps-dir <dir> [--require-laps N] [--out <dir>]

@@ -352,10 +352,11 @@ mid-run or silently changing gate semantics.
 | `LOADGEN_MIN_PASS_RATE` | `0.95` | successful-client fraction, 0..1 |
 | `LOADGEN_RAMP_MS` | `0` | join stagger window, clamped 0..3600000 |
 | `LOADGEN_QUIET` | unset | non-empty silences probe/self-test logs |
+| `LOADGEN_ALLOW_OVERLAP` | unset | `1` skips the per-target rerun lock that otherwise fails a second cohort against the same host:port |
 | `LOADGEN_SELF_TEST` | `0` | `1` forces self-test mode |
-| `LOADGEN_BOT_MODE` | auto | one of the bot modes listed above |
+| `LOADGEN_BOT_MODE` | unset | one of the bot modes listed above; unset means the CLI default, `wander` until world death |
 | `LOADGEN_BOT_MIX` | empty | weighted mix, e.g. `traverse:35,combat:20` (overrides `LOADGEN_BOT_MODE`) |
-| `LOADGEN_DEATH` | auto | `none` \| `drown` \| `suicide` \| `killed` \| `random` |
+| `LOADGEN_DEATH` | unset | `none` \| `drown` \| `suicide` \| `killed` \| `random`; unset means the CLI default, `none` (no client self-kill) |
 | `LOADGEN_PACE_MS` | mode default | ms between action steps |
 | `LOADGEN_SEED` | `42` | action RNG seed for reproducible runs |
 | `LOADGEN_NO_SPAWN` | unset | non-empty disables telnet zombie spawns |
@@ -418,7 +419,7 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
 
 - **Threads/memory:** each live bot pins one ThreadPool thread (~1 MB stack,
   provisioned up-front so `--ramp-ms` is the real gate; see the JOIN_LOAD
-  comment in `Program.cs`). 1000 bots = ~1 GB of thread stacks before game
+  comment in `Program.Join.cs`). 1000 bots = ~1 GB of thread stacks before game
   cost. Prefer fewer bots + server-side zombie spawn for load, not more bots.
 - **Loopback IPs:** unique `127.x.x.x` binds bypass the server's per-IP 500 ms
   connect throttle. On stock Linux `lo` is configured as `127.0.0.1/8`, so the
@@ -453,16 +454,19 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
 
 ## Verified game builds
 
-The client pins **7DTD V3.2.0 (b10)** (`GameVersion 1.3.20.10`,
-`PackageCodec.GameVersion`; the pin moved in 0.4.0). The join client reads the
+`PackageCodec.GameVersion` is pinned to **V3.2.0 (b10)** (the pin moved in
+0.4.0), i.e. `VersionInfo(1, 3, 20, 10)`: the engine packs release `V` as
+release=1, major=3, and minor=20 for "3.2.0". The join client reads the
 server's version from `NetPackagePackageIds` and builds its `PlayerLogin` from it
-(VersionAuthorizer compares `LongStringNoBuild`, e.g. "V 3.2"), so joining a
-nearby minor/branch build works without a client change; the golden-wire body
-size constants and the `PackageIds` map count (189) are captured-build-specific
-and fail loudly (`FAIL golden-wire`) on a different build - bump `GameVersion`
-and re-verify against the new dump before shipping a fixture for another release.
-**Last live-verified 2026-08-10, on the previous pin:** a full join against the
-stock V3.1.0 dedi reported
+(VersionAuthorizer compares `LongStringNoBuild`, where the display form packs
+Minor as `mid*10 + patch`, so 20 renders as "V 3.2.0"), so joining a nearby
+minor/branch build works without a client change; the golden-wire body size
+constants and the checked-in `PackageIds` head fixtures (V3.0.1 b4 and V3.1.0
+b14, map count 189) are build-specific and fail loudly (`FAIL golden-wire`) on a
+different build - bump `GameVersion` and re-verify against the new dump before
+shipping a fixture for another release.
+**Live re-verified 2026-08-10 against stock V3.1.0 (b14),** the last live join
+before the pin moved to V3.2.0: a full join reported
 `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
 `LoginAnswered: allowed=True` - the golden-wire's map count and the census
 (`../7dtd-engine-research/docs/network/network.md`: 189 of 193 registered)
@@ -546,7 +550,8 @@ Current protocol, workload, and operations work is tracked in
   throttles.
 - Empty height-test style maps often lack AI spawn points; use a stock pregen
   or RWG 4k for real POI/sleeper activity.
-- Admin `kill` fallback fires when scouts/`se` cannot place zombies, keeping
+- Admin `kill` fallback fires when `spawnscouts` / `spawnentity` cannot place
+  zombies, keeping
   death/respawn soak working on such maps (`--no-kill-fallback` disables it;
   default on).
 - Fake clients are test actors, not gameplay-compatible replacements for the

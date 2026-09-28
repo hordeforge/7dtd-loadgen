@@ -131,7 +131,10 @@ public sealed class GameJoinClient
         public int ActionSeed { get; set; } = 42;
         public int ClientId { get; set; } = 1;
         public bool SkipActions { get; set; }
-        /// <summary>Walk until world death (default true). Overridden by Mode.</summary>
+        /// <summary>Walk until world death (default true). Run downgrades
+        /// <see cref="ActionLoop.BotMode.Wander"/> to <c>Mixed</c> when this is
+        /// false, because Mixed is the only other mode that never self-kills;
+        /// <see cref="Mode"/> itself does not override this flag.</summary>
         public bool WanderUntilDeath { get; set; } = true;
         /// <summary>Bot behaviour mode (see <see cref="ActionLoop.BotMode"/>).</summary>
         public ActionLoop.BotMode Mode { get; set; } = ActionLoop.BotMode.Wander;
@@ -140,7 +143,9 @@ public sealed class GameJoinClient
         /// <summary>Optional pace override in ms (-1 = mode default).</summary>
         public int PaceMs { get; set; } = -1;
 
-        /// <summary>Dynamite cap per life (Demolition mode raises this).</summary>
+        /// <summary>Dynamite cap per life. The Demolition auto-raise is the
+        /// CLI's (Program.DynamiteCapFor), so an explicit --max-dynamite wins
+        /// regardless of flag order.</summary>
         public int MaxDynamitePerLife { get; set; } = ActionLoop.DefaultMaxDynamitePerLife;
         /// <summary>Total bots in this run (chat throttle).</summary>
         public int CohortSize { get; set; } = 1;
@@ -165,6 +170,11 @@ public sealed class GameJoinClient
         public BenchClock? Bench { get; set; }
     }
 
+    /// <summary>Join, act, and exit with the automation contract: 0 when the bot
+    /// reached <c>Joined</c> and ran its workload, 1 otherwise. Runs on its own
+    /// poll thread, mutates the shared <see cref="State"/>, and registers in the
+    /// process-global <c>ActiveNets</c> for its lifetime (see the class comment
+    /// on that list's threading contract). Releases the socket on every path.</summary>
     public int Run(Options opt)
     {
         void Log(string msg)
@@ -1270,6 +1280,14 @@ public sealed class GameJoinClient
         if (server.WalkPackages < 1)
         {
             log?.Invoke("FAIL server did not observe walk packages");
+            return 1;
+        }
+        // Pins the V3.2.0 damage-body offsets the mock decodes: the drown
+        // damage source/type only land in these counters if the mock reads
+        // them from behind the packed flags word, not from the flags bytes.
+        if (server.DrownPackages < sm.DeathCount)
+        {
+            log?.Invoke($"FAIL mock saw {server.DrownPackages} drown packages for {sm.DeathCount} deaths");
             return 1;
         }
         if (sm.DeathCount < 2)

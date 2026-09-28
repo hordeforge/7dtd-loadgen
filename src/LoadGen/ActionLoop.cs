@@ -12,8 +12,10 @@ public static class ActionLoop
     // real client instead of outrunning them.
     const float MaxRunSpeedMps = 6.0f;
 
-    /// <summary>Default per-life dynamite cap; selecting Demolition while the cap
-    /// is still this default auto-raises it to <see cref="DemolitionMaxDynamitePerLife"/>.</summary>
+    /// <summary>Default per-life dynamite cap. The Demolition auto-raise to
+    /// <see cref="DemolitionMaxDynamitePerLife"/> lives in the CLI
+    /// (Program.DynamiteCapFor), which is the only place that knows whether the
+    /// caller passed --max-dynamite explicitly.</summary>
     public const int DefaultMaxDynamitePerLife = 3;
 
     /// <summary>Raised dynamite cap for Demolition mode (terrain destruction load).</summary>
@@ -840,10 +842,10 @@ public static class ActionLoop
         Math.Max(plannedSteps - 2, (int)((long)plannedSteps * 4 / 5));
 
     /// <summary>Apply the ±20% think-time jitter. Saturates instead of wrapping:
-    /// a huge --pace-ms makes the double product exceed int range, and .NET's
-    /// out-of-range double→int cast yields int.MinValue - a negative pace that
-    /// would skip the sleep loop below and silently turn the most-paced bot into
-    /// an unpaced spammer.</summary>
+    /// a huge --pace-ms makes the double product exceed int range, so the product
+    /// is widened to long and only the final result is clamped - a wrapped
+    /// negative would skip the sleep loop below and silently turn the
+    /// most-paced bot into an unpaced spammer.</summary>
     internal static int JitteredPaceMs(int paceMs, Random rng)
     {
         long jittered = (long)(paceMs * (0.8 + rng.NextDouble() * 0.4));
