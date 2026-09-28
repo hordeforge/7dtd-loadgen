@@ -120,4 +120,51 @@ public sealed class BenchClockTests
         Assert.Equal(0, c.ActiveAtWindowEnd);
         Assert.Equal(0, c.ActiveMin);
     }
+
+    /// <summary>In a bench run one sampler thread feeds the curve while every
+    /// bot thread counts window events, and the summary reads min/max from the
+    /// orchestrator thread. The min/max pair must stay a consistent snapshot
+    /// (min never above max) across all three roles.</summary>
+    [Fact]
+    public async Task ConcurrentSampleAndCount_MinMaxStayConsistent()
+    {
+        var c = new BenchClock(0, 60_000);
+        var stop = new CancellationTokenSource();
+        var workers = new List<Task>();
+        for (int i = 0; i < 4; i++)
+        {
+            int active = i;
+            workers.Add(Task.Run(() =>
+            {
+                while (!stop.IsCancellationRequested)
+                {
+                    c.SampleActive(active);
+                    c.OnAction();
+                    c.OnDeath();
+                    c.OnRespawn();
+                }
+            }));
+        }
+        try
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                int min = c.ActiveMin;
+                int max = c.ActiveMax;
+                Assert.True(min <= max, $"min={min} above max={max}");
+                Assert.InRange(max, 0, 3);
+            }
+        }
+        finally
+        {
+            stop.Cancel();
+            await Task.WhenAll(workers).WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        // All four sampler values are in the curve, so both ends are covered.
+        Assert.Equal(0, c.ActiveMin);
+        Assert.Equal(3, c.ActiveMax);
+        var (actions, deaths, respawns) = c.WindowCounts;
+        Assert.True(actions > 0 && deaths > 0 && respawns > 0);
+    }
 }

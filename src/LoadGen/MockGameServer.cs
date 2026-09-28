@@ -36,14 +36,18 @@ public sealed class MockGameServer : IDisposable
     // an echo nonce for a loopback test double, not a secret.
     readonly Random _challengesRng;
     readonly object _challengesRngLock = new();
+    readonly object _pollGate = new();
+    int _pollingNow;
+    int _maxConcurrentPolls;
     int _nextEntity = 100;
 
     /// <summary>Challenge seed used when a caller passes none.</summary>
     public const int DefaultSeed = 0x5f3759df;
 
     // Counters are bumped inside LiteNetLib event handlers, which run on
-    // whichever thread calls Poll(); increment them atomically so two pollers
-    // can never lose an update. Reads are plain (atomic) int loads.
+    // whichever thread calls Poll(). Poll() serializes those threads, but the
+    // properties are read from test threads while the poll loop runs, so the
+    // bumps stay atomic and the reads are plain (atomic) int loads.
     int _walkPackages;
     int _jumpPackages;
     int _drownPackages;
@@ -100,7 +104,25 @@ public sealed class MockGameServer : IDisposable
         Port = port > 0 ? port : _net.LocalPort;
     }
 
-    public void Poll() => _net.PollEvents();
+    /// <summary>One poll tick. Serialized: LiteNetLib's NetManager is
+    /// single-threaded by contract (PollEvents dequeues the shared incoming
+    /// queues and every handler mutates peer state), so two pollers inside it
+    /// concurrently corrupt those queues. Atomic counters below keep the
+    /// handler-side totals exact; they cannot repair the library.</summary>
+    public void Poll()
+    {
+        lock (_pollGate)
+        {
+            int now = Interlocked.Increment(ref _pollingNow);
+            if (now > _maxConcurrentPolls) _maxConcurrentPolls = now;
+            try { _net.PollEvents(); }
+            finally { Interlocked.Decrement(ref _pollingNow); }
+        }
+    }
+
+    /// <summary>Highest number of pollers ever inside <see cref="Poll"/> at
+    /// once. Must stay 1; above 1 the NetManager was driven from two threads.</summary>
+    internal int MaxConcurrentPolls => Volatile.Read(ref _maxConcurrentPolls);
 
     void OnPeerConnected(NetPeer peer)
     {

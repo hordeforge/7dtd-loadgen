@@ -665,7 +665,24 @@ public sealed class GameJoinClient
             // A dead socket throws here; the finally below still releases the
             // manager, and this courtesy BYE has no result to report.
             if (!ShutdownRequested)
-                try { net.DisconnectAll(); net.PollEvents(); Thread.Sleep(120); }
+                try
+                {
+                    // Under SweepGate, like StopNet and the sweep itself. The
+                    // ShutdownRequested check above only orders this thread
+                    // against the sweep's 300 ms grace; it does not exclude it.
+                    // Between that read and this lock the sweep can start and
+                    // drive DisconnectAll/Stop on this same non-thread-safe
+                    // NetManager from the signal-handler thread, so both must
+                    // serialize. The sleep stays outside the gate: it is a BYE
+                    // drain, and holding the process-wide teardown lock for it
+                    // would delay every other bot's StopNet.
+                    lock (SweepGate)
+                    {
+                        net.DisconnectAll();
+                        net.PollEvents();
+                    }
+                    Thread.Sleep(120);
+                }
                 catch (Exception) { }
         }
         finally

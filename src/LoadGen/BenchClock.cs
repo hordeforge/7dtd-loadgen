@@ -98,9 +98,18 @@ public sealed class BenchClock
         (Volatile.Read(ref _actionsInWindow), Volatile.Read(ref _deathsInWindow),
          Volatile.Read(ref _respawnsInWindow));
 
-    public int ActiveMin => _activeMin == int.MaxValue ? 0 : _activeMin;
+    // Written by the sampler under _activeCurve, read by whoever renders the
+    // summary: same lock as the write, so the min/max pair is a consistent
+    // snapshot rather than two independent unsynchronized loads.
+    public int ActiveMin
+    {
+        get { lock (_activeCurve) return _activeMin == int.MaxValue ? 0 : _activeMin; }
+    }
 
-    public int ActiveMax => _activeMax;
+    public int ActiveMax
+    {
+        get { lock (_activeCurve) return _activeMax; }
+    }
 
     /// <summary>Active clients at (or just before) the window start; 0 when no sample yet.</summary>
     public int ActiveAtWindowStart
