@@ -106,13 +106,21 @@ public static class RunReport
             : "";
     }
 
+    /// <summary>One log line in the shape every line of a run uses: UTC
+    /// timestamp, level token, then the message. Built in one place because a
+    /// module that formats its own lines (the telnet console did) puts a line
+    /// into the run transcript with no timestamp and no level, which is
+    /// invisible to a time-ordered read of the log and to a grep on ERROR.</summary>
+    public static string Event(string level, string message) =>
+        $"[{DateTime.UtcNow:O}] {level} {message}";
+
     /// <summary>One stderr fault line in the shape every other fault in the
     /// client uses: UTC timestamp, ERROR level, then the fault. A teardown
     /// fault that arrives without those two fields is indistinguishable from
     /// a bot's own log line in a long cohort transcript, and the level is what
     /// a grep for the run's errors keys on.</summary>
     public static string FaultLine(string context, Exception ex) =>
-        $"[{DateTime.UtcNow:O}] ERROR {FaultText(context, ex)}";
+        Event("ERROR", FaultText(context, ex));
 
     /// <summary>Write line-oriented artifact text with LF terminators and no
     /// BOM, whatever the host's Environment.NewLine is. Client logs and JSONL

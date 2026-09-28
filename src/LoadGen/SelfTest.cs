@@ -70,7 +70,7 @@ static class SelfTest
             return 1;
         }
         port = port > 0 ? port : server.LocalPort;
-        Console.WriteLine($"[{DateTime.UtcNow:O}] [self-test] STAGE self_host_listen: port={port} count={count}");
+        Console.WriteLine(RunReport.Event("INFO", $"[self-test] STAGE self_host_listen: port={port} count={count}"));
         using var cts = new CancellationTokenSource();
         var hostLoop = Task.Run(() => { while (!cts.Token.IsCancellationRequested) { server.PollEvents(); Thread.Sleep(2); } });
 

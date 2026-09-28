@@ -317,10 +317,10 @@ public static partial class Program
         if (concurrency <= 0)
             concurrency = count;
         else if (concurrency < count)
-            Console.WriteLine(
-                $"[{DateTime.UtcNow:O}] WARN --concurrency {concurrency} < --count {count}: only "
+            Console.WriteLine(RunReport.Event("WARN",
+                $"--concurrency {concurrency} < --count {count}: only "
                 + $"{concurrency} bots will be live at once; long-lived join bots never free slots. "
-                + $"Use --concurrency {count} (or omit it) for {count} simultaneous players.");
+                + $"Use --concurrency {count} (or omit it) for {count} simultaneous players."));
 
         // Default: wander endlessly until zombies/rad/water/server kill the bot (no client self-kill).
         if (!modeSet)
@@ -359,18 +359,18 @@ public static partial class Program
         if (spawnZombies)
         {
             int spawnIntervalMs = Math.Max(MinSpawnEveryMs, spawnEveryMs);
-            Console.WriteLine(
-                $"[{DateTime.UtcNow:O}] ZOMBIE_SPAWN telnet={telnetHost}:{telnetPort} " +
-                $"everyMs={spawnIntervalMs} perPlayer={spawnPerPlayer} entity={spawnEntity}");
+            Console.WriteLine(RunReport.Event("INFO",
+                $"ZOMBIE_SPAWN telnet={telnetHost}:{telnetPort} " +
+                $"everyMs={spawnIntervalMs} perPlayer={spawnPerPlayer} entity={spawnEntity}"));
             if (spawnIntervalMs != spawnEveryMs)
-                Console.WriteLine(
-                    $"[{DateTime.UtcNow:O}] WARN --spawn-every-ms {spawnEveryMs} raised to the " +
-                    $"{MinSpawnEveryMs} ms floor (a faster wave cadence is not run)");
+                Console.WriteLine(RunReport.Event("WARN",
+                    $"--spawn-every-ms {spawnEveryMs} raised to the " +
+                    $"{MinSpawnEveryMs} ms floor (a faster wave cadence is not run)"));
             // First wave after bots have had a chance to join.
             spawnTask = RunTelnetPressureLoop("spawn", spawnCts.Token,
                 startDelayMs: 8_000, intervalMs: spawnIntervalMs,
                 errorBackoffMs: 10_000,
-                () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine)
+                log => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, log)
                 {
                     KillFallback = killFallback,
                 },
@@ -402,20 +402,20 @@ public static partial class Program
         if (hordeEveryMs > 0)
         {
             int hordeIntervalMs = Math.Max(MinHordeEveryMs, hordeEveryMs);
-            Console.WriteLine(
-                $"[{DateTime.UtcNow:O}] WANDERING_HORDE telnet={telnetHost}:{telnetPort} "
-                + $"everyMs={hordeIntervalMs} waves={hordeWaves}");
+            Console.WriteLine(RunReport.Event("INFO",
+                $"WANDERING_HORDE telnet={telnetHost}:{telnetPort} "
+                + $"everyMs={hordeIntervalMs} waves={hordeWaves}"));
             if (hordeIntervalMs != hordeEveryMs)
-                Console.WriteLine(
-                    $"[{DateTime.UtcNow:O}] WARN --horde-every-ms {hordeEveryMs} raised to the " +
-                    $"{MinHordeEveryMs} ms floor (a faster horde cadence is not run)");
+                Console.WriteLine(RunReport.Event("WARN",
+                    $"--horde-every-ms {hordeEveryMs} raised to the " +
+                    $"{MinHordeEveryMs} ms floor (a faster horde cadence is not run)"));
             // Each wave opens a fresh telnet session, so the rotation cursor
             // lives here rather than on the (per-wave) admin.
             int hordeCursor = 0;
             hordeTask = RunTelnetPressureLoop("horde", spawnCts.Token,
                 startDelayMs: 20_000, intervalMs: hordeIntervalMs,
                 errorBackoffMs: 15_000,
-                () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine),
+                log => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, log),
                 admin => admin.SpawnWanderingHorde(hordeWaves, 2, ref hordeCursor));
         }
 
@@ -501,16 +501,18 @@ public static partial class Program
                     || cause == DeathCause.ServerDisconnect))
                 {
                     log?.Invoke(
-                        $"[{DateTime.UtcNow:O}] REJOIN client={clientId} attempt={attempt} " +
-                        $"cause={DeathCauseNames.Of(cause)} remainingMs={remainMs}");
+                        RunReport.Event("INFO",
+                        $"REJOIN client={clientId} attempt={attempt} " +
+                        $"cause={DeathCauseNames.Of(cause)} remainingMs={remainMs}"));
                     Thread.Sleep(backoff(2_000, 500));
                     continue;
                 }
                 if (!last.EverJoined)
                 {
                     log?.Invoke(
-                        $"[{DateTime.UtcNow:O}] REJOIN client={clientId} attempt={attempt} " +
-                        $"no_join stage={last.Stage} remainingMs={remainMs}");
+                        RunReport.Event("INFO",
+                        $"REJOIN client={clientId} attempt={attempt} " +
+                        $"no_join stage={last.Stage} remainingMs={remainMs}"));
                     Thread.Sleep(backoff(3_000, 750));
                     continue;
                 }
@@ -588,10 +590,10 @@ public static partial class Program
             // Same run header as the cohort lane: a single-bot run also produces
             // a stats json and a manifest, and its console lines have to name
             // the run they belong to.
-            Console.WriteLine(
-                $"[{DateTime.UtcNow:O}] JOIN_LOAD count=1 concurrency=1 host={opt.Host}:{opt.Port} " +
+            Console.WriteLine(RunReport.Event("INFO",
+                $"JOIN_LOAD count=1 concurrency=1 host={opt.Host}:{opt.Port} " +
                 $"mode={opt.Mode} death={opt.Death} actions={opt.ActionCount} seed={opt.ActionSeed} " +
-                $"timeoutMs={opt.TimeoutMs}{scenarioTag} bind={opt.LocalBindIp ?? "0.0.0.0"}");
+                $"timeoutMs={opt.TimeoutMs}{scenarioTag} bind={opt.LocalBindIp ?? "0.0.0.0"}"));
             var lines = new RunLogBuffer();
             // --quiet drops the console echo only; --log still gets every line.
             // The delegate is shared: the bot's loop calls it, and so does the
@@ -673,21 +675,21 @@ public static partial class Program
         ThreadPool.SetMinThreads(concurrency + 16, Math.Max(minIocp, concurrency + 16));
 
         // Multi join: unique 127.x.x.x binds + bounded concurrency (dedicated rate-limit is per IP)
-        Console.WriteLine(
-            $"[{DateTime.UtcNow:O}] JOIN_LOAD count={count} concurrency={concurrency} " +
+        Console.WriteLine(RunReport.Event("INFO",
+            $"JOIN_LOAD count={count} concurrency={concurrency} " +
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
             $"seed={opt.ActionSeed}{scenarioTag} " +
             $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} killFallback={killFallback} " +
-            $"bind=127.x multi-ip");
+            $"bind=127.x multi-ip"));
         // killFallback only takes effect inside the telnet spawn loop, so the
         // pressure warning fires on spawnZombies alone.
         if (spawnZombies)
-            Console.WriteLine(
-                $"[{DateTime.UtcNow:O}] WARNING: server-side pressure active - " +
+            Console.WriteLine(RunReport.Event("WARN",
+                "server-side pressure active - " +
                 "telnet zombie spawning" +
                 (killFallback ? " and admin kill fallback" : "") +
                 ". These modify the world and raise server load; use --no-spawn-zombies " +
-                "and/or --no-kill-fallback for a pure join/action measurement.");
+                "and/or --no-kill-fallback for a pure join/action measurement."));
         // Per-bot outcome: the session's final state snapshot already carries the
         // aggregate counters (RunWithRejoin folds every rejoin attempt into it),
         // so storing the object keeps one source of truth for the summary,
@@ -992,32 +994,44 @@ public static partial class Program
 
     /// <summary>Periodic telnet pressure loop shared by the zombie trickle and
     /// wandering hordes: one fresh telnet session per wave (long sessions drop
-    /// half-open sockets), fixed backoff on faults, ends with cancellation.</summary>
+    /// half-open sockets), fixed backoff on faults, ends with cancellation.
+    /// The loop owns the per-wave log so it can report an unreachable console
+    /// once per outage instead of once per wave, and so the run's transcript
+    /// ends with what the pressure source actually did.</summary>
     internal static Task RunTelnetPressureLoop(
         string label, CancellationToken ct,
         int startDelayMs, int intervalMs, int errorBackoffMs,
-        Func<TelnetAdmin> createAdmin, Action<TelnetAdmin> wave)
+        Func<Action<string>, TelnetAdmin> createAdmin, Action<TelnetAdmin> wave)
         => Task.Run(() =>
         {
-            if (!NappableDelay(startDelayMs, ct)) return;
-            while (!ct.IsCancellationRequested)
+            var report = new PressureWaveLog(label, Console.WriteLine);
+            if (NappableDelay(startDelayMs, ct))
             {
-                try
+                while (!ct.IsCancellationRequested)
                 {
-                    using var admin = createAdmin();
-                    if (admin.Connect())
-                        wave(admin);
-                    if (!NappableDelay(intervalMs, ct)) break;
-                }
-                catch (OperationCanceledException) { break; }
-                // A fault observed while shutting down is teardown, not a telnet
-                // error: gate on the token so a stop never waits out the backoff.
-                catch (Exception ex) when (!ct.IsCancellationRequested)
-                {
-                    Console.Error.WriteLine(
-                        $"[{DateTime.UtcNow:O}] TELNET {label} err {RunReport.FaultText(label, ex)}");
-                    if (!NappableDelay(errorBackoffMs, ct)) break;
+                    report.WaveStarted();
+                    try
+                    {
+                        using var admin = createAdmin(report.Admin);
+                        if (admin.Connect())
+                        {
+                            wave(admin);
+                            report.WaveApplied();
+                        }
+                        else
+                            report.Unreachable();
+                        if (!NappableDelay(intervalMs, ct)) break;
+                    }
+                    catch (OperationCanceledException) { break; }
+                    // A fault observed while shutting down is teardown, not a telnet
+                    // error: gate on the token so a stop never waits out the backoff.
+                    catch (Exception ex) when (!ct.IsCancellationRequested)
+                    {
+                        report.Fault(ex);
+                        if (!NappableDelay(errorBackoffMs, ct)) break;
+                    }
                 }
             }
+            Console.WriteLine(report.Summary);
         });
 }

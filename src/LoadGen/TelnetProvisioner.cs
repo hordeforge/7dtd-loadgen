@@ -116,8 +116,9 @@ public sealed class TelnetProvisioner : IDisposable
                     // shared lab server can carry newlines or terminal escapes,
                     // and this line is run evidence parsed by the harness.
                     req.Log?.Invoke(
-                        $"[{DateTime.UtcNow:O}] PROVISION entity={req.EntityId} "
-                        + $"cmd={req.Command} response={RunReport.SafeText(response.Trim())}");
+                        RunReport.Event("INFO",
+                        $"PROVISION entity={req.EntityId} "
+                        + $"cmd={req.Command} response={RunReport.SafeText(response.Trim())}"));
                 }
                 catch (Exception ex)
                 {
@@ -135,7 +136,7 @@ public sealed class TelnetProvisioner : IDisposable
         }
     }
 
-    void Report(Request req, string message) => (req.Log ?? _log)($"[{DateTime.UtcNow:O}] {message}");
+    void Report(Request req, string message) => (req.Log ?? _log)(RunReport.Event("WARN", message));
 
     const int ReadPollIntervalMs = 20;
     const int ReconnectBackoffMs = 200;
@@ -145,8 +146,8 @@ public sealed class TelnetProvisioner : IDisposable
         if (_stopping) return;
         _stopping = true;
         if (!_worker.Join(ShutdownWaitMs))
-            _log($"[{DateTime.UtcNow:O}] PROVISION shutdown timeout; dropped={Dropped}");
+            _log(RunReport.Event("WARN", $"PROVISION shutdown timeout; dropped={Dropped}"));
         if (Dropped > 0)
-            _log($"[{DateTime.UtcNow:O}] PROVISION dropped={Dropped}");
+            _log(RunReport.Event("WARN", $"PROVISION dropped={Dropped}"));
     }
 }

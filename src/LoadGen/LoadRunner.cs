@@ -55,7 +55,7 @@ public static class LoadRunner
                     catch (Exception ex)
                     {
                         var lines = new List<string>();
-                        if (keepLines) lines.Add($"[{DateTime.UtcNow:O}] [fake#{id}] EX {RunReport.FaultText("session", ex)}");
+                        if (keepLines) lines.Add(RunReport.Event("ERROR", $"[fake#{id}] EX {RunReport.FaultText("session", ex)}"));
                         // A faulted probe is booked as a plain fail below, and
                         // keepLines is false for every quiet run and every
                         // probe past the logged window, so without this the

@@ -180,7 +180,7 @@ public sealed class GameJoinClient
     {
         void Log(string msg)
         {
-            string line = $"[{DateTime.UtcNow:O}] [join#{opt.ClientId}] {msg}";
+            string line = RunReport.Event("INFO", $"[join#{opt.ClientId}] {msg}");
             opt.Log?.Invoke(line);
             State.Note(line);
         }
