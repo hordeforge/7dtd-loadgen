@@ -198,7 +198,10 @@ python3 "$SBCONFIG" render \
 # The rendered config carries TelnetPassword: keep it owner-readable only.
 chmod 600 "$TMPCFG"
 
-LOG="$USERDATA/server_prefab_${WORLD_NAME}_${WORLD_GEN_SIZE}_$(date +%Y-%m-%d__%H-%M-%S).txt"
+# UTC stamp: a local stamp repeats across a fall-back transition, so two starts
+# an hour apart could resolve to the same log file and the second -logfile write
+# truncates the first run's evidence. The UTC form also sorts lexicographically.
+LOG="$USERDATA/server_prefab_${WORLD_NAME}_${WORLD_GEN_SIZE}_$(date -u +%Y%m%dT%H%M%SZ).txt"
 echo "$LOG" >"$USERDATA/dedicated.logpath"
 echo "Log: $LOG"
 echo "Note: first RWG boot generates the 4k world (can take several minutes)."

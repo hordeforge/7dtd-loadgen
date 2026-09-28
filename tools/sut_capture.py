@@ -25,6 +25,10 @@ import re
 import sys
 from datetime import datetime
 
+# A 7 Days to Die game day is 24 game hours, and `gettime` prints "Day N, HH:MM"
+# with the hour wrapping back to 0 at game midnight.
+GAME_MINUTES_PER_DAY = 1440
+
 
 def _file_size(path: str) -> int | None:
     """Size of a listed file, or None when it vanished before the stat.
@@ -183,7 +187,7 @@ def telnet_snapshot(run_dir):
 
         def gm(r):
             d, h, mnt = (int(x) for x in r[2])
-            return d * 1440 + h * 60 + mnt
+            return d * GAME_MINUTES_PER_DAY + h * 60 + mnt
 
         dt_s = None
         if first[1] is not None and last[1] is not None:
@@ -196,7 +200,13 @@ def telnet_snapshot(run_dir):
             except ValueError:
                 dt_s = None
         if dt_s is not None and dt_s > 0:
-            rate = round((gm(last) - gm(first)) / dt_s, 4)
+            # The game clock rolls over at 00:00 into the next Day, so a session
+            # that straddles game midnight ("Day 60, 23:58" -> "Day 61, 00:03")
+            # subtracts to a large negative number. Modulo one game day turns
+            # the rollover into the few minutes that actually elapsed; the
+            # capture window is seconds, far shorter than a game day.
+            game_min = (gm(last) - gm(first)) % GAME_MINUTES_PER_DAY
+            rate = round(game_min / dt_s, 4)
     return {
         "day": list(day.groups()) if day else None,
         "banner": banner,

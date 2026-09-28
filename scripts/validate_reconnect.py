@@ -100,7 +100,7 @@ def start_server(players: int) -> None:
     env = dict(
         os.environ,
         RE_WORLD_NAME="Navezgane",
-        RE_GAME_NAME=f"ReconnectStd_{time.strftime('%m%d_%H%M%S')}",
+        RE_GAME_NAME=f"ReconnectStd_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}",
         RE_SERVER_MAX_PLAYERS=str(max(players, 16)),
     )
     subprocess.Popen(
@@ -154,7 +154,7 @@ def main() -> int:
         # bots keep retrying through the kill + restart).
         print(f"[reconnect] joining {args.players} bots (ramp 2.5 s)...")
         exe = ROOT / "src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll"
-        log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%d_%H%M%S')}.out"
+        log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.out"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         cmd = [
             "dotnet", str(exe),

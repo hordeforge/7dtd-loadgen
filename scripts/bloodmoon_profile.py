@@ -130,7 +130,9 @@ def alive():
 def start_server():
     # Unique save per run: reusing a save from a crashed/saturated run reloads its
     # persisted entities + stale player profiles and poisons the load (bot churn).
-    game_name = f"BloodMoonStd_{time.strftime('%m%d_%H%M%S')}"
+    # UTC stamp, not local: at a fall-back transition the local clock repeats an
+    # hour, and two runs then resolve to the same save name.
+    game_name = f"BloodMoonStd_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
     env = dict(os.environ, DOTNET_ROOT=DOTNET, RE_WORLD_NAME="Navezgane",
                RE_GAME_NAME=game_name, RE_SERVER_MAX_PLAYERS=str(max(PLAYERS, 64)),
                RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5")

@@ -118,7 +118,10 @@ public static partial class Program
             else if (args[i] is "--key" or "--password") return SecretFlagRemoved(args[i], "LOADGEN_KEY");
             else if (args[i] == "--timeout" && i + 1 < args.Length)
             {
-                opt.TimeoutMs = int.Parse(args[++i]);
+                if (!TryParseTimeoutMs(args[++i], out int timeoutMs))
+                    return InvalidArg("--timeout", args[i],
+                        $"a positive millisecond value up to {MaxTimeoutMs} (~24.9 days)");
+                opt.TimeoutMs = timeoutMs;
                 timeoutSet = true;
             }
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];

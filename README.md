@@ -212,7 +212,8 @@ tools/                 SUT-comparison capture/report + bench consolidation
 ## Workload controls
 
 The join runner accepts `--count` and `--concurrency` for cohort size, plus
-`--timeout` for the wall-clock budget. Bots default to wandering until death;
+`--timeout` for the wall-clock budget in milliseconds (1 to 2147483647, about
+24.9 days). Bots default to wandering until death;
 `--mode`, `--actions`, `--pace-ms`, and `--seed` make shorter
 or deterministic action workloads possible. Use `--min-pass-rate` to require a
 minimum successful-client fraction.

@@ -52,6 +52,28 @@ public static partial class Program
     /// silently loses meaning (always-fail or always-pass).</summary>
     public static bool IsValidMinPassRate(double rate) => !double.IsNaN(rate) && rate >= 0.0 && rate <= 1.0;
 
+    /// <summary>Upper bound for --timeout, in milliseconds. The budget is an
+    /// int end to end (LiteNetLib's DisconnectTimeout, the per-attempt
+    /// remaining), so int.MaxValue (~24.9 days) is the ceiling a longer soak
+    /// would need a long budget for.</summary>
+    public const int MaxTimeoutMs = int.MaxValue;
+
+    /// <summary>--timeout as a positive millisecond budget within
+    /// <see cref="MaxTimeoutMs"/>. Parsed as long so an over-long soak is
+    /// rejected with its bound named, instead of throwing OverflowException out
+    /// of int.Parse at argument-parse time.</summary>
+    public static bool TryParseTimeoutMs(string raw, out int ms)
+    {
+        ms = 0;
+        if (!long.TryParse(raw, System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture, out long v))
+            return false;
+        if (v <= 0 || v > MaxTimeoutMs)
+            return false;
+        ms = (int)v;
+        return true;
+    }
+
     /// <summary>Fail fast on an out-of-range configuration value instead of a
     /// confusing mid-run failure. Exit code 2 matches bad argument values.</summary>
     internal static int InvalidArg(string flag, string value, string requirement)
@@ -194,6 +216,7 @@ public static partial class Program
             "  --run-manifest PATH run manifest (schema 7dtd.loadgen.run.v1)\n" +
             "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions --ramp-ms --quiet\n" +
+            "      --timeout is a wall-clock budget in ms, 1..2147483647 (~24.9 days)\n" +
             "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +
             "  --observe-buff NAME  observe one exact replicated buff (repeatable)\n" +
             "  --events-jsonl PATH  write filtered joined/state events as JSON lines\n" +

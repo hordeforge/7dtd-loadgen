@@ -43,7 +43,7 @@ Inbound entry points (data arriving at this code):
 
 | Entry point | Kind | Trust treatment | Reference |
 |---|---|---|---|
-| CLI arguments (~50 flags incl. `--host/--port/--timeout`; credential flags are rejected) | operator input | treated as fully trusted; `int.Parse`/`double.Parse` without validation crashes on malformed values | `src/LoadGen/Program.cs:41-330`, probe parser `Program.cs:940-953` |
+| CLI arguments (~50 flags incl. `--host/--port/--timeout`; credential flags are rejected) | operator input | treated as fully trusted; `int.Parse`/`double.Parse` without validation crashes on malformed values, except `--timeout` (range-checked in `Program.TryParseTimeoutMs`) | `src/LoadGen/Program.cs:41-330`, probe parser `Program.cs:940-953` |
 | Environment variables (`LOADGEN_SCENARIO_ID` in-process; `LOADGEN_*`, `RE_*` across scripts) | host env | trusted | `src/LoadGen/Program.cs:92,162`; `scripts/run_loadgen.sh:94`; `scripts/start_dedicated_prefab.sh:20-48` |
 | UDP LiteNetLib wire from game server (join handshake, packages, position corrections) | **untrusted network data** | parsed by hand-written codec; queue capped | `src/LoadGen/GameJoinClient.cs:158-172`, `src/LoadGen/PackageCodec.cs` |
 | TCP telnet banner/responses from server (`listplayers` output, command echoes) | **untrusted network data** | regex-parsed; results feed new admin commands (see R3) | `src/LoadGen/TelnetAdmin.cs:47-53,87-108,186-195` |

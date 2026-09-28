@@ -16,7 +16,13 @@ static class SelfTest
             else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
             else if (args[i] == "--min-pass-rate" && i + 1 < args.Length) minPassRate = double.Parse(args[++i]);
-            else if (args[i] == "--timeout" && i + 1 < args.Length) timeoutMs = int.Parse(args[++i]);
+            else if (args[i] == "--timeout" && i + 1 < args.Length)
+            {
+                if (!Program.TryParseTimeoutMs(args[++i], out int parsed))
+                    return Program.InvalidArg("--timeout", args[i],
+                        $"a positive millisecond value up to {Program.MaxTimeoutMs} (~24.9 days)");
+                timeoutMs = parsed;
+            }
         }
         if (count < 1) count = 1;
         // Port 0 = pick an ephemeral port for the in-process host.

@@ -236,6 +236,24 @@ def test_clock_rate_prefers_monotonic_markers(tmp_path):
     assert telnet["clockRateGameMinPerRealSec"] == 0.64
 
 
+def test_clock_rate_survives_game_midnight(tmp_path):
+    """A capture straddling game midnight rolls the Day counter over, so the
+    minute delta must be taken modulo one game day, not across the boundary."""
+    (tmp_path / "telnet.txt").write_text(
+        "# ts=2026-08-12T00:00:00Z mono=1000 cmd=gettime\n"
+        "Day 60, 23:58\n"
+        "# ts=2026-08-12T00:00:20Z mono=13500 cmd=gettime\n"
+        "Day 61, 00:03\n",
+        encoding="utf-8",
+    )
+    r = _py([str(TOOLS / "sut_capture.py"), str(tmp_path), "stock"])
+    assert r.returncode == 0, r.stderr
+    telnet = json.loads(r.stdout)["telnet"]
+    # 5 game-min over 12.5 s. A plain subtraction reads -1435 and reports a
+    # negative rate.
+    assert telnet["clockRateGameMinPerRealSec"] == 0.4
+
+
 def test_missing_telnet_on_one_side_does_not_crash(tmp_path):
     """A side with no telnet.txt (snapshot failed) still yields a report."""
     stock_dir = tmp_path / "scenario" / "stock"
