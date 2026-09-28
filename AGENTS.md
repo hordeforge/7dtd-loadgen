@@ -38,11 +38,15 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
     cmdline substring, so a second run ends the first one's server and cohort
     and both then report numbers from a world neither measured.
     `LOADGEN_ALLOW_OVERLAP=1` is the deliberate opt-out; the profiles pass it
-    to the `run_loadgen.sh` they start internally, which is the one nested
-    case where the overlap is the intent. `runlock.py` separates contention
-    (exit 4, the shell runner's code) from a lock file it could not open
-    (exit 5): the guard is inert in the second case, so it must not be read
-    as "wait for the other run".
+    to the `run_loadgen.sh` and the `start_dedicated_prefab.sh` they start
+    internally, which are the nested cases where the overlap is the intent.
+    The boot script itself takes the same lock (keyed on the LiteNet join port,
+    `ServerPort + 2`) before it rewrites `platform.cfg`, quarantines the mod
+    or pkills a dedicated, and releases it once the server is launched, so a
+    bare `make dedicated-4k` is refused while a measured run holds the target.
+    `runlock.py` separates contention (exit 4, the shell runner's code) from a
+    lock file it could not open (exit 5): the guard is inert in the second
+    case, so it must not be read as "wait for the other run".
 
 ## Build / test / run
 

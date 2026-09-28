@@ -409,6 +409,119 @@ def test_bloodmoon_profile_nested_runner_is_exempt_from_the_shell_guard(tmp_path
     assert seen["LOADGEN_COUNT"] == "2"
 
 
+def test_bloodmoon_profile_boot_is_exempt_from_the_boot_scripts_own_lock(
+        tmp_path, monkeypatch):
+    """start_dedicated_prefab.sh now takes the same run lock before its
+    pkill. The profile holds that lock for its whole run and boots the server
+    itself, so without the opt-out the boot reads its own parent's lock and
+    exits 4 with no server running and no measurement taken."""
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    seen: dict[str, str] = {}
+
+    def fake_run(cmd, **_kwargs):
+        seen.update(_kwargs.get("env") or {})
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(bloodmoon_profile.subprocess, "run", fake_run)
+    monkeypatch.setattr(bloodmoon_profile.time, "sleep", lambda *_a: None)
+    bloodmoon_profile.start_server()
+    assert seen["LOADGEN_ALLOW_OVERLAP"] == "1"
+    assert seen["RE_WORLD_NAME"] == "Navezgane"
+
+
+# --- start_dedicated_prefab.sh overlap guard -------------------------------
+
+# The boot script is where the overlap actually does its damage: it rewrites
+# platform.cfg, quarantines the RealEarth mod, and pkills any running
+# 7DaysToDieServe. run_loadgen.sh and the two Python profiles were already
+# guarded, so a second `make dedicated-4k` could still stop a dedicated a bench
+# lap or a comparison was measuring, and both would report numbers from a world
+# neither measured. The boot now contends for the same lock, keyed on the same
+# LiteNet join port (ServerPort + 2 = 26902) the runners default to.
+
+BOOT = ROOT / "scripts" / "start_dedicated_prefab.sh"
+# The join port the boot locks on, as runlock.lock_path names it.
+BOOT_LOCK_TAG = "127.0.0.1-26902"
+
+
+def _boot_env(tmp_path: Path, xdg: Path) -> dict[str, str]:
+    """Env that stops the boot right after the lock, at the missing-renderer
+    or missing-install check, so the test needs no game install and boots
+    nothing."""
+    env = os.environ.copy()
+    env["XDG_RUNTIME_DIR"] = str(xdg)
+    env["SANDBOX_ROOT"] = str(tmp_path / "no-sandbox")
+    env["SEVENDTD_SERVER_DIR"] = str(tmp_path / "no-install")
+    env["RE_DEDICATED_USERDATA"] = str(tmp_path / "ud")
+    env.pop("LOADGEN_ALLOW_OVERLAP", None)
+    return env
+
+
+def test_boot_refuses_a_second_run_while_another_holds_the_target(tmp_path):
+    xdg = tmp_path / "xdg"
+    xdg.mkdir()
+    env = _boot_env(tmp_path, xdg)
+    fd = os.open(xdg / f"7dtd-loadgen-{BOOT_LOCK_TAG}.lock", os.O_CREAT | os.O_RDWR)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        r = subprocess.run([BASH, str(BOOT)], env=env, capture_output=True,
+                           text=True, timeout=60, check=False)
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+    assert r.returncode == 4, (r.stdout, r.stderr)
+    assert "another loadgen run holds" in r.stderr
+    # Refused at the lock, which precedes the pkill and every other mutating
+    # step, so the running server was never signalled.
+    assert "pkill" not in r.stderr
+
+
+def test_boot_lets_a_free_target_through_and_stops_at_its_own_checks(tmp_path):
+    xdg = tmp_path / "xdg"
+    xdg.mkdir()
+    r = subprocess.run([BASH, str(BOOT)], env=_boot_env(tmp_path, xdg),
+                       capture_output=True, text=True, timeout=60, check=False)
+    # No holder: the guard must not fire, or no run could ever start. The run
+    # then fails on its own named missing-renderer check.
+    assert r.returncode != 4, (r.stdout, r.stderr)
+    assert "another loadgen run holds" not in r.stderr
+    assert "serverconfig renderer not found" in r.stderr
+
+
+def test_boot_honors_the_documented_overlap_opt_out(tmp_path):
+    """LOADGEN_ALLOW_OVERLAP=1 is the one supported way to boot anyway, and it
+    must reach the boot, or the only escape from the guard is a lock file to
+    delete."""
+    xdg = tmp_path / "xdg"
+    xdg.mkdir()
+    env = _boot_env(tmp_path, xdg)
+    fd = os.open(xdg / f"7dtd-loadgen-{BOOT_LOCK_TAG}.lock", os.O_CREAT | os.O_RDWR)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        env["LOADGEN_ALLOW_OVERLAP"] = "1"
+        r = subprocess.run([BASH, str(BOOT)], env=env, capture_output=True,
+                           text=True, timeout=60, check=False)
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+    assert r.returncode != 4, (r.stdout, r.stderr)
+    assert "another loadgen run holds" not in r.stderr
+
+
+def test_boot_lock_tag_matches_the_runners(tmp_path, monkeypatch):
+    """The boot's lock file name must be the one run_loadgen.sh and
+    scripts/runlock.py already use, or the guard excludes nothing."""
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    assert runlock.lock_path("127.0.0.1", 26902).name == f"7dtd-loadgen-{BOOT_LOCK_TAG}.lock"
+    text = BOOT.read_text(encoding="utf-8")
+    # ServerPort 26900 in the template; bots join ServerPort + 2.
+    assert 'name="ServerPort" value="26900"' in (
+        ROOT / "scripts" / "serverconfig_loadgen.xml").read_text(encoding="utf-8")
+    assert "JOIN_PORT=$((JOIN_PORT + 2))" in text
+
+
 # --- compare_sut.sh partial rerun ------------------------------------------
 
 # The evidence dir is shared state across executions: `--sut all` writes both

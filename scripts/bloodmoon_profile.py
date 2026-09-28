@@ -168,7 +168,12 @@ def start_server():
     game_name = f"BloodMoonStd_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
     env = dict(os.environ, DOTNET_ROOT=DOTNET, RE_WORLD_NAME="Navezgane",
                RE_GAME_NAME=game_name, RE_SERVER_MAX_PLAYERS=str(max(PLAYERS, 64)),
-               RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5")
+               RE_MAX_ZOMBIES=str(max(ZOMBIES, 64)), RE_ENEMY_DIFFICULTY="5",
+               # This profile already holds the target's run lock (main), and
+               # start_dedicated_prefab.sh contends for that same lock before its
+               # destructive pkill. Without the opt-out the boot reads its own
+               # parent's lock and exits 4 with no server running.
+               LOADGEN_ALLOW_OVERLAP="1")
     log(f"starting server (MaxSpawnedZombies={max(ZOMBIES,64)}, maxplayers={max(PLAYERS,64)})...")
     SCRATCH.mkdir(exist_ok=True)
     log_path = SCRATCH / "bloodmoon_server_start.log"

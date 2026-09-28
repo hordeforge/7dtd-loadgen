@@ -71,10 +71,18 @@ REDACTED = "redacted"
 # capture, and both re-run it against the same server, so an unguarded mutating
 # command repeats its effect on every probe. Reject them by name; --allow-mutating
 # is the opt-in for the profiling lanes that really mean to spawn.
+#
+# The list names the verbs this repo's own console traffic uses, not a guess at
+# the game's full command set: the client sends `give <id> thrownDynamite 3`
+# per bot life (Program.Join.cs) and `spawnscouts <id>` per pressure wave
+# (TelnetAdmin), and both were missing here, so the exact commands the harness
+# issues passed a guard meant to stop them. A verb absent from this set is
+# treated as world-changing rather than safe: the cost of a refused probe is
+# one --allow-mutating flag, the cost of an allowed one is a doubled world.
 MUTATING_VERBS = frozenset({
-    "addxp", "ban", "cexec", "cm", "cmds", "exec", "giveitem", "givexp",
-    "kick", "kickall", "kill", "remove", "save", "shutdown", "spawnentity",
-    "teleport", "time", "tp", "unban",
+    "addxp", "ban", "cexec", "cm", "cmds", "es", "exec", "give", "giveitem",
+    "givexp", "giveself", "kick", "kickall", "kill", "remove", "save",
+    "shutdown", "spawnentity", "spawnscouts", "teleport", "time", "tp", "unban",
 })
 
 

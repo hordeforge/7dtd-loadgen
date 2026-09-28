@@ -150,6 +150,16 @@ def test_world_changing_commands_are_mutating():
         assert sut_telnet.mutating_command(cmd), cmd
 
 
+def test_the_clients_own_console_traffic_is_refused():
+    """The guard has to cover the commands this repo actually sends, or the
+    probe re-runs the client's own world-changing traffic. The per-life
+    dynamite grant and the pressure wave's scout spawn are both world-changing
+    and both were absent from the list."""
+    for cmd in ("give 12 thrownDynamite 3", "spawnscouts 12", "es benchgod on",
+                "giveitem 12 thrownDynamite 3"):
+        assert sut_telnet.mutating_command(cmd), cmd
+
+
 def test_mutating_command_is_refused_before_the_socket_opens(capsys, monkeypatch):
     def _boom(*_a, **_k):
         raise AssertionError("console was opened for a refused command")

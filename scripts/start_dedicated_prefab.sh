@@ -51,6 +51,42 @@ CONFIG_SRC="$ROOT/scripts/serverconfig_loadgen.xml"
 # SANDBOX_ROOT at the checkout when it does not sit beside this repo.
 SANDBOX_ROOT="${SANDBOX_ROOT:-$ROOT/../7dtd-sandbox}"
 SBCONFIG="$SANDBOX_ROOT/scripts/sbconfig.py"
+
+# Rerun safety, taken before every other check and every mutating step below. Everything after
+# this point overwrites shared state: platform.cfg is rewritten, the RealEarth
+# mod is quarantined, and `pkill -x 7DaysToDieServe` stops whatever dedicated is
+# running. A second execution of this script therefore does not re-apply its
+# own effects, it destroys the first execution's: the server a bench lap or a
+# comparison is measuring dies mid-run and both report numbers from a world
+# neither measured. That is the same hazard AGENTS.md rule 10 records for the
+# cohort and the two Python profiles, and this boot is the step that performs
+# it, so it is the step that must refuse.
+#
+# The lock is the one run_loadgen.sh and scripts/runlock.py already contend
+# for (same file name, same tag), keyed on the LiteNet data port the bots join
+# (ServerPort + 2, the convention the runners' port defaults encode), so a
+# boot here excludes a shell-launched cohort and a Python profile, and they
+# exclude it. LOADGEN_ALLOW_OVERLAP=1 is the documented opt-out, and it is how
+# a caller that already holds the lock itself (bloodmoon_profile,
+# capacity_sweep) reaches this boot without deadlocking against its own lock.
+JOIN_PORT="$(sed -n 's/.*name="ServerPort" value="\([0-9]*\)".*/\1/p' "$CONFIG_SRC" | head -1)"
+JOIN_PORT="${JOIN_PORT:-26900}"
+JOIN_PORT=$((JOIN_PORT + 2))
+LOCK_HOST="${RE_LOCK_HOST:-127.0.0.1}"
+if [[ "${LOADGEN_ALLOW_OVERLAP:-0}" != "1" ]] && command -v flock >/dev/null 2>&1; then
+  lock_tag="$(printf '%s' "${LOCK_HOST}-${JOIN_PORT}" | tr -c 'A-Za-z0-9._-' '_')"
+  LOCK_FILE="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/7dtd-loadgen-${lock_tag}.lock"
+  exec 9>"$LOCK_FILE"
+  if ! flock -n 9; then
+    echo "ERROR: another loadgen run holds $LOCK_FILE (target $LOCK_HOST:$JOIN_PORT)." >&2
+    echo "       Booting here would stop that run's dedicated mid-measurement," >&2
+    echo "       and both would report numbers from a world neither measured." >&2
+    echo "       Wait for it to finish, stop it, or set LOADGEN_ALLOW_OVERLAP=1" >&2
+    echo "       if you meant it." >&2
+    exit 4
+  fi
+fi
+
 if [[ ! -f "$SBCONFIG" ]]; then
   echo "ERROR: serverconfig renderer not found: $SBCONFIG (set SANDBOX_ROOT)" >&2
   exit 1
@@ -207,6 +243,13 @@ echo "Log: $LOG"
 echo "Note: first RWG boot generates the 4k world (can take several minutes)."
 
 cd "$DS_DIR"
+# The lock has done its job: every destructive step above is done, and the
+# dedicated is the only thing left that must not be duplicated. Releasing it
+# here is what lets the cohort this server exists to load take the same lock
+# seconds later. Holding it across the launch would make RE_DEDICATED_FOREGROUND=1
+# (the mode that never returns) exclude every join against its own server for
+# as long as the server runs.
+exec 9>&-
 if [[ "${RE_DEDICATED_FOREGROUND:-0}" == "1" ]]; then
   echo "starting in foreground (RE_DEDICATED_FOREGROUND=1)"
   exec ./7DaysToDieServer.x86_64 \

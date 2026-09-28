@@ -395,7 +395,7 @@ mid-run or silently changing gate semantics.
 | `LOADGEN_MIN_PASS_RATE` | `0.95` | successful-client fraction, 0..1 |
 | `LOADGEN_RAMP_MS` | `0` | join stagger window; outside 0..3600000 exits 2 rather than clamping |
 | `LOADGEN_QUIET` | unset | non-empty silences probe/self-test logs |
-| `LOADGEN_ALLOW_OVERLAP` | unset | `1` skips the per-target rerun lock that otherwise fails a second cohort against the same host:port |
+| `LOADGEN_ALLOW_OVERLAP` | unset | `1` skips the per-target rerun lock that otherwise fails a second cohort, or a dedicated boot, against the same host:port |
 | `LOADGEN_SELF_TEST` | `0` | `1` forces self-test mode |
 | `LOADGEN_BOT_MODE` | unset | one of the bot modes listed above; unset means the CLI default, `wander` until world death |
 | `LOADGEN_BOT_MIX` | empty | weighted mix, e.g. `traverse:35,combat:20` (overrides `LOADGEN_BOT_MODE`) |
