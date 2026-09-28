@@ -9,6 +9,9 @@ explicit rerun-safety claim today and had no test pinning it:
   on every run.
 - scripts/run_loadgen.sh: one advisory flock per target rejects an overlapping
   cohort with exit 4, while a free target gets through the gate.
+- scripts/sut_zdtd.sh and scripts/bench_stock.sh: both wipe a caller-supplied
+  directory (RE_SUT_WORLD, BENCH_OUT) before they act. A value that names
+  something other than a dedicated scratch dir is refused, not deleted.
 
 All tests are offline: no game install, no dedicated server, no built client.
 """
@@ -233,3 +236,44 @@ def test_bench_force_replaces_the_lap_rather_than_merging_into_it(tmp_path):
     # admin port ends.
     assert r.returncode == 1, (r.stdout, r.stderr)
     assert "already in use" in r.stderr
+
+
+# --- destructive env-var guards --------------------------------------------
+
+SUT_ZDTD = ROOT / "scripts" / "sut_zdtd.sh"
+
+
+def test_sut_zdtd_refuses_to_wipe_a_path_that_is_not_a_world_dir(tmp_path):
+    """RE_SUT_WORLD is rm -rf'd before the server boots. Only a dedicated
+    scratch dir (the compare harness passes <run_dir>/world) may be wiped.
+    An empty value is not in this list: ${RE_SUT_WORLD:-...} resolves it to the
+    documented default world dir, which is a scratch dir."""
+    victim = tmp_path / "precious"
+    victim.mkdir()
+    (victim / "keep.txt").write_text("evidence\n", encoding="utf-8")
+
+    for world in ("   ", "/", "world", "/world", "./world"):
+        env = os.environ.copy()
+        env["RE_SUT_WORLD"] = world
+        r = subprocess.run([BASH, str(SUT_ZDTD)], env=env, cwd=str(tmp_path),
+                           capture_output=True, text=True, timeout=60, check=False)
+        assert r.returncode == 2, (world, r.stdout, r.stderr)
+        assert "refusing to wipe" in r.stderr, (world, r.stderr)
+        # Refused before the Zig/repo/game-install checks, so the path never
+        # reached rm and nothing the run touched was removed.
+        assert "missing Zig compiler" not in r.stderr
+
+    assert (victim / "keep.txt").read_text(encoding="utf-8") == "evidence\n"
+
+
+def test_bench_refuses_to_wipe_a_path_that_is_not_a_lap_dir(tmp_path):
+    for out in ("   ", "/", "lap1", "/lap1", "./lap1"):
+        env = _bench_env(out, "1")
+        r = subprocess.run([BASH, str(BENCH), "--lap", "1"], env=env,
+                           cwd=str(tmp_path), capture_output=True, text=True,
+                           timeout=60, check=False)
+        assert r.returncode == 2, (out, r.stdout, r.stderr)
+        assert "refusing to wipe" in r.stderr, (out, r.stderr)
+        # Refused before the pre-flight, so no dedicated was booted.
+        assert "already in use" not in r.stderr
+    assert not (tmp_path / "lap1").exists()

@@ -1,0 +1,23 @@
+name: Toolchain
+description: .NET 8 SDK, the NuGet package cache and uv, as every CI job needs them
+
+# One definition of the build toolchain. The ci jobs used to repeat the same
+# four steps, and a cache key edited in one job silently left the other
+# restoring a stale ~/.nuget/packages.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+      with:
+        dotnet-version: 8.0.x
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/packages.lock.json') }}
+        restore-keys: nuget-${{ runner.os }}-
+    - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      with:
+        # The dev extras (pytest, ruff, mypy) are re-downloaded per run
+        # otherwise; uv keys the cache on uv.lock, which is committed.
+        enable-cache: true

@@ -22,6 +22,15 @@ SBCONFIG="$SANDBOX_ROOT/scripts/sbconfig.py"
 OUT_ROOT="${COMPARE_OUT:-$ROOT/workspace/comparison}"
 SCENARIO_ID=""
 SUTS=""
+# Each run dir under OUT_ROOT is replaced before the scenario boots and
+# COMPARE_OUT is caller-supplied, so a value like / would have its children
+# deleted. Require an evidence root at least two levels deep.
+out_slashes="${OUT_ROOT//[^\/]/}"
+if [[ -z "${OUT_ROOT// }" ]] || (( ${#out_slashes} < 2 )); then
+  echo "ERROR: COMPARE_OUT must name an evidence dir at least two levels deep" >&2
+  echo "       (default workspace/comparison); got '$OUT_ROOT'" >&2
+  exit 2
+fi
 
 # A harness that is killed mid-run (SIGTERM/SIGINT) must not leave the booted
 # server behind: the next run's pkill would otherwise kill an unrelated

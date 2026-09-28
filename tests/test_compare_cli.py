@@ -1,12 +1,14 @@
 """Offline CLI gates for scripts/compare_sut.sh (no servers booted).
 
 Exercises the entry point's parsing surface: --list, --help, bad --sut,
-missing args, and catalog resolution (join-probe vs a catalog scenario). The
-boot/capture paths are covered by the live harness + tools tests.
+missing args, catalog resolution (join-probe vs a catalog scenario), and the
+COMPARE_OUT evidence-root guard. The boot/capture paths are covered by the
+live harness + tools tests.
 """
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -17,6 +19,16 @@ SCRIPT = ROOT / "scripts" / "compare_sut.sh"
 def _run(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["bash", str(SCRIPT), *args], cwd=str(ROOT),
+        capture_output=True, text=True, encoding="utf-8",
+        errors="replace", timeout=60, check=False,
+    )
+
+
+def _run_env(env_overrides: dict[str, str], *args: str) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    env.update(env_overrides)
+    return subprocess.run(
+        ["bash", str(SCRIPT), *args], cwd=str(ROOT), env=env,
         capture_output=True, text=True, encoding="utf-8",
         errors="replace", timeout=60, check=False,
     )
@@ -55,3 +67,13 @@ def test_unknown_scenario_rejected_before_boot():
     assert r.returncode != 0
     assert "no-such-scenario" in (r.stdout + r.stderr)
     assert "not ready" not in r.stderr  # failed before any boot wait
+
+
+def test_shallow_evidence_root_is_refused_before_any_run_dir_is_removed():
+    """Each run dir is rm -rf'd before the server boots, so a COMPARE_OUT that
+    is empty, the root, or a single component would delete whatever it names."""
+    for out in ("   ", "/", "comparison", "./comparison"):
+        r = _run_env({"COMPARE_OUT": out}, "--scenario", "join-probe", "--sut", "stock")
+        assert r.returncode == 2, (out, r.stdout, r.stderr)
+        assert "COMPARE_OUT must name an evidence dir" in r.stderr, (out, r.stderr)
+        assert "not ready" not in r.stderr  # refused before any boot wait

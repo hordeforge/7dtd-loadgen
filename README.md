@@ -156,7 +156,9 @@ Pregen08k01` (or `COMPARE_WORLD=Pregen08k01`) writes to
 `workspace/comparison/join-fast-pregen08k01/` unless the scenario id already
 carries the `-pregen08k01` suffix (the `compare-worlds` convention). A
 scenario id that encodes a world while `COMPARE_WORLD` disagrees is warned,
-never silently accepted.
+never silently accepted. `COMPARE_OUT` retargets the whole evidence tree, and
+each run dir under it is deleted before the server boots, so a value that is
+not a dedicated scratch dir is refused rather than wiped.
 
 Catalog: join-probe, wander-2bot, join-fast, probe-15s, horde-lite (spawn
 pressure), soak-4bot (sustained multi-bot). Each side carries a cost axis:
@@ -203,7 +205,9 @@ A lap number is one measured run, so `bench-stock` refuses to reuse
 previous lap's entities, claims and player profiles) and add a second APM
 session to the dir, so the rerun would measure the wrong world and
 `bench-report` would summarize whichever session sorts last. `BENCH_LAP_FORCE=1`
-replaces the lap instead of merging into it.
+replaces the lap instead of merging into it. `BENCH_OUT` moves the lap tree
+(`RE_SUT_WORLD` does the same for the zdtd boot) and both directories are
+deleted, so a value that is not a dedicated scratch dir is refused.
 
 The bench client mode: `--profile bench` presets the cohort (16 bots,
 15s ramp, 30s warm-up, 60s window, no telnet world pressure) and

@@ -7,7 +7,9 @@ name: release
 #
 # The self-contained binary is deliberately NOT built here: publishing one
 # would claim a platform matrix this workflow does not exercise. Gating the
-# tag is the half that can be proven automatically.
+# tag is the half that can be proven automatically. The tagged commit still
+# runs the full test lane first: ci.yml does not trigger for tag pushes, so
+# without it a tag could be pushed straight onto a red tree.
 
 on:
   push:
@@ -19,11 +21,16 @@ permissions:
 jobs:
   verify-tag:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     steps:
       # Actions pinned by full commit SHA (tag in comment) so a moved tag or a
       # compromised major-version release cannot inject code into the pipeline.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/toolchain
+      # A tag is a release claim about this exact commit, and the ci workflow
+      # does not run for tag pushes. Gate the tag on the same lane it gates a
+      # push or a pull request with.
+      - run: make test
       - name: Check the tag matches src/LoadGen/LoadGen.csproj
         shell: bash
         run: |

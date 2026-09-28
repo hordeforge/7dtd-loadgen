@@ -33,6 +33,14 @@ APM_PROJECT="$ROOT/../7dtd-server-apm"
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 BENCH_LAPS_ONLY="${BENCH_LAPS_ONLY:-0}"
 OUT="${BENCH_OUT:-$ROOT/workspace/bench/lap$LAP}"
+# The lap dir is replaced below and BENCH_OUT is caller-supplied: a value like
+# / or a home directory would delete it outright behind the force flag.
+slashes="${OUT//[^\/]/}"
+if [[ -z "${OUT// }" ]] || (( ${#slashes} < 2 )); then
+  echo "ERROR: refusing to wipe '$OUT'; BENCH_OUT must name a dedicated evidence" >&2
+  echo "       dir at least two levels deep (default workspace/bench/lap<LAP>)." >&2
+  exit 2
+fi
 # A lap number is one measured run. Reusing it would boot the SAME save
 # (bench_stock_lap<LAP> under this dir's userdata) and append a second apm
 # session_*, so the rerun would measure a world still carrying the previous

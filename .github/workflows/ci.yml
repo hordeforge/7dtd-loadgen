@@ -22,14 +22,7 @@ jobs:
     steps:
       # Pinned to commit SHAs (mutable tags) for reproducible, tamper-proof CI.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
-        with: { dotnet-version: 8.0.x }
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/packages.lock.json') }}
-          restore-keys: nuget-${{ runner.os }}-
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - uses: ./.github/actions/toolchain
       - run: make test
 
   coverage-badge:
@@ -41,32 +34,28 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
-        with: { dotnet-version: 8.0.x }
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/packages.lock.json') }}
-          restore-keys: nuget-${{ runner.os }}-
+      - uses: ./.github/actions/toolchain
       - run: make coverage
-      - run: python3 scripts/coverage_badge.py TestResults/coverage.cobertura.xml "$RUNNER_TEMP/coverage.svg"
+      - run: uv run --locked python scripts/coverage_badge.py TestResults/coverage.cobertura.xml "$RUNNER_TEMP/coverage.svg"
       - name: Publish the badge to the badges branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          url="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          if git ls-remote --exit-code --heads origin badges >/dev/null 2>&1; then
-            git clone --depth 1 --branch badges "$url" badge-repo
+          # The token rides an http header, never a remote URL: a credential in
+          # a URL lands in every error message, process listing and log line
+          # that echoes the remote.
+          auth="http.https://github.com/.extraheader=AUTHORIZATION: bearer ${GITHUB_TOKEN}"
+          if git -c "$auth" ls-remote --exit-code --heads origin badges >/dev/null 2>&1; then
+            git -c "$auth" clone --depth 1 --branch badges origin badge-repo
           else
             git init -q -b badges badge-repo
+            git -C badge-repo remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
           fi
           cp "$RUNNER_TEMP/coverage.svg" badge-repo/
           cd badge-repo
-          git remote remove origin 2>/dev/null || true
-          git remote add origin "$url"
           git config user.name "hordeforge-ci"
           git config user.email "ci@hordeforge.noreply.github.com"
           git add coverage.svg
           git diff --cached --quiet || git commit -m "update coverage badge"
-          git push origin badges
+          git -c "$auth" push origin badges

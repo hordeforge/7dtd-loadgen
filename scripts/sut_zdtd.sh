@@ -27,6 +27,16 @@ GAME_DIR="${RE_SUT_GAME_DIR:-$HOME/.local/share/Steam/steamapps/common/7 Days to
 SERVERCONFIG="${RE_SUT_SERVERCONFIG:-}"
 LOGFILE="${RE_SUT_LOGFILE:-$WORLD/server.log}"
 
+# Validate before anything is built or removed. The world dir is wiped below
+# and RE_SUT_WORLD is caller-supplied, so a mistyped or empty value would
+# rm -rf whatever it names. Require at least two path components below the
+# root (the compare harness passes <run_dir>/world).
+slashes="${WORLD//[^\/]/}"
+if [[ -z "${WORLD// }" ]] || (( ${#slashes} < 2 )); then
+  echo "ERROR: refusing to wipe '$WORLD'; RE_SUT_WORLD must name a dedicated" >&2
+  echo "       world dir at least two levels deep, e.g. /path/to/run/world" >&2
+  exit 2
+fi
 if ! command -v "$ZIG" >/dev/null 2>&1; then
   echo "sut_zdtd: missing Zig compiler '$ZIG'" >&2
   exit 127

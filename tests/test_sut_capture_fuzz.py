@@ -86,7 +86,7 @@ def _assert_invariants(snap: dict) -> None:
     assert entities["alive"] + entities["dead"] == entities["count"]
     assert sum(entities["types"].values()) == entities["count"]
     # Player rows are counted and discarded, so the player axis is a count and
-    # nothing else: per-player identifiers must not reach kept evidence, and the
+    # nothing else: per-player identities must not reach kept evidence, and the
     # absence of "rows" is the contract, not a gap. The fuzz welds rows onto
     # other lines, so a banner value can still carry the name a mutation put
     # there; the redaction contract itself is asserted on a well-formed
@@ -141,7 +141,8 @@ def test_banner_counts_and_axes_survive_a_well_formed_transcript(tmp_path: Path)
     assert snap["entities"]["types"]["EntityPlayer"] == 1
     # The player row is counted and then dropped: the name and id are
     # player-typed free text and must not survive into kept evidence in any
-    # form.
+    # form. The listplayers row in the transcript names a player; the snapshot
+    # must not carry that name out of the parser.
     assert snap["players"] == {"count": 1}
     assert PLAYER_NAME not in json.dumps(snap)
     assert snap["reportedTotal"] == 3

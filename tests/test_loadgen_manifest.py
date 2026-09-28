@@ -9,11 +9,8 @@ run_loadgen.sh feeds it the whole workload from the environment and treats a
 non-zero exit as a best-effort WARN, so a manifest that drops a field or
 mislabels a run stays silent: the record claims a configuration the cohort did
 not run. Unset optional knobs must land on their documented "auto"/"default"
-//0 placeholders rather than missing keys.
-
-This is the wrapper's record, not the client's: the per-client run manifest
-(schema 7dtd.loadgen.run.v1) is written by the client via --run-manifest, and
-the two carry different fields under deliberately different ids.
+//0 placeholders rather than missing keys, and a non-numeric numeric knob must
+fail the write instead of recording a 0 that reads as a measurement.
 """
 
 from __future__ import annotations
@@ -62,17 +59,20 @@ def test_manifest_records_the_workload_and_result(tmp_path):
         "LOADGEN_ACTIONS": "64",
         "LOADGEN_RAMP_MS": "3000",
         "LOADGEN_BOT_MODE": "mixed",
+        "LOADGEN_BOT_MIX": "traverse:35,combat:20",
         "LOADGEN_DEATH": "drown",
         "LOADGEN_SEED": "42",
         "LOADGEN_SPAWN_ENTITY": "zombie",
         "LOADGEN_SPAWN_PER_PLAYER": "3",
         "LOADGEN_SPAWN_EVERY_MS": "9000",
+        "LOADGEN_SCENARIO_ID": "join-fast",
         "LOADGEN_RC": "0",
     })
     assert r["returncode"] == 0, r["stderr"]
     doc = r["doc"]
     assert doc["schema"] == "7dtd.loadgen.runner.v1"
     assert doc["mode"] == "join"
+    assert doc["scenarioId"] == "join-fast"
     assert doc["target"] == {"host": "127.0.0.1", "port": 26902}
     assert doc["workload"] == {
         "clients": 8,
@@ -81,7 +81,7 @@ def test_manifest_records_the_workload_and_result(tmp_path):
         "actionsPerClient": 64,
         "rampMs": 3000,
         "botMode": "mixed",
-        "botMix": None,
+        "botMix": "traverse:35,combat:20",
         "deathMode": "drown",
         "seed": "42",
         "maxDynamite": "default",
@@ -104,6 +104,7 @@ def test_unset_optional_knobs_fall_back_to_documented_placeholders(tmp_path):
     assert r["returncode"] == 0, r["stderr"]
     workload = r["doc"]["workload"]
     assert workload["botMode"] == "auto"
+    assert workload["botMix"] is None
     assert workload["deathMode"] == "auto"
     assert workload["seed"] == "default"
     assert workload["maxDynamite"] == "default"
@@ -112,6 +113,7 @@ def test_unset_optional_knobs_fall_back_to_documented_placeholders(tmp_path):
                 "rampMs", "spawnPerPlayer", "spawnEveryMs"):
         assert workload[key] == 0, key
     assert r["doc"]["target"]["port"] == 0
+    assert r["doc"]["scenarioId"] is None
 
 
 def test_empty_optional_string_is_the_placeholder_not_a_blank_field(tmp_path):
@@ -123,7 +125,7 @@ def test_empty_optional_string_is_the_placeholder_not_a_blank_field(tmp_path):
     assert r["doc"]["workload"]["seed"] == "default"
 
 
-def test_non_numeric_numeric_field_fails_loud_instead_of_recording_zero(tmp_path):
+def test_non_numeric_numeric_field_fails_without_writing_a_manifest(tmp_path):
     # A silent 0 would read as a measured count/port/timeout in every
     # downstream lap summary, so the manifest is refused outright and the
     # caller keeps the client's own exit code. The write aborts naming the

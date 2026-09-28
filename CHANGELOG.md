@@ -21,7 +21,7 @@ under **Changed** with their migration path.
   CI runs), the edit-test loop, and where new tests and scenarios go.
 - Offline gates for four scripts whose output lands in published evidence and
   had no test: `stats_pass_fail.py` (the `0 0` fallback must never read as a
-  measured all-fail run), `loadgen_manifest.py` (the `7dtd.loadgen.run.v1`
+  measured all-fail run), `loadgen_manifest.py` (the `7dtd.loadgen.runner.v1`
   record and its placeholder defaults), `capacity_sweep.frame_alive` (lost
   telemetry must stop the sweep, not report a perfect frame), and
   `webdash_password_hash.py` (the game's `base64(MD5(utf8(pass)))` encoding).
@@ -67,6 +67,23 @@ under **Changed** with their migration path.
 - Telnet reads close when the console goes quiet instead of always waiting out
   the read window, so a spawn wave of N commands costs N round trips rather
   than N times the window. The window remains the upper bound.
+- **Breaking (artifact schema id):** the manifest `run_loadgen.sh` writes after
+  every cohort is now `7dtd.loadgen.runner.v1`, and records `scenarioId` and
+  `botMix`. It was claiming the client's own `7dtd.loadgen.run.v1` id while
+  carrying different fields, so a consumer could read one as the other. A
+  non-numeric `LOADGEN_*` knob now fails the write (run_loadgen.sh keeps the
+  client's exit code and warns) instead of recording a 0 that reads as a
+  measured value downstream. `--run-manifest` output is unchanged.
+- CI runs the badge renderer under `uv run --locked` like every other Python
+  lane, and both jobs share one toolchain composite action, so a cache key or
+  SDK version changed in one job no longer drifts from the other. The badge
+  publish step passes its token as an HTTP header instead of embedding it in
+  the clone URL. A `v*` tag now runs the test lane before its version check:
+  `ci.yml` does not trigger for tag pushes, so a tag could previously land on
+  a commit whose tests had not run.
+- `scripts/sut_zdtd.sh` refuses a `RE_SUT_WORLD` that is empty, the root, or
+  less than two path components deep. It wipes that directory before booting,
+  so a mistyped value previously removed whatever it named.
 
 ### Fixed
 
@@ -127,6 +144,12 @@ under **Changed** with their migration path.
   returns each row's `id` and `name`, the contract the transcript fuzz gate
   asserts; `surface.json` still keeps the count only, so no per-player
   identity reaches kept evidence.
+- `TelnetProvisionerTests.CohortSharesOneConsoleConnection` failed
+  intermittently on a loaded runner. It proved "enqueueing does not block on
+  the console" with a 40 ms wall-clock budget for 40 in-memory appends, which
+  a preempted CI runner can miss on its own. The gate now checks the
+  structural claim instead: a loop that waited a round trip per grant has
+  delivered all of them by the time it returns, and a queueing one has not.
 - Run artifacts no longer inherit the writer's operating system line endings.
   Client logs, the `--events-jsonl` sink, the death CSV and the cohort summary
   were written with `Environment.NewLine`, and the report tools with the

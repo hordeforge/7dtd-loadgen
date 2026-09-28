@@ -198,15 +198,23 @@ public sealed class TelnetProvisionerTests
         for (int i = 0; i < Grants; i++)
             provisioner.Enqueue($"give {i} thrownDynamite 3", i, null);
         sw.Stop();
+        int receivedBeforeDrain = console.Received.Count;
 
         Assert.True(console.WaitForCommands(Grants, 30_000),
             $"only {console.Received.Count}/{Grants} grants reached the console");
         provisioner.Dispose();
         Assert.Equal(0, provisioner.Dropped);
 
-        // Enqueueing is the bot's cost and must not scale with the console.
-        Assert.True(sw.ElapsedMilliseconds < Grants,
-            $"enqueueing {Grants} grants took {sw.ElapsedMilliseconds}ms: the bot loop is blocking on the console");
+        // Enqueueing is the bot's cost and must not scale with the console. The
+        // proof is structural, not a wall-clock budget: a loop that waits on a
+        // round trip per grant has necessarily delivered all of them by the
+        // time it returns, while queue appends outrun the console by orders of
+        // magnitude. A millisecond bound tight enough to catch the blocking
+        // shape also fails on a loaded CI runner through preemption alone, and
+        // a gate that red for the wrong reason stops being read.
+        Assert.True(receivedBeforeDrain < Grants,
+            $"all {Grants} grants reached the console before the enqueue loop returned "
+            + $"({sw.ElapsedMilliseconds}ms): the bot loop is blocking on the console");
 
         int give = console.Received.Count(c => c.StartsWith("give ", StringComparison.Ordinal));
         Assert.Equal(Grants, give);
