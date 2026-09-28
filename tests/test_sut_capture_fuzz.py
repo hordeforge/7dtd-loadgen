@@ -1,4 +1,4 @@
-"""Fuzz gate for the telnet transcript parser in tools/sut_capture.py.
+"""Fuzz gate for the untrusted-input parsers in tools/sut_capture.py.
 
 telnet.txt is written by a server console we do not control: the admin port is
 unauthenticated plaintext, so every line is attacker-shaped input to this
@@ -6,6 +6,11 @@ parser. These drive the parser with hostile and mutated transcripts and pin the
 invariants the report depends on (counts add up, banner values stay on one
 line, the scan stays linear in transcript size) instead of only checking that
 no exception escapes.
+
+The APM session summary.json is the second such parser: it is written by
+7dtd-server-apm and a run killed mid-write leaves it half-formed, so the file
+can be well-formed JSON of the wrong shape. Its axis has to degrade to omitted,
+never to a raised AttributeError out of the middle of a comparison.
 """
 
 from __future__ import annotations
@@ -166,3 +171,95 @@ def test_banner_value_stops_at_its_own_line(tmp_path: Path) -> None:
     assert "Server IP" not in snap["banner"]
     assert snap["players"] == {"count": 1}
     assert PLAYER_NAME not in json.dumps(snap)
+
+
+# A completed stock capture, the shape 7dtd-server-apm writes. The generator
+# substitutes one hostile value at a key path so the fuzzer explores around a
+# genuine layout instead of noise.
+APM_SEED: dict = {
+    "metadata": {
+        "lag_diagnosis": {"verdict": "server met its tick deadline"},
+        "gc": {"grossAllocMBPerSecond": 12.5, "fullCollections": 3},
+    },
+    "layers": [
+        {"layer": "cpu", "score": 20.0, "signals": {"ipc": 2.06, "cache": None}},
+        {"layer": "sync", "score": 10.0},
+    ],
+}
+
+# Wrong types, non-finite floats json.loads accepts, and strings carrying the
+# characters that break a markdown cell.
+HOSTILE: list = [
+    None, True, False, 0, -1, 1.5, float("nan"), float("inf"),
+    "", "n/a", "a | b", "line\nbreak", "日", [], [1, 2], {}, {"k": [1]},
+]
+
+
+def _apm_run_dir(tmp_path: Path, payload: object) -> Path:
+    run_dir = tmp_path / "apm-run"
+    session = run_dir / "apm" / "session_1"
+    session.mkdir(parents=True, exist_ok=True)
+    (session / "summary.json").write_text(json.dumps(payload, allow_nan=True),
+                                          encoding="utf-8")
+    return run_dir
+
+
+def _substitute(value: object, rng: random.Random) -> object:
+    if isinstance(value, dict) and value and rng.random() < 0.7:
+        out: dict = dict(value)
+        key = rng.choice(list(out))
+        out[key] = _substitute(out[key], rng)
+        return out
+    if isinstance(value, list) and value and rng.random() < 0.7:
+        out_list = list(value)
+        index = rng.randrange(len(out_list))
+        out_list[index] = _substitute(out_list[index], rng)
+        return out_list
+    return rng.choice(HOSTILE)
+
+
+def _assert_apm_snapshot(snapshot: dict | None) -> None:
+    # An unreadable or wrong-shaped session is reported as a missing axis, the
+    # same as a session directory that was never created.
+    if snapshot is None:
+        return
+    assert set(snapshot) >= {"session"}
+    verdict = snapshot.get("lagVerdict")
+    if verdict is not None:
+        # Reaches a markdown report cell; a line break would forge a row.
+        assert isinstance(verdict, str) and "\n" not in verdict and "\r" not in verdict
+        assert len(verdict) <= 80
+    for key in ("gcAllocMBPerSec", "gcFullCollections"):
+        value = snapshot.get(key)
+        assert value is None or (isinstance(value, float) and math.isfinite(value)), \
+            f"{key} is not a renderable number: {value!r}"
+    # Both become keys in the surface JSON, so a non-string one is not a name.
+    for name in snapshot.get("layers", {}):
+        assert isinstance(name, str) and name
+    # The snapshot is serialized to surface.json; an unserializable value here
+    # would only fail at write time, long after the capture.
+    json.dumps(snapshot, allow_nan=True)
+
+
+@pytest.mark.parametrize("seed", [1, 2, 3])
+def test_apm_summary_fuzz_degrades_to_omitted_axis(tmp_path: Path, seed: int) -> None:
+    rng = random.Random(seed)
+    for _ in range(200):
+        payload = _substitute(APM_SEED, rng)
+        run_dir = _apm_run_dir(tmp_path, payload)
+        _assert_apm_snapshot(sut_capture.stock_apm_summary(str(run_dir)))
+
+
+def test_well_formed_apm_summary_still_reports_the_cost_axis(tmp_path: Path) -> None:
+    """The fuzz above only proves the parser does not crash. This pins the
+    values a complete capture must still publish, so the shape coercion cannot
+    quietly drop a measurement."""
+    snapshot = sut_capture.stock_apm_summary(str(_apm_run_dir(tmp_path, APM_SEED)))
+
+    assert snapshot is not None
+    assert snapshot["session"] == "session_1"
+    assert snapshot["lagVerdict"] == "server met its tick deadline"
+    assert snapshot["gcAllocMBPerSec"] == 12.5
+    assert snapshot["gcFullCollections"] == 3
+    assert snapshot["layers"] == {"cpu": 20.0, "sync": 10.0}
+    assert snapshot["signals"] == {"cpu": {"ipc": 2.06}}

@@ -26,6 +26,8 @@ import re
 import sys
 from datetime import datetime
 
+from json_shape import as_cell, as_dict, as_list, as_number
+
 # A 7 Days to Die game day is 24 game hours, and `gettime` prints "Day N, HH:MM"
 # with the hour wrapping back to 0 at game midnight.
 GAME_MINUTES_PER_DAY = 1440
@@ -359,24 +361,31 @@ def stock_apm_summary(run_dir):
               f"{e.__class__.__name__}: {e}; cost axis omitted", file=sys.stderr)
         return None
     out = {"session": sessions[-1]}
-    meta = s.get("metadata") or {}
-    lag = meta.get("lag_diagnosis") or {}
+    # The session summary is written by 7dtd-server-apm and a run killed
+    # mid-write leaves it half-formed, so every level is coerced rather than
+    # assumed: a well-formed JSON object of the wrong shape is a shape this
+    # reader has to survive, not an error to propagate into the comparison.
+    meta = as_dict(as_dict(s).get("metadata"))
+    lag = as_dict(meta.get("lag_diagnosis"))
     if lag.get("verdict"):
-        out["lagVerdict"] = lag["verdict"]
-    gc = meta.get("gc") or {}
-    if gc.get("grossAllocMBPerSecond") is not None:
-        out["gcAllocMBPerSec"] = gc["grossAllocMBPerSecond"]
-    if gc.get("fullCollections") is not None:
-        out["gcFullCollections"] = gc["fullCollections"]
+        out["lagVerdict"] = as_cell(lag["verdict"])
+    gc = as_dict(meta.get("gc"))
+    if as_number(gc.get("grossAllocMBPerSecond")) is not None:
+        out["gcAllocMBPerSec"] = as_number(gc["grossAllocMBPerSecond"])
+    if as_number(gc.get("fullCollections")) is not None:
+        out["gcFullCollections"] = as_number(gc["fullCollections"])
     layers = {}
     signals = {}
-    for layer in s.get("layers") or []:
+    for layer in as_list(as_dict(s).get("layers")):
+        layer = as_dict(layer)
+        # The name becomes a key in the surface JSON, so a non-string one is
+        # not a name.
         name = layer.get("layer")
-        if not name:
+        if not isinstance(name, str) or not name:
             continue
         if layer.get("score") is not None:
             layers[name] = layer["score"]
-        sig = {k: v for k, v in (layer.get("signals") or {}).items() if v is not None}
+        sig = {k: v for k, v in as_dict(layer.get("signals")).items() if v is not None}
         if sig:
             signals[name] = sig
     if layers:

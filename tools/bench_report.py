@@ -20,6 +20,8 @@ import json
 import sys
 from pathlib import Path
 
+from json_shape import as_cell, as_count, as_dict, as_int, as_list, as_number
+
 # Locale-independent text boundary: the rendered text comes from UTF-8 JSON
 # evidence, but a C-locale runner gives stdout an ASCII codec and print()
 # raises. See scenario_env.py for the same block and its reason.
@@ -37,13 +39,17 @@ def iso_delta(a: str, b: str) -> float | None:
     A negative span is a clock step or a mis-stamped run, not a zero-second
     run: clamping it to 0.0 published 0 as a measured wall and then blamed
     the 100% repeatability delta on host contention.
+
+    One stamp carrying a UTC offset and the other not is the same class of
+    input as a malformed one, and the subtraction is what raises for it, so
+    the arithmetic shares the guard.
     """
     try:
         ta = dt.datetime.fromisoformat(a)
         tb = dt.datetime.fromisoformat(b)
-    except (ValueError, TypeError):
+        span = (tb - ta).total_seconds()
+    except (ValueError, TypeError, OverflowError):
         return None
-    span = (tb - ta).total_seconds()
     return span if span >= 0 else None
 
 
@@ -58,7 +64,10 @@ def apm_summary(run_dir: Path) -> dict:
         try:
             for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
                 if "lag diagnosis" in line or "lagVerdict" in line:
-                    verdict = line.strip().split(":", 1)[-1].strip()[:80]
+                    # A key with nothing after the colon is an unfilled
+                    # template, not a verdict: 'n/a' says the capture did not
+                    # report one, a blank cell only looks empty.
+                    verdict = as_cell(line.strip().split(":", 1)[-1])
                     break
         except OSError:
             pass
@@ -66,16 +75,18 @@ def apm_summary(run_dir: Path) -> dict:
     if sessions:
         try:
             s = json.loads(sessions[-1].read_text(encoding="utf-8"))
-            for layer in s.get("layers") or []:
-                name = layer.get("layer")
-                score = layer.get("score")
-                if name and score is not None:
-                    layers[name] = float(score)
-                sig = layer.get("signals") or {}
-                if name == "cpu" and sig.get("ipc") is not None:
-                    ipc = round(float(sig["ipc"]), 3)
-        except (ValueError, OSError, TypeError):
-            pass
+        except (ValueError, OSError):
+            s = None
+        for layer in as_list(as_dict(s).get("layers")):
+            if not isinstance(layer, dict):
+                continue
+            name = layer.get("layer")
+            score = as_number(layer.get("score"))
+            if isinstance(name, str) and name and score is not None:
+                layers[name] = score
+            ipc_value = as_number(as_dict(layer.get("signals")).get("ipc"))
+            if name == "cpu" and ipc_value is not None:
+                ipc = round(ipc_value, 3)
     return {"verdict": verdict, "ipc": ipc, "layers": layers}
 
 
@@ -125,22 +136,37 @@ def load_lap(lap_dir: Path) -> dict:
                           f"to run-meta summary", file=sys.stderr)
                     stats = {}
                     stats_unreadable = True
-        bench = (stats.get("bench") or {}) if isinstance(stats, dict) else {}
+        # Normalize every value the renderer formats. A cell reaches the
+        # markdown table through int() and `:.1f`, both of which raise on a
+        # string or a container, and a well-formed JSON capture of the wrong
+        # shape is exactly what a foreign writer produces. An absent bench
+        # block stays empty: the renderer reads that as n/a, and filling it in
+        # would publish a zero-second window as a measurement.
+        raw_bench = as_dict(stats.get("bench") if isinstance(stats, dict) else None)
+        bench = {
+            "windowStartMs": as_int(raw_bench.get("windowStartMs")) or 0,
+            "windowEndMs": as_int(raw_bench.get("windowEndMs")) or 0,
+            "actionsPerSec": as_number(raw_bench.get("actionsPerSec")) or 0.0,
+            "activeMin": as_cell(raw_bench.get("activeMin")),
+            "activeMax": as_cell(raw_bench.get("activeMax")),
+        } if raw_bench else {}
+        summary = as_dict(meta.get("summary"))
         # stats.json is the authoritative join outcome (client.log can contain
         # binary bytes that defeat grep); fall back to run-meta summary.
         joins_pass = (stats.get("pass")
                       if isinstance(stats, dict) and stats.get("pass") is not None
-                      else meta.get("summary", {}).get("pass"))
+                      else summary.get("pass"))
         joins_fail = (stats.get("fail")
                       if isinstance(stats, dict) and stats.get("fail") is not None
-                      else meta.get("summary", {}).get("fail"))
+                      else summary.get("fail"))
         wall = iso_delta(meta.get("startUtc", ""), meta.get("endUtc", ""))
         scenarios[sc] = {
             "wallS": round(wall, 1) if wall is not None else None,
-            "joinsPass": joins_pass,
-            "joinsFail": joins_fail,
+            "joinsPass": as_count(joins_pass),
+            "joinsFail": as_count(joins_fail),
             "statsUnreadable": stats_unreadable,
-            "hostLoad": f"{meta.get('hostLoadStart')}->{meta.get('hostLoadEnd')}",
+            "hostLoad": (f"{as_cell(meta.get('hostLoadStart'))}"
+                         f"->{as_cell(meta.get('hostLoadEnd'))}"),
             "bench": bench,
             "apm": apm_cell(meta_path.parent),
         }
