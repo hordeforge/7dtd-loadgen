@@ -5,9 +5,13 @@ Also covers transcript redaction of per-player identifiers."""
 
 from __future__ import annotations
 
+import re
 import sys
 
 import sut_telnet
+
+# What a redacted name becomes; one per player, in first-seen order.
+PSEUDONYM = re.compile(r"\bplayer-\d+\b")
 
 
 def test_unset_env_resolves_to_none(monkeypatch):
@@ -124,6 +128,54 @@ def test_connection_lifecycle_lines_drop_name_ids_and_address():
     assert "ClientNumber='1'" in out and "EntityID=177" in out
     assert out.count("PlayerName='player-1'") == 1
     assert "PltfmId='redacted'" in out and "OwnerID='redacted'" in out
+
+
+def test_unquoted_identity_fields_are_dropped_too():
+    # The same lifecycle record is relayed quoted by some builds and bare by
+    # others. Only the quoted form was recognized, so a bare PlayerName put a
+    # real player's name in the committed transcript in the clear.
+    out = sut_telnet.redact_identities(
+        "2026-08-12T23:11:28 45.9 INF [NET] PlayerDisconnected EntityID=177, "
+        "PlayerName=Alice, CrossId=76561198021925107, ClientNumber=1\n"
+    )
+    assert "Alice" not in out
+    assert "76561198021925107" not in out
+    assert "PlayerName=player-1" in out
+    # The comparable fields of the record survive, and the line still ends where
+    # the console put it (a dropped newline welds two records into one line).
+    assert "EntityID=177" in out and "ClientNumber=1" in out
+    assert out.endswith("\n") and out.count("\n") == 1
+
+
+def test_an_empty_identity_field_does_not_invent_a_player():
+    out = sut_telnet.redact_identities("INF [NET] PlayerDisconnected PlayerName=\n")
+    assert "PlayerName=" in out
+    assert "player-" not in out
+
+
+def test_a_name_carrying_the_row_terminator_is_redacted_whole():
+    # A listplayers row is "id=N, <name>, pos=(...)" and a name is player-typed
+    # free text, so it can hold the ", pos=" that ends its own field. Ending at
+    # the first one leaves the tail of the name in the committed transcript.
+    out = sut_telnet.redact_identities(
+        "0. id=171, Alice, pos=(9, 9, 9), pos=(1.0, 2.0, 3.0), deaths=0, "
+        "pltfmid=Local_Alice, ip=10.1.2.3\n"
+    )
+    assert "Alice" not in out
+    assert PSEUDONYM.search(out)
+    assert "deaths=0" in out and "ip=redacted" in out
+    assert out.count("\n") == 1
+
+
+def test_an_entity_row_name_is_not_a_player_name():
+    # The row discriminator is the deaths= field the player row carries after
+    # its terminator. An entity row's name is a class name, and pseudonymizing
+    # it would report players the console never listed.
+    out = sut_telnet.redact_identities(
+        "2. id=173, zombieBoe, pos=(1, 2, 3), lifetime=float.Max, "
+        "remote=False, dead=False\n"
+    )
+    assert "zombieBoe" in out and "player-" not in out
 
 
 def test_bare_platform_ids_are_dropped():
