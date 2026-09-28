@@ -77,6 +77,18 @@ under **Changed** with their migration path.
 - The telnet-transcript fuzz gate still asserted `players.rows`, removed when
   per-player identifiers were kept out of run evidence, so five gates failed
   on `KeyError: 'rows'`. They assert the count-only surface now.
+- The `--events-jsonl` sink batches its writes instead of flushing every line, so
+  an observing cohort no longer pays one `write()` syscall per event under the
+  cohort-wide lock. Lines land within 250 ms, and `JsonLineEventWriter.Flush()`
+  forces them out at a phase boundary.
+- The telnet pressure path reuses one read buffer and one command buffer per
+  session instead of allocating a `byte[4096]`, a string concat and a `byte[]`
+  per admin command.
+- `tests/test_loadgen_manifest.py` matched the pre-split manifest id
+  (`7dtd.loadgen.run.v1`) and the superseded lenient-integer behavior. The
+  wrapper's own record is `7dtd.loadgen.runner.v1` and a non-numeric workload
+  value is refused rather than recorded as a measured `0`; the gate now asserts
+  both.
 - Run artifacts no longer inherit the writer's operating system line endings.
   Client logs, the `--events-jsonl` sink, the death CSV and the cohort summary
   were written with `Environment.NewLine`, and the report tools with the

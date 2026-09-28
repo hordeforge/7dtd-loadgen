@@ -43,6 +43,25 @@ public sealed class JsonLineEventWriterTests : IDisposable
     }
 
     [Fact]
+    public void Flush_LandsBufferedLines_WithoutDispose()
+    {
+        // Write batches for the syscall; Flush is the explicit "make it on disk
+        // now" the run phases use, so a line written before it must be readable
+        // from the file while the sink is still open.
+        string path = Path.Combine(_dir, "flush.jsonl");
+        using (var sink = new JsonLineEventWriter(path))
+        {
+            sink.Write("{\"type\":\"joined\"}");
+            sink.Flush();
+            Assert.Equal(new[] { "{\"type\":\"joined\"}" }, ReadAllLines(path));
+
+            sink.Write("{\"type\":\"state\"}");
+            sink.Flush();
+            Assert.Equal(new[] { "{\"type\":\"joined\"}", "{\"type\":\"state\"}" }, ReadAllLines(path));
+        }
+    }
+
+    [Fact]
     public void ConcurrentWriters_LoseNoLines()
     {
         string path = Path.Combine(_dir, "conc.jsonl");

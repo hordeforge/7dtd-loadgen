@@ -19,6 +19,12 @@ public sealed partial class TelnetAdmin : IDisposable
     NetworkStream? _stream;
     readonly StringBuilder _buf = new();
     readonly Utf8ChunkDecoder _decoder = new();
+    // A pressure wave issues one command per (player × entity) plus the scout
+    // probes, and every command costs a fresh read buffer, a string concat and
+    // a fresh byte[] on the way out. Both buffers are per-instance and reused
+    // for the life of the session, like _buf and _decoder beside them.
+    readonly byte[] _readBuf = new byte[4096];
+    byte[] _writeBuf = new byte[512];
 
     public TelnetAdmin(string host, int port, string password, Action<string>? log = null)
     {
@@ -479,8 +485,12 @@ public sealed partial class TelnetAdmin : IDisposable
         // The server telnet speaks UTF-8 (see ReadAvailable); commands echo
         // player names parsed from its output, so ASCII here would corrupt any
         // non-ASCII name (kill Zöé -> kill Zo?e).
-        byte[] data = Encoding.UTF8.GetBytes(s + "\n");
-        _stream.Write(data, 0, data.Length);
+        int byteCount = Encoding.UTF8.GetByteCount(s);
+        if (byteCount + 1 > _writeBuf.Length)
+            Array.Resize(ref _writeBuf, byteCount + 1);
+        int n = Encoding.UTF8.GetBytes(s, 0, s.Length, _writeBuf, 0);
+        _writeBuf[n] = (byte)'\n';
+        _stream.Write(_writeBuf, 0, n + 1);
         _stream.Flush();
     }
 
@@ -490,7 +500,6 @@ public sealed partial class TelnetAdmin : IDisposable
         // Monotonic window: a wall-clock step (NTP correction) mid-read must
         // not cut the wait short or stretch it past waitMs.
         var sw = Stopwatch.StartNew();
-        var tmp = new byte[4096];
         long lastDataMs = 0;
         bool sawData = false;
         while (sw.ElapsedMilliseconds < waitMs)
@@ -499,10 +508,10 @@ public sealed partial class TelnetAdmin : IDisposable
             {
                 if (_stream.DataAvailable)
                 {
-                    int n = _stream.Read(tmp, 0, tmp.Length);
+                    int n = _stream.Read(_readBuf, 0, _readBuf.Length);
                     if (n > 0)
                     {
-                        _buf.Append(_decoder.Decode(tmp.AsSpan(0, n)));
+                        _buf.Append(_decoder.Decode(_readBuf.AsSpan(0, n)));
                         lastDataMs = sw.ElapsedMilliseconds;
                         sawData = true;
                     }

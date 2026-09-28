@@ -1,4 +1,4 @@
-"""scripts/loadgen_manifest.py: the 7dtd.loadgen.run.v1 artifact written after
+"""scripts/loadgen_manifest.py: the 7dtd.loadgen.runner.v1 artifact written after
 every run_loadgen.sh cohort.
 
 run_loadgen.sh feeds it the whole workload from the environment and treats a
@@ -6,6 +6,10 @@ non-zero exit as a best-effort WARN, so a manifest that drops a field or
 mislabels a run stays silent: the record claims a configuration the cohort did
 not run. Unset optional knobs must land on their documented "auto"/"default"
 //0 placeholders rather than missing keys.
+
+This is the wrapper's record, not the client's: the per-client run manifest
+(schema 7dtd.loadgen.run.v1) is written by the client via --run-manifest, and
+the two carry different fields under deliberately different ids.
 """
 
 from __future__ import annotations
@@ -63,7 +67,7 @@ def test_manifest_records_the_workload_and_result(tmp_path):
     })
     assert r["returncode"] == 0, r["stderr"]
     doc = r["doc"]
-    assert doc["schema"] == "7dtd.loadgen.run.v1"
+    assert doc["schema"] == "7dtd.loadgen.runner.v1"
     assert doc["mode"] == "join"
     assert doc["target"] == {"host": "127.0.0.1", "port": 26902}
     assert doc["workload"] == {
@@ -73,6 +77,7 @@ def test_manifest_records_the_workload_and_result(tmp_path):
         "actionsPerClient": 64,
         "rampMs": 3000,
         "botMode": "mixed",
+        "botMix": None,
         "deathMode": "drown",
         "seed": "42",
         "maxDynamite": "default",
@@ -114,11 +119,14 @@ def test_empty_optional_string_is_the_placeholder_not_a_blank_field(tmp_path):
     assert r["doc"]["workload"]["seed"] == "default"
 
 
-def test_non_numeric_numeric_field_does_not_abort_the_manifest(tmp_path):
-    _, r = _write(tmp_path, {"LOADGEN_COUNT": "eight"})
-    assert r["returncode"] == 0, r["stderr"]
-    assert r["doc"]["workload"]["clients"] == 0
-    assert r["doc"]["result"]["exitCode"] == 0
+def test_non_numeric_numeric_field_fails_loud_instead_of_recording_zero(tmp_path):
+    # A silent 0 would read as a measured count/port/timeout in every
+    # downstream lap summary, so the manifest is refused outright and the
+    # caller keeps the client's own exit code.
+    out, r = _write(tmp_path, {"LOADGEN_COUNT": "eight"})
+    assert r["returncode"] != 0
+    assert "LOADGEN_COUNT" in r["stderr"]
+    assert not out.exists()
 
 
 def test_missing_required_input_fails_without_writing_a_manifest(tmp_path):
