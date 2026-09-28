@@ -130,12 +130,17 @@ public sealed class BenchClockTests
     {
         var c = new BenchClock(0, 60_000);
         var stop = new CancellationTokenSource();
-        // Every worker signals its first sample before the reads start. Without
-        // that rendezvous the main loop can finish its reads (and cancel) while
-        // the pool still has not run the higher-valued workers, and the test
-        // then asserts against a curve that only ever saw active=0.
         using var sampled = new CountdownEvent(4);
         var workers = new List<Task>();
+        // Every worker has sampled once before the read loop starts. Without
+        // that rendezvous the main loop can finish its reads (and cancel) while
+        // the pool still has not run the higher-valued workers, and the test
+        // then asserts against a curve that only ever saw active=0: the loop
+        // is 200 unsynchronized reads that finish in microseconds, so a
+        // preempted worker can miss its only chance to run and the end-of-test
+        // min/max assertions fail on scheduling, not on the clock. min and max
+        // are monotone, so the first sample of each value fixes the bounds for
+        // good.
         for (int i = 0; i < 4; i++)
         {
             int active = i;

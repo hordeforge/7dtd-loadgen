@@ -32,6 +32,27 @@ under **Changed** with their migration path.
   all of them. `mypy` holds the already-annotated entry points to
   `disallow_untyped_defs`; the rest of the tree joins that list as it gets
   annotated.
+- Join-handshake latency is measured and reported. Each bot records
+  `joinMs` (connect request to server-confirmed spawn, `-1` if it never
+  joined); the cohort summary gains a `JOIN_LATENCY joined=<n> p50Ms= p95Ms=
+  maxMs=` line, and the stats JSON gains `joinMsSamples`, `joinMsP50`,
+  `joinMsP95` and `joinMsMax`. Bots that never joined are excluded from the
+  percentiles rather than counted as zero, so a failed join does not drag the
+  curve down. `PASS`/`FAIL` lines and the per-bot summary rows carry `joinMs`
+  too, and a failure now reports `elapsedMs` so a broken handshake is
+  distinguishable from a server that never answered. The `FAIL
+  litenet_start` / `FAIL litenet_connect_null` paths log a line, which the
+  throttled cohort console echo otherwise swallowed.
+- Swallowed faults print their top stack frame. A cohort run catches per-bot
+  and per-task exceptions by design, so only the type and message survived;
+  `FaultText` adds context, type, message and the leading frame on one line.
+  A multi-line trace inside a timestamped log line breaks line-oriented
+  parsers, so the frame is flattened. Log line text changes, the log line
+  format does not.
+- A single-bot `--join` run now prints the same `JOIN_LOAD` header as a cohort
+  run, and the cohort header names the scenario id. A stats JSON and a run
+  manifest exist for both shapes, and their console lines have to name the run
+  they belong to.
 
 ### Changed
 
@@ -238,14 +259,16 @@ under **Changed** with their migration path.
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the
   life of the run. The connect now waits on the `ConnectAsync` task.
-- The flag removed in 0.4.2 now fails loudly instead of silently doing
-  nothing. The argument parser ignores flags it does not recognize, so a
-  script still passing `--mixed-actions` after upgrading kept its exit code 0
-  and its bots ran the default wander workload rather than the mixed one. In a
-  load generator that is the worst failure shape: the run looks healthy and
-  only the generated load differs, which quietly invalidates a comparison.
-  `--mixed-actions` is now rejected with exit code 2 and a message naming
-  `--mode mixed`. Scripts that never passed the flag are unaffected.
+- **Breaking (CLI, exit code):** the flag removed in 0.4.2 now fails loudly
+  instead of silently doing nothing. The argument parser ignores flags it does
+  not recognize, so a script still passing `--mixed-actions` after upgrading
+  kept its exit code 0 and its bots ran the default wander workload rather
+  than the mixed one. In a load generator that is the worst failure shape: the
+  run looks healthy and only the generated load differs, which quietly
+  invalidates a comparison. `--mixed-actions` is now rejected with exit code 2
+  and a message naming `--mode mixed`, so a script that has not finished
+  migrating from 0.4.2 sees the failure rather than a wrong workload. Scripts
+  that never passed the flag are unaffected.
 - `listplayers` parsing no longer scans the whole response per row. The
   `id=...`/`health=...`/`pltfmid=...` patterns chained unbounded `.*?` gaps
   with `RegexOptions.Singleline`, so a response missing the tail fields cost
@@ -261,6 +284,53 @@ under **Changed** with their migration path.
   translation table whose fallback relabelled an unknown cause as a world
   death. The reported cause names in the stats JSON, the deaths CSV and the
   log lines are unchanged.
+- **Breaking (CLI, exit code):** `--key`, `--password` and `--telnet-password`
+  are now refused in every mode, not only under `--join`. The tokens stayed in
+  `KnownFlags` because `--help` still names them, but the probe, `--self-test`
+  and `--self-test-join` parsers had no branch for them, so the flag and its
+  value were dropped and the secret sat in world-readable `argv` while the run
+  proceeded with no password. `README.md` already promised the exit-2
+  refusal in all modes; the code now does it. The refusal moved to the mode
+  dispatch in `Program.Main`, so the per-mode branches are gone and a script
+  passing a credential to any lane now fails with exit 2 and a message naming
+  the environment variable, instead of running passwordless. Pass the
+  credential in `LOADGEN_KEY` / `LOADGEN_TELNET_PASSWORD`. A refused value is
+  still readable in `ps` until the process exits.
+- `MockGameServer.Poll` is serialized. LiteNetLib's `NetManager` is
+  single-threaded by contract: `PollEvents` drains shared incoming queues and
+  every handler mutates peer state, so two pollers inside it concurrently
+  corrupt those queues. The concurrent-poller self-test drove four threads
+  through it and the atomic counters it kept exact could not repair the
+  library. The mock now reports the highest observed poller count, and the
+  self-test pins it at 1.
+- The client's courtesy BYE no longer races the shutdown sweep.
+  `ShutdownRequested` only orders the join thread against the sweep's grace
+  period; it does not exclude it, so the sweep could call `DisconnectAll` and
+  `Stop` on the same non-thread-safe `NetManager` from the signal-handler
+  thread. The BYE now takes the same `SweepGate` as `StopNet` and the sweep.
+  The drain sleep stays outside the gate so one bot's BYE does not delay every
+  other bot's teardown.
+- `BenchClock.ActiveMin` / `ActiveMax` read under the lock that writes them, so
+  the summary sees one consistent min/max pair rather than two independent
+  unsynchronized loads.
+- The C# suite's `BenchClockTests.ConcurrentSampleAndCount_MinMaxStayConsistent`
+  failed on a preempted runner. Its read loop is 200 unsynchronized reads that
+  finish in microseconds, so a worker could miss its only scheduled sample and
+  the end-of-test min/max assertions failed on scheduling rather than on the
+  clock. Each worker now samples once and signals a `CountdownEvent` the read
+  loop waits on; min and max are monotone, so the first sample of each value
+  fixes the bounds.
+- `make lint` was red on a clean tree: `B011` (`assert False` in the dependency
+  contract gate), `ARG001` (unused `tmp_path` in the text-encoding gate) and
+  `E741` (a variable named `l` in the SUT capture). The gates now raise
+  `AssertionError`, drop the unused fixture, and name the loop variable.
+- `tests/test_release_contract.py` annotated `pinned_game_version` as returning
+  a 3-tuple while it returns the 4-tuple `(release, major, minor, build)`, so
+  mypy failed the lint lane.
+- `docs/THREAT_MODEL.md` was re-verified against the current code: R6 (admin
+  command injection) is partially mitigated by the token allowlist and
+  single-line guard, and the credential-flag finding (R2) is fixed as described
+  above.
 
 ## [0.4.2] - 2026-09-21
 

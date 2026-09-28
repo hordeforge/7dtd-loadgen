@@ -382,7 +382,8 @@ mid-run or silently changing gate semantics.
 A secret on the command line is visible in `ps` output to every user on the
 host, so both credentials come from the environment and there is no flag for
 either. Passing `--key`, `--password`, or `--telnet-password` exits 2 naming the
-environment variable to use; the refusal never echoes the value.
+environment variable to use, in every mode (probe, `--join`, `--self-test`,
+`--self-test-join`); the refusal never echoes the value.
 
 | Secret | Environment variable | Default |
 |---|---|---|
@@ -509,7 +510,10 @@ Each client logs its join stage, actions, death cause, respawn count, and final
 failure reason. The cohort summary and process exit code are the automation
 contract: a probe proves network reachability, while a successful join test
 proves the expected handshake and action path completed at the configured pass
-rate. Preserve logs alongside the server configuration and APM session when
+rate. The summary's `JOIN_LATENCY` line (and the stats JSON's `joinMsP50`,
+`joinMsP95`, `joinMsMax`) reports handshake latency per bot and across the
+cohort: connect request to server-confirmed spawn, excluding bots that never
+joined. Preserve logs alongside the server configuration and APM session when
 comparing runs.
 
 ## Reproducible performance runs

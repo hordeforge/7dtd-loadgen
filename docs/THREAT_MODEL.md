@@ -26,7 +26,7 @@ cohort from being aimed at a third-party host.
 | # | Risk | Boundary | Where | Mitigation today |
 |---|---|---|---|---|
 | R1 | Web dashboard on :8080 with a seeded level-0 webuser whose credential is `admin`/`admin`, committed to the repo as an **unsalted** base64(MD5) hash | config-to-runtime | `scripts/serverconfig_loadgen.xml:38-39`, `scripts/start_dedicated_prefab.sh:186`, webuser `scripts/serveradmin_apm_seed.xml:116`, seeded `scripts/start_dedicated_prefab.sh:135-169` | operator may set `RE_ADMIN_WEB_PASSWORD` (hash computed via `scripts/webdash_password_hash.py`, `start_dedicated_prefab.sh:155-164`); seeded file `chmod 600` (`:144`, `:199`); comment at `serverconfig_loadgen.xml:34-37` now states the exposure. No control binds 8080/8081 off the public internet |
-| R2 | **False mitigation claim:** `README.md:374-379` says `--key`, `--password`, `--telnet-password` "exit 2 naming the environment variable". They exit 2 in join mode (`src/LoadGen/Program.Join.cs:122,195`) and for `--key` in probe (`src/LoadGen/Program.Probe.cs:26`), but all three tokens are whitelisted in `KnownFlags` (`src/LoadGen/Program.cs:110-126`) and the probe / `--self-test` / `--self-test-join` parsers have no branch for them, so the flag **and its value are silently ignored and sit in world-readable argv** | operator-to-tool | `src/LoadGen/Program.cs:110-126,205-211`; parsers `src/LoadGen/Program.Probe.cs:22-42`, `src/LoadGen/Program.SelfTestJoin.cs:13-21`, `src/LoadGen/SelfTest.cs:14-22` | none. Join lane is safe; the other three lanes contradict the documented contract |
+| R2 | **Credential flags were silently ignored outside join mode.** `README.md:374-379` says `--key`, `--password`, `--telnet-password` "exit 2 naming the environment variable". They exit 2 in join mode (`src/LoadGen/Program.Join.cs:122,195`) and for `--key` in probe (`src/LoadGen/Program.Probe.cs:26`), but all three tokens are whitelisted in `KnownFlags` (`src/LoadGen/Program.cs:110-126`) and the probe / `--self-test` / `--self-test-join` parsers have no branch for them, so the flag **and its value are silently ignored and sit in world-readable argv** | operator-to-tool | `src/LoadGen/Program.cs:110-126,205-211`; parsers `src/LoadGen/Program.Probe.cs:22-42`, `src/LoadGen/Program.SelfTestJoin.cs:13-21`, `src/LoadGen/SelfTest.cs:14-22` | **fixed**: `Program.Main` refuses all three flags before mode dispatch (`Program.cs:205-217`), so the refusal no longer depends on which parser runs; `tests/test_loadgen.py` pins exit 2 in every mode. The value is still in argv for the lifetime of the process, so passing a secret on the command line remains wrong |
 | R3 | Test-only telnet credential `retest` hardcoded in three source files, in the shipped serverconfig, and printed by `--help`; grants full server admin over plaintext TCP | secrets-to-code | `src/LoadGen/Program.Join.cs:37-40`, `src/LoadGen/Program.cs:267` (help text), `scripts/bloodmoon_profile.py:44-48`, `scripts/serverconfig_loadgen.xml:46`, `README.md:111-112,384` | policy text only (`AGENTS.md` rule 4); failed-login limit `scripts/serverconfig_loadgen.xml:47-48`; no rotation has ever happened |
 | R4 | Join password is placed in the **connect payload** sent to a peer the client never authenticates, so any host answering `--host/--port` receives it | game-server-to-client | `src/LoadGen/GameJoinClient.cs:330-333`; bind/start `GameJoinClient.cs:310-328` | preflight bind check only (`GameJoinClient.cs:195-203`); no key, signature, or host allow-list exists |
 | R5 | Hand-written binary parser over untrusted server wire data; memory safety rests on reader bounds checks and golden-wire tests, not proof | game-server-to-client | `src/LoadGen/PackageCodec.cs`, receive path `src/LoadGen/GameJoinClient.cs:294-308,393` | inbox cap 2000 (`GameJoinClient.cs:230,301-307`); mapping-count bound before allocation (`PackageCodec.cs:931-932`, `MaxPackageMappings`); `--golden-wire` layout gates (`tests/test_loadgen.py`) |
@@ -39,8 +39,9 @@ cohort from being aimed at a third-party host.
 
 Ranking rationale. R1 and R2 are the two a reader is most likely to act on
 incorrectly: R1 because the dashboard is live admin authority reachable by anyone
-who reaches the lab host, and R2 because the README actively promises a
-protection the code does not deliver in three of four lanes. R3-R6 assume a
+who reaches the lab host, and R2 because the README promised a protection the
+code did not deliver in three of four lanes (now it does; the residual is that a
+refused secret is still in `ps` until exit). R3-R6 assume a
 hostile or corrupted target server, which the tool's own posture demands when
 pointed anywhere but the lab. R7-R9 are operator-misuse and self-harm paths that
 corrupt load-test conclusions rather than systems. R10-R11 are process debt.
@@ -105,8 +106,9 @@ CI (push to main) ──▶ write-scoped GITHUB_TOKEN ──▶ badges branch
 - **Server telnet (TCP):** the password is sent cleartext after a banner check
   (`src/LoadGen/TelnetAdmin.cs:275-287`); any network observer between bot and
   server reads it and the session.
-- **Secrets flow:** enter through the environment only in the lanes that enforce
-  it (`LOADGEN_KEY`, `LOADGEN_TELNET_PASSWORD`; see R2 for the lanes that do not).
+- **Secrets flow:** enter through the environment in every lane
+  (`LOADGEN_KEY`, `LOADGEN_TELNET_PASSWORD`; a credential flag exits 2 before
+  mode dispatch, R2).
   Also present: the `retest` literal in three source files and the help text, the
   `admin` webuser hash committed in `scripts/serveradmin_apm_seed.xml:116`, and
   `TelnetPassword` in the rendered config, which is `chmod 600`
@@ -140,8 +142,9 @@ STRIDE tied to real code:
 - **Repudiation (evidence):** manifests record settings but nothing binds them to
   outcomes cryptographically (`Program.Join.cs:787-798,803-824`); a modified
   `workspace/` tree is undetectable, and the comparisons trust it.
-- **Information disclosure:** secrets in argv in the lanes that do not refuse them
-  (R2); plaintext telnet auth (`TelnetAdmin.cs:275-287`); committed default
+- **Information disclosure:** secrets in argv are refused in every mode, but a
+  refused value is still readable in `ps` until the process exits (R2);
+  plaintext telnet auth (`TelnetAdmin.cs:275-287`); committed default
   credentials (R1, R3); the webuser hash is unsalted MD5
   (`scripts/webdash_password_hash.py:22-23`), so a readable `serveradmin.xml`
   yields the password by dictionary attack. MD5 is the game's on-disk format, so
@@ -205,7 +208,9 @@ Claims in docs not matched by code/config (highest-value catches):
    (`Program.Probe.cs:22-42`, `Program.SelfTestJoin.cs:13-21`, `SelfTest.cs:14-22`).
    In those lanes the credential is neither used nor refused: it stays in
    world-readable argv. The documented contract is narrower than the code (R2);
-   no code changed here, the fix belongs to sec-review.
+   no code changed here, the fix belongs to sec-review. **Resolved:** the refusal
+   moved to `Program.Main`, before mode dispatch, and the per-mode branches were
+   removed, so all four modes now refuse and `tests/test_loadgen.py` asserts it.
 2. **`AGENTS.md` rule 4 / `README.md:374-388` prefer env over argv for the telnet
    password, and the code does that**, but the same password is still a literal
    default in three files plus the help text (R3).
@@ -289,3 +294,5 @@ able to run the binary:
   `TelnetProvisioner`, the truncating JSONL sink, the unsalted webuser hash, the
   `MaxPackageMappings` allocation bound, `chmod 600` on seeded credentials, the
   mutating-verb refusal in `tools/sut_telnet.py`, and CI badge-job write scope.
+  R2 is now fixed: the credential-flag refusal moved from two per-mode parsers
+  to `Program.Main` before mode dispatch, and the per-mode branches were removed.
