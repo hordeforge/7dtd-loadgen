@@ -3,7 +3,7 @@
 # hold in the foreground. The compare orchestrator backgrounds this, waits for
 # the ready line, runs the client, then kills via dedicated.pid.
 #
-#   env: RE_SUT_PORT (LiteNet data port; bots join PORT+2)
+#   env: RE_SUT_PORT (server port; bots join PORT+2)
 #        RE_SUT_ADMIN_PORT (stock-shaped telnet console; 0 = off, default 8082)
 #        RE_SUT_WORLD      (fresh world dir, created here)
 #        RE_SUT_WORLD_NAME (Navezgane | RWG | ... default Navezgane)

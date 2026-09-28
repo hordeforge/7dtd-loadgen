@@ -8,7 +8,9 @@ Diff axes (the comparable observable surface):
   - join outcome (pass/fail counts, first passing client line)
   - server log severity/category counts (normalized)
   - entity counts from telnet listents (total/alive) and listplayers
-  - game day/time (gettime)
+  - game day/time (gettime) and the game-clock rate between two gettime markers
+  - telnet server banner fields the two sides disagree on (max players,
+    difficulty, world)
   - save-file inventory (presence + sizes; formats differ by design, so this
     is a presence/growth comparison, not a byte diff)
   - telnet gamestats: compared on shared names; one-side-only stats are
@@ -16,7 +18,11 @@ Diff axes (the comparable observable surface):
 
 A difference is a FINDING to triage (zdtd bug vs harness artifact vs known
 divergence), never a pass to fake. If only one side ran, the scenario is
-reported as NOT COMPARED, never as compared.
+reported as NOT COMPARED, never as compared. Two sides stamped with different
+run ids are NOT COMPARED either (diff.json then carries stale: true): a
+one-sided rerun left the other side on disk from an earlier invocation, and
+diffing the pair would measure one server today against the other whenever it
+last ran.
 
 diff.json carries DIFF_SCHEMA, the same versioned id every other evidence
 file in this repo stamps. A capture from a different revision of the report

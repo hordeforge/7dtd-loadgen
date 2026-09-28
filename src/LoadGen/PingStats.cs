@@ -56,10 +56,11 @@ public static class PingStats
         get { lock (Gate) return Samples.Count; }
     }
 
-    /// <summary>count and every derived value cover the whole run: the first
-    /// <c>stride</c> samples were exact, the rest are uniform over the
-    /// decimation, so percentiles and the spike count are scaled estimates and
-    /// <c>stride</c> says how far.</summary>
+    /// <summary><c>count</c> and <c>stride</c> describe the whole run: the first
+    /// <c>stride</c> samples were exact, the rest are uniform over the decimation.
+    /// The average and the spike count are scaled back up by <c>stride</c>; the
+    /// percentiles and the max are reported as they stand, because an order
+    /// statistic over a uniform subsample already estimates the run's.</summary>
     public static (int count, double avg, int p50, int p95, int max, int spikes, int stride) Summary()
     {
         lock (Gate)

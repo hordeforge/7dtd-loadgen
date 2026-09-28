@@ -13,9 +13,9 @@ public static class ActionLoop
     const float MaxRunSpeedMps = 6.0f;
 
     /// <summary>Default per-life dynamite cap. The Demolition auto-raise to
-    /// <see cref="DemolitionMaxDynamitePerLife"/> lives in the CLI
-    /// (Program.DynamiteCapFor), which is the only place that knows whether the
-    /// caller passed --max-dynamite explicitly.</summary>
+    /// <see cref="DemolitionMaxDynamitePerLife"/> lives in the CLI (the
+    /// DynamiteCapFor local in Program.Join.cs), which is the only place that
+    /// knows whether the caller passed --max-dynamite explicitly.</summary>
     public const int DefaultMaxDynamitePerLife = 3;
 
     /// <summary>Raised dynamite cap for Demolition mode (terrain destruction load).</summary>
@@ -113,7 +113,7 @@ public static class ActionLoop
         public int MaxLifetimeMs { get; set; } = 0;
         /// <summary>Dynamite cap per life. The Demolition auto-raise to
         /// <see cref="DemolitionMaxDynamitePerLife"/> is applied by the caller
-        /// (Program.Join), not here, so a library caller that only sets
+        /// (Program.Join.cs), not here, so a library caller that only sets
         /// <see cref="Mode"/> to Demolition still gets this cap.</summary>
         public int MaxDynamitePerLife { get; set; } = DefaultMaxDynamitePerLife;
 

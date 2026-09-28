@@ -25,7 +25,8 @@ bots against EAC-off test servers only.
 
 ## Requirements
 
-`make doctor` checks all of these at once and names whatever is missing:
+`make doctor` checks the three build/test tools in this table at once and names
+whatever is missing. It does not look for a game install:
 
 | Tool | Needed for | Version |
 |---|---|---|
@@ -211,11 +212,13 @@ Output per scenario (`workspace/comparison/<scenario>/`): `stock/` and `zdtd/`
 run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus
 `REPORT.md` + `diff.json` (the normalized diff). Both servers get the same
 client knobs (`COMPARE_*`) and the same game options (zdtd boots with a
-serverconfig matching the stock run's live values). If a scenario cannot run on
-one server the report says NOT COMPARED; it is never reported as compared on
-one side's data alone. A one-sided rerun over an earlier two-sided run is
-reported the same way (the sides carry different `runId`s, so they are not a
-comparison of the same moment); re-run `--sut all` to compare.
+serverconfig carrying the stock run's live values, except the day lengths,
+which the stock start script overrides and the zdtd template does not). If a
+scenario cannot run on one server the report says NOT COMPARED; it is never
+reported as compared on one side's data alone. A one-sided rerun over an
+earlier two-sided run is reported the same way (the sides carry different
+`runId`s, so they are not a comparison of the same moment); re-run
+`--sut all` to compare.
 
 Details, axis definitions, status semantics and current findings:
 [`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md). Running the real stock client

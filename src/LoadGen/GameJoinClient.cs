@@ -145,8 +145,8 @@ public sealed class GameJoinClient
         public int PaceMs { get; set; } = -1;
 
         /// <summary>Dynamite cap per life. The Demolition auto-raise is the
-        /// CLI's (Program.DynamiteCapFor), so an explicit --max-dynamite wins
-        /// regardless of flag order.</summary>
+        /// CLI's (the DynamiteCapFor local in Program.Join.cs), so an explicit
+        /// --max-dynamite wins regardless of flag order.</summary>
         public int MaxDynamitePerLife { get; set; } = ActionLoop.DefaultMaxDynamitePerLife;
         /// <summary>Total bots in this run (chat throttle).</summary>
         public int CohortSize { get; set; } = 1;

@@ -27,7 +27,7 @@ demand and honest client outcomes, not emulation of the complete game client.
 - [x] RealEarth P0/P1 offline scenarios (`re-p0-p1-offline-gate`, `re-p1-inject-selftest-manifest`)
 - [x] Add a checked-in run-manifest format containing server build, world/seed,
   bot count, concurrency, action seed, duration, and telnet pressure settings.
-  (Implemented: --run-manifest 7dtd.loadgen.run.v1, Program.cs.)
+  (Implemented: --run-manifest 7dtd.loadgen.run.v1, Program.Join.cs.)
 - [x] Add structured per-client and cohort JSON output alongside human-readable
   logs. (Implemented: --stats-json with cohort + per-client + ping stats.)
 - [x] Cover CLI argument validation, timeout, cancellation, and minimum-pass-rate
@@ -95,9 +95,10 @@ demand and honest client outcomes, not emulation of the complete game client.
   naming which, with --no-spawn-zombies/--no-kill-fallback guidance.)
 - [x] Add graceful shutdown handling that stops telnet pressure and writes a
   final cohort summary. (Normal completion: spawnCts.Cancel + spawn/horde
-  task join before the summary + gate return, Program.cs; Ctrl-C/ProcessExit:
-  DisconnectAllActive frees player slots; the final summary is only written on
-  normal completion - Ctrl-C is an emergency stop, not a measurement end.)
+  task join before the summary + gate return, Program.Join.cs;
+  Ctrl-C/ProcessExit: DisconnectAllActive frees player slots; the final summary
+  is only written on normal completion - Ctrl-C is an emergency stop, not a
+  measurement end.)
 - [x] Document host resource limits and safe scaling guidance for large cohorts.
   (2026-08-10: README "Host resource limits and scaling" - thread stack,
   loopback /8, server caps, measurement hygiene.)
@@ -113,9 +114,9 @@ demand and honest client outcomes, not emulation of the complete game client.
   throttle + 127.x binds, empty-world AI spawn points, RWG warm-up.)
 - [x] Run `make selftest` and `make test` on a clean .NET 8 environment before a
   release. (CI: .github/workflows/ci.yml runs make test on ubuntu-latest with
-  dotnet 8.0.x + uv - includes build, self-test-join, 24 C# unit tests, pytest
-  golden-wire. unittest target added 2026-08-10; selftest folded into make test
-  2026-08-11.)
+  dotnet 8.0.x + uv - includes lint (shellcheck, ruff, mypy), build,
+  self-test-join, the C# unit suite and the pytest gates. unittest target added
+  2026-08-10; selftest folded into make test 2026-08-11.)
 
 ## Done criteria
 
@@ -142,7 +143,7 @@ record, and documentation of any protocol-version restriction.
 | Login deny reason 14 on some soaks | **open if repro** | Earlier misread; re-verify if full bot soaks fail after ready |
 | H500 / expanded-world live validate | open | Next checkbox above |
 | EAC/encrypted servers | unsupported | Documented non-goal unless scoped |
-| Named workload profiles in-repo | **done** | `--profile probe\|join-burst\|steady-wander\|death-soak\|mixed\|bench` in `Program.cs`; the per-tier scenario profiles are a separate thing and live under `7dtd-server-apm/plans/` |
+| Named workload profiles in-repo | **done** | `--profile probe\|join-burst\|steady-wander\|death-soak\|mixed\|bench` in `Program.Join.cs`; the per-tier scenario profiles are a separate thing and live under `7dtd-server-apm/plans/` |
 
 ## SUT comparison harness (2026-08-12)
 

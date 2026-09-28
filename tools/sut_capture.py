@@ -10,12 +10,15 @@ dump lands in the server log as GameStat.X = value lines).
   server log  : normalized category counts (stock skips [ScriptOrder] frame
                 noise, which is internal frame-dump spam, not behavior) + key
                 boot lines + stock GameStat dump
-  telnet      : day/time, entity rows (id/type/dead) -> counts, player count
+  telnet      : day/time, entity rows (id/type/dead) -> counts, player count,
+                gamestats, banner keys, the console's own total, and the
+                game-clock rate between two gettime markers
   join outcome: loadgen PASS/FAIL counts + first/last pass
-  save files  : inventory summary - stock inventories Region/*.7rg + main.ttw +
-                decoration.7dt under userdata/Saves by extension; zdtd lists
-                every file in world/ except dedicated.pid and server.log, and
-                reduces world/Region to a file_count entry
+  save files  : inventory summary - stock walks userdata/Saves and takes every
+                .7rg/.7rr/.ttw/.7dt/.nim/.bak file; zdtd lists every file in
+                world/ except dedicated.pid and server.log, and reports
+                world/Region's entry count as regionFileCount beside the map
+                (never inside it: it is a count, not a byte size)
 
 Usage: python3 tools/sut_capture.py <run_dir> <stock|zdtd>
 """

@@ -374,8 +374,8 @@ def teardown(bots, stop_server=False):
     the server (and the host) until its own wall clock expires, poisoning any
     run that follows; Ctrl-C mid-spawn must tear down exactly like a clean end.
     A server this run started via --start-server is stopped too (same ownership
-    rule as capacity_sweep); one pre-existing under SKIP_SERVER_START is left
-    alone."""
+    rule as capacity_sweep); a server this profile found already running is
+    left alone."""
     log("tearing down")
     telnet(["kickall", "kick all"])
     if bots is not None:

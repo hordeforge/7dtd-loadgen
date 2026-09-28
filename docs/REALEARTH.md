@@ -95,7 +95,10 @@ Pair manifests with sibling `7dtd-server-apm` captures for P0-P1 tall-Y soaks.
 ## Product assumptions (RealEarth)
 
 - YDim expand on client + dedicated (`make engine-expand` / start script)
-- `EngineHeightStockSafe=false`, real height `seaLevelY + elev_m` (sea default **100**)
+- `EngineHeightStockSafe=false`, real height `seaLevelY + elev_m`. The sea
+  anchor is the sibling's product constant (`SeaLevelGameY`, **16000** with the
+  YDim expand); loadgen does not pin it, and the gate only asserts the mp and
+  default profiles agree on it
 - MP template `Config/realearth.mp.json` → **SharedFixed**
 - Empty height maps: telnet zed spawn still available on join (loadgen default)
 

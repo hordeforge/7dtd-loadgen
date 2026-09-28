@@ -21,8 +21,8 @@ public static class RunReport
         foreach (char c in s)
         {
             // Stop at the snippet cap so a hostile oversized string cannot make
-            // the scrub loop itself the cost; Snippet still trims a split
-            // surrogate pair exactly as before.
+            // the scrub loop itself the cost; Snippet below still trims a cut
+            // that lands inside a surrogate pair.
             if (sb.Length >= MaxScrubbedChars) break;
             sb.Append(char.IsControl(c) ? '?' : c);
         }

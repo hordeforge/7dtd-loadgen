@@ -16,9 +16,13 @@ A suite/scenario is HONESTLY classified:
   - UNREADABLE  the evidence file exists but could not be parsed. It is listed
                 as its own verdict: dropping the entry would silently remove a
                 scenario from the ledger and read as "nothing was compared here".
+  - STALE       one side's evidence is on disk but no diff.json was written for
+                it, or the two sides come from different invocations. Both sides
+                ran, so neither ONE-SIDE nor a comparison describes the entry.
 
 Usage: python3 tools/consolidated_report.py [--playtest-root <dir>] [--out <dir>]
-Defaults: playtest root ../7dtd-playtest, out workspace/comparison.
+Defaults: playtest root ../7dtd-playtest/workspace/comparison-playtest, out
+workspace/comparison.
 
 Regeneration refuses to run when it would drop playtest suites the committed
 ledger already holds: the playtest evidence lives in a sibling checkout, and a

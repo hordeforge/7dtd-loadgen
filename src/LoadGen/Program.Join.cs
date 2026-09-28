@@ -564,8 +564,9 @@ public static partial class Program
                     spawnZombies, killFallback, spawnEntity, spawnPerPlayer,
                     spawnEveryMs, hordeEveryMs, hordeWaves),
                 ["pingSamples"] = ping.count,
-                // Above 1 the ping percentiles below come from one sample in
-                // pingSampleStride, scaled to the whole run.
+                // Above 1 the ping store is decimated, one sample in
+                // pingSampleStride: pingAvgMs and the spike count below are
+                // scaled back up by it, the percentiles are not.
                 ["pingSampleStride"] = ping.stride,
                 ["joinMsSamples"] = joinCount,
                 ["joinMsP50"] = joinP50,

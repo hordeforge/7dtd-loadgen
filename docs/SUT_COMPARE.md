@@ -64,10 +64,14 @@ Scenario knobs come from `scripts/scenarios/sut.json` (count / actions /
 timeoutMs); explicitly-set env vars (`COMPARE_COUNT`, `COMPARE_ACTIONS`,
 `COMPARE_TIMEOUT_MS`) win over the catalog. Both servers get the same client
 knobs and the same game options: the stock side runs
-`start_dedicated_prefab.sh` with `serverconfig_loadgen.xml`; zdtd boots with a
-serverconfig matching the stock run's live values (day 60/18, max zombies 16,
-difficulty 1, moves 2/3, 64 slots) plus `--admin-port` for the stock-shaped
-telnet console.
+`start_dedicated_prefab.sh` with `serverconfig_loadgen.xml` (max zombies 16,
+difficulty 1, moves 2/3, 64 slots, day lengths overridden to 40/12); zdtd
+boots with a per-scenario serverconfig carrying the same values plus
+`--admin-port` for the stock-shaped telnet console. The one game option the two
+sides do not share is the day length: the zdtd template keeps the 60/18 of
+`serverconfig_loadgen.xml` that the stock start script overrides, so the
+clock-rate axis compares differently configured servers and is triage material,
+not a like-for-like measurement.
 
 ## Observable surface (per run, `surface.json`)
 

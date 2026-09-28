@@ -3,7 +3,7 @@
 Replaces pgrep/pkill: no external process, no shell, and no regex escaping of
 the pattern. The bracket trick those calls needed ("7DaysToDieServer.x86_6[4]",
 so the matcher does not match itself) is unnecessary here because the walk
-skips this process and its ancestors explicitly.
+skips this process and its parent explicitly.
 
 Linux only, which is what the dedicated server and every runner in this repo
 target.

@@ -3,8 +3,10 @@
 #
 # Runs the same client scenario against the stock dedicated server and/or
 # zdtd, captures the observable surface per run (server log, loadgen outcome,
-# telnet snapshot, save-file inventory), and in --sut all mode diffs the two
-# runs into a machine-readable report via tools/sut_report.py.
+# telnet snapshot, save-file inventory), and diffs the two runs into a
+# machine-readable report via tools/sut_report.py. The report is regenerated on
+# every run, including a one-sided --sut stock|zdtd, which then reads NOT
+# COMPARED rather than keeping a stale both-sides diff.
 #
 #   ./scripts/compare_sut.sh --scenario join-probe --sut all
 #   ./scripts/compare_sut.sh --scenario join-probe --sut zdtd
@@ -270,9 +272,12 @@ for sut in $SUTS; do
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       ;;
     zdtd)
-      # Same game options stock runs with (live values from the stock run's
-      # getgamestat/getgamepref: day 60/18, max zombies 16, difficulty 1, move
-      # 2/3). Written per scenario so both servers get one config each.
+      # Game options matched to the stock side's (max zombies 16, difficulty 1,
+      # move 2/3) so the two servers differ only in the implementation under
+      # test. Day lengths do NOT match: start_dedicated_prefab.sh overrides them
+      # to 40/12, and this template keeps the 60/18 of
+      # serverconfig_loadgen.xml the comment here was written against.
+      # Written per scenario so both servers get one config each.
       # Values go through the Safehouse renderer (argv data + XML-escaped), the
       # same tested path start_dedicated_prefab.sh uses: a quote in
       # --world/COMPARE_WORLD must never terminate an attribute and inject

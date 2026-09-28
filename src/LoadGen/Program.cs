@@ -50,7 +50,7 @@ public static partial class Program
     /// synonyms below, but the help lists the canonical names.</summary>
     internal const string DeathList = "none|drown|suicide|killed|random";
 
-    /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.1.1".
+    /// <summary>Consumer-facing build identity, e.g. "7dtd-loadgen 0.4.2".
     /// Backed by &lt;Version&gt; in LoadGen.csproj (see test_release_contract.py).</summary>
     public static string VersionLine()
     {
