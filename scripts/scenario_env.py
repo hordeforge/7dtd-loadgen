@@ -112,8 +112,6 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
         out.append(("LOADGEN_SEED", str(int(client["seed"]))))
     if client.get("writeRunManifest"):
         out.append(("LOADGEN_WRITE_RUN_MANIFEST", "1"))
-    if sc.get("priority"):
-        out.append(("LOADGEN_PRIORITY", str(sc["priority"])))
     if server:
         server_script = str(server.get("script", ""))
         if not SERVER_SCRIPT_RE.match(server_script):
@@ -125,8 +123,6 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
             out.append((k, str(v)))
     else:
         out.append(("LOADGEN_SERVER_SCRIPT", ""))
-    out.append(("LOADGEN_SCENARIO_CI", "1" if sc.get("ci") else "0"))
-    out.append(("LOADGEN_SCENARIO_OPTIONAL", "1" if sc.get("optional") else "0"))
 
     lines = []
     for key, value in out:

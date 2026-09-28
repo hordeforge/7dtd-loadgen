@@ -51,7 +51,6 @@ public sealed class MockGameServerConcurrentPollTests
                 TimeoutMs = 20_000,
                 ActionCount = 12,
                 Mode = ActionLoop.BotMode.Mixed,
-                WanderUntilDeath = false,
                 Death = ActionLoop.DeathMethod.None,
                 Respawn = false,
                 CohortSize = 1,

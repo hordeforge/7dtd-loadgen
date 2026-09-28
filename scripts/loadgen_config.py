@@ -27,9 +27,6 @@ MAX_PORT = 65535
 
 _Number = TypeVar("_Number", int, float)
 
-# Accepted spellings for a boolean knob, lowercased. Deliberately explicit:
-# a bare `== "1"` test reads "yes", "on" and "true" as false, so a script
-# configured with a reasonable spelling silently ran the other branch.
 TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
 FALSE_VALUES = frozenset({"0", "false", "no", "off"})
 

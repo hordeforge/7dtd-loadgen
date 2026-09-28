@@ -134,6 +134,10 @@ public sealed class BenchClockTests
         // silently drop it from the totals asserted below.
         var c = new BenchClock(0, int.MaxValue);
         using var stop = new CancellationTokenSource();
+        // Both ends of the curve only exist once every sampler has reported, and
+        // the read loop below is far shorter than a thread ramp, so wait for the
+        // first sample of each rather than letting the scheduler decide what the
+        // min/max assertions see.
         using var sampled = new CountdownEvent(WorkerCount);
         long localActions = 0, localDeaths = 0, localRespawns = 0;
         var workers = new List<Task>();
@@ -165,7 +169,6 @@ public sealed class BenchClockTests
         Assert.True(sampled.Wait(TimeSpan.FromSeconds(10)), "workers never sampled");
         try
         {
-            Assert.True(sampled.Wait(TimeSpan.FromSeconds(30)), "sampler workers did not start");
             for (int i = 0; i < 200; i++)
             {
                 var (min, max) = c.ActiveBounds;

@@ -136,11 +136,6 @@ public sealed class GameJoinClient
         public int ActionSeed { get; set; } = 42;
         public int ClientId { get; set; } = 1;
         public bool SkipActions { get; set; }
-        /// <summary>Walk until world death (default true). Run downgrades
-        /// <see cref="ActionLoop.BotMode.Wander"/> to <c>Mixed</c> when this is
-        /// false, because Mixed is the only other mode that never self-kills;
-        /// <see cref="Mode"/> itself does not override this flag.</summary>
-        public bool WanderUntilDeath { get; set; } = true;
         /// <summary>Bot behaviour mode (see <see cref="ActionLoop.BotMode"/>).</summary>
         public ActionLoop.BotMode Mode { get; set; } = ActionLoop.BotMode.Wander;
         /// <summary>Client self-kill method. Default None = wait for zombies/rad/water/server.</summary>
@@ -482,8 +477,6 @@ public sealed class GameJoinClient
                 if (State.Stage == JoinStage.Joined && !actionsDone && !opt.SkipActions)
                 {
                     var mode = opt.Mode;
-                    if (!opt.WanderUntilDeath && mode == ActionLoop.BotMode.Wander)
-                        mode = ActionLoop.BotMode.Mixed;
                     State.BotModeName = mode.ToString();
 
                     var pollBatch = new List<byte[]>();
@@ -1287,7 +1280,6 @@ public sealed class GameJoinClient
             ClientId = 1,
             Mode = ActionLoop.BotMode.Wander,
             Death = ActionLoop.DeathMethod.Drown,
-            WanderUntilDeath = true,
             Respawn = true,
             MaxLives = 2,
             RespawnDelayMs = 100,

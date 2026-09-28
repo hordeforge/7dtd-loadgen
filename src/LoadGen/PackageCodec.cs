@@ -655,16 +655,12 @@ public static class PackageCodec
         byte damageType,
         ushort strength,
         bool fatal,
-        int attackerEntityId = -1,
-        byte channel = 0,
-        bool trapKillXp = false,
-        float killXpScale = 1f)
+        int attackerEntityId = -1)
     {
         const uint fPainHit = 0x100;
         const uint fFatal = 0x010;
-        const uint fTrapKillXp = 0x400;
-        uint flags = fPainHit | (fatal ? fFatal : 0u) | (trapKillXp ? fTrapKillXp : 0u);
-        return FrameChannelPackage(channel, packageId, w =>
+        uint flags = fPainHit | (fatal ? fFatal : 0u);
+        return FrameChannelPackage(0, packageId, w =>
         {
             w.Write(entityId);
             w.Write(flags);
@@ -680,7 +676,7 @@ public static class PackageCodec
             w.Write(""); // hitTransformName
             w.Write(0f); w.Write(0f); w.Write(0f); // hitTransformPosition
             w.Write(0f); w.Write(0f); // uvHit
-            w.Write(killXpScale); // KillXPScale (V3.2.0)
+            w.Write(1f); // KillXPScale (V3.2.0)
             w.Write(1f); // damageMultiplier
             w.Write(0f); // random
             w.Write((byte)0); // bonusDamageType
@@ -1075,12 +1071,7 @@ public static class PackageCodec
     /// </summary>
     public static string VersionLongString(VersionInfo v)
     {
-        string release = v.ReleaseType switch
-        {
-            0 => "Alpha",
-            1 => "V",
-            _ => "V",
-        };
+        string release = v.ReleaseType == 0 ? "Alpha" : "V";
         if (v.ReleaseType == 1 && v.Major >= 3)
         {
             int mid = v.Minor / 10;

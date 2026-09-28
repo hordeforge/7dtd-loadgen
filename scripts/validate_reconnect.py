@@ -31,12 +31,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from loadgen_config import env_bool
 
 ROOT = Path(__file__).resolve().parent.parent
-DS_DIR = Path(
-    os.environ.get(
-        "SEVENDTD_SERVER_DIR",
-        str(Path.home() / ".local/share/Steam/steamapps/common/7 Days to Die Dedicated Server"),
-    )
-)
 GAME_PORT = 26900
 TELNET_PORT = 8081
 

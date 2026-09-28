@@ -172,7 +172,6 @@ public static partial class Program
                 if (!ActionLoop.TryParseMode(raw, out var mode))
                     return InvalidArg(flag, raw, ModeList);
                 opt.Mode = mode;
-                opt.WanderUntilDeath = mode == ActionLoop.BotMode.Wander;
                 modeSet = true;
             }
             else if (args[i] == "--bot-mix" && i + 1 < args.Length)
@@ -226,12 +225,6 @@ public static partial class Program
         // headline number of a load run: reject it.
         if (!IsValidCount(count))
             return InvalidArg("--count", count.ToString(), "an integer 1 or more (bots in the cohort)");
-
-        // --bot-mix overrides --mode, so a mix entry naming wander must stay
-        // wander: --mode's --bot-mix-independent conversion (Wander+!WanderUntilDeath
-        // to Mixed) is a --mode behavior and must not apply to a mix entry.
-        if (botMix.Count > 0)
-            opt.WanderUntilDeath = true;
 
         // Demolition's raised per-life cap applies only when the caller did not
         // pin one: an explicit --max-dynamite N bounds charges per life for
@@ -325,7 +318,6 @@ public static partial class Program
         if (!modeSet)
         {
             opt.Mode = ActionLoop.BotMode.Wander;
-            opt.WanderUntilDeath = true;
         }
 
         // Wall-clock budget: long for endless world-death walks; short estimate when --actions N set.
@@ -347,8 +339,6 @@ public static partial class Program
                 opt.TimeoutMs = (int)Math.Max(opt.TimeoutMs, Math.Min(estimate, 3_600_000));
             }
         }
-
-        opt.CohortSize = count;
 
         using var spawnCts = new CancellationTokenSource();
         // One shared console for the whole cohort's per-life grants. The bot
@@ -454,9 +444,6 @@ public static partial class Program
                     ActionSeed = opt.ActionSeed,
                     ClientId = clientId,
                     SkipActions = opt.SkipActions,
-                    // GameJoinClient converts Wander+!WanderUntilDeath to Mixed;
-                    // Mode is always clientMode here, so pass the flag through.
-                    WanderUntilDeath = opt.WanderUntilDeath,
                     Mode = clientMode,
                     MaxDynamitePerLife = clientDynamite,
                     Death = opt.Death,
@@ -758,7 +745,7 @@ public static partial class Program
                 $"lastDied={r.s.Died} cause={DeathCauseNames.Of(r.s.DeathCause)}"));
         if (bench is { } b)
         {
-            var (wStart, wEnd) = b.WindowBounds;
+            var (wStart, _) = b.WindowBounds;
             var (wActions, wDeaths, wRespawns) = b.WindowCounts;
             var (activeMin, activeMax) = b.ActiveBounds;
             double aps = b.WindowMs > 0 ? wActions * 1000.0 / b.WindowMs : 0;
