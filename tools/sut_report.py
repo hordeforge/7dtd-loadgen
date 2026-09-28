@@ -129,6 +129,45 @@ def main():
         print("ERROR: no run data for either side", file=sys.stderr)
         return 1
 
+    # Sides from different invocations are not a comparison. A one-sided rerun
+    # (`compare_sut.sh --sut stock`) replaces that side and leaves the other's
+    # evidence from an earlier invocation on disk; diffing the pair measures one
+    # server today against the other whenever it last ran, and every finding
+    # would be an artifact of the rerun rather than a difference between the
+    # servers. Each invocation stamps its id into both sides' run-meta.json, so
+    # a mismatch names exactly that.
+    stale_invocations = None
+    if stock is not None and zdtd is not None:
+        smeta = (stock.get("meta") or {})
+        zmeta = (zdtd.get("meta") or {})
+        sid, zid = smeta.get("runId"), zmeta.get("runId")
+        if sid and zid and sid != zid:
+            stale_invocations = (sid, zid)
+
+    lines = [f"# Stock-vs-zdtd comparison: {scenario}\n"]
+    if stale_invocations is not None:
+        sid, zid = stale_invocations
+        lines.append("## Status: NOT COMPARED\n")
+        lines.append(f"- stock ran under invocation `{sid}`, zdtd under `{zid}`")
+        lines.append("- Both sides hold evidence, but not from the same run: a "
+                     "one-sided rerun replaced one of them. Diffing the pair "
+                     "would compare servers measured at different times, so no "
+                     "axis is scored here.")
+        lines.append(f"- re-run both sides together to compare them: "
+                     f"`./scripts/compare_sut.sh --scenario {scenario} --sut all`\n")
+        report = "\n".join(lines) + "\n"
+        with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(report)
+        with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
+            json.dump({"scenario": scenario, "compared": False, "stale": True,
+                       "ran": ["stock", "zdtd"],
+                       "runIds": {"stock": sid, "zdtd": zid},
+                       "findings": [f"sides are from different invocations "
+                                    f"(stock={sid}, zdtd={zid}); re-run --sut all"]},
+                      fh, indent=1, sort_keys=True)
+        print(report, file=sys.stderr)
+        return 0
+
     lines = [f"# Stock-vs-zdtd comparison: {scenario}\n"]
     findings = []
     axes = {}

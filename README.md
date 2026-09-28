@@ -206,7 +206,9 @@ run dirs (boot.log, loadgen.log, server.log, telnet.txt, surface.json) plus
 client knobs (`COMPARE_*`) and the same game options (zdtd boots with a
 serverconfig matching the stock run's live values). If a scenario cannot run on
 one server the report says NOT COMPARED; it is never reported as compared on
-one side's data alone.
+one side's data alone. A one-sided rerun over an earlier two-sided run is
+reported the same way (the sides carry different `runId`s, so they are not a
+comparison of the same moment); re-run `--sut all` to compare.
 
 Details, axis definitions, status semantics and current findings:
 [`docs/SUT_COMPARE.md`](docs/SUT_COMPARE.md). Running the real stock client

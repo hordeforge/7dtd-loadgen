@@ -103,6 +103,22 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
                 "summary": None,
             })
             continue
+        if d.get("stale"):
+            # Both sides hold evidence, but from different invocations: a
+            # one-sided rerun replaced one of them. That is neither a comparison
+            # nor a one-sided run, and reporting it as ONE-SIDE would read as
+            # "the other server could not run".
+            rows.append({
+                "tool": "loadgen",
+                "id": scenario_dir.name,
+                "compared": False,
+                "ran": ["stock", "zdtd"],
+                "missing": [],
+                "verdict": "STALE",
+                "findings": d.get("findings") or [],
+                "summary": None,
+            })
+            continue
         findings = [as_cell(f) for f in as_list(d.get("findings"))]
         if not d.get("compared"):
             verdict = "ONE-SIDE"
@@ -220,7 +236,8 @@ def render(rows: list[dict]) -> str:
         lines.append(f"## {r['tool']}/{r['id']} - {r['verdict']}\n")
         if r["verdict"] in ("ONE-SIDE", "STALE"):
             lines.append(f"- ran: {r.get('ran')} | missing: {r.get('missing')} "
-                         f"(missing capability or failed run; not compared)\n")
+                         f"(missing capability, failed run, or a one-sided rerun; "
+                         f"not compared)\n")
             continue
         if r["verdict"] == "UNREADABLE":
             for f in r["findings"]:

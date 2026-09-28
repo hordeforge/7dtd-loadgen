@@ -169,6 +169,14 @@ TELNET_PORT_ZDTD="${COMPARE_TELNET_PORT_ZDTD:-8082}"
 
 echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIONS) ==="
 
+# One id per invocation, stamped into every side's run-meta.json. A comparison
+# is only meaningful between two runs of the SAME invocation: a one-sided rerun
+# (`--sut stock`) replaces that side and leaves the other side's evidence from
+# an earlier invocation on disk, and diffing the two measures a stock run from
+# today against a zdtd run from whenever it last ran. sut_report.py refuses a
+# pair whose ids differ rather than publishing that as a comparison.
+RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
+
 # Evidence must never silently clobber: a non-default world writes to a
 # world-tagged dir (join-fast + Pregen08k01 -> join-fast-pregen08k01), unless
 # the scenario id already carries that tag (compare-worlds convention).
@@ -451,6 +459,7 @@ EOF
 {
   "scenario": "$SCENARIO_ID",
   "sut": "$sut",
+  "runId": "$RUN_ID",
   "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "hostLoad": "$HOST_LOAD",
   "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST",
@@ -475,8 +484,13 @@ EOF
   echo "  torn down"
 done
 
-if [[ "$SUTS" == "stock zdtd" ]]; then
-  echo "=== diff report ==="
-  python3 "$ROOT/tools/sut_report.py" "$SCENARIO_DIR"
-  echo "report: $SCENARIO_DIR/REPORT.md"
-fi
+# Always regenerate, not only after a both-sides run. A one-sided rerun
+# (`--sut stock`) replaces that side's evidence and leaves the other side's
+# evidence from an earlier run, so the previous diff.json would keep asserting
+# `compared: true` for a pair of runs that never happened side by side, and
+# consolidated_report.py would report that scenario as CLEAN or DELTAS.
+# sut_report.py already downgrades a one-sided scenario to NOT COMPARED, so
+# re-running it here is what makes a partial rerun converge on the truth.
+echo "=== diff report ==="
+python3 "$ROOT/tools/sut_report.py" "$SCENARIO_DIR"
+echo "report: $SCENARIO_DIR/REPORT.md"

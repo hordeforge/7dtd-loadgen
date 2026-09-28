@@ -26,6 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import procs
+import runlock
 from loadgen_config import env_float, env_int, env_port, env_str
 
 # Teardown targets, matched as a cmdline substring by scripts/procs.py.
@@ -192,7 +193,12 @@ def join_ramped(target):
                LOADGEN_PORT=GAME_PORT, LOADGEN_COUNT=str(target), LOADGEN_CONCURRENCY=str(target),
                LOADGEN_RAMP_MS=ramp_ms, LOADGEN_TIMEOUT="3600000", LOADGEN_BOT_MODE="wander",
                LOADGEN_ACTIONS="100000000", LOADGEN_NO_SPAWN="1", LOADGEN_SEED="7777",
-               LOADGEN_QUIET="1")
+               LOADGEN_QUIET="1",
+               # The profile itself holds this target's run lock (runlock.hold in
+               # main), and it is the only cohort this run starts. Without the
+               # opt-out the nested runner would read its own parent's lock and
+               # exit 4 before joining a single bot.
+               LOADGEN_ALLOW_OVERLAP="1")
     SCRATCH.mkdir(exist_ok=True)
     fh_path = SCRATCH / "bloodmoon_bots.log"
     with fh_path.open("wb") as fh:
@@ -363,6 +369,12 @@ def main():
     # during server boot must stop the half-booted server, not orphan it.
     started_server = False
     bots = None
+    # Taken before the server boot, because boot is itself the destructive step:
+    # start_dedicated_prefab.sh pkills any running dedicated, so an overlapping
+    # profile would end this one's server mid-measurement. The fd stays open
+    # through teardown (the process exiting releases it), so the lock also
+    # covers the teardown that stops the cohort.
+    runlock.acquire_or_exit(HOST, GAME_PORT, "blood-moon profile")
     try:
         if "--start-server" in sys.argv:
             start_server()

@@ -12,6 +12,9 @@ explicit rerun-safety claim today and had no test pinning it:
 - scripts/sut_zdtd.sh and scripts/bench_stock.sh: both wipe a caller-supplied
   directory (RE_SUT_WORLD, BENCH_OUT) before they act. A value that names
   something other than a dedicated scratch dir is refused, not deleted.
+- scripts/runlock.py, the guard the two Python load profiles take: a second
+  profile is refused with the shell runner's exit 4 before it boots anything,
+  and a rerun after the first exits takes the lock freely.
 
 All tests are offline: no game install, no dedicated server, no built client.
 """
@@ -19,11 +22,17 @@ All tests are offline: no game install, no dedicated server, no built client.
 from __future__ import annotations
 
 import fcntl
+import json
 import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
+
+import bloodmoon_profile
+import pytest
+import runlock
 
 ROOT = Path(__file__).resolve().parents[1]
 RESET = ROOT / "scripts" / "reset_world.sh"
@@ -277,3 +286,204 @@ def test_bench_refuses_to_wipe_a_path_that_is_not_a_lap_dir(tmp_path):
         # Refused before the pre-flight, so no dedicated was booted.
         assert "already in use" not in r.stderr
     assert not (tmp_path / "lap1").exists()
+
+
+# --- Python profile overlap guard -------------------------------------------
+
+# scripts/capacity_sweep.py and scripts/bloodmoon_profile.py boot the dedicated
+# themselves, and boot is the destructive step: start_dedicated_prefab.sh opens
+# with `pkill -x 7DaysToDieServe`, and both profiles end in
+# procs.kill(BOT_PROC) / procs.kill(SERVER_PROC), which match by cmdline
+# substring. So a second profile does not merely add load, it ends the first
+# one's server and cohort and leaves both reporting a world neither measured.
+# scripts/runlock.py refuses the overlap with the same exit code (4) the shell
+# runner already uses, and with the same lock file name so the two lanes
+# exclude each other.
+
+
+def test_runlock_refuses_a_second_holder_then_frees_on_release(tmp_path, monkeypatch):
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+
+    first = runlock.acquire("127.0.0.1", "26902")
+    assert first is not None, "the first holder must get the lock"
+    try:
+        # A second execution of the same operation is refused, not queued: the
+        # whole point is that it must not proceed to boot a server.
+        assert runlock.acquire("127.0.0.1", "26902") is None
+        # A different target is a different lock, so unrelated profiles and
+        # cohorts still run side by side.
+        other = runlock.acquire("127.0.0.1", "27122")
+        assert other is not None
+        os.close(other)
+    finally:
+        os.close(first)
+
+    # Re-running after the first run exited converges: flock dies with the
+    # holder, so the second run takes the lock freely.
+    again = runlock.acquire("127.0.0.1", "26902")
+    assert again is not None
+    os.close(again)
+
+
+def test_runlock_path_matches_the_shell_runner(tmp_path, monkeypatch):
+    """The Python guard and scripts/run_loadgen.sh must contend for ONE lock
+    file, or a profile and a shell-launched cohort both proceed against the
+    same target and the exclusion this gate exists to provide is void."""
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    assert runlock.lock_path("127.0.0.1", "26902") == _lock_path(tmp_path, "127.0.0.1", "26902")
+    # A host:port carrying shell metacharacters lands on the same normalized
+    # tag the runner's `tr -c 'A-Za-z0-9._-' '_'` produces.
+    assert runlock.lock_path("fe80::1", "26902").name == "7dtd-loadgen-fe80__1-26902.lock"
+
+
+def test_bloodmoon_profile_refuses_an_overlapping_run(tmp_path, monkeypatch):
+    """A second profile exits 4 BEFORE start_server(), so the first profile's
+    dedicated is never pkilled and neither run reports a fabricated number."""
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    holder = runlock.acquire("127.0.0.1", bloodmoon_profile.GAME_PORT)
+    assert holder is not None
+    started: list[bool] = []
+    monkeypatch.setattr(bloodmoon_profile, "start_server",
+                        lambda: started.append(True))
+    try:
+        with pytest.raises(SystemExit) as exc:
+            bloodmoon_profile.main()
+        assert exc.value.code == runlock.LOCK_BUSY_EXIT
+    finally:
+        os.close(holder)
+    assert started == [], "the boot must not run while another profile holds the target"
+
+
+def test_bloodmoon_profile_nested_runner_is_exempt_from_the_shell_guard(tmp_path,
+                                                                       monkeypatch):
+    """The profile holds the lock for the whole run and starts the only cohort
+    itself, so the run_loadgen.sh it launches must be told the overlap is
+    deliberate. Without the opt-out the nested runner reads its own parent's
+    lock and exits 4 having joined zero bots."""
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+    seen: dict[str, str] = {}
+
+    class FakeProc:
+        returncode = 0
+
+        def poll(self):
+            return 0
+
+    def fake_run(*_args, **kwargs):
+        seen.update(kwargs.get("env") or {})
+        return FakeProc()
+
+    monkeypatch.setattr(bloodmoon_profile.subprocess, "Popen", fake_run)
+    monkeypatch.setattr(bloodmoon_profile.time, "sleep", lambda *_a, **_k: None)
+    monkeypatch.setattr(bloodmoon_profile, "player_ids", lambda: [1, 2])
+    bloodmoon_profile.join_ramped(2)
+    assert seen["LOADGEN_ALLOW_OVERLAP"] == "1"
+    assert seen["LOADGEN_COUNT"] == "2"
+
+
+# --- compare_sut.sh partial rerun ------------------------------------------
+
+# The evidence dir is shared state across executions: `--sut all` writes both
+# sides plus diff.json, and a later `--sut stock` replaces one side. Two
+# distinct rerun defects follow, and both are pinned here:
+#   - the report step ran only after a both-sides invocation, so a one-sided
+#     rerun left the previous diff.json asserting compared:true;
+#   - a one-sided rerun leaves the other side's evidence from an EARLIER
+#     invocation, so a regenerated diff would compare servers measured at
+#     different times. Each invocation stamps a runId into both sides'
+#     run-meta.json and the report refuses a mismatched pair.
+
+COMPARE_SUT = ROOT / "scripts" / "compare_sut.sh"
+
+
+def _side(scenario: Path, sut: str, run_id: str) -> None:
+    """One side's surface.json as compare_sut.sh + sut_capture.py leave it,
+    including the meta block sut_report.py reads the runId from."""
+    d = scenario / sut
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "surface.json").write_text(json.dumps({
+        "sut": sut,
+        "meta": {"scenario": scenario.name, "sut": sut, "runId": run_id,
+                 "startedAt": "2026-09-28T00:00:00Z",
+                 "loadgen": {"git": "abc1234", "dirtyFiles": 0},
+                 "zdtd": {"git": "def5678", "dirtyFiles": 0}},
+        "join": {"pass": 1, "fail": 0,
+                 "firstPass": "PASS joined", "lastPass": "PASS joined"},
+        "telnet": {"entities": {"count": 1, "alive": 1, "dead": 0, "types": {}},
+                   "players": {"count": 1}, "banner": {}, "gamestats": {},
+                   "clockRateGameMinPerRealSec": 0.4, "unknownCommands": []},
+        "log": {"severity": {"INF": 2}},
+        "saves": {"count": 1, "totalBytes": 10, "files": {"a": 10}},
+    }), encoding="utf-8")
+
+
+def _report(scenario: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "sut_report.py"), str(scenario)],
+        capture_output=True, text=True, timeout=60, check=False)
+
+
+def test_compare_sut_always_regenerates_the_report():
+    """The report step is not gated on both sides having been requested: that
+    gate is what let a partial rerun keep a stale compared verdict."""
+    text = COMPARE_SUT.read_text(encoding="utf-8")
+    assert 'SUTS" == "stock zdtd"' not in text, (
+        "compare_sut.sh must regenerate the report on every run, not only when "
+        "both sides were requested")
+    assert "sut_report.py" in text
+
+
+def test_one_sided_rerun_refuses_to_compare_against_a_stale_side(tmp_path):
+    """`--sut all` then `--sut stock` leaves the stock side from the new
+    invocation and the zdtd side from the old one. The report must score that
+    NOT COMPARED, not diff a stock run from today against a zdtd run from
+    whenever it last ran."""
+    scenario = tmp_path / "join-probe"
+    first = "20260928T000000Z-111"
+    _side(scenario, "stock", first)
+    _side(scenario, "zdtd", first)
+
+    r = _report(scenario)
+    assert r.returncode == 0, r.stderr
+    diff = json.loads((scenario / "diff.json").read_text(encoding="utf-8"))
+    assert diff["compared"] is True, "same-invocation evidence still compares"
+
+    # The one-sided rerun: stock is replaced, zdtd is left from `first`.
+    _side(scenario, "stock", "20260928T010000Z-222")
+    r2 = _report(scenario)
+    assert r2.returncode == 0, r2.stderr
+    diff2 = json.loads((scenario / "diff.json").read_text(encoding="utf-8"))
+    assert diff2["compared"] is False
+    assert diff2["stale"] is True
+    assert diff2["runIds"] == {"stock": "20260928T010000Z-222", "zdtd": first}
+    report = (scenario / "REPORT.md").read_text(encoding="utf-8")
+    assert "NOT COMPARED" in report
+    # The prior both-sides verdict is gone, not left standing beside the new
+    # evidence.
+    assert "## Join outcome" not in report
+
+
+def test_consolidated_report_classes_a_stale_pair_as_stale(tmp_path):
+    """The ledger must not report a mixed-invocation pair as CLEAN or DELTAS
+    (a comparison) nor as ONE-SIDE (which reads as "the other server could not
+    run")."""
+    scenario = tmp_path / "join-probe"
+    _side(scenario, "stock", "20260928T010000Z-222")
+    _side(scenario, "zdtd", "20260928T000000Z-111")
+    assert _report(scenario).returncode == 0
+
+    # The ledger walks <out>/<scenario>/diff.json, so mirror the result there.
+    out = tmp_path / "comparison"
+    (out / "join-probe").mkdir(parents=True)
+    for name in ("diff.json", "REPORT.md"):
+        (out / "join-probe" / name).write_text(
+            (scenario / name).read_text(encoding="utf-8"), encoding="utf-8")
+
+    r = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "consolidated_report.py"),
+         "--playtest-root", str(tmp_path / "no-playtest"), "--out", str(out)],
+        capture_output=True, text=True, timeout=60, check=False)
+    assert r.returncode == 0, r.stderr
+    rows = json.loads((out / "CONSOLIDATED.json").read_text(encoding="utf-8"))
+    assert [row["verdict"] for row in rows] == ["STALE"]
+    assert "different invocations" in rows[0]["findings"][0]

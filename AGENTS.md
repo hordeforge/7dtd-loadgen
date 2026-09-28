@@ -29,6 +29,17 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
 7. **.NET 8** for the client (`src/LoadGen`). Optional Python tests via **`uv`**, never pip.
 8. **No AI attribution** in commits/docs/comments. **No em dashes** in shipped text.
 9. Empty height-test maps often lack AI spawn points; prefer stock pregen or RWG 4k for sleeper/POI pressure.
+10. **Overlapping runs are refused, not merged.** `run_loadgen.sh` takes an
+    advisory flock per target `host:port` (exit 4); `scripts/runlock.py` gives
+    the two Python load profiles (`bloodmoon_profile`, `capacity_sweep`) the
+    same lock, same file name, so the lanes exclude each other. Boot is the
+    destructive step: `start_dedicated_prefab.sh` opens with
+    `pkill -x 7DaysToDieServe`, and both profiles end in a `procs.kill` by
+    cmdline substring, so a second run ends the first one's server and cohort
+    and both then report numbers from a world neither measured.
+    `LOADGEN_ALLOW_OVERLAP=1` is the deliberate opt-out; the profiles pass it
+    to the `run_loadgen.sh` they start internally, which is the one nested
+    case where the overlap is the intent.
 
 ## Build / test / run
 

@@ -67,6 +67,27 @@ under **Changed** with their migration path.
 
 ### Changed
 
+- The two Python load profiles (`scripts/bloodmoon_profile.py`,
+  `scripts/capacity_sweep.py`) refuse an overlapping run instead of
+  replacing the first one. They boot the dedicated themselves, and boot is
+  the destructive step: `start_dedicated_prefab.sh` opens with
+  `pkill -x 7DaysToDieServe`, and both profiles end in a `procs.kill` that
+  matches by cmdline substring. A second profile therefore ended the first
+  one's server mid-measurement, stopped its cohort in teardown, and both runs
+  then reported a capacity ceiling or a 20 TPS verdict from a world neither
+  measured. The new `scripts/runlock.py` takes the same advisory flock per
+  target `host:port`, with the same lock file name and the same exit 4 as
+  `run_loadgen.sh`, so the lanes exclude each other; `LOADGEN_ALLOW_OVERLAP=1`
+  stays the deliberate opt-out.
+- `compare_sut.sh` regenerates `REPORT.md` / `diff.json` on every invocation
+  instead of only after a both-sides run, and each invocation stamps a
+  `runId` into both sides' `run-meta.json`. A one-sided rerun
+  (`--sut stock` over an earlier `--sut all`) used to leave the previous
+  `compared: true` verdict in place, and a regenerated one would have diffed
+  the fresh side against the other side's evidence from an earlier run.
+  `sut_report.py` now reports such a pair as `compared: false`,
+  `stale: true`, and `consolidated_report.py` classes it STALE, so a mixed
+  pair is never published as CLEAN, DELTAS or a comparison.
 - `git_short`, `git_dirty` and `hostload` move to `scripts/harness_lib.sh`,
   sourced by `bench_stock.sh` and `compare_sut.sh`. `compare_sut.sh` had
   inlined the first two and read load average with `cut` where

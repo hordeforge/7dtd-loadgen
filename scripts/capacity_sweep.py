@@ -22,6 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bloodmoon_profile as B
 import procs
+import runlock
 from loadgen_config import env_bool, env_float, env_int
 
 STEP = env_int("SWEEP_STEP", 40, minimum=1)
@@ -101,6 +102,12 @@ def frame_alive():
 
 def main():
     bots = None
+    # Held before B.start_server(), which pkills any running dedicated: an
+    # overlapping sweep would end this one's server mid-measurement and then
+    # stop its cohort in the finally below, leaving both sweeps reporting a
+    # ceiling neither measured. The fd outlives the teardown (process exit
+    # releases it), so the lock also covers teardown.
+    runlock.acquire_or_exit(B.HOST, B.GAME_PORT, "capacity sweep")
     try:
         B.start_server()
         bots, joined = B.join_ramped(B.PLAYERS)

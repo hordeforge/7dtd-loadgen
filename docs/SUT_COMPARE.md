@@ -122,6 +122,13 @@ puts in death messages.
   never reported as compared on one side's data alone. A missing capability
   (e.g. a command the server lacks) shows as `unknownCommands` / a missing
   stat, recorded not faked.
+- Both sides, different invocations -> `compared: false`, `stale: true`, and
+  the ledger classes the scenario STALE. Each `compare_sut.sh` run stamps a
+  `runId` into both sides' `run-meta.json`, so a one-sided rerun
+  (`--sut stock` over an earlier `--sut all`) is visible rather than diffed:
+  that pair measures one server today against the other whenever it last ran,
+  and every "finding" would be an artifact of the rerun. Re-run `--sut all`
+  to get a comparison.
 
 ## Findings so far (join-probe + wander-2bot, 2026-08-12)
 
@@ -182,8 +189,9 @@ so an evidence dir always names exactly what was compared.
 (`workspace/comparison/CONSOLIDATED.md` + `.json`): every loadgen scenario
 (per-scenario `diff.json`) and every playtest suite
 (`../7dtd-playtest/workspace/comparison-playtest/*/playtest-compare.json`),
-classified CLEAN / DELTAS / ONE-SIDE / UNREADABLE (evidence present but not
-parseable, which is listed rather than dropped). It is computed, never hand-maintained,
+classified CLEAN / DELTAS / ONE-SIDE / STALE / UNREADABLE (evidence present
+but not parseable, which is listed rather than dropped; STALE = both sides
+hold evidence from different invocations). It is computed, never hand-maintained,
 so the view cannot drift from the runs. The hand-written summary below is the
 triage record behind those rows.
 
