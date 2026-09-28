@@ -19,11 +19,18 @@ timeout reads downstream as a measured value.
 from __future__ import annotations
 
 import os
+import re
 from collections.abc import Callable
 from typing import TypeVar
 
 MIN_PORT = 1
 MAX_PORT = 65535
+
+# A target host is interpolated into socket arguments, a /dev/tcp path and a
+# lock filename, so it must be a bare host name or IP literal (IPv4, or IPv6
+# without its brackets: "fe80::1", not "[fe80::1]"): no separators, no
+# whitespace, no shell or glob metacharacters.
+HOST_RE = re.compile(r"^[A-Za-z0-9._:-]+$")
 
 _Number = TypeVar("_Number", int, float)
 
@@ -102,3 +109,14 @@ def env_optional_int(name: str, minimum: int | None = None) -> int | None:
     if not os.environ.get(name):
         return None
     return env_int(name, minimum=minimum)
+
+
+def env_host(name: str, default: str = "127.0.0.1") -> str:
+    """A target host, rejected unless it is a bare host name or IP literal
+    (see HOST_RE). The value reaches socket arguments, /dev/tcp paths and lock
+    filenames, so a value carrying separators or metacharacters is a typo or
+    an injection attempt, not a host to try and time out on."""
+    value = env_str(name, default)
+    if not HOST_RE.match(value):
+        raise SystemExit(f"{name}={value!r} is not a bare host name or IP literal")
+    return value

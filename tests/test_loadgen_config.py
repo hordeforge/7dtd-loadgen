@@ -14,7 +14,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from loadgen_config import env_bool, env_float, env_int, env_port
+from loadgen_config import env_bool, env_float, env_host, env_int, env_port, env_str
 
 
 @pytest.mark.parametrize("raw", ["1", "true", "TRUE", "yes", "on"])
@@ -72,3 +72,55 @@ def test_required_value_without_a_default_fails(monkeypatch: pytest.MonkeyPatch)
         env_int("K")
     with pytest.raises(SystemExit):
         env_float("K")
+
+
+def test_unset_and_empty_both_take_the_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    # An exported-but-empty variable is a shell value that was lost, and the
+    # shell runner's ${VAR:-default} reads it as unset. The readers have to
+    # agree, or a path knob resolves to "" and the child it starts cannot
+    # find the tool at all.
+    monkeypatch.delenv("K", raising=False)
+    assert env_str("K", "/default/path") == "/default/path"
+    monkeypatch.setenv("K", "")
+    assert env_str("K", "/default/path") == "/default/path"
+    monkeypatch.setenv("K", "/real/path")
+    assert env_str("K", "/default/path") == "/real/path"
+
+
+@pytest.mark.parametrize("raw", ["127.0.0.1", "10.0.0.5", "localhost", "server-7", "fe80::1"])
+def test_host_accepts_a_bare_host_or_ip_literal(
+    monkeypatch: pytest.MonkeyPatch, raw: str
+) -> None:
+    monkeypatch.setenv("K", raw)
+    assert env_host("K") == raw
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "",
+        "host;rm -rf /",
+        "127.0.0.1/../etc",
+        "-oProxyCommand=x",
+        "host name",
+        "host*",
+        # The rule takes a bare literal; the bracketed form is not what any
+        # consumer here splices into a path, so it is refused rather than
+        # half-supported.
+        "[::1]",
+    ],
+)
+def test_host_rejects_anything_that_is_not_a_host(
+    monkeypatch: pytest.MonkeyPatch, raw: str
+) -> None:
+    # The value reaches a socket argument, a /dev/tcp path and a lock filename,
+    # so a value carrying separators or metacharacters is a typo or an
+    # injection attempt, not a host to time out on.
+    monkeypatch.setenv("K", raw)
+    if raw == "":
+        # Unset and empty take the default, like every other reader here.
+        assert env_host("K") == "127.0.0.1"
+        return
+    with pytest.raises(SystemExit) as excinfo:
+        env_host("K")
+    assert "K=" in str(excinfo.value)

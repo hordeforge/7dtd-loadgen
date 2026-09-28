@@ -25,6 +25,11 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+# One host rule for the repo: this catalog's host and the LOADGEN_HOST the
+# profiles read must not drift into disagreeing about what a host is.
+from loadgen_config import HOST_RE
+
 # Locale-independent text boundary. Titles and env values come from a UTF-8
 # JSON catalog, but a C-locale runner (CI container, POSIX shell) gives stdout
 # an ASCII codec and print() raises UnicodeEncodeError instead of printing the
@@ -35,10 +40,6 @@ if isinstance(sys.stderr, io.TextIOWrapper):
     sys.stderr.reconfigure(encoding="utf-8")
 
 ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-# The host is interpolated into a /dev/tcp path in run_scenario.sh, so it must
-# be a bare host name, IPv4, or bracketed IPv6 literal: no separators, no
-# whitespace, no shell or glob metacharacters.
-HOST_RE = re.compile(r"^(?:\[[0-9A-Fa-f:.]+\]|[A-Za-z0-9._:-]+)$")
 # The server script is run as `bash $ROOT/scripts/<value>`: a bare .sh filename
 # in that directory, nothing that can climb out of it.
 SERVER_SCRIPT_RE = re.compile(r"^[A-Za-z0-9._-]+\.sh$")
@@ -82,7 +83,7 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     host = str(client.get("host", defs.get("host", "127.0.0.1")))
     if not HOST_RE.match(host):
         print(f"ERROR: scenario {scenario_id}: refusing host {host!r} "
-              "(not a bare host name, IPv4, or bracketed IPv6 literal)", file=sys.stderr)
+              "(not a bare host name or IP literal)", file=sys.stderr)
         return 1
 
     out: list[tuple[str, str]] = [

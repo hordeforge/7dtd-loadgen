@@ -290,6 +290,9 @@ public static partial class Program
         // from "endless" downstream and reached stats json as actions: -1.
         if (opt.ActionCount < 0)
             return InvalidArg("--actions", opt.ActionCount.ToString(), "an action count >= 0 (0 = until the timeout)");
+        if (!IsValidPaceMs(opt.PaceMs))
+            return InvalidArg("--pace-ms", opt.PaceMs.ToString(),
+                $"an integer {UnsetPaceMs} (bot mode default) or more");
         if (benchWarmupMs < 0)
             return InvalidArg("--bench-warmup-ms", benchWarmupMs.ToString(), ">= 0");
         if (benchWindowMs < 0)

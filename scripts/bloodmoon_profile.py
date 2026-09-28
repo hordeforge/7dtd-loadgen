@@ -27,7 +27,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import procs
 import runlock
-from loadgen_config import env_float, env_int, env_port, env_str
+from loadgen_config import env_float, env_host, env_int, env_port, env_str
 
 # Teardown targets, matched as a cmdline substring by scripts/procs.py.
 BOT_PROC = "net8.0/7dtd-loadgen"
@@ -37,8 +37,12 @@ ROOT = Path(__file__).resolve().parent.parent
 # Run logs are regenerable one-off captures, so they land in the gitignored
 # scratch dir instead of the project root.
 SCRATCH = ROOT / ".scratch"
-HOST = env_str("LOADGEN_HOST", "127.0.0.1")
-GAME_PORT = env_str("LOADGEN_PORT", "26902")
+# The bot data port is a port: a typo here used to travel as an unvalidated
+# string into the client's LOADGEN_PORT and into the run lock's key, and only
+# surfaced as a connection failure minutes later. Same range check the shell
+# lane's int_in_range applies to LOADGEN_PORT.
+HOST = env_host("LOADGEN_HOST")
+GAME_PORT = str(env_port("LOADGEN_PORT", 26902))
 TELNET_PORT = env_port("LOADGEN_TELNET_PORT", 8081)
 # One name for the lab telnet credential across this repo's tools;
 # SEVENDTD_TELNET_PASSWORD stays as a legacy alias.
@@ -47,8 +51,11 @@ TELNET_PW = (
     or os.environ.get("SEVENDTD_TELNET_PASSWORD")
     or "retest"
 )
-DOTNET = os.environ.get("DOTNET_ROOT", str(Path.home() / ".cache/dotnet-sdk"))
-APM_SNAP = Path(os.environ.get("APM_SNAPSHOT", str(
+# Unset and empty are the same thing here, as they are in run_loadgen.sh's
+# ${DOTNET_ROOT:-...}: an empty variable is a shell export that lost its value,
+# and reading it as the path would hand the child an empty SDK root.
+DOTNET = env_str("DOTNET_ROOT", str(Path.home() / ".cache/dotnet-sdk"))
+APM_SNAP = Path(env_str("APM_SNAPSHOT", str(
     Path.home() / ".local/share/Steam/steamapps/common/7 Days to Die Dedicated Server"
     / "Mods/7dtd-server-apm-bridge/telemetry/apm_app_latest.json")))
 

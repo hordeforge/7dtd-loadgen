@@ -405,7 +405,7 @@ mid-run or silently changing gate semantics.
 | `LOADGEN_BOT_MODE` | unset | one of the bot modes listed above; unset means the CLI default, `wander` until world death |
 | `LOADGEN_BOT_MIX` | empty | weighted mix, e.g. `traverse:35,combat:20` (overrides `LOADGEN_BOT_MODE`) |
 | `LOADGEN_DEATH` | unset | `none` \| `drown` \| `suicide` \| `killed` \| `random`; unset means the CLI default, `none` (no client self-kill) |
-| `LOADGEN_PACE_MS` | mode default | ms between action steps |
+| `LOADGEN_PACE_MS` | mode default | ms between action steps, 0 or more; below 0 exits 2 (a negative value would pace at the mode default instead) |
 | `LOADGEN_SEED` | `42` | action RNG seed for reproducible runs |
 | `LOADGEN_NO_SPAWN` | unset | non-empty disables telnet zombie spawns |
 | `LOADGEN_SPAWN_ENTITY` | `zombieBoe` | comma-separated entity classes |
@@ -470,9 +470,12 @@ world pack, one of the names `start_dedicated_realearth.sh` accepts),
   before anything is wiped or started.
 - Bench lane: `LAP` (make variable), `BENCH_LAPS_ONLY`, `BENCH_ADMIN_PORT`.
 - Blood-moon stress profile: `BM_PLAYERS` (64), `BM_ZOMBIES` (1000),
-  `BM_GAMESTAGE` (250), `BM_HOLD_S` (0); telnet credential honors
-  `LOADGEN_TELNET_PASSWORD` (`SEVENDTD_TELNET_PASSWORD` accepted as legacy alias).
-- Capacity sweep: `SWEEP_STEP`, `SWEEP_MAX`, `SWEEP_BUDGET_MS`.
+  `BM_GAMESTAGE` (250), `BM_HOLD_S` (0), `BM_FRAME_BUDGET_MS` (55, the
+  ms/frame ceiling the ~20 TPS verdict is judged against); telnet credential
+  honors `LOADGEN_TELNET_PASSWORD` (`SEVENDTD_TELNET_PASSWORD` accepted as
+  legacy alias).
+- Capacity sweep: `SWEEP_STEP`, `SWEEP_MAX`, `SWEEP_BUDGET_MS`,
+  `CAPTURE_AT_CEILING` (`1` runs a full APM capture at the break point).
 - Live RealEarth pytest gates: `LOADGEN_LIVE_REALEARTH=1`, `REALEARTH_ROOT`,
   `LOADGEN_TEST_SCRATCH`.
 

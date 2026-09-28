@@ -105,6 +105,18 @@ public static partial class Program
         return true;
     }
 
+    /// <summary>--pace-ms "unset" sentinel. ActionLoop reads any value below 0
+    /// as "use the bot mode's pace", so this is the only negative a caller may
+    /// pass and the CLI never has to synthesize it: the option default is -1.</summary>
+    public const int UnsetPaceMs = -1;
+
+    /// <summary>--pace-ms within [-<see cref="UnsetPaceMs"/>, int.MaxValue].
+    /// A deeper negative is a typo (<c>--pace-ms -5</c>), and ActionLoop's
+    /// <c>PaceMs >= 0</c> test read it as the unset sentinel, so the run paced
+    /// at the mode default instead of the requested rate: a silent change in
+    /// what the server is asked to absorb.</summary>
+    public static bool IsValidPaceMs(int paceMs) => paceMs >= UnsetPaceMs;
+
     /// <summary>Cohort size. 0 or negative is rejected rather than silently
     /// raised to 1: a LOADGEN_COUNT=0 typo would otherwise produce a one-bot run
     /// whose stats json reads downstream as a measured one.</summary>
@@ -417,6 +429,7 @@ public static partial class Program
             "  --telnet-host/port  dedicated telnet (default 127.0.0.1:8081; password\n" +
             "      from LOADGEN_TELNET_PASSWORD only)\n" +
             "  --pace-ms N --seed N --name NAME --count N --concurrency N\n" +
+            "      --pace-ms is ms between actions, 0 or more (default: the bot mode's)\n" +
             "  --bot-mix m1:w1,m2:w2  weighted per-bot modes; overrides --mode\n" +
             "  --max-dynamite N    dynamite charges per life (default 3, demolition 200)\n" +
             "  --spawn-entity LIST --spawn-per-player N --spawn-every-ms N\n" +

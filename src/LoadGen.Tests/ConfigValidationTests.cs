@@ -122,4 +122,18 @@ public sealed class ConfigValidationTests
     [InlineData(-1, false)]
     public void Count_MustBePositive(int count, bool valid)
         => Assert.Equal(valid, Program.IsValidCount(count));
+
+    [Theory]
+    // -1 is the "bot mode default" sentinel, not a rate.
+    [InlineData(Program.UnsetPaceMs, true)]
+    [InlineData(0, true)]
+    [InlineData(50, true)]
+    [InlineData(int.MaxValue, true)]
+    // ActionLoop's `PaceMs >= 0` test read a deeper negative as the same
+    // sentinel, so the run paced at the mode default instead of the rate the
+    // operator asked for, and the stats json recorded the requested value.
+    [InlineData(-2, false)]
+    [InlineData(int.MinValue, false)]
+    public void PaceMs_BelowTheUnsetSentinel_IsRejected(int paceMs, bool valid)
+        => Assert.Equal(valid, Program.IsValidPaceMs(paceMs));
 }
