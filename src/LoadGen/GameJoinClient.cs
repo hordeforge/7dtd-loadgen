@@ -1147,15 +1147,6 @@ public sealed class GameJoinClient
         return Snippet(sb.ToString(), MaxScrubbedChars);
     }
 
-    // Allocation-free letter probe (LINQ Any allocated an enumerator plus a
-    // delegate per chat/GMSG package on the joined receive path).
-    static bool HasLetter(string s)
-    {
-        foreach (char c in s)
-            if (char.IsLetter(c)) return true;
-        return false;
-    }
-
     /// <summary>Truncate for logging without splitting a surrogate pair: chat
     /// text is server-controlled and may end in emoji at the cut point.</summary>
     static string Snippet(string s, int maxChars)
@@ -1180,17 +1171,20 @@ public sealed class GameJoinClient
             using var r = new BinaryReader(ms, System.Text.Encoding.UTF8);
             if (body.Length >= 2)
             {
+                // ReadString consumed a well-formed 7-bit length and that many
+                // bytes, so the body is a string whatever the content is; only
+                // the control-character scrub applies. Falling through to the
+                // ASCII byte scan below when the text is short or letterless
+                // discarded the decode: "Zo" came back as "Z" and a two-kanji
+                // message as "", so a non-ASCII bot name could never match.
                 string s = r.ReadString();
-                if (s.Length >= 3 && HasLetter(s))
-                {
-                    var clean = new System.Text.StringBuilder(s.Length);
-                    foreach (char c in s)
-                        clean.Append(char.IsControl(c) ? '?' : c);
-                    return clean.ToString();
-                }
+                var clean = new System.Text.StringBuilder(s.Length);
+                foreach (char c in s)
+                    clean.Append(char.IsControl(c) ? '?' : c);
+                return clean.ToString();
             }
         }
-        catch { /* fall through */ }
+        catch { /* not a length-prefixed string; scan the bytes below */ }
 
         var sb = new System.Text.StringBuilder();
         foreach (byte b in body)

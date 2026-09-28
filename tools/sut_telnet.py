@@ -17,12 +17,22 @@ Usage:
 """
 
 import argparse
+import io
 import os
 import re
 import select
 import socket
 import sys
 import time
+
+# Locale-independent text boundary. The transcript is the game's own console
+# output (player names, world and game name) decoded as UTF-8, so writing it
+# must not depend on the caller: a C-locale runner gives stdout an ASCII codec
+# and the final write raises instead of emitting the session evidence.
+if isinstance(sys.stdout, io.TextIOWrapper):
+    sys.stdout.reconfigure(encoding="utf-8")
+if isinstance(sys.stderr, io.TextIOWrapper):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 # Identity fields the console prints for every connected player. The snapshot
 # only compares player counts, so the values never reach the transcript file

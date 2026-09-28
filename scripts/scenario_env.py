@@ -17,10 +17,20 @@ source. Unknown scenarios exit non-zero with a message on stderr.
 
 from __future__ import annotations
 
+import io
 import json
 import re
 import sys
 from pathlib import Path
+
+# Locale-independent text boundary. Titles and env values come from a UTF-8
+# JSON catalog, but a C-locale runner (CI container, POSIX shell) gives stdout
+# an ASCII codec and print() raises UnicodeEncodeError instead of printing the
+# line. Name the encoding rather than inheriting the caller's.
+if isinstance(sys.stdout, io.TextIOWrapper):
+    sys.stdout.reconfigure(encoding="utf-8")
+if isinstance(sys.stderr, io.TextIOWrapper):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # The host is interpolated into a /dev/tcp path in run_scenario.sh, so it must

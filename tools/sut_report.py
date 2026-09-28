@@ -21,9 +21,18 @@ reported as NOT COMPARED, never as compared.
 Usage: python3 tools/sut_report.py <scenario_dir>
 """
 
+import io
 import json
 import os
 import sys
+
+# Locale-independent text boundary: the rendered text comes from UTF-8 JSON
+# evidence, but a C-locale runner gives stdout an ASCII codec and print()
+# raises. See scenario_env.py for the same block and its reason.
+if isinstance(sys.stdout, io.TextIOWrapper):
+    sys.stdout.reconfigure(encoding="utf-8")
+if isinstance(sys.stderr, io.TextIOWrapper):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 
 def load(run_dir):

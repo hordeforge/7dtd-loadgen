@@ -41,6 +41,25 @@ public sealed class ExtractPrintableTests
     }
 
     [Fact]
+    public void StringPath_KeepsShortNonAsciiText()
+    {
+        // The decode succeeded, so the text stands whatever its length. Falling
+        // back to the ASCII byte scan on the "too short" probe used to rewrite
+        // "Zo" as "Z" and a two-kanji message as "", so a non-ASCII bot name
+        // could never match its own death line.
+        Assert.Equal("Zo", GameJoinClient.ExtractPrintable(NetStringBody("Zo")));
+        Assert.Equal("日本", GameJoinClient.ExtractPrintable(NetStringBody("日本")));
+    }
+
+    [Fact]
+    public void StringPath_KeepsAstralTextWhole()
+    {
+        // A surrogate pair is neither a control character nor split by the
+        // scrub; the text has to survive intact for name matching.
+        Assert.Equal("Bot\U0001f600", GameJoinClient.ExtractPrintable(NetStringBody("Bot\U0001f600")));
+    }
+
+    [Fact]
     public void ByteFallbackPath_AlreadyStripped()
     {
         var body = new byte[] { 0x05, 0x00, 0x64, 0x69, 0x65, 0x64, 0x0A }; // "died\n" + junk

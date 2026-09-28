@@ -14,9 +14,18 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import io
 import json
 import sys
 from pathlib import Path
+
+# Locale-independent text boundary: the rendered text comes from UTF-8 JSON
+# evidence, but a C-locale runner gives stdout an ASCII codec and print()
+# raises. See scenario_env.py for the same block and its reason.
+if isinstance(sys.stdout, io.TextIOWrapper):
+    sys.stdout.reconfigure(encoding="utf-8")
+if isinstance(sys.stderr, io.TextIOWrapper):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 TOLERANCE = 0.20  # per-scenario wall repeatability bound
 
