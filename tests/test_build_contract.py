@@ -132,3 +132,52 @@ def test_uv_lock_is_not_gitignored():
         "be staged"
     )
     assert (ROOT / "uv.lock").is_file()
+
+
+# The analyzer rules the .editorconfig turns on, with the reason each is here.
+# A rule that falls out of the file is a rule that stops running, silently:
+# the compile stays green and the category is off again. Named here so the
+# drop has to be deliberate and re-justified, not an edit nobody reviews.
+SECURITY_ANALYZER_RULES = {
+    "CA2100": "insecure SQL",
+    "CA2101": "insecure reflection",
+    "CA2109": "public mutable fields",
+    "CA2119": "unsealed override",
+    "CA2153": "unsafe memory code",
+    "CA3001": "SQL injection",
+    "CA3002": "cross-site scripting",
+    "CA3003": "path traversal",
+    "CA3004": "untrusted file path",
+    "CA3005": "open redirect",
+    "CA3006": "process command injection",
+    "CA3007": "open redirect on untrusted input",
+    "CA3008": "regex denial of service",
+    "CA3009": "regex without a timeout",
+    "CA3010": "regex without an anchor",
+    "CA3011": "non-ordinal string comparison",
+    "CA3012": "regex injection",
+    "CA3061": "schema passed as a parameter",
+    "CA3075": "insecure DTD processing",
+    "CA5350": "weak crypto algorithm",
+    "CA5351": "broken crypto algorithm",
+    "CA5359": "certificate validation disabled",
+    "CA5360": "dangerous crypto call",
+    "CA5379": "auto-generated key",
+    "CA5384": "digital signature algorithm",
+    "CA5385": "RSA key size too small",
+    "CA5386": "crypto fallback",
+}
+
+
+def test_security_analyzers_stay_enabled() -> None:
+    """The security category ships disabled in the SDK analyzer set, so the
+    only thing keeping it on is this file. TreatWarningsAsErrors turns a
+    finding in any listed rule into a failed compile; a rule removed from here
+    and from .editorconfig reopens the hole with nothing to notice it."""
+    text = (ROOT / ".editorconfig").read_text(encoding="utf-8")
+    for rule, what in sorted(SECURITY_ANALYZER_RULES.items()):
+        setting = f"dotnet_diagnostic.{rule}.severity = warning"
+        assert setting in text, (
+            f"{rule} ({what}) is not enabled in .editorconfig; a rule dropped "
+            "from this list and from the file is analysis that quietly stops"
+        )

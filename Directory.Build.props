@@ -16,8 +16,10 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
     <!-- Analyzer posture: SDK analyzers on, code style checked at build time,
          and every warning fails the compile (CI runs these via make test).
-         Rules the tree does not pass yet stay off: raising AnalysisLevel
-         above the default is a follow-up once its findings are fixed. -->
+         The security analyzer category is enabled rule by rule in
+         .editorconfig (the tree passes it clean); globalization (CA1305) and
+         raising AnalysisLevel above the default stay off until their findings
+         are fixed. -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

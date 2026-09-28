@@ -231,9 +231,9 @@ def redact_identities(text: str) -> str:
     return "".join(out)
 
 
-def drain(sock, deadline):
+def drain(sock: socket.socket, deadline: float) -> bytes:
     """Read whatever is available until quiet for ~0.4s or deadline passes."""
-    chunks = []
+    chunks: list[bytes] = []
     while True:
         now = time.monotonic()
         if now >= deadline:
@@ -262,7 +262,7 @@ def resolve_password() -> str | None:
     )
 
 
-def main():
+def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("host", help="dedicated console host")

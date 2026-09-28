@@ -86,6 +86,7 @@ testpaths = ["tests"]
 [[tool.mypy.overrides]]
 module = [
     "bench_report",
+    "capacity_sweep",
     "conftest",
     "consolidated_report",
     "coverage_badge",
@@ -98,7 +99,9 @@ module = [
     "scenario_env",
     "stats_pass_fail",
     "sut_catalog",
+    "sut_telnet",
     "test_bench_report_fuzz",
+    "test_line_endings",
     "test_sut_capture_fuzz",
     "test_text_encoding",
     "test_webdash_password_hash",

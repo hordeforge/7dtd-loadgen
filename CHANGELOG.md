@@ -77,6 +77,19 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
+- The SDK analyzer security category (injection, weak crypto, DTD parsing,
+  unsafe memory code, certificate validation) is enabled rule by rule in
+  `.editorconfig`. The category ships disabled, and a client that parses an
+  untrusted server's packets and holds the lab console credential is where it
+  earns its keep. Every listed rule is clean on the tree today, and
+  `TreatWarningsAsErrors` fails the compile on the first regression;
+  `tests/test_build_contract.py` names the set so a rule cannot be dropped
+  without a deliberate edit. Globalization (CA1305) stays off until its
+  findings are fixed.
+- The mypy ratchet takes three more modules: `scripts/capacity_sweep.py`,
+  `tools/sut_telnet.py` and `tests/test_line_endings.py` are annotated, so a
+  new unannotated function in them fails `make lint` instead of widening the
+  unchecked surface.
 - The NuGet http cache moves under a path the CI cache step restores, so a warm
   package cache no longer re-fetches the service index and registration
   metadata on every run.

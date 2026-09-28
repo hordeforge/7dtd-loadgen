@@ -32,7 +32,7 @@ EDITED_DATA_FILES = [
 ]
 
 
-def test_gitattributes_pins_eol_lf_for_scripts_and_data_files():
+def test_gitattributes_pins_eol_lf_for_scripts_and_data_files() -> None:
     attrs = (ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
     for ext in ("sh", "py", "cs", "xml", "json"):
         assert f"*.{ext} text eol=lf" in attrs, f"*.{ext} text eol=lf missing"
@@ -42,7 +42,7 @@ def test_gitattributes_pins_eol_lf_for_scripts_and_data_files():
         assert f"*{path.suffix} text eol=lf" in attrs, f"{path.name} has no eol=lf rule"
 
 
-def test_bench_report_artifacts_are_lf_only(tmp_path):
+def test_bench_report_artifacts_are_lf_only(tmp_path: Path) -> None:
     lap = tmp_path / "lap1" / "bench"
     lap.mkdir(parents=True)
     (lap / "run-meta.json").write_text(json.dumps({

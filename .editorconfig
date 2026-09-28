@@ -26,3 +26,42 @@ indent_size = 2
 # Note: braceless single-statement bodies are the established house style;
 # do not switch csharp_style_prefer_braces on without converting the tree.
 dotnet_diagnostic.IDE0055.severity = warning
+
+# The security analyzer category (injection, weak crypto, DTD parsing, unsafe
+# code in memory, unvalidated cert callbacks) ships disabled: SDK analyzers
+# enable the default set only. This client parses an untrusted server's
+# packets and holds the lab console credential, so the category is the one
+# worth having on. Every rule below is proven clean on the tree as it stands
+# (both projects build with 0 warnings under TreatWarningsAsErrors), and
+# TreatWarningsAsErrors turns the first regression into a failed compile.
+#
+# Globalization (CA1305) is deliberately not in this list: the client parses
+# protocol integers and formats console numbers, where a culture-sensitive
+# overload is a real hazard, but converting the tree is its own change.
+dotnet_diagnostic.CA2100.severity = warning
+dotnet_diagnostic.CA2101.severity = warning
+dotnet_diagnostic.CA2109.severity = warning
+dotnet_diagnostic.CA2119.severity = warning
+dotnet_diagnostic.CA2153.severity = warning
+dotnet_diagnostic.CA3001.severity = warning
+dotnet_diagnostic.CA3002.severity = warning
+dotnet_diagnostic.CA3003.severity = warning
+dotnet_diagnostic.CA3004.severity = warning
+dotnet_diagnostic.CA3005.severity = warning
+dotnet_diagnostic.CA3006.severity = warning
+dotnet_diagnostic.CA3007.severity = warning
+dotnet_diagnostic.CA3008.severity = warning
+dotnet_diagnostic.CA3009.severity = warning
+dotnet_diagnostic.CA3010.severity = warning
+dotnet_diagnostic.CA3011.severity = warning
+dotnet_diagnostic.CA3012.severity = warning
+dotnet_diagnostic.CA3061.severity = warning
+dotnet_diagnostic.CA3075.severity = warning
+dotnet_diagnostic.CA5350.severity = warning
+dotnet_diagnostic.CA5351.severity = warning
+dotnet_diagnostic.CA5359.severity = warning
+dotnet_diagnostic.CA5360.severity = warning
+dotnet_diagnostic.CA5379.severity = warning
+dotnet_diagnostic.CA5384.severity = warning
+dotnet_diagnostic.CA5385.severity = warning
+dotnet_diagnostic.CA5386.severity = warning

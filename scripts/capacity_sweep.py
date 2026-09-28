@@ -77,7 +77,7 @@ def sustained_break_at(curve: list[dict]) -> int | None:
     return curve[first_over]["zombies"]
 
 
-def frame_alive():
+def frame_alive() -> tuple[float, int] | None:
     """One (frame_ms, zombies_alive) reading, or None when the APM snapshot is
     unreadable. Mapping lost telemetry to 0 read as a perfect frame: every sweep
     round reported 'ok', the over-budget stop never fired, and the final
@@ -100,7 +100,7 @@ def frame_alive():
     return float(frame_ms), max(0, int(alives) - int(players))
 
 
-def main():
+def main() -> None:
     bots = None
     # Held before B.start_server(), which pkills any running dedicated: an
     # overlapping sweep would end this one's server mid-measurement and then
