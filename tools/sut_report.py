@@ -90,9 +90,9 @@ def main():
             lines.append(f"- join: {zdtd['join'].get('pass')} PASS / "
                          f"{zdtd['join'].get('fail')} FAIL")
         report = "\n".join(lines) + "\n"
-        with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8") as fh:
+        with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
             fh.write(report)
-        with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8") as fh:
+        with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
             json.dump({"scenario": scenario, "compared": False,
                        "ran": ran, "missing": "zdtd" if ran == "stock" else "stock",
                        "findings": []}, fh, indent=1, sort_keys=True)
@@ -293,9 +293,9 @@ def main():
                  "zdtd-server/docs/PROVENANCE.md (divergence register).*")
 
     report = "\n".join(lines)
-    with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(report)
-    with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump({"scenario": scenario, "compared": True,
                    "findings": findings, "axes": axes}, fh, indent=1, sort_keys=True)
     print(report)

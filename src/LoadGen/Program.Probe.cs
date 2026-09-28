@@ -53,7 +53,7 @@ public static partial class Program
             Action<string>? log = quiet ? null : Console.WriteLine;
             var result = LiteNetProbe.Run(host, port, key, timeoutMs, clientId, log);
             if (!string.IsNullOrEmpty(logPath))
-                WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, result.Lines));
+                WriteArtifact("log", logPath, () => WriteLines(logPath, result.Lines));
             if (!result.Pass)
             {
                 Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");

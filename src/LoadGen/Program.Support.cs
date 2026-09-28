@@ -9,6 +9,21 @@ public static partial class Program
     /// manifest): one instance so the artifact schemas serialize identically.</summary>
     static readonly System.Text.Json.JsonSerializerOptions ArtifactJsonOpts = new() { WriteIndented = true };
 
+    /// <summary>Write line-oriented artifact text with LF terminators and no
+    /// BOM, whatever the host's Environment.NewLine is. Client logs and JSONL
+    /// sinks are read by the Python report lanes and diffed as evidence, so
+    /// their bytes must not depend on the operating system that produced
+    /// them.</summary>
+    internal static void WriteLines(string path, IEnumerable<string> lines)
+    {
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+        using var w = new StreamWriter(fs, new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false))
+        {
+            NewLine = "\n",
+        };
+        foreach (string line in lines) w.WriteLine(line);
+    }
+
     /// <summary>Write a run artifact (log/stats-json/run manifest) without letting
     /// an IO failure mask the run's exit code: the measurement finished, so its
     /// gate result must still propagate. The artifact's parent directory is

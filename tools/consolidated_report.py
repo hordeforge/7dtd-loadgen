@@ -209,9 +209,9 @@ def main() -> int:
         return 1
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "CONSOLIDATED.md").write_text(render(rows), encoding="utf-8")
+    (out_dir / "CONSOLIDATED.md").write_text(render(rows), encoding="utf-8", newline="\n")
     (out_dir / "CONSOLIDATED.json").write_text(
-        json.dumps(rows, indent=1, sort_keys=True), encoding="utf-8")
+        json.dumps(rows, indent=1, sort_keys=True), encoding="utf-8", newline="\n")
     print(f"consolidated: {len(rows)} entries -> {out_dir}/CONSOLIDATED.{'md,json'}")
     return 0
 

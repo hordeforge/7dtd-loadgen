@@ -33,6 +33,10 @@ public sealed class JsonLineEventWriterTests : IDisposable
 
         byte[] raw = File.ReadAllBytes(path);
         Assert.NotEqual(0xEF, raw[0]); // no BOM: parsers must see '{' first
+        // LF only, not Environment.NewLine: File.ReadAllLines splits on \r
+        // too, so the byte check is the only thing that catches a host
+        // newline leaking into evidence the report lanes diff.
+        Assert.DoesNotContain((byte)'\r', raw);
 
         string[] lines = ReadAllLines(path);
         Assert.Equal(new[] { "{\"type\":\"joined\"}", "{\"type\":\"state\"}" }, lines);

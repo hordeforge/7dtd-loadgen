@@ -106,8 +106,8 @@ def _runner_env(tmp_path: Path) -> tuple[dict[str, str], Path]:
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     for tool in ("tr", "flock", "dirname"):
-        tool_path = Path("/usr/bin") / tool
-        if tool_path.exists():
+        tool_path = shutil.which(tool)
+        if tool_path:
             (fake_bin / tool).symlink_to(tool_path)
     env = os.environ.copy()
     env["XDG_RUNTIME_DIR"] = str(xdg)

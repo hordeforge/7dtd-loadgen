@@ -51,4 +51,4 @@ manifest = {
 }
 
 Path(os.environ["LOADGEN_MANIFEST_PATH"]).write_text(
-    json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")

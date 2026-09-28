@@ -44,7 +44,7 @@ public static partial class Program
             $"deaths={sm.DeathCount} respawns={sm.RespawnCount} " +
             $"died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
         if (!string.IsNullOrEmpty(logPath))
-            WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines.Concat(sm.Log)));
+            WriteArtifact("log", logPath, () => WriteLines(logPath, lines.Concat(sm.Log)));
         if (rc == 0)
             Log("PASS: self-test-join joined + actions");
         else

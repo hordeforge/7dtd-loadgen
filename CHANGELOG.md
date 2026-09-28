@@ -26,6 +26,16 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- Run artifacts no longer inherit the writer's operating system line endings.
+  Client logs, the `--events-jsonl` sink, the death CSV and the cohort summary
+  were written with `Environment.NewLine`, and the report tools with the
+  platform default newline, so the same run produced different bytes on a
+  CRLF host and a regenerated report churned against committed evidence. They
+  are written with LF and no BOM now, and the line-ending policy pins
+  `*.xml` / `*.json` to LF in `.gitattributes`: `serveradmin_apm_seed.xml` is
+  rewritten with `sed -i` and the serverconfig templates go through
+  `sbconfig.py`'s line-based insert, so a CRLF checkout changes what those
+  tools match.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the

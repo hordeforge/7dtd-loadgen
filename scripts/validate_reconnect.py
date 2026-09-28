@@ -166,7 +166,7 @@ def main() -> int:
             "--log", str(log_path),
             "--host", "127.0.0.1", "--port", str(GAME_PORT + 2),
         ]
-        with log_path.open("w", encoding="utf-8") as fh:
+        with log_path.open("w", encoding="utf-8", newline="\n") as fh:
             proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT)
             time.sleep(args.hold_before_kill)
 

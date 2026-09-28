@@ -4,9 +4,16 @@
 # Compiled C# is pinned too: .editorconfig sets end_of_line=lf and the build
 # enforces it (EnforceCodeStyleInBuild + TreatWarningsAsErrors), so an
 # autocrlf checkout would fail the compile with IDE0055 formatting errors.
+# Data files the tooling edits or parses by line get the same guarantee:
+# scripts/start_dedicated_prefab.sh rewrites serveradmin_apm_seed.xml with
+# sed -i, both serverconfig templates go through sbconfig.py's line-based
+# insert-if-missing, and the scenario catalogs are JSON read by the
+# shell/python lanes. A CRLF checkout changes what those tools match.
 * text=auto
 
 *.sh text eol=lf
 *.py text eol=lf
 *.cs text eol=lf
+*.xml text eol=lf
+*.json text eol=lf
 Makefile text eol=lf

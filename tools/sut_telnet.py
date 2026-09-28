@@ -167,7 +167,7 @@ def main():
         sys.stdout.write(out)
     else:
         try:
-            with open(args.out, "w", encoding="utf-8") as fh:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as fh:
                 fh.write(out)
         except OSError as e:
             # The session evidence is captured; losing only its file write must

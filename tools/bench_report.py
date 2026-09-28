@@ -231,9 +231,9 @@ def main() -> int:
     md = render_md(laps)
     out_dir = args.out or args.laps_dir
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "bench-stock.md").write_text(md, encoding="utf-8")
+    (out_dir / "bench-stock.md").write_text(md, encoding="utf-8", newline="\n")
     (out_dir / "bench-stock.json").write_text(
-        json.dumps(payload, indent=1, sort_keys=True), encoding="utf-8")
+        json.dumps(payload, indent=1, sort_keys=True), encoding="utf-8", newline="\n")
     print(md)
     return 0
 

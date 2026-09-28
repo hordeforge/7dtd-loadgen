@@ -511,7 +511,7 @@ public static partial class Program
             AwaitTeardown("zombie_spawn", spawnTask);
             AwaitTeardown("wandering_horde", hordeTask);
             if (!string.IsNullOrEmpty(logPath))
-                WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines));
+                WriteArtifact("log", logPath, () => WriteLines(logPath, lines));
             // Single-bot runs still write stats-json (and the run manifest when
             // asked) so the bench lane evidence is uniform (probe-15s/join-fast/
             // join-probe/horde-lite are count=1).
@@ -706,18 +706,18 @@ public static partial class Program
         if (!string.IsNullOrEmpty(logPath))
         {
             WriteArtifact("log", logPath, () => File.WriteAllText(logPath, report + "\n"));
-            var csvPath = Path.ChangeExtension(logPath, null) + "_deaths.csv";
+            var csvPath = Path.ChangeExtension(logPath, "_deaths.csv");
             var csv = new System.Text.StringBuilder();
-            csv.AppendLine(
+            csv.Append(
                 "id,rc,mode,stage,entityId,walks,jumps,crouches,aims,turns,strafes,looks,chats," +
-                "breaks,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount,rejoinCount");
+                "breaks,attacks,drowns,suicides,killed,died,deathCause,deathCount,respawnCount,rejoinCount\n");
             foreach (var r in results.OrderBy(x => x.id))
             {
-                csv.AppendLine(
+                csv.Append(
                     $"{r.id},{r.rc},{r.s.BotModeName},{r.s.Stage},{r.s.EntityId},{r.s.WalkActions},{r.s.JumpActions}," +
                     $"{r.s.CrouchActions},{r.s.AimActions},{r.s.TurnActions},{r.s.StrafeActions},{r.s.LookActions},{r.s.ChatActions}," +
                     $"{r.s.BreakBlockActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions},{r.s.KilledActions},{r.s.Died}," +
-                    $"{DeathCauseNames.Of(r.s.DeathCause)},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}");
+                    $"{DeathCauseNames.Of(r.s.DeathCause)},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}\n");
             }
             WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }

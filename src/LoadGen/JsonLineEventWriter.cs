@@ -14,7 +14,13 @@ public sealed class JsonLineEventWriter : IDisposable
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         _writer = new StreamWriter(new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.Read),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))
-        { AutoFlush = true };
+        {
+            AutoFlush = true,
+            // LF, not Environment.NewLine: the JSONL sink is read by the
+            // report lanes and diffed as run evidence, so its bytes must not
+            // depend on the host OS.
+            NewLine = "\n",
+        };
     }
 
     public void Write(string json)

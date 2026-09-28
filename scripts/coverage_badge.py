@@ -44,7 +44,7 @@ def main(argv: list[str]) -> int:
         return 2
     pct = round(float(root.get("line-rate", "0")) * 100)
     # Explicit UTF-8: a C-locale runner must not get a platform-default codec.
-    Path(argv[2]).write_text(badge(pct, colour(pct)), encoding="utf-8")
+    Path(argv[2]).write_text(badge(pct, colour(pct)), encoding="utf-8", newline="\n")
     return 0
 
 
