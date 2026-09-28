@@ -580,6 +580,13 @@ public static partial class Program
                 ["pingP95Ms"] = ping.p95,
                 ["pingMaxMs"] = ping.max,
                 ["pingSpikesOver150Ms"] = ping.spikes,
+                // Per-life dynamite grants the shared telnet console never
+                // received. The queue drops its oldest entries when the cohort
+                // outruns the console, and a dropped grant is a bot that walked
+                // its whole life unarmed: without this field a run that
+                // under-delivered its world pressure is indistinguishable from
+                // one that delivered all of it, and the two compare equal.
+                ["provisionDropped"] = provisioner.Dropped,
             };
         }
 
@@ -786,21 +793,13 @@ public static partial class Program
         // One cause table for both renderings. The console line and the stats
         // JSON used to name their buckets separately, so four causes the
         // console reported were computed and then dropped from the artifact.
-        // Keys are stable report-schema names; every DeathCause lands in one.
-        var deathBuckets = new (string Key, int Count)[]
-        {
-            ("world_killed", results.Count(r =>
-                r.s.DeathCause is DeathCause.WorldKilled or DeathCause.WorldDeath)),
-            ("world_drown", results.Count(r => r.s.DeathCause == DeathCause.WorldDrown)),
-            ("world_radiation", results.Count(r => r.s.DeathCause == DeathCause.WorldRadiation)),
-            ("timeout_alive", results.Count(r => r.s.DeathCause == DeathCause.TimeoutAlive)),
-            ("disconnect", results.Count(r => r.s.DeathCause == DeathCause.ServerDisconnect)),
-            ("self_kill", results.Count(r => r.s.DeathCause
-                is DeathCause.DrownFatal or DeathCause.Suicide
-                or DeathCause.SuicideFallback or DeathCause.KilledExternal)),
-            ("respawn_timeout", results.Count(r => r.s.DeathCause == DeathCause.RespawnTimeout)),
-            ("exception", results.Count(r => r.s.DeathCause == DeathCause.Exception)),
-        };
+        // The assignment now lives in DeathCauseBuckets, which covers every
+        // DeathCause, so the counts are a partition and sum to the total.
+        var deathBuckets = DeathCauseBuckets.Keys
+            .Select(k => (Key: k, Count: 0)).ToArray();
+        foreach (var r in results)
+            deathBuckets[Array.IndexOf(DeathCauseBuckets.Keys,
+                                       DeathCauseBuckets.KeyOf(r.s.DeathCause))].Count++;
 
         var (joinCount, joinP50, joinP95, joinMax) = JoinLatency.Summary(results.Select(r => r.s.JoinMs));
         var report =

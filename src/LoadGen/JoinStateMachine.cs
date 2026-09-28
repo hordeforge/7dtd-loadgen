@@ -132,6 +132,58 @@ public static class DeathCauseNames
     };
 }
 
+/// <summary>Report bucket for every <see cref="DeathCause"/>, in the order
+/// DEATH_STATS and the stats json emit them.
+/// <para>
+/// The buckets are a partition: each cause lands in exactly one, and a cause
+/// the table omits lands in none, so the emitted counts stop summing to the
+/// cohort total and the residual is invisible in both renderings. The list
+/// used to be open-coded at its call site, where a cause nobody remembered
+/// dropped out of the artifact while the console still reported it in
+/// DEATH_HISTOGRAM. It is a table here for that reason:
+/// <see cref="KeyOf"/> refuses an unmapped cause and
+/// DeathCauseBucketTests walks the whole enum.
+/// </para></summary>
+public static class DeathCauseBuckets
+{
+    /// <summary>Bucket keys, in report order. The eight cause buckets plus
+    /// <c>none</c> (a bot that finished its life alive) cover every cohort
+    /// member, so the counts sum to the total.</summary>
+    public static readonly string[] Keys =
+    {
+        "world_killed", "world_drown", "world_radiation", "timeout_alive",
+        "disconnect", "self_kill", "respawn_timeout", "exception", "none",
+    };
+
+    static readonly Dictionary<DeathCause, string> ByCause = new()
+    {
+        [DeathCause.None] = "none",
+        // Server-driven death arrives two ways (a stat change, or only an
+        // entity removal) and both report as one world kill.
+        [DeathCause.WorldKilled] = "world_killed",
+        [DeathCause.WorldDeath] = "world_killed",
+        [DeathCause.WorldDrown] = "world_drown",
+        [DeathCause.WorldRadiation] = "world_radiation",
+        [DeathCause.TimeoutAlive] = "timeout_alive",
+        [DeathCause.ServerDisconnect] = "disconnect",
+        [DeathCause.DrownFatal] = "self_kill",
+        [DeathCause.Suicide] = "self_kill",
+        [DeathCause.SuicideFallback] = "self_kill",
+        [DeathCause.KilledExternal] = "self_kill",
+        [DeathCause.RespawnTimeout] = "respawn_timeout",
+        [DeathCause.Exception] = "exception",
+    };
+
+    /// <summary>Report key for a cause. Throws rather than returning a
+    /// sentinel: an unmapped cause is a table bug, and a sentinel would put
+    /// it in no bucket and quietly break the partition the report promises.</summary>
+    public static string KeyOf(DeathCause cause) =>
+        ByCause.TryGetValue(cause, out var key)
+            ? key
+            : throw new InvalidOperationException(
+                $"death cause {cause} has no report bucket; add it to DeathCauseBuckets");
+}
+
 public sealed class JoinStateMachine
 {
     // Soak cohorts log continuously (walk/turn/chat/unparsed-frame lines) for
