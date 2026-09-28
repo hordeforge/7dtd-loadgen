@@ -25,8 +25,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Validate before anything is built or deleted. LAP names the evidence dir and
+# is interpolated into run-meta.json; "1; x" or "../.." in either is a deleted
+# path or a report tool that cannot parse its metadata. Same reason COMPARE_WORLD
+# is checked in compare_sut.sh.
+if [[ ! "$LAP" =~ ^[1-9][0-9]*$ ]]; then
+  echo "ERROR: --lap must be a positive integer (got '$LAP')" >&2
+  exit 2
+fi
 WORLD_NAME="${COMPARE_WORLD:-Navezgane}"
 ADMIN_PORT="${BENCH_ADMIN_PORT:-8084}"
+if [[ ! "$WORLD_NAME" =~ ^[A-Za-z0-9_-]+$ ]]; then
+  echo "ERROR: COMPARE_WORLD must match [A-Za-z0-9_-]+ (got '$WORLD_NAME')" >&2
+  exit 2
+fi
+if [[ ! "$ADMIN_PORT" =~ ^[0-9]+$ ]] || (( 10#$ADMIN_PORT < 1 || 10#$ADMIN_PORT > 65535 )); then
+  echo "ERROR: BENCH_ADMIN_PORT must be an integer 1..65535 (got '$ADMIN_PORT')" >&2
+  exit 2
+fi
+ADMIN_PORT="$((10#$ADMIN_PORT))"
 COMPARE_APM="${COMPARE_APM:-1}"
 APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
 APM_PROJECT="$ROOT/../7dtd-server-apm"
@@ -83,6 +100,18 @@ declare -A SCEN_MATRIX=(
   [horde-lite]="--profile probe --timeout 70000 --count 1 --spawn-entity zombieBoe --spawn-per-player 4 --spawn-every-ms 15000"
 )
 BENCH_WARMUP_MS=30000  # must match the bench profile preset
+# Every matrix value is checked once, here, before a server boots: each one is
+# forwarded to run_loadgen.sh as its own argv entry and recorded in the
+# hand-built run-meta.json, so a space or a quote in one is a value that cannot
+# be passed or written.
+for sc_args in "${SCEN_MATRIX[@]}"; do
+  for a in $sc_args; do
+    if [[ ! "$a" =~ ^[A-Za-z0-9_.:-]+$ ]]; then
+      echo "ERROR: bench matrix arg '$a' is outside [A-Za-z0-9_.:-]" >&2
+      exit 2
+    fi
+  done
+done
 
 # Pre-flight: the admin port must be bindable (docker owns 8081/8082 on this host).
 if grep -q ":$ADMIN_PORT " <<<"$(ss -tln 2>/dev/null || true)"; then
@@ -133,7 +162,10 @@ for sc in "${scenarios[@]}"; do
   echo "--- scenario: $sc (hostLoad=$(hostload))"
   h0=$(hostload)
   t0=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-  args="${SCEN_MATRIX[$sc]}"
+  # Split the matrix entry into an argv array, not a string handed to `bash -c`:
+  # a spliced command body is parsed as shell, so any future matrix value with
+  # a space or a quote runs as a command instead of as one argument.
+  read -r -a args <<<"${SCEN_MATRIX[$sc]}"
   loadgen_env=(
     LOADGEN_MODE=join LOADGEN_HOST=127.0.0.1 LOADGEN_PORT=26902
     LOADGEN_TELNET_HOST=127.0.0.1 LOADGEN_TELNET_PORT="$ADMIN_PORT"
@@ -144,7 +176,7 @@ for sc in "${scenarios[@]}"; do
   if [[ "$sc" == "bench" ]]; then
     loadgen_env+=(LOADGEN_BENCH_WARMUP_MS="$BENCH_WARMUP_MS" LOADGEN_BENCH_WINDOW_MS=60000)
   fi
-  env "${loadgen_env[@]}" bash -c "bash '$ROOT/scripts/run_loadgen.sh' $args" \
+  env "${loadgen_env[@]}" bash "$ROOT/scripts/run_loadgen.sh" "${args[@]}" \
     >"$run_dir/client.log" 2>&1 &
   CLIENT_PID=$!
 
@@ -176,6 +208,9 @@ for sc in "${scenarios[@]}"; do
 
   read -r pass fail <<<"$(python3 "$ROOT/scripts/stats_pass_fail.py" "$run_dir/stats.json")"
   bench_line=$(grep -a "BENCH_SUMMARY" "$run_dir/client.log" 2>/dev/null | tail -1 || true)
+  # The recorded value is the argv the client actually got, not a re-parsed
+  # string. Every element was charset-checked against the matrix above.
+  args_joined="${args[*]}"
   cat >"$run_dir/run-meta.json" <<EOF
 {
   "scenario": "$sc",
@@ -187,7 +222,7 @@ for sc in "${scenarios[@]}"; do
   "hostLoadEnd": "$h1",
   "loadgen": {"git": "$(git_short "$ROOT")", "dirtyFiles": $(git_dirty "$ROOT")},
   "server": {"adminPort": $ADMIN_PORT, "litePort": 26902},
-  "matrixArgs": "$args",
+  "matrixArgs": "$args_joined",
   "summary": {"pass": "${pass:-0}", "fail": "${fail:-0}"}
 }
 EOF

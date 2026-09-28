@@ -122,10 +122,29 @@ if [[ -n "$SPAWN_ENTITY" && ! "$SPAWN_ENTITY" =~ ^[A-Za-z0-9._,-]+$ ]]; then
   echo "ERROR: spawn entity list must match [A-Za-z0-9._,-]+ (got '$SPAWN_ENTITY')" >&2
   exit 2
 fi
-for numeric in "$COUNT" "$ACTIONS" "$TIMEOUT_MS" "$SPAWN_PER_PLAYER" \
-               "$SPAWN_EVERY_MS" "$SNAPSHOT_DELAY_MS"; do
+# The world name reaches an rm -rf'd evidence path below: SCENARIO_DIR is
+# "$OUT_ROOT/<id>-${WORLD_NAME,,}" for any non-default world, and its children
+# are deleted per run. Without this a COMPARE_WORLD of "../../.." retargets the
+# delete outside OUT_ROOT. A stock or RealEarth world name is a bare identifier
+# (Navezgane, Pregen06k01, RWG, RealEarth_H500), so reject separators, dots and
+# whitespace rather than sanitizing a value nothing legitimate needs.
+if [[ ! "$WORLD_NAME" =~ ^[A-Za-z0-9_-]+$ ]]; then
+  echo "ERROR: world must match [A-Za-z0-9_-]+ (got '$WORLD_NAME')" >&2
+  exit 2
+fi
+for numeric in "$COUNT" "$ACTIONS" "$TIMEOUT_MS" "$SNAPSHOT_DELAY_MS"; do
   if [[ ! "$numeric" =~ ^[0-9]+$ ]]; then
     echo "ERROR: workload knobs must be non-negative integers (got '$numeric')" >&2
+    exit 2
+  fi
+done
+# The spawn-pressure knobs are optional: an empty value means "do not forward
+# this knob" and is what every catalog row without spawn pressure carries.
+# Validating them as required rejected the empty string, so the default
+# scenario (join-probe) exited 2 before either server booted.
+for optional in "$SPAWN_PER_PLAYER" "$SPAWN_EVERY_MS"; do
+  if [[ -n "$optional" && ! "$optional" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: workload knobs must be non-negative integers (got '$optional')" >&2
     exit 2
   fi
 done

@@ -111,7 +111,7 @@ def test_nuget_packages_are_exactly_pinned():
         for name, version in reference.findall(csproj.read_text(encoding="utf-8")):
             if exact.search(f'Version="{version}"') or locked:
                 continue
-            assert False, (
+            raise AssertionError(
                 f"{csproj.name}: '{name}' {version} is a minimum-version range and "
                 "the project has no packages.lock.json, so restore silently takes "
                 "the newest published version; pin it as [x.y.z] or add a lock file"

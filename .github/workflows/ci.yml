@@ -21,7 +21,11 @@ jobs:
     timeout-minutes: 30
     steps:
       # Pinned to commit SHAs (mutable tags) for reproducible, tamper-proof CI.
+      # persist-credentials off: the job is read-only, and a token left in
+      # .git/config would stay readable to every later build/test step.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/toolchain
       - run: make test
 
@@ -33,7 +37,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      # The badge push authenticates itself with the extraheader below, so the
+      # token does not have to be left behind in .git/config for the test lane.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/toolchain
       - run: make coverage
       - run: uv run --locked python scripts/coverage_badge.py TestResults/coverage.cobertura.xml "$RUNNER_TEMP/coverage.svg"

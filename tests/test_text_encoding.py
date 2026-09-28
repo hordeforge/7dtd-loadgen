@@ -96,7 +96,7 @@ def test_sut_report_prints_non_ascii_evidence_text(tmp_path: Path) -> None:
     assert TITLE in r.stdout.decode("utf-8")
 
 
-def test_sut_telnet_writes_non_ascii_console_bytes(tmp_path: Path) -> None:
+def test_sut_telnet_writes_non_ascii_console_bytes() -> None:
     """The transcript is raw console output, not text this repo produced."""
     banner = f"Day 1, 08:00:00\nWorld name: {TITLE}\n".encode()
 
