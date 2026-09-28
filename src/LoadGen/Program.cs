@@ -126,6 +126,30 @@ public static partial class Program
         return true;
     }
 
+    /// <summary>Ceiling for --id. A cohort numbers itself base..base+count-1,
+    /// and every value derived from the base assumes that arithmetic: a base
+    /// near int.MaxValue wraps base+i negative, and a negative base makes
+    /// `id % n` negative in the loopback-bind jitter, the retry jitter and the
+    /// spawn request's chunkViewDim. 1,000,000 is far above the largest
+    /// documented cohort (README scaling tops out at 1000) and leaves the
+    /// derived arithmetic in int range.</summary>
+    public const int MaxClientId = 1_000_000;
+
+    /// <summary>--id as a base client id within [0, <see cref="MaxClientId"/>].
+    /// Parsed as long so an out-of-range value is rejected with its bound named
+    /// rather than throwing OverflowException out of int.Parse.</summary>
+    public static bool TryParseClientId(string raw, out int id)
+    {
+        id = 1;
+        if (!long.TryParse(raw, System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture, out long v))
+            return false;
+        if (v < 0 || v > MaxClientId)
+            return false;
+        id = (int)v;
+        return true;
+    }
+
     /// <summary>Fail fast on an out-of-range configuration value instead of a
     /// confusing mid-run failure. Exit code 2 matches bad argument values.</summary>
     internal static int InvalidArg(string flag, string value, string requirement)
@@ -351,6 +375,7 @@ public static partial class Program
             "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions --ramp-ms --quiet\n" +
             "      --timeout is a wall-clock budget in ms, 1..2147483647 (~24.9 days)\n" +
+            "      --id is a base client id, 0..1000000; the cohort numbers base..base+count-1\n" +
             "      --quiet drops per-client progress lines, keeping the summary\n" +
             "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +
             "  --observe-buff NAME  observe one exact replicated buff (repeatable)\n" +

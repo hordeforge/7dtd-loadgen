@@ -145,7 +145,12 @@ public static partial class Program
                         $"an integer 0..{MaxRampMs} (per-bot join stagger)");
                 joinRampMs = rampMs;
             }
-            else if (args[i] == "--id" && i + 1 < args.Length) opt.ClientId = int.Parse(args[++i]);
+            else if (args[i] == "--id" && i + 1 < args.Length)
+            {
+                if (!TryParseClientId(args[++i], out int clientId))
+                    return InvalidArg("--id", args[i], $"an integer 0..{MaxClientId}");
+                opt.ClientId = clientId;
+            }
             else if (args[i] == "--name" && i + 1 < args.Length) opt.PlayerName = args[++i];
             else if (args[i] == "--actions" && i + 1 < args.Length) opt.ActionCount = int.Parse(args[++i]);
             else if (args[i] == "--seed" && i + 1 < args.Length) opt.ActionSeed = int.Parse(args[++i]);

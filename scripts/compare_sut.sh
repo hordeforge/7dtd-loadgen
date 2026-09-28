@@ -395,7 +395,7 @@ EOF
   # Pressure scenarios snapshot late so the accumulated entities are visible.
   if (( SNAPSHOT_DELAY_MS > 0 )); then
     echo "  snapshot delay ${SNAPSHOT_DELAY_MS}ms (pressure accumulation)"
-    sleep $((SNAPSHOT_DELAY_MS / 1000))
+    sleep_ms "$SNAPSHOT_DELAY_MS"
   fi
 
   # Stock cost axis: 7dtd-server-apm capture over the connected window, aligned with

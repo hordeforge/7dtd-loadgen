@@ -31,7 +31,12 @@ public static partial class Program
                 timeoutMs = parsed;
             }
             else if (args[i] == "--log" && i + 1 < args.Length) logPath = args[++i];
-            else if (args[i] == "--id" && i + 1 < args.Length) clientId = int.Parse(args[++i]);
+            else if (args[i] == "--id" && i + 1 < args.Length)
+            {
+                if (!TryParseClientId(args[++i], out int parsedId))
+                    return InvalidArg("--id", args[i], $"an integer 0..{MaxClientId}");
+                clientId = parsedId;
+            }
             else if (args[i] == "--count" && i + 1 < args.Length) count = int.Parse(args[++i]);
             else if (args[i] == "--concurrency" && i + 1 < args.Length) concurrency = int.Parse(args[++i]);
             else if (args[i] == "--min-pass-rate" && i + 1 < args.Length)

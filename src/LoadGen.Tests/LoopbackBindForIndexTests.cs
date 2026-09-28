@@ -60,4 +60,38 @@ public sealed class LoopbackBindForIndexTests
         string b = GameJoinClient.LoopbackBindForIndex(1234 + cycle);
         Assert.Equal(a, b);
     }
+
+    [Fact]
+    public void AttemptPastIntWrap_KeepsBindsDistinct()
+    {
+        // (attempt - 1) * 7919 passes int.MaxValue at attempt 271183. The int
+        // product used to wrap negative there, and Math.Abs folded that value
+        // onto an unrelated part of the address space, so a long-soaking bot
+        // left its own lane instead of stepping one stride along it.
+        const int firstWrappedAttempt = 271_183;
+        Assert.True((long)(firstWrappedAttempt - 1) * GameJoinClient.RejoinIndexStride > int.MaxValue,
+            "this test is only meaningful past the int wrap of the stride product");
+        var seen = new HashSet<string>();
+        for (int attempt = firstWrappedAttempt - 20; attempt <= firstWrappedAttempt + 20; attempt++)
+        {
+            string bind = GameJoinClient.LoopbackBindFor(7, attempt);
+            Assert.StartsWith("127.", bind);
+            Assert.True(seen.Add(bind), $"attempt {attempt} reuses bind {bind}");
+        }
+    }
+
+    [Fact]
+    public void ExtremeIndex_StaysWellFormed()
+    {
+        // long.MinValue / long.MaxValue reach the map as one folded value; the
+        // old Math.Abs threw on int.MinValue, and a negative fold must not
+        // produce a malformed address.
+        foreach (long index in new[] { long.MinValue, long.MaxValue, -1L, -7919L })
+        {
+            var octets = GameJoinClient.LoopbackBindForIndex(index).Split('.');
+            Assert.Equal(4, octets.Length);
+            Assert.Equal("127", octets[0]);
+            Assert.All(octets, o => Assert.InRange(int.Parse(o), 0, 255));
+        }
+    }
 }

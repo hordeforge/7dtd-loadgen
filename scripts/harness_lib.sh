@@ -14,3 +14,8 @@ git_dirty() { git -C "$1" status --porcelain 2>/dev/null | wc -l; }
 # 1-minute load average, or "n/a" where /proc/loadavg does not exist. It goes
 # into run-meta.json so a reader can tell a contended run from a clean one.
 hostload() { cut -d' ' -f1 /proc/loadavg 2>/dev/null || echo "n/a"; }
+
+# Sleep for a millisecond count. sleep takes fractional seconds, and
+# `$((MS / 1000))` truncates: a 500ms delay the knobs accept became sleep 0, so
+# the pressure the delay existed to accumulate was never applied.
+sleep_ms() { printf -v _SEC '%d.%03d' "$(($1 / 1000))" "$(($1 % 1000))"; sleep "$_SEC"; }

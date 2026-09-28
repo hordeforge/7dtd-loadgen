@@ -93,6 +93,27 @@ public sealed class ConfigValidationTests
         => Assert.False(Program.TryParseMinPassRate(raw, out _));
 
     [Theory]
+    [InlineData("0", 0)]
+    [InlineData("1", 1)]
+    [InlineData("1000000", 1_000_000)]
+    public void ClientId_WithinRange_Parses(string raw, int expected)
+    {
+        Assert.True(Program.TryParseClientId(raw, out int id));
+        Assert.Equal(expected, id);
+    }
+
+    [Theory]
+    // A negative base made `id % n` negative in the bind jitter, the retry
+    // jitter and the spawn request's chunkViewDim; a base near int.MaxValue
+    // wrapped base+count. Both are rejected, not clamped.
+    [InlineData("-1")]
+    [InlineData("1000001")]
+    [InlineData("99999999999999999999")]
+    [InlineData("abc")]
+    public void ClientId_OutsideRange_IsRejected(string raw)
+        => Assert.False(Program.TryParseClientId(raw, out _));
+
+    [Theory]
     [InlineData(1, true)]
     [InlineData(64, true)]
     // A silent raise to 1 turned a LOADGEN_COUNT=0 typo into a one-bot run

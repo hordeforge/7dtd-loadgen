@@ -162,8 +162,8 @@ def main():
             json.dump({"scenario": scenario, "compared": False, "stale": True,
                        "ran": ["stock", "zdtd"],
                        "runIds": {"stock": sid, "zdtd": zid},
-                       "findings": [f"sides are from different invocations "
-                                    f"(stock={sid}, zdtd={zid}); re-run --sut all"]},
+                       "findings": [(f"sides are from different invocations "
+                                     f"(stock={sid}, zdtd={zid}); re-run --sut all")]},
                       fh, indent=1, sort_keys=True)
         print(report, file=sys.stderr)
         return 0

@@ -190,7 +190,7 @@ for sc in "${scenarios[@]}"; do
   if [[ "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] && [[ -f "$APM_PROJECT/uv.lock" ]] \
      && command -v uv >/dev/null; then
     if [[ "$sc" == "bench" ]]; then
-      sleep $((BENCH_WARMUP_MS / 1000))
+      sleep_ms "$BENCH_WARMUP_MS"
     else
       sleep 8
     fi

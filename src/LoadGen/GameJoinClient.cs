@@ -725,14 +725,25 @@ public sealed class GameJoinClient
         return 1;
     }
 
-    /// <summary>127.0.0.0/8 unique bind for client index (avoids dedicated per-IP connect throttle).</summary>
-    public static string LoopbackBindForIndex(int index)
+    /// <summary>Addresses the bind map cycles through: 127.0.0.0/8 less the
+    /// 127.0.0.0 network address. One period of the (client, attempt) map.</summary>
+    internal const int LoopbackBindCycle = 256 * 256 * 254;
+
+    /// <summary>127.0.0.0/8 unique bind for client index (avoids dedicated per-IP connect throttle).
+    /// The index is a (client, attempt) product and folds in long: in int it wraps
+    /// negative at attempt 271183 (pinned by LoopbackBindForIndexTests), and a
+    /// wrapped index maps back onto addresses early attempts already hold,
+    /// re-arming the per-IP throttle these binds exist to bypass. Math.Abs threw
+    /// on int.MinValue for the same reason.</summary>
+    public static string LoopbackBindForIndex(long index)
     {
         // 127.a.b.c with a=0..255, skip 127.0.0.0
-        int n = Math.Abs(index) % (256 * 256 * 254) + 1;
-        int c = n % 256;
-        int b = (n / 256) % 256;
-        int a = (n / (256 * 256)) % 256;
+        long n = index % LoopbackBindCycle;
+        if (n < 0) n += LoopbackBindCycle;
+        n += 1;
+        int c = (int)(n % 256);
+        int b = (int)(n / 256 % 256);
+        int a = (int)(n / (256 * 256) % 256);
         if (a == 0 && b == 0 && c == 0) c = 1;
         return $"127.{a}.{b}.{c}";
     }
@@ -750,12 +761,13 @@ public sealed class GameJoinClient
     /// <summary>Bind address for one (clientId, attempt) pair, one-based on both
     /// axes so the first bot of a cohort takes 127.0.0.1. Injective while the
     /// cohort spans fewer than <see cref="RejoinIndexStride"/> consecutive
-    /// client ids. Single source of truth: call sites take the address from
-    /// here and must not re-derive the arithmetic (the old inline stride
-    /// drifted away from its test).</summary>
+    /// client ids, and the stride product is computed in long so a long-running
+    /// soak stays injective past the point where it would wrap. Single source of
+    /// truth: call sites take the address from here and must not re-derive the
+    /// arithmetic (the old inline stride drifted away from its test).</summary>
     public static string LoopbackBindFor(int clientId, int attempt) =>
         LoopbackBindForIndex(
-            Math.Max(0, clientId - 1) + Math.Max(0, attempt - 1) * RejoinIndexStride);
+            (long)Math.Max(0, clientId - 1) + (long)Math.Max(0, attempt - 1) * RejoinIndexStride);
 
     void HandlePackage(
         ushort id,
