@@ -31,6 +31,7 @@ import socket
 import sys
 import time
 import unicodedata
+from collections.abc import Callable
 
 # Locale-independent text boundary. The transcript is the game's own console
 # output (player names, world and game name) decoded as UTF-8, so writing it
@@ -49,9 +50,12 @@ IDENTITY_FIELD = re.compile(r"\b(pltfmid|crossid|ip)=([^,\s]*)")
 # session carry the same identities as a listplayers row, quoted and
 # capitalized, so the lower-case key pattern above never matched them: a real
 # player's name and platform id reached the committed transcript through the
-# PlayerDisconnected / Player disconnected lines.
-QUOTED_IDENTITY_FIELD = re.compile(
-    r"\b(pltfmid|crossid|ownerid|playername)='([^']*)'", re.IGNORECASE)
+# PlayerDisconnected / Player disconnected lines. A name is free text and can
+# hold the quote that delimits its own value, so a field is bounded by the
+# field that follows it, not by the first quote inside it.
+QUOTED_IDENTITY_FIELDS = frozenset({"pltfmid", "crossid", "ownerid", "playername"})
+FIELD_START = re.compile(r"([,\s]+)(?=[A-Za-z_][A-Za-z0-9_]*=)")
+QUOTED_FIELD = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_]*)='(.*)$")
 # The LiteNetLib connect/disconnect log line the stock server relays into the
 # session: the address is the connecting player's, and the port is the
 # session's.
@@ -60,14 +64,53 @@ CLIENT_ADDRESS = re.compile(
 # Platform account ids printed bare (a ban line, a command echo):
 # SteamID64 is 17 digits starting 76561, EOS id is 32 hex starting 0002.
 PLATFORM_ID = re.compile(r"\b(?:76561\d{12}|0002[0-9a-fA-F]{28})\b")
-# Stock listents wraps a player in "[type=EntityPlayer, name=<name>, id=N]".
-BRACKET_PLAYER_NAME = re.compile(r"(\[type=EntityPlayer[^,\]]*,\s*name=)([^,\]]+)(,)")
+# Stock listents wraps a player in "[type=EntityPlayer, name=<name>, id=N]". A
+# name is free text, so it can hold the delimiters of the form it is printed
+# in; the name's extent is therefore located by the terminator that follows it
+# (see _bracket_name_span) rather than by the first delimiter after it.
+BRACKET_PLAYER_HEAD = "[type=EntityPlayer"
+BRACKET_NAME_KEY = "name="
+BRACKET_TERMINATOR = ", id="
 # listplayers rows: "0. id=171, <name>, pos=(...)".
 ROW_NAME = re.compile(r"^(\s*\d+\. id=\d+, )(.+?)(, pos=)")
 # The greeting's own line: "Server IP:   118.189.191.239". The address belongs
 # to the machine that ran the session, and the comparisons never read it.
 BANNER_ADDRESS = re.compile(r"^(Server IP:[ \t]+)\S+")
+# What a console puts in front of a record: the telnet control bytes and
+# color escapes of a raw session stream, plus indentation. The record patterns
+# above are anchored, so the decoration is cut off before they run and
+# re-attached afterwards; a colored or negotiation-prefixed line otherwise
+# defeated the anchor and kept the identity it carries. The two-character Fe
+# forms are deliberately absent: "ESC S" is one of them and it would eat the
+# first character of the record behind it.
+LEADING_DECORATION = re.compile(
+    r"\A(?:\x1b\[[0-?]*[ -/]*[@-~]"
+    r"|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)"
+    r"|[\x00-\x09\x0b-\x20\x7f]"
+    r"|\x1b)*")
 REDACTED = "redacted"
+
+
+def _bracket_name_span(line: str) -> tuple[int, int] | None:
+    """The extent of the player name inside a stock listents bracket form.
+
+    Returns (start, end) offsets into `line`, or None when the line is not a
+    bracketed player. A name is player-typed free text and the console prints
+    it between `name=` and either the `, id=` that follows it or the closing
+    bracket, so the last of each on the line is the terminator. Stopping at
+    the first delimiter instead leaves the tail of a name carrying one in the
+    committed transcript, in the clear.
+    """
+    head = line.find(BRACKET_PLAYER_HEAD)
+    if head < 0:
+        return None
+    key = line.find(BRACKET_NAME_KEY, head)
+    if key < 0:
+        return None
+    start = key + len(BRACKET_NAME_KEY)
+    ends = [at for at in (line.rfind(BRACKET_TERMINATOR, start),
+                          line.rfind("]", start)) if at > start]
+    return (start, min(ends) if ends else len(line))
 
 # Console verbs whose second execution changes the world in a way the first
 # did not: they create entities, grant progress, evict or ban players, move the
@@ -100,17 +143,45 @@ def mutating_command(cmd: str) -> bool:
     return bool(verb) and verb[0].lower() in MUTATING_VERBS
 
 
-def _quoted_identity(alias):
-    """Sub for a quoted identity field. The name keeps the session pseudonym so
-    a lifecycle line correlates with the rows it belongs to; every other field
-    is a platform id and takes the placeholder."""
-    def sub(m: "re.Match[str]") -> str:
-        key = m.group(1)
-        value = m.group(2)
-        if key.lower() == "playername":
-            return f"{key}='{alias(value)}'"
-        return f"{key}='{REDACTED}'"
-    return sub
+def _redact_field(field: str, alias: Callable[[str], str]) -> str:
+    """One relayed field with its identity dropped.
+
+    A name keeps the session pseudonym so a lifecycle line correlates with the
+    rows it belongs to; every other identity is a platform id and takes the
+    placeholder. A field that is not a quoted identity comes back untouched,
+    so the comparable evidence on the line survives.
+
+    A name is free text and can hold the quote that delimits its own value, so
+    the value ends at the last quote in the field rather than the first. A
+    value that is never closed is taken whole: its tail is the identity, and a
+    name carrying a quote must not stop the redaction halfway.
+    """
+    match = QUOTED_FIELD.match(field)
+    if match is None or match.group(1).lower() not in QUOTED_IDENTITY_FIELDS:
+        return field
+    key = match.group(1)
+    value = match.group(2)
+    closing = value.rfind("'")
+    if closing >= 0:
+        value = value[:closing]
+    value = alias(value) if key.lower() == "playername" else REDACTED
+    # The line break a splitlines() line carries is part of the field string,
+    # and dropping it welds two console records into one transcript line.
+    return f"{key}='{value}'" + field[match.end():]
+
+
+def _redact_fields(line: str, alias: Callable[[str], str]) -> str:
+    """The identity fields of a relayed lifecycle line, redacted field-wise."""
+    if "'" not in line:
+        return line
+    out = []
+    at = 0
+    for separator in FIELD_START.finditer(line):
+        out.append(_redact_field(line[at:separator.start()], alias))
+        out.append(separator.group(1))
+        at = separator.end()
+    out.append(_redact_field(line[at:], alias))
+    return "".join(out)
 
 
 def redact_identities(text: str) -> str:
@@ -137,20 +208,26 @@ def redact_identities(text: str) -> str:
         return aliases.setdefault(key, f"player-{len(aliases) + 1}")
 
     out = []
-    quoted = _quoted_identity(alias)
     for line in text.splitlines(keepends=True):
-        if "[type=" in line:
-            line = BRACKET_PLAYER_NAME.sub(
-                lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
-        elif "deaths=" in line and "pos=" in line:
-            # Both halves: the branch is only the row shape ROW_NAME matches, so
-            # gating on one half alone lets the other half skip the redaction.
-            line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
-        line = BANNER_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
-        line = CLIENT_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
-        line = QUOTED_IDENTITY_FIELD.sub(quoted, line)
-        line = PLATFORM_ID.sub(REDACTED, line)
-        out.append(IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", line))
+        # The record starts after the console's decoration; the record patterns
+        # are anchored, so they run on the remainder and the prefix is put back
+        # verbatim. Offsets shift by the prefix length only.
+        decoration = LEADING_DECORATION.match(line)
+        cut = decoration.end() if decoration else 0
+        head, record = line[:cut], line[cut:]
+        span = _bracket_name_span(record)
+        if span is not None:
+            start, end = span
+            record = record[:start] + alias(record[start:end]) + record[end:]
+        elif "deaths=" in record:
+            record = ROW_NAME.sub(
+                lambda m: m.group(1) + alias(m.group(2)) + m.group(3), record)
+        record = BANNER_ADDRESS.sub(lambda m: m.group(1) + REDACTED, record)
+        record = CLIENT_ADDRESS.sub(lambda m: m.group(1) + REDACTED, record)
+        record = _redact_fields(record, alias)
+        record = PLATFORM_ID.sub(REDACTED, record)
+        record = IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", record)
+        out.append(head + record)
     return "".join(out)
 
 
