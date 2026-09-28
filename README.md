@@ -76,7 +76,9 @@ advisory (NU1901-NU1904) fails the lane rather than scrolling past in the log.
 `make sbom` writes the CycloneDX inventory of both lock files to
 `workspace/sbom/7dtd-loadgen.cdx.json`: every resolved package with the hash
 its lock recorded, for scanners and for whoever reads a release without
-checking out the tree.
+checking out the tree. The tag lane renders the same document into the release
+run's summary, so a `vX.Y.Z` tag leaves the inventory behind instead of
+discarding it with the runner.
 
 ## Quick start
 

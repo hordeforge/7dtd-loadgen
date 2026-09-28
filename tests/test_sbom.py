@@ -45,7 +45,13 @@ def test_document_is_cyclonedx_with_the_shipped_version(tmp_path):
     assert document["specVersion"] == "1.6"
     locked = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
     version = next(p["version"] for p in locked["package"] if p["name"] == "7dtd-loadgen")
-    assert document["metadata"]["component"]["version"] == version
+    root = document["metadata"]["component"]
+    assert root["version"] == version
+    assert "purl" not in root, (
+        "the root component is the C# client, not a distribution on PyPI; a "
+        "pkg:pypi/7dtd-loadgen identifier points a scanner at a package name "
+        "nobody publishes"
+    )
 
 
 def test_every_locked_python_package_is_listed_with_its_hash(tmp_path):

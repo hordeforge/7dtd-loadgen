@@ -142,6 +142,25 @@ def test_nuget_advisories_fail_the_build():
         )
 
 
+def test_release_lane_publishes_the_dependency_inventory():
+    """A tag has to carry the inventory of what it shipped, not just a verdict.
+
+    `make sbom` renders both lock files into workspace/, which a runner
+    discards with the job. Someone auditing a release has neither the checkout
+    nor a registry feed, so the tag lane writes the same document to the run
+    summary. A rendering that stays on the runner answers nobody.
+    """
+    release = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+    assert "scripts/sbom.py" in release, (
+        "the tag lane never renders the SBOM, so a release ships no "
+        "machine-readable inventory of its dependencies"
+    )
+    assert "GITHUB_STEP_SUMMARY" in release, (
+        "the tag lane renders the SBOM but keeps it on the runner; write it to "
+        "the run summary so it outlives the job"
+    )
+
+
 def test_lock_files_are_tracked():
     """A lock file nobody can commit pins nothing, so .gitignore must not eat it."""
     tracked = subprocess.run(

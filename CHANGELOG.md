@@ -21,7 +21,11 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   resolved package, PyPI and NuGet, with the hash its lock recorded. Stdlib
   only, computed from the locks so it cannot claim a version the tree does not
   resolve, and gated by `tests/test_sbom.py`. A release previously shipped no
-  machine-readable inventory at all.
+  machine-readable inventory at all. The `vX.Y.Z` tag lane renders the same
+  document into the run summary, so the inventory outlives the runner.
+- The SBOM's root component no longer claims `pkg:pypi/7dtd-loadgen`. The
+  shipped artifact is the C# client and nobody publishes that name on PyPI, so
+  the identifier pointed a scanner at a package that does not exist.
 - `make doctor` names a missing build or test tool (.NET 8 SDK, `shellcheck`,
   `uv`) instead of leaving `make lint` to fail with `shellcheck: command not
   found`. `make lint` and `make test` run it first, and `make build` reports

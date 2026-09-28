@@ -106,11 +106,13 @@ def build() -> dict[str, Any]:
     for lock_path in NUGET_LOCKS:
         components.extend(nuget_components(lock_path))
     components.sort(key=lambda c: c["purl"])
+    # No purl on the root component. The shipped artifact is the C# client,
+    # not a distribution on PyPI, and a pkg:pypi/7dtd-loadgen identifier points
+    # a scanner at a package name nobody publishes.
     root = {
         "type": "application",
         "name": "7dtd-loadgen",
         "version": version,
-        "purl": f"pkg:pypi/7dtd-loadgen@{version}",
     }
     return {
         "bomFormat": BOM_FORMAT,

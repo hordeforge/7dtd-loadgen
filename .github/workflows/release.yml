@@ -64,6 +64,27 @@ jobs:
       # does not run for tag pushes. Gate the tag on the same lane it gates a
       # push or a pull request with.
       - run: make test
+      # `make sbom` renders the CycloneDX inventory of both lock files, but on
+      # a runner the document would die with the job. A consumer auditing a
+      # release has no checkout and no registry feed, so the tag lane writes
+      # the same document to the run summary, which the release run keeps.
+      # No new action and no new permission: the summary is the runner's own
+      # output, and the job stays at contents: read.
+      - name: Publish the dependency inventory with the tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --locked python scripts/sbom.py --output "$RUNNER_TEMP/7dtd-loadgen.cdx.json"
+          {
+            echo '## Dependency inventory'
+            echo
+            echo 'CycloneDX 1.6, rendered from uv.lock and'
+            echo 'src/LoadGen.Tests/packages.lock.json at this tag.'
+            echo
+            echo '```json'
+            cat "$RUNNER_TEMP/7dtd-loadgen.cdx.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Check the tag matches src/LoadGen/LoadGen.csproj
         shell: bash
         env:
