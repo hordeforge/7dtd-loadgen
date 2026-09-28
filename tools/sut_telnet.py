@@ -87,7 +87,8 @@ def redact_identities(text: str) -> str:
     out = []
     for line in text.splitlines(keepends=True):
         if "[type=" in line:
-            line = BRACKET_PLAYER_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
+            line = BRACKET_PLAYER_NAME.sub(
+                lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
         elif "deaths=" in line:
             line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
         out.append(IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", line))
@@ -132,7 +133,8 @@ def main():
     ap.add_argument("--commands", default="gettime,listents,listplayers",
                     help="comma-separated commands to run after connect")
     ap.add_argument("--out", default="-", help="transcript path ('-' = stdout)")
-    ap.add_argument("--settle-ms", type=int, default=1500, help="read settle time after each command")
+    ap.add_argument("--settle-ms", type=int, default=1500,
+                    help="read settle time after each command")
     ap.add_argument("--tail-sleep", type=float, default=0.0,
                     help="extra sleep before the LAST command (widens the interval "
                          "between two repeated commands, e.g. gettime, so rate "

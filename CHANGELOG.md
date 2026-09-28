@@ -26,6 +26,12 @@ under **Changed** with their migration path.
   telemetry must stop the sweep, not report a perfect frame), and
   `webdash_password_hash.py` (the game's `base64(MD5(utf8(pass)))` encoding).
   `LoadRunner.ResolveConcurrency` gained a C# gate for its cohort clamp.
+- `ruff` runs an explicit rule set in `pyproject.toml` instead of ruff's
+  default, which covered neither the 100-column cap (`E501`) nor import
+  order, bugbear, return-shape or quote consistency. `make lint` now fails on
+  all of them. `mypy` holds the already-annotated entry points to
+  `disallow_untyped_defs`; the rest of the tree joins that list as it gets
+  annotated.
 
 ### Changed
 
@@ -89,6 +95,10 @@ under **Changed** with their migration path.
   wrapper's own record is `7dtd.loadgen.runner.v1` and a non-numeric workload
   value is refused rather than recorded as a measured `0`; the gate now asserts
   both.
+- `telnet_snapshot` no longer counts `listplayers` rows and discards them. It
+  returns each row's `id` and `name`, the contract the transcript fuzz gate
+  asserts; `surface.json` still keeps the count only, so no per-player
+  identity reaches kept evidence.
 - Run artifacts no longer inherit the writer's operating system line endings.
   Client logs, the `--events-jsonl` sink, the death CSV and the cohort summary
   were written with `Environment.NewLine`, and the report tools with the

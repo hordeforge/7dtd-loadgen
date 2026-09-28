@@ -174,10 +174,12 @@ def start_server():
     except subprocess.TimeoutExpired as e:
         # Same surface as a non-zero exit: the operator gets the boot log tail,
         # not a bare traceback.
-        tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:] if log_path.is_file() else ""
+        tail = (log_path.read_text(encoding="utf-8", errors="replace")[-2000:]
+                if log_path.is_file() else "")
         raise RuntimeError(f"start_dedicated_prefab timed out after 400s\n{tail}") from e
     if r.returncode != 0:
-        tail = log_path.read_text(encoding="utf-8", errors="replace")[-2000:] if log_path.is_file() else ""
+        tail = (log_path.read_text(encoding="utf-8", errors="replace")[-2000:]
+                if log_path.is_file() else "")
         raise RuntimeError(f"start_dedicated_prefab failed rc={r.returncode}\n{tail}")
     time.sleep(5)
 
@@ -330,7 +332,8 @@ def health():
     return {"readable": True,
             "entityAlives": w.get("entityAlives"), "players": w.get("players"),
             "frameMs": w.get("unityDeltaMs"), "tickAvgMs": u.get("serverTickIntervalAvgMs"),
-            "tickMaxMs": u.get("serverTickIntervalMaxMs"), "gmMaxMs": u.get("gmUpdateDurationMaxMs"),
+            "tickMaxMs": u.get("serverTickIntervalMaxMs"),
+            "gmMaxMs": u.get("gmUpdateDurationMaxMs"),
             "lateTicks": u.get("lateTicks"), "stallMs": u.get("tickStallMsTotal")}
 
 
@@ -364,7 +367,8 @@ def main():
         if "--start-server" in sys.argv:
             start_server()
             started_server = True
-        log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies (GS{GAMESTAGE}) ===")
+        log(f"=== BLOOD MOON STANDARD: {PLAYERS} players + {ZOMBIES} endgame zombies "
+            f"(GS{GAMESTAGE}) ===")
         bots, joined = join_ramped(PLAYERS)
         log(f"players stable: {joined}/{PLAYERS}")
         set_gamestage(GAMESTAGE)
@@ -380,9 +384,12 @@ def main():
         log("=== LOAD ESTABLISHED ===")
         if not h.get("readable"):
             log(f"  apm snapshot unreadable: {h.get('error')}")
-        log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  entityAlives={h.get('entityAlives')}")
-        log(f"  frame={h.get('frameMs')}ms (budget {FRAME_BUDGET_MS}ms/frame)  tickMax={h.get('tickMaxMs')}ms  "
-            f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  stall={h.get('stallMs')}ms")
+        log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  "
+            f"entityAlives={h.get('entityAlives')}")
+        log(f"  frame={h.get('frameMs')}ms (budget {FRAME_BUDGET_MS}ms/frame)  "
+            f"tickMax={h.get('tickMaxMs')}ms  "
+            f"gmMax={h.get('gmMaxMs')}ms  lateTicks={h.get('lateTicks')}  "
+            f"stall={h.get('stallMs')}ms")
         frame = h.get("frameMs")
         if not h.get("readable"):
             # A missing snapshot is not an over-budget server: say the load was
@@ -392,7 +399,8 @@ def main():
             log("  VERDICT: UNKNOWN (snapshot has no unityDeltaMs; the load was not measured)")
         else:
             keeps = frame <= FRAME_BUDGET_MS
-            log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else f'OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)'}")
+            over = f"OVER BUDGET at {frame}ms/frame (cannot hold 20 TPS)"
+            log(f"  VERDICT: {'HOLDS ~20 TPS' if keeps else over}")
         if HOLD_S <= 0:
             log("holding load (BM_HOLD_S=0). Attach APM/capture now. Ctrl-C to tear down.")
             try:
@@ -402,7 +410,8 @@ def main():
                     if not h.get("readable"):
                         log(f"  hold: apm snapshot unreadable: {h.get('error')}")
                     else:
-                        log(f"  hold: alive={h.get('entityAlives')} frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
+                        log(f"  hold: alive={h.get('entityAlives')} "
+                            f"frame={h.get('frameMs')}ms lateTicks={h.get('lateTicks')}")
             except KeyboardInterrupt:
                 pass
         else:

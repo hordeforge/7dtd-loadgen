@@ -29,7 +29,9 @@ MAX_Z = env_int("SWEEP_MAX", 900, minimum=STEP)
 BUDGET = env_float("SWEEP_BUDGET_MS", float(B.FRAME_BUDGET_MS), minimum=0.1)
 CAPTURE = os.environ.get("CAPTURE_AT_CEILING", "0") == "1"
 # Sibling checkout of 7dtd-server-apm (repo root's parent dir); RE_APM_DIR overrides.
-APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-server-apm")
+APM_DIR = Path(
+    os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[1].parent / "7dtd-server-apm"
+)
 
 
 def sample_row(zombies: int, frame_ms: float, budget: float) -> dict:

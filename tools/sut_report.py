@@ -74,11 +74,11 @@ def main():
     for side, s in (("stock", stock), ("zdtd", zdtd)):
         if s and s.get("meta"):
             m = s["meta"]
+            lg_dirty = " (dirty)" if int(m.get("loadgen", {}).get("dirtyFiles", 0) or 0) else ""
+            zl_dirty = " (dirty)" if int(m.get("zdtd", {}).get("dirtyFiles", 0) or 0) else ""
             lines.append(f"- {side}: ran {m.get('startedAt')} | "
-                         f"loadgen {m.get('loadgen', {}).get('git', '?')}"
-                         f"{' (dirty)' if int(m.get('loadgen', {}).get('dirtyFiles', 0) or 0) else ''} | "
-                         f"zdtd {m.get('zdtd', {}).get('git', '?')}"
-                         f"{' (dirty)' if int(m.get('zdtd', {}).get('dirtyFiles', 0) or 0) else ''} | "
+                         f"loadgen {m.get('loadgen', {}).get('git', '?')}{lg_dirty} | "
+                         f"zdtd {m.get('zdtd', {}).get('git', '?')}{zl_dirty} | "
                          f"client count={m.get('client', {}).get('count', '?')} "
                          f"actions={m.get('client', {}).get('actions', '?')} "
                          f"timeout={m.get('client', {}).get('timeoutMs', '?')}ms")
@@ -157,7 +157,8 @@ def main():
                         f"zdtd={zl['severity'].get('ERR', 0)})")
     if sl.get("severity", {}).get("EXC", 0) != zl.get("severity", {}).get("EXC", 0):
         findings.append(f"log: EXC (exception) line count differs "
-                        f"(stock={sl['severity'].get('EXC', 0)} zdtd={zl['severity'].get('EXC', 0)})")
+                        f"(stock={sl['severity'].get('EXC', 0)} "
+                        f"zdtd={zl['severity'].get('EXC', 0)})")
 
     # ---- Entity counts ----
     st, zt = stock.get("telnet"), zdtd.get("telnet")
@@ -190,7 +191,8 @@ def main():
     for side, e in (("stock", se), ("zdtd", ze)):
         t = e.get("types") or {}
         if t:
-            lines.append(f"- {side} entity types: {', '.join(f'{k}={v}' for k, v in sorted(t.items()))}")
+            types = ", ".join(f"{k}={v}" for k, v in sorted(t.items()))
+            lines.append(f"- {side} entity types: {types}")
     if se.get("count") != ze.get("count"):
         findings.append(f"telnet: entity count differs (stock={se.get('count')} "
                         f"zdtd={ze.get('count')})")

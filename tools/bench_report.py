@@ -128,10 +128,12 @@ def load_lap(lap_dir: Path) -> dict:
         bench = (stats.get("bench") or {}) if isinstance(stats, dict) else {}
         # stats.json is the authoritative join outcome (client.log can contain
         # binary bytes that defeat grep); fall back to run-meta summary.
-        joins_pass = stats.get("pass") if stats.get("pass") is not None \
-            else meta.get("summary", {}).get("pass")
-        joins_fail = stats.get("fail") if stats.get("fail") is not None \
-            else meta.get("summary", {}).get("fail")
+        joins_pass = (stats.get("pass")
+                      if isinstance(stats, dict) and stats.get("pass") is not None
+                      else meta.get("summary", {}).get("pass"))
+        joins_fail = (stats.get("fail")
+                      if isinstance(stats, dict) and stats.get("fail") is not None
+                      else meta.get("summary", {}).get("fail"))
         wall = iso_delta(meta.get("startUtc", ""), meta.get("endUtc", ""))
         scenarios[sc] = {
             "wallS": round(wall, 1) if wall is not None else None,

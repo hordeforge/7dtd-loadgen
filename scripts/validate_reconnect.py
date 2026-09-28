@@ -133,8 +133,10 @@ def stop_server() -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--players", type=int, default=8)
-    ap.add_argument("--hold-before-kill", type=float, default=40.0, help="seconds of walking before kill")
-    ap.add_argument("--hold-after-restart", type=float, default=30.0, help="seconds to observe rejoins")
+    ap.add_argument("--hold-before-kill", type=float, default=40.0,
+                    help="seconds of walking before kill")
+    ap.add_argument("--hold-after-restart", type=float, default=30.0,
+                    help="seconds to observe rejoins")
     args = ap.parse_args()
 
     skip_start = os.environ.get("SKIP_SERVER_START", "0") == "1"
@@ -155,7 +157,8 @@ def main() -> int:
         # bots keep retrying through the kill + restart).
         print(f"[reconnect] joining {args.players} bots (ramp 2.5 s)...")
         exe = ROOT / "src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll"
-        log_path = ROOT / "server" / "logs" / f"reconnect_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.out"
+        stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        log_path = ROOT / "server" / "logs" / f"reconnect_{stamp}.out"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         cmd = [
             "dotnet", str(exe),
@@ -195,8 +198,8 @@ def main() -> int:
         # one bot in the world ("JOINED entity="; "PASS joined" is the
         # session-end summary, written only at disconnect).
         ok = joins >= 1 and len(rejoin_lines) >= 1 and len(joined_lines) >= 1
-        print(f"[reconnect] joins={joins} rejoin events={len(rejoin_lines)} joined={len(joined_lines)} "
-              f"log={log_path.name}")
+        print(f"[reconnect] joins={joins} rejoin events={len(rejoin_lines)} "
+              f"joined={len(joined_lines)} log={log_path.name}")
         print(f"[reconnect] {'PASS' if ok else 'FAIL'}: bots rejoined after server restart")
         return 0 if ok else 1
     finally:

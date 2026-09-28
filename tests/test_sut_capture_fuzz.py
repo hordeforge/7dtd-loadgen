@@ -112,7 +112,8 @@ def test_huge_transcript_scan_stays_linear(tmp_path: Path) -> None:
     # A single enormous line is the shape that makes anchored regexes walk the
     # whole remainder per start position. The banner and row scans must stay
     # proportional to the transcript, not its length squared.
-    hostile = "Server IP: " + "x" * (2 * 1024 * 1024) + "\n" + ("filler line with no rows\n" * 40_000)
+    hostile = ("Server IP: " + "x" * (2 * 1024 * 1024) + "\n"
+               + ("filler line with no rows\n" * 40_000))
     run_dir = _write_transcript(tmp_path, hostile)
     assert len(hostile) > MAX_TRANSCRIPT_BYTES // 2
 

@@ -122,7 +122,9 @@ def test_empty_optional_string_is_the_placeholder_not_a_blank_field(tmp_path):
 def test_non_numeric_numeric_field_fails_loud_instead_of_recording_zero(tmp_path):
     # A silent 0 would read as a measured count/port/timeout in every
     # downstream lap summary, so the manifest is refused outright and the
-    # caller keeps the client's own exit code.
+    # caller keeps the client's own exit code. The write aborts naming the
+    # offending field, and the file must not exist, so no half-populated
+    # artifact is left behind.
     out, r = _write(tmp_path, {"LOADGEN_COUNT": "eight"})
     assert r["returncode"] != 0
     assert "LOADGEN_COUNT" in r["stderr"]

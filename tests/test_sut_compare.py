@@ -36,7 +36,8 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run-meta.json").write_text(
         json.dumps({"scenario": "scenario", "sut": sut, "startedAt": "2026-08-12T00:00:00Z",
-                    "client": {"count": "1", "actions": "0", "timeoutMs": "60000", "host": "127.0.0.1"},
+                    "client": {"count": "1", "actions": "0", "timeoutMs": "60000",
+                               "host": "127.0.0.1"},
                     "loadgen": {"git": "abc1234", "dirtyFiles": "0"},
                     "zdtd": {"git": "def5678", "dirtyFiles": "1"}}),
         encoding="utf-8",

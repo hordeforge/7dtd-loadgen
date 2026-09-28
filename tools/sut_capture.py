@@ -43,7 +43,9 @@ def _file_size(path: str) -> int | None:
     except OSError:
         return None
 
-ENTITY_ROW = re.compile(r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\blifetime=\S+, remote=\S+, dead=(True|False)")
+ENTITY_ROW = re.compile(
+    r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\blifetime=\S+, remote=\S+, dead=(True|False)"
+)
 # Stock listents names come as "[type=EntityPlayer, name=EntityPlayer, id=171]";
 # zdtd's mirror prints a bare class name ("zombie"). Pull the type out of the
 # bracket form so the per-side type breakdown is meaningful.
@@ -57,7 +59,9 @@ BOOT_KEYS = ("createWorld", "GameState =", "Loading world", "GameStat.", "GamePr
 # negotiation, and stock logs an ERR + EXC twin per close. Deterministic per
 # run, so they are counted separately as harness noise, not compared ERR/EXC
 # evidence.
-TELNET_CLOSE_RE = re.compile(r"IOException in TelnetClient|Unable to write data to the transport connection")
+TELNET_CLOSE_RE = re.compile(
+    r"IOException in TelnetClient|Unable to write data to the transport connection"
+)
 # Stock server-log line: "<ts> <ts> SEV rest". Compiled once; this matcher runs
 # on every line of a soak log, which can reach hundreds of MB.
 STOCK_LOG_LINE = re.compile(r"^\S+ \S+ (INF|WRN|ERR|EXC|DBG) (.*)$")
@@ -131,7 +135,7 @@ def log_categories(path, sut):
 
 
 def telnet_snapshot(run_dir):
-    """Parse the telnet.txt transcript into day/entities/players counts."""
+    """Parse the telnet.txt transcript into day/entities/players facts."""
     p = os.path.join(run_dir, "telnet.txt")
     if not os.path.exists(p):
         # Every entity/day/clock axis comes from this transcript, so its absence
@@ -165,6 +169,11 @@ def telnet_snapshot(run_dir):
         elif "deaths=" in line and "pos=" in line:
             m = PLAYER_ROW.match(line)
             if m:
+                # The name is reported verbatim, the way the console printed
+                # it, so a bare "name=bot1" stays comparable across servers
+                # whose bracketed form differs. Stripped only, because it
+                # lands in a report cell where a trailing newline would forge
+                # a row.
                 players.append({"id": int(m.group(2)), "name": m.group(3).strip()})
     totals = [int(n) for n in TOTAL_ROW.findall(text)]
     total = totals[-1] if totals else None
@@ -361,12 +370,12 @@ def stock_apm_summary(run_dir):
         out["gcFullCollections"] = gc["fullCollections"]
     layers = {}
     signals = {}
-    for l in s.get("layers") or []:
-        if l.get("score") is not None:
-            layers[l["layer"]] = l["score"]
-        sig = {k: v for k, v in (l.get("signals") or {}).items() if v is not None}
+    for layer in s.get("layers") or []:
+        if layer.get("score") is not None:
+            layers[layer["layer"]] = layer["score"]
+        sig = {k: v for k, v in (layer.get("signals") or {}).items() if v is not None}
         if sig:
-            signals[l["layer"]] = sig
+            signals[layer["layer"]] = sig
     if layers:
         out["layers"] = layers
     if signals:
@@ -399,8 +408,9 @@ def main():
     telnet = telnet_snapshot(run_dir)
     if telnet is not None:
         # The snapshot keeps the parsed player rows for in-process callers, but
-        # the surface is an artifact the harness keeps: per-player identity has
-        # no place in a committed comparison, so only the count crosses over.
+        # a listplayers row names a player and the committed surface is an
+        # artifact the harness publishes alongside the run: only the count
+        # crosses over, so no per-player identity lands in kept evidence.
         telnet["players"] = {"count": telnet["players"]["count"]}
     surface = {
         "sut": sut,

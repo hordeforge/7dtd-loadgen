@@ -232,12 +232,14 @@ def render(rows: list[dict]) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--playtest-root", default=str(ROOT / ".." / "7dtd-playtest" / "workspace" / "comparison-playtest"))
+    playtest_default = ROOT / ".." / "7dtd-playtest" / "workspace" / "comparison-playtest"
+    ap.add_argument("--playtest-root", default=str(playtest_default))
     ap.add_argument("--out", default=str(ROOT / "workspace" / "comparison"))
     args = ap.parse_args()
     rows = collect_loadgen(Path(args.out)) + collect_playtest(Path(args.playtest_root))
     if not rows:
-        print("ERROR: no evidence found (run compare-all / playtest-compare first)", file=sys.stderr)
+        print("ERROR: no evidence found (run compare-all / playtest-compare first)",
+              file=sys.stderr)
         return 1
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)

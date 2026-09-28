@@ -9,9 +9,38 @@ dependencies = []
 dev = ["pytest>=8.0", "ruff>=0.16", "mypy>=1.15"]
 
 [tool.ruff]
-# Same 100-column cap as .editorconfig; the default lint rule set runs via
-# `uv run --locked --extra dev ruff check` in the make lint / test lanes.
+# Same 100-column cap as .editorconfig. line-length alone does not enforce
+# it: the cap is E501, which the default rule set leaves out, so the select
+# below has to name E or the cap is decoration.
 line-length = 100
+
+[tool.ruff.lint]
+# Ruff's default set (E4, E7, E9, F) finds almost nothing here. This is the
+# full set the tree passes today, so a defect in any of these categories fails
+# `make lint` and with it the CI job. Categories with open findings
+# (ANN, D, S, PTH, COM, PLR2..4, T20, FBT, PLC0415) stay off rather than
+# being silenced: enabling one is a separate change, made with its fixes.
+select = [
+    "E",    # pycodestyle, including the 100-column cap (E501)
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort: import order and grouping
+    "UP",   # pyupgrade: syntax the pinned Python 3.11 makes obsolete
+    "B",    # flake8-bugbear: mutable defaults, shadowed loop vars, ...
+    "RET",  # flake8-return: redundant else/return paths
+    "PIE",  # flake8-pie: misimplemented, non-idiomatic constructs
+    "Q",    # flake8-quotes: one string style across the tree
+    "RUF",  # ruff-specific correctness rules
+    "ASYNC",  # async mistakes (no async code yet, so it stays free)
+    "TID",  # tidy-imports: banned APIs
+    "ERA",  # eradicate: commented-out code
+    "LOG",  # flake8-logging-format
+    "G",    # flake8-logging-format, format-string style
+    "A",    # flake8-builtins: shadowing a stdlib name
+    "BLE",  # flake8-blind-except: bare except Exception
+    "EXE",  # flake8-executable: shebang and exec permissions
+    "ARG",  # flake8-unused-arguments
+]
 
 [tool.mypy]
 python_version = "3.11"
@@ -27,3 +56,27 @@ no_implicit_optional = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# Typing ratchet. The tree is not fully annotated, so disallow_untyped_defs
+# cannot be a global flag yet. These entry points are annotated today and are
+# held to the strict rule, so a new unannotated function in one of them fails
+# `make lint` instead of quietly widening the untyped surface. Every remaining
+# module moves onto this list as it gets annotated, and the list empties.
+[[tool.mypy.overrides]]
+module = [
+    "bench_report",
+    "conftest",
+    "consolidated_report",
+    "coverage_badge",
+    "loadgen_cli",
+    "loadgen_manifest",
+    "procs",
+    "scenario_env",
+    "stats_pass_fail",
+    "sut_catalog",
+    "validate_reconnect",
+    "webdash_password_hash",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
