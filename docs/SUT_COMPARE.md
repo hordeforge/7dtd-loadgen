@@ -89,14 +89,26 @@ world; the session-end `PASS joined` summary is too late).
 ## Player identities in run artifacts
 
 A dedicated server is shared infrastructure, so a real player can connect to a
-lab session. Two rules keep their identifiers out of the kept evidence:
+lab session, and the session runs on the operator's own machine. Two rules
+keep the identifiers out of the kept evidence:
 
 - `tools/sut_telnet.py` writes the transcript with each player name replaced by
   a session-stable pseudonym (`player-1`, `player-2`, ...) and `pltfmid`,
-  `crossid` and `ip` replaced by `redacted`. Row shape, row counts, entity
-  classes and the banner stay, so every axis above is unchanged.
+  `crossid`, `ip` and the greeting's `Server IP` replaced by `redacted`. Row
+  shape, row counts, entity classes and the rest of the banner stay, so every
+  axis above is unchanged.
 - `tools/sut_capture.py` keeps the player count only; it never copies a
-  name or an entity id into `surface.json`.
+  name or an entity id into `surface.json`, and it masks `Server IP` again on
+  the way in, so a transcript captured before that rule (or by another tool)
+  still cannot put a host address into a kept surface.
+
+The lab machine's account name is the other identifier the evidence carried: a
+boot line from either server holds the server's absolute paths, so the kept
+`surface.json`, `diff.json` and `REPORT.md` held `/home/<user>/...` for whoever
+ran the session. `tools/sut_capture.py` masks the home-directory component of
+every boot line. The rest of the path stays, so a boot line still says which
+data root the run used, and a stock-vs-zdtd difference between two boot lines
+is still a difference.
 
 ## Console commands in the snapshot driver
 

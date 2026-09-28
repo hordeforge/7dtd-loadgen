@@ -5,7 +5,8 @@ Both servers expose a stock-shaped console (stock: TelnetPort; zdtd:
 --admin-port mirrors the stock telnet greeting/commands), so one driver covers
 both sides of a comparison. Authenticates when the banner asks for a password,
 then runs the requested commands and writes the transcript to a file with every
-per-player identifier replaced by a session-stable pseudonym.
+per-player identifier replaced by a session-stable pseudonym and the session
+host's own address replaced by a placeholder.
 
 The password resolves from LOADGEN_TELNET_PASSWORD (SEVENDTD_TELNET_PASSWORD
 accepted as legacy alias). There is no flag for it: argv is world-readable in
@@ -43,6 +44,9 @@ IDENTITY_FIELD = re.compile(r"\b(pltfmid|crossid|ip)=([^,\s]*)")
 BRACKET_PLAYER_NAME = re.compile(r"(\[type=EntityPlayer[^,\]]*,\s*name=)([^,\]]+)(,)")
 # listplayers rows: "0. id=171, <name>, pos=(...)".
 ROW_NAME = re.compile(r"^(\s*\d+\. id=\d+, )(.+?)(, pos=)")
+# The greeting's own line: "Server IP:   118.189.191.239". The address belongs
+# to the machine that ran the session, and the comparisons never read it.
+BANNER_ADDRESS = re.compile(r"^(Server IP:[ \t]+)\S+")
 REDACTED = "redacted"
 
 # Console verbs whose second execution changes the world in a way the first
@@ -73,10 +77,11 @@ def redact_identities(text: str) -> str:
 
     A dedicated server is shared infrastructure: a real player who connects to
     a lab session puts their in-game name, platform id and IP in listplayers
-    and listents output. The comparisons read counts, class names and the
-    banner from these rows, never the identity, so the name is replaced by a
+    and listents output, and the greeting puts the session host's own address
+    in every transcript. The comparisons read counts, class names and the
+    banner keys, never an identity, so the name is replaced by a
     session-stable pseudonym (row-to-row correlation survives) and the
-    platform id and address by a placeholder.
+    platform id, the address and the host address by a placeholder.
     """
     aliases: dict[str, str] = {}
 
@@ -90,6 +95,7 @@ def redact_identities(text: str) -> str:
                 lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
         elif "deaths=" in line:
             line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
+        line = BANNER_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
         out.append(IDENTITY_FIELD.sub(lambda m: f"{m.group(1)}={REDACTED}", line))
     return "".join(out)
 

@@ -36,6 +36,10 @@ GAME_MINUTES_PER_DAY = 1440
 # grammar and save layout, so the name selects the rules for every axis.
 SUTS = ("stock", "zdtd")
 
+# Placeholder for a value the console announced that no comparison axis reads
+# and that identifies a person or a host rather than a behavior.
+REDACTED = "redacted"
+
 
 def _file_size(path: str) -> int | None:
     """Size of a listed file, or None when it vanished before the stat.
@@ -71,6 +75,11 @@ TELNET_CLOSE_RE = re.compile(
 # Stock server-log line: "<ts> <ts> SEV rest". Compiled once; this matcher runs
 # on every line of a soak log, which can reach hundreds of MB.
 STOCK_LOG_LINE = re.compile(r"^\S+ \S+ (INF|WRN|ERR|EXC|DBG) (.*)$")
+# Boot lines carry the server's absolute paths, so a kept surface (and the
+# report rendered from it) holds the operator's home directory and, through
+# it, the OS account name. The username component is replaced; the rest of the
+# path stays, so the line still shows which data root the run used.
+HOME_DIR = re.compile(r"(/home/|/Users/|/root/)[^/\s\"']+")
 
 
 def _collect_gamestats(text: str, gamestats: dict) -> None:
@@ -130,7 +139,8 @@ def log_categories(path, sut):
                             boot_lines[key] = line[:140]
                 elif "error:" in line.lower() or "[ERROR]" in line:
                     severity["ERR"] = severity.get("ERR", 0) + 1
-    out = {"severity": severity, "boot": boot_lines}
+    out = {"severity": severity,
+           "boot": {k: HOME_DIR.sub(r"\1<user>", v) for k, v in boot_lines.items()}}
     if sut == "stock":
         out["exec"] = exec_cmds
         if telnet_close_errors:
@@ -166,6 +176,12 @@ def telnet_snapshot(run_dir):
         m = re.search(re.escape(key) + r":?[ \t]+(\S[^\r\n]*)", text)
         if m:
             banner[key] = m.group(1).strip()
+    # The greeting's address is the machine that ran the session, and no axis
+    # reads it. Transcripts written before sut_telnet masked the greeting (and
+    # transcripts from a server this tool did not write) still carry it, so the
+    # capture masks it too: the kept surface never holds a host address.
+    if "Server IP" in banner:
+        banner["Server IP"] = REDACTED
     entities = []
     player_count = 0
     for line in text.splitlines():

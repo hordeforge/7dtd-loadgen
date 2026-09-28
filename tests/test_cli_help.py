@@ -37,7 +37,7 @@ def _run(script: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 @pytest.mark.parametrize("script", HAND_ROLLED)
 @pytest.mark.parametrize("flag", ["-h", "--help"])
-def test_help_goes_to_stdout_and_exits_zero(script: str, flag: str):
+def test_help_goes_to_stdout_and_exits_zero(script: str, flag: str) -> None:
     r = _run(script, flag)
     assert r.returncode == 0, r.stderr
     assert r.stdout.strip(), "help printed nothing to stdout"
@@ -45,7 +45,7 @@ def test_help_goes_to_stdout_and_exits_zero(script: str, flag: str):
 
 
 @pytest.mark.parametrize("script", HAND_ROLLED)
-def test_wrong_arity_still_reports_usage_on_stderr(script: str):
+def test_wrong_arity_still_reports_usage_on_stderr(script: str) -> None:
     r = _run(script, "a", "b", "c", "d", "e")
     assert r.returncode == 2, r.stdout
     assert r.stdout == ""
@@ -60,7 +60,7 @@ ARGPARSE_TOOLS = [
 
 
 @pytest.mark.parametrize("script", ARGPARSE_TOOLS)
-def test_argparse_help_carries_the_module_docstring(script: str):
+def test_argparse_help_carries_the_module_docstring(script: str) -> None:
     r = _run(script, "--help")
     assert r.returncode == 0, r.stderr
     assert r.stderr == ""

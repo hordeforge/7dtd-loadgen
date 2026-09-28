@@ -29,7 +29,7 @@ def scratch(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return path
 
 
-def test_golden_wire_cli(scratch: Path):
+def test_golden_wire_cli(scratch: Path) -> None:
     r = _run(["--golden-wire"], timeout=30)
     out = r.stdout + r.stderr
     (scratch / "golden_wire.txt").write_text(out, encoding="utf-8")
@@ -46,7 +46,7 @@ def test_relpos_constants_in_source():
     assert "EntityRelPosAndRotNoQ = 36" not in src
 
 
-def test_self_test_join_respawn_loop(scratch: Path):
+def test_self_test_join_respawn_loop(scratch: Path) -> None:
     r = _run(["--self-test-join", "--actions", "24", "--seed", "7"], timeout=40)
     full = (r.stdout or "") + (r.stderr or "")
     (scratch / "self_test_join.txt").write_text(full, encoding="utf-8")
@@ -84,7 +84,7 @@ def test_observer_flags_are_documented_and_require_jsonl_output():
     assert "invalid --events-jsonl 'missing'" in output
 
 
-def test_unwritable_events_jsonl_fails_clean(scratch: Path):
+def test_unwritable_events_jsonl_fails_clean(scratch: Path) -> None:
     """An unwritable --events-jsonl path is a usage error (exit 2, named flag),
     not an unhandled-exception crash after validation."""
     blocked = scratch / "events_jsonl_blocked"

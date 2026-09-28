@@ -137,7 +137,9 @@ def test_banner_counts_and_axes_survive_a_well_formed_transcript(tmp_path: Path)
     snap = sut_capture.telnet_snapshot(str(_write_transcript(tmp_path, text)))
 
     assert snap is not None
-    assert snap["banner"]["Server IP"] == "127.0.0.1"
+    # The greeting's address is the session host's, not a comparable axis, so
+    # the surface keeps the key and drops the value.
+    assert snap["banner"]["Server IP"] == "redacted"
     assert snap["entities"]["count"] == 2
     assert snap["entities"]["alive"] == 1
     assert snap["entities"]["dead"] == 1

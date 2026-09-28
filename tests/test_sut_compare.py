@@ -194,6 +194,29 @@ def test_full_comparison_pipeline(tmp_path):
     assert "layer scores: cpu=20, sync=10" in report
 
 
+def test_boot_evidence_drops_the_operators_home_directory(tmp_path):
+    """A boot line carries the server's absolute paths, so a kept surface would
+    hold the account name that owns the lab machine. The username component is
+    masked; the rest of the path stays, so the line still names the data root
+    the run used."""
+    run_dir = tmp_path / "run"
+    run_dir.mkdir(parents=True)
+    (run_dir / "server.log").write_text(
+        "zdtd: config port=27120 max_players=64\n"
+        "  map=/home/dana/.local/share/Steam/steamapps/common/7 Days to Die\n"
+        "  save=/Users/dana/Desktop/loadgen/workspace/run/zdtd/world\n",
+        encoding="utf-8",
+    )
+    r = _py([str(TOOLS / "sut_capture.py"), str(run_dir), "zdtd"])
+    assert r.returncode == 0, r.stderr
+    surface = json.loads(r.stdout)
+    assert "dana" not in json.dumps(surface)
+    assert surface["log"]["boot"]["map="] == (
+        "  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die")
+    assert surface["log"]["boot"]["save="] == (
+        "  save=/Users/<user>/Desktop/loadgen/workspace/run/zdtd/world")
+
+
 def test_save_total_bytes_excludes_the_region_file_count(tmp_path):
     """Every value in the save inventory is a size in bytes. The zdtd Region
     chunk count is a different quantity: keeping it in the same map summed a

@@ -26,10 +26,10 @@ Boot evidence per side:
 - `stock.StartGame done` = `StartGame done`
 - `stock.createWorld` = `createWorld: Navezgane, Navezgane (src: GameData, DeviceLocal), horde-lite_stock, GameModeSurvival`
 - `zdtd.config port=` = `zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8085 webui_port=0 password=open auth`
-- `zdtd.dtm=` = `  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Nave`
-- `zdtd.map=` = `  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Nave`
-- `zdtd.quests=` = `  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/q`
-- `zdtd.save=` = `  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/horde-lite/zdtd/world`
+- `zdtd.dtm=` = `  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Nave`
+- `zdtd.map=` = `  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Nave`
+- `zdtd.quests=` = `  quests=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/q`
+- `zdtd.save=` = `  save=/home/<user>/Desktop/7dtd/7dtd-loadgen/workspace/comparison/horde-lite/zdtd/world`
 
 ## Telnet snapshot (gettime / listents / listplayers)
 

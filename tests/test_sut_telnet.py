@@ -80,6 +80,29 @@ def test_entity_class_names_are_not_pseudonymized():
     assert "player-" not in out
 
 
+def test_transcript_drops_the_session_host_address():
+    # The greeting announces the address the session ran on. It is the
+    # operator's own host on a lab machine, no axis compares it, and the
+    # transcript is committed as run evidence.
+    out = sut_telnet.redact_identities(
+        "Server IP:   118.189.191.239\nServer port: 26900\n"
+        "Max players: 64\nWorld:       Navezgane\n"
+    )
+    assert "118.189.191.239" not in out
+    assert "Server IP:   redacted" in out
+    # Every other banner key is untouched: the greeting stays comparable.
+    assert "Server port: 26900" in out
+    assert "Max players: 64" in out
+    assert "World:       Navezgane" in out
+
+
+def test_a_valueless_address_line_is_left_alone():
+    # No value to mask: the line must not gain one, or the surface would
+    # report an address the server never announced.
+    out = sut_telnet.redact_identities("Server IP:\nServer port: 26900\n")
+    assert "Server IP:" in out
+    assert "redacted" not in out
+
 
 def test_read_commands_are_not_mutating():
     for cmd in ("gettime", "getgamestat", "listents", "listplayers", "apm dump",

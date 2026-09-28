@@ -106,10 +106,10 @@
    "zdtd": {
     "boot": {
      "config port=": "zdtd: config port=27120 max_players=64 view_radius=7 admin_port=8082 webui_port=0 password=open authority=correct wire_chunks=on",
-     "dtm=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen08k01 dtm=8192x8192 spawn=(789,46,289)",
-     "map=": "  map=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen08k01 dtm=8192x8192 spawn=(789,46,289)",
-     "quests=": "  quests=/home/maci/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
-     "save=": "  save=/home/maci/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-fast-pregen08k01/zdtd/world"
+     "dtm=": "  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen08k01 dtm=8192x8192 spawn=(789,46,289)",
+     "map=": "  map=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds/Pregen08k01 dtm=8192x8192 spawn=(789,46,289)",
+     "quests=": "  quests=/home/<user>/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Config/quests.xml defs=99 starter=quest_whiteRiv",
+     "save=": "  save=/home/<user>/Desktop/7dtd/7dtd-loadgen/workspace/comparison/join-fast-pregen08k01/zdtd/world"
     },
     "severity": {
      "INF": 71,
@@ -199,7 +199,7 @@
      "Game mode": "GameModeSurvival",
      "Game name": "join-fast-pregen08k01_stock",
      "Max players": "64",
-     "Server IP": "118.189.191.239",
+     "Server IP": "redacted",
      "Server port": "26900",
      "Server version": "V 3.1.0 (b14) Compatibility Version: V 3.1.0",
      "World": "Pregen08k01"

@@ -132,6 +132,24 @@ under **Changed** with their migration path.
   `CHAT chars=<n>` instead of the server's chat text, which is player-typed
   free text plus the names the server puts in death messages. Comparison
   axes (counts, entity classes, banner, gamestats) are unchanged.
+- The session host's own address no longer reaches kept run evidence. The
+  console greeting's `Server IP` is the machine the lab session ran on, no
+  comparison axis reads it, and it was committed verbatim in the `telnet.txt`
+  transcripts, `surface.json` and `diff.json` of every stock run under
+  `workspace/comparison/`. `tools/sut_telnet.py` masks it when it writes the
+  transcript, `tools/sut_capture.py` masks it again on the way into the
+  surface (a transcript written before the rule still cannot leak it), and
+  the committed run artifacts were rewritten to `redacted`. The rest of the
+  greeting, and every comparison axis, is unchanged.
+- Kept run evidence no longer carries the lab machine's account name. A boot
+  line from either server holds the server's absolute paths, so `surface.json`,
+  `diff.json` and `REPORT.md` held `/home/<user>/...` for the operator who ran
+  the run; the committed stock APM summaries held the same prefix in their
+  process metadata. `tools/sut_capture.py` now masks the home-directory
+  component of every boot line (the rest of the path stays, so the line still
+  names the data root), and the committed artifacts were rewritten to
+  `/home/<user>/`. Comparison axes are unchanged: a mask is deterministic, so
+  a stock-vs-zdtd boot-line difference is still a difference.
 - The per-life dynamite grant is issued over one cohort-shared telnet console
   by a background worker. Bots no longer open a console connection and block
   their action loop on a round trip once per life.
