@@ -17,13 +17,41 @@ timeout reads downstream as a measured value.
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
+from typing import TypeVar
 
 MIN_PORT = 1
 MAX_PORT = 65535
 
+_Number = TypeVar("_Number", int, float)
+
 
 def env_str(name: str, default: str = "") -> str:
     return os.environ.get(name) or default
+
+
+def _env_number(
+    name: str,
+    cast: Callable[[str], _Number],
+    noun: str,
+    default: _Number | None,
+    minimum: _Number | None,
+    maximum: _Number | None,
+) -> _Number:
+    raw = os.environ.get(name)
+    if not raw:
+        if default is None:
+            raise SystemExit(f"{name} is required (set it or pass a default)")
+        return default
+    try:
+        value = cast(raw)
+    except ValueError as e:
+        raise SystemExit(f"{name}={raw!r} is not {noun}") from e
+    if minimum is not None and value < minimum:
+        raise SystemExit(f"{name}={value} is below the minimum {minimum}")
+    if maximum is not None and value > maximum:
+        raise SystemExit(f"{name}={value} is above the maximum {maximum}")
+    return value
 
 
 def env_int(
@@ -32,20 +60,7 @@ def env_int(
     minimum: int | None = None,
     maximum: int | None = None,
 ) -> int:
-    raw = os.environ.get(name)
-    if not raw:
-        if default is None:
-            raise SystemExit(f"{name} is required (set it or pass a default)")
-        return default
-    try:
-        value = int(raw)
-    except ValueError as e:
-        raise SystemExit(f"{name}={raw!r} is not an integer") from e
-    if minimum is not None and value < minimum:
-        raise SystemExit(f"{name}={value} is below the minimum {minimum}")
-    if maximum is not None and value > maximum:
-        raise SystemExit(f"{name}={value} is above the maximum {maximum}")
-    return value
+    return _env_number(name, int, "an integer", default, minimum, maximum)
 
 
 def env_float(
@@ -54,20 +69,7 @@ def env_float(
     minimum: float | None = None,
     maximum: float | None = None,
 ) -> float:
-    raw = os.environ.get(name)
-    if not raw:
-        if default is None:
-            raise SystemExit(f"{name} is required (set it or pass a default)")
-        return default
-    try:
-        value = float(raw)
-    except ValueError as e:
-        raise SystemExit(f"{name}={raw!r} is not a number") from e
-    if minimum is not None and value < minimum:
-        raise SystemExit(f"{name}={value} is below the minimum {minimum}")
-    if maximum is not None and value > maximum:
-        raise SystemExit(f"{name}={value} is above the maximum {maximum}")
-    return value
+    return _env_number(name, float, "a number", default, minimum, maximum)
 
 
 def env_port(name: str, default: int) -> int:

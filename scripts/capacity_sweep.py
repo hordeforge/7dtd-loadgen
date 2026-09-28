@@ -34,6 +34,11 @@ APM_DIR = Path(
 )
 
 
+# Consecutive over-budget rounds that end the sweep. A single over-budget
+# round is noise; the reported break point is the first round of that run.
+SUSTAINED_BREAK_ROUNDS = 2
+
+
 def sample_row(zombies: int, frame_ms: float, budget: float) -> dict:
     """One curve row. over_budget is decided from the raw frame reading, never
     from the rounded display value: a 54.96 ms frame at a 55 ms budget rounds
@@ -52,6 +57,23 @@ def capacity_ceiling(curve: list[dict]) -> int:
     """
     inside = [p["zombies"] for p in curve if not p["over_budget"]]
     return max(inside) if inside else 0
+
+
+def sustained_break_at(curve: list[dict]) -> int | None:
+    """Zombie count of the first round of the trailing over-budget run, or None
+    when the run is shorter than the stop threshold.
+
+    Not the last row: the loop stops on the SUSTAINED_BREAK_ROUNDS-th
+    consecutive break, so the final row is the last of the run and naming it
+    the first reported a count the ceiling had already passed.
+    """
+    first_over = len(curve)
+    for i, row in enumerate(curve):
+        if not row["over_budget"]:
+            first_over = i + 1
+    if len(curve) - first_over < SUSTAINED_BREAK_ROUNDS:
+        return None
+    return curve[first_over]["zombies"]
 
 
 def frame_alive():
@@ -88,7 +110,7 @@ def main():
         curve = []
         over = 0
         target = 0
-        while target < MAX_Z and over < 2:
+        while target < MAX_Z and over < SUSTAINED_BREAK_ROUNDS:
             target += STEP
             B.spawn_endgame(target)
             time.sleep(15)
@@ -116,9 +138,11 @@ def main():
 
         B.log("=== CEILING REACHED ===")
         ceiling = capacity_ceiling(curve)
-        last_z = curve[-1]["zombies"] if curve else 0
+        broke_at = sustained_break_at(curve)
+        break_note = (f"first sustained break at ~{broke_at}" if broke_at is not None
+                      else "no sustained over-budget break recorded")
         B.log(f"  CAPACITY: {joined} players sustain ~{ceiling} endgame zombies at 20 TPS "
-              f"(first sustained break at ~{last_z})")
+              f"({break_note})")
         B.log(f"  curve: {json.dumps(curve)}")
 
         if CAPTURE:

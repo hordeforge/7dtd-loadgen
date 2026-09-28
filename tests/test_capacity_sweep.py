@@ -102,3 +102,29 @@ def test_ceiling_is_zero_when_every_round_broke_the_budget():
     curve = [capacity_sweep.sample_row(40, 61.0, 55.0)]
     assert capacity_sweep.capacity_ceiling(curve) == 0
     assert capacity_sweep.capacity_ceiling([]) == 0
+
+
+def test_break_point_is_the_first_round_of_the_over_budget_run():
+    curve = [
+        capacity_sweep.sample_row(40, 48.0, 55.0),
+        capacity_sweep.sample_row(80, 54.96, 55.0),
+        capacity_sweep.sample_row(120, 61.0, 55.0),
+        capacity_sweep.sample_row(160, 70.0, 55.0),
+    ]
+    # The loop stops on the second consecutive break, so the last row is 160;
+    # the first sustained break is the round before it.
+    assert capacity_sweep.sustained_break_at(curve) == 120
+    assert capacity_sweep.capacity_ceiling(curve) == 80
+
+
+def test_no_break_point_without_a_sustained_run():
+    # A sweep stopped by unreadable telemetry or by MAX_Z can end on a single
+    # over-budget round; that round is not a confirmed break.
+    curve = [
+        capacity_sweep.sample_row(40, 48.0, 55.0),
+        capacity_sweep.sample_row(80, 61.0, 55.0),
+    ]
+    assert capacity_sweep.sustained_break_at(curve) is None
+    assert capacity_sweep.sustained_break_at([]) is None
+    assert capacity_sweep.sustained_break_at(
+        [capacity_sweep.sample_row(40, 61.0, 55.0)]) is None
