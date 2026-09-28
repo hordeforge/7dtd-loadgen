@@ -23,7 +23,8 @@ public static class ActionLoop
 
     public enum BotMode
     {
-        /// <summary>Walk one heading + occasional jumps until world death.</summary>
+        /// <summary>Walk, re-heading every 12-39 steps, plus occasional jumps
+        /// until world death.</summary>
         Wander = 0,
         /// <summary>Walk/jump/turn/crouch mix until world death (or client death if requested).</summary>
         Mixed = 1,
@@ -110,7 +111,10 @@ public static class ActionLoop
         public int CohortSize { get; set; } = 1;
         /// <summary>Wall-clock cap for the action loop (0 = no extra cap beyond ShouldStop).</summary>
         public int MaxLifetimeMs { get; set; } = 0;
-        /// <summary>Dynamite cap per life (Demolition mode raises this).</summary>
+        /// <summary>Dynamite cap per life. The Demolition auto-raise to
+        /// <see cref="DemolitionMaxDynamitePerLife"/> is applied by the caller
+        /// (Program.Join), not here, so a library caller that only sets
+        /// <see cref="Mode"/> to Demolition still gets this cap.</summary>
         public int MaxDynamitePerLife { get; set; } = DefaultMaxDynamitePerLife;
 
         /// <summary>Returns current LiteNetLib RTT in ms, or -1 when unknown.</summary>
@@ -168,9 +172,11 @@ public static class ActionLoop
         // Stay near spawn so telnet/AI zombies can reach the player (empty worlds have no POI attractors).
         float homeX = x;
         float homeZ = z;
-        // Wide leash so bots can walk into POIs/sleeper volumes (height-test had none).
-        // Traverse bots roam far to stream fresh chunks + tile entities continuously
-        // (the chunk-bandwidth + TileEntity.InstantiateFromRead churn bottleneck).
+        // Home leash. Traverse bots roam far to stream fresh chunks + tile
+        // entities continuously (the chunk-bandwidth + TileEntity.InstantiateFromRead
+        // churn bottleneck); every other mode stays near spawn so telnet/AI
+        // zombies can reach the player. For those modes the 45 m turn-home in the
+        // step loop binds first, so only Traverse ever sees this radius.
         float leashRadius = opt.Mode == BotMode.Traverse
             ? 20000f
             : 180f + (float)rng.NextDouble() * 120f;

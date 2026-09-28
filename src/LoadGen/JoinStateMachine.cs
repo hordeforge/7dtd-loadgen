@@ -19,10 +19,9 @@ public enum JoinStage
     Disconnected,
 }
 
-/// <summary>Why a bot's current life ended. This was a free-form string on the
-/// state plus a second, near-identical enum inside ActionLoop kept in step by a
-/// hand-written translation table whose fallback silently relabelled an
-/// unrecognised cause as a world death. One enum, one meaning.</summary>
+/// <summary>Why a bot's current life ended. One enum, one meaning: the state
+/// and the action loop report the same cause rather than translating between
+/// parallel representations.</summary>
 public enum DeathCause
 {
     None = 0,

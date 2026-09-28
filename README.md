@@ -352,8 +352,8 @@ death - join/handshake health), `join-burst` (24 bots, simultaneous joins,
 short steps), `steady-wander` (8 bots, endless wander soak), `death-soak`
 (6 combat bots, self-kill + respawn loop), `mixed` (12 weighted wander/combat
 with deaths). Presets apply before the arg loop, so an explicit flag on the
-same command line overrides the profile; unknown names exit 3 with the valid
-list.
+same command line overrides the profile; an unknown name exits 2 and prints the
+valid list.
 
 Live tests can create world pressure through server telnet. Relevant options
 include `--no-spawn-zombies`, `--telnet-host`, `--telnet-port`
@@ -383,7 +383,7 @@ mid-run or silently changing gate semantics.
 | `LOADGEN_MODE` | `probe` | `probe` \| `join` \| `self-test` \| `self-test-join` |
 | `LOADGEN_HOST` | `127.0.0.1` | target server host |
 | `LOADGEN_PORT` | `26902` | LiteNet data port = ServerPort + 2 |
-| `LOADGEN_COUNT` | `2` | cohort size, >= 1 |
+| `LOADGEN_COUNT` | `2` | cohort size, >= 1 (the runner caps at 1000) |
 | `LOADGEN_CONCURRENCY` | `0` (auto) | live-bot cap; 0 = count for joins |
 | `LOADGEN_TIMEOUT` | `8000` (`make join`: `3600000`) | per-run wall clock, ms > 0 |
 | `LOADGEN_ACTIONS` | `24` | steps after join; 0 = endless wander until death/timeout |

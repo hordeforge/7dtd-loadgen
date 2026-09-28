@@ -1228,7 +1228,9 @@ public sealed class GameJoinClient
     /// <summary>Server-controlled chat/GMSG text for logging and death-word
     /// matching. Both paths neutralize control characters: a hostile server must
     /// not inject newlines or terminal escapes into line-parsed logs (the
-    /// harness greps PASS/FAIL lines), while letters survive for matching.</summary>
+    /// harness greps PASS/FAIL lines). The length-prefixed path keeps every
+    /// non-control character, so non-ASCII text still matches; the fallback byte
+    /// scan keeps printable ASCII only.</summary>
     internal static string ExtractPrintable(byte[] body)
     {
         if (body.Length == 0) return "";

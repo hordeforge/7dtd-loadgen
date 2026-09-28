@@ -24,7 +24,9 @@ internal readonly record struct CohortCounters(
         a.TotalRespawns + b.TotalRespawns, a.TotalRejoins + b.TotalRejoins);
 
     /// <summary>Cohort-wide fold of every bot's final state snapshot in one
-    /// pass; every counter accumulates as long so the totals cannot wrap.</summary>
+    /// pass. Action and death totals accumulate as long so a 1000-bot multi-day
+    /// run cannot wrap them; <see cref="DiedClients"/> is an int because it is
+    /// bounded by the cohort size.</summary>
     public static CohortCounters Sum(IEnumerable<JoinStateMachine> states)
     {
         CohortCounters total = default;

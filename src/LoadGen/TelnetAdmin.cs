@@ -299,10 +299,11 @@ public sealed partial class TelnetAdmin : IDisposable
         }
     }
 
-    /// <summary>Send one admin command and return the accumulated console text.
-    /// Not just this command's reply: the console buffer is drained, so a caller
-    /// may still see output from earlier commands. Parsers must therefore match
-    /// what they need and ignore the rest. Returns "" when not connected.</summary>
+    /// <summary>Send one admin command and return the console text that arrived
+    /// for it. The buffer is cleared first, so nothing from an earlier command
+    /// leaks into the result, but a reply can still overrun the read window and
+    /// spill into the next call. Parsers must match what they need and ignore
+    /// the rest. Returns "" when not connected.</summary>
     public string Exec(string cmd)
     {
         if (_stream == null || _tcp is not { Connected: true }) return "";
@@ -519,8 +520,8 @@ public sealed partial class TelnetAdmin : IDisposable
                 else if (sawData && sw.ElapsedMilliseconds - lastDataMs >= ReadQuietGapMs)
                 {
                     // The console stopped talking. Output that arrives after
-                    // the window closes stays in _buf and is returned by the
-                    // next Exec, exactly as when a reply overran waitMs.
+                    // the window closes stays in _buf, but the next Exec clears
+                    // _buf before it writes, so the late tail is dropped.
                     break;
                 }
                 else

@@ -914,10 +914,10 @@ public static partial class Program
         };
 
     /// <summary>Cancellable sleep that reports whether to keep looping.
-    /// .Wait() wraps delay cancellation in AggregateException, which neither an
-    /// OperationCanceledException catch nor the token-gated fault catch sees:
-    /// letting it propagate would fault the pressure task on every clean
-    /// teardown and make AwaitTeardown log a spurious ERROR into the run log.</summary>
+    /// The catch is catch-all on purpose: .Wait() wraps delay cancellation in
+    /// AggregateException, and letting that propagate would fault the pressure
+    /// task on every clean teardown and make AwaitTeardown log a spurious ERROR
+    /// into the run log. The token, not the exception, decides the answer.</summary>
     static bool NappableDelay(int ms, CancellationToken ct)
     {
         try { Task.Delay(ms, ct).Wait(); }

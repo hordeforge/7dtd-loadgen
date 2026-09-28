@@ -105,9 +105,9 @@ public static partial class Program
         return true;
     }
 
-    /// <summary>Cohort size. A 0 or negative --count used to be silently
-    /// raised to 1, so a LOADGEN_COUNT=0 typo produced a one-bot run whose
-    /// stats json reads downstream as a measured one.</summary>
+    /// <summary>Cohort size. 0 or negative is rejected rather than silently
+    /// raised to 1: a LOADGEN_COUNT=0 typo would otherwise produce a one-bot run
+    /// whose stats json reads downstream as a measured one.</summary>
     public static bool IsValidCount(int count) => count >= 1;
 
     /// <summary>--timeout as a positive millisecond budget within
@@ -215,12 +215,12 @@ public static partial class Program
         "--timeout",
     };
 
-    /// <summary>Reject an argv token that looks like a flag but is not one. The
-    /// parser ignores arguments it does not recognize, so a typo (<c>--concurency</c>)
-    /// or a flag from a newer script used to start the default probe workload
-    /// and exit 0: a silent change in what the server is asked to absorb, which
-    /// invalidates a benchmark rather than failing it. Same contract as
-    /// <see cref="RemovedFlag"/>. A negative number is a value, not a flag.</summary>
+    /// <summary>Reject an argv token that looks like a flag but is not one. A
+    /// typo (<c>--concurency</c>) or a flag from a newer script would otherwise
+    /// start the default probe workload and exit 0: a silent change in what the
+    /// server is asked to absorb, which invalidates a benchmark rather than
+    /// failing it. Same contract as <see cref="RemovedFlag"/>. A negative number
+    /// is a value, not a flag.</summary>
     internal static string? UnknownFlag(string[] args)
     {
         foreach (var a in args)

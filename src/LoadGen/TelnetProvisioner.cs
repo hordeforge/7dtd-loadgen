@@ -2,11 +2,10 @@ namespace SevenDTD.LoadGen;
 
 /// <summary>
 /// Cohort-shared telnet console for per-life server provisioning (the dynamite
-/// grant). Each bot used to open its own TCP session and block its action loop
-/// for the full round trip, so at cohort scale every life cost a connection
-/// plus a blocking read, and the dedicated's single console serialized all of
-/// them. One connection, one worker, one bounded queue: a bot enqueues and
-/// keeps walking, which is what a load generator should be doing.
+/// grant). One connection, one worker, one bounded queue: a bot enqueues and
+/// keeps walking, which is what a load generator should be doing. Per-bot
+/// sessions would instead cost every life a connection plus a blocking read, and
+/// the dedicated's single console would serialize all of them.
 /// </summary>
 public sealed class TelnetProvisioner : IDisposable
 {

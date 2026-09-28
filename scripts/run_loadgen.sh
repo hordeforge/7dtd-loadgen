@@ -21,10 +21,10 @@ MIN_PASS="${LOADGEN_MIN_PASS_RATE:-0.95}"
 RAMP_MS="${LOADGEN_RAMP_MS:-0}"
 QUIET="${LOADGEN_QUIET:-}"
 SELF_TEST="${LOADGEN_SELF_TEST:-0}"
-# MODE: probe (default) | join | self-test-join
+# MODE: probe (default) | join | self-test | self-test-join
 MODE="${LOADGEN_MODE:-probe}"
 ACTIONS="${LOADGEN_ACTIONS:-24}"
-# Bot behaviour (join only). Empty = CLI scale defaults (wander@1, mixed@count>=2)
+# Bot behaviour (join only). Empty = CLI default (wander until world death).
 BOT_MODE="${LOADGEN_BOT_MODE:-}"
 # Weighted per-bot mode mix, e.g. "traverse:35,combat:20,bait:15". Overrides BOT_MODE.
 BOT_MIX="${LOADGEN_BOT_MIX:-}"
