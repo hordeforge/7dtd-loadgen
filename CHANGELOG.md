@@ -32,6 +32,16 @@ under **Changed** with their migration path.
   only the generated load differs, which quietly invalidates a comparison.
   `--mixed-actions` is now rejected with exit code 2 and a message naming
   `--mode mixed`. Scripts that never passed the flag are unaffected.
+- `listplayers` parsing no longer scans the whole response per row. The
+  `id=...`/`health=...`/`pltfmid=...` patterns chained unbounded `.*?` gaps
+  with `RegexOptions.Singleline`, so a response missing the tail fields cost
+  O(n^2): 16 KB of console text spent about 9 s inside one pressure wave, and
+  the admin port is unauthenticated. Rows are now field-scanned inside a
+  bounded 512-char window, with an id that overflows Int32 dropped instead of
+  wrapping into a killable one.
+- `tools/sut_capture.py` populates `reportedTotal` again. `TOTAL_ROW` was
+  anchored with `^` but compiled without `re.MULTILINE`, so it only matched
+  when the `Total of N in the game` line was the first line of the transcript.
 
 ## [0.4.2] - 2026-09-21
 

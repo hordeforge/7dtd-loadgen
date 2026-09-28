@@ -44,7 +44,7 @@ ENTITY_ROW = re.compile(r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\blifetime=\S+, rem
 # bracket form so the per-side type breakdown is meaningful.
 BRACKET_TYPE = re.compile(r"^\[type=([^,\]]+)")
 PLAYER_ROW = re.compile(r"^\s*(\d+)\. id=(\d+), (.+?), pos=.*\bdeaths=\d+")
-TOTAL_ROW = re.compile(r"^Total of (\d+) in the game")
+TOTAL_ROW = re.compile(r"^Total of (\d+) in the game", re.MULTILINE)
 GAMESTAT_LOG = re.compile(r"GameStat\.(\w+) = (\S+)")
 BOOT_KEYS = ("createWorld", "GameState =", "Loading world", "GameStat.", "GamePref.",
              "StartGame done")

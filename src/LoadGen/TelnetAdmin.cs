@@ -28,20 +28,188 @@ public sealed partial class TelnetAdmin : IDisposable
         _log = log;
     }
 
-    // listplayers output scales with cohort size (one row per player) and is
-    // re-parsed on every pressure wave; source-generated regexes keep that
-    // scan compiled instead of re-interpreting the pattern per call.
-    [GeneratedRegex(@"id\s*=\s*(\d+),.*?health\s*=\s*(\d+).*?pltfmid\s*=\s*Local_([^,\s]+).*?ip\s*=\s*127\.",
-        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private static partial Regex LivePlayerRowRegex();
+    /// <summary>How far past an "id=" anchor one listplayers row may extend.
+    /// Console rows are a few hundred characters; nothing real comes close.</summary>
+    internal const int MaxRowScanChars = 512;
 
-    [GeneratedRegex(@"id\s*=\s*(\d+).*?Local_(REFake\d+).*?ip=127",
-        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private static partial Regex FallbackPlayerRowRegex();
+    // Row parsers below walk the response field by field inside a bounded
+    // window instead of running an unbounded `.*?` chain over the whole
+    // response. The chain retried the full remaining text at every start
+    // position, so a response without the tail fields cost O(n^2): 16 KB of
+    // server-controlled text spent 9 s in one SpawnZombiesNearPlayers call,
+    // and the response is unauthenticated telnet output. Field scanning keeps
+    // the cost linear in the response length.
 
-    [GeneratedRegex(@"id\s*=\s*(\d+),.*?health\s*=\s*(\d+)",
-        RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private static partial Regex PlayerIdHealthRegex();
+    /// <summary>Step over `name '='`, whitespace-tolerant, at or after
+    /// <paramref name="pos"/>. False when the field is not in the row.</summary>
+    static bool TrySkipField(ReadOnlySpan<char> row, ref int pos, string name)
+    {
+        int at = row.Slice(pos).IndexOf(name, StringComparison.OrdinalIgnoreCase);
+        if (at < 0) return false;
+        pos += at + name.Length;
+        while (pos < row.Length && char.IsWhiteSpace(row[pos])) pos++;
+        if (pos >= row.Length || row[pos] != '=') return false;
+        pos++;
+        while (pos < row.Length && char.IsWhiteSpace(row[pos])) pos++;
+        return true;
+    }
+
+    /// <summary>Read a bare unsigned decimal at <paramref name="pos"/>. False
+    /// when there is no digit there or the value overflows Int32 (a crafted
+    /// row must not wrap into a small, killable id).</summary>
+    static bool TryReadUInt(ReadOnlySpan<char> row, int pos, out int value, out int end)
+    {
+        value = 0;
+        end = pos;
+        long acc = 0;
+        int i = pos;
+        while (i < row.Length && row[i] is >= '0' and <= '9')
+        {
+            acc = acc * 10 + (row[i] - '0');
+            if (acc > int.MaxValue) return false;
+            i++;
+        }
+        if (i == pos) return false;
+        value = (int)acc;
+        end = i;
+        return true;
+    }
+
+    /// <summary>Read a token of non-separator characters at
+    /// <paramref name="pos"/> (listplayers terminates tokens with ',' or
+    /// whitespace). False on an empty token.</summary>
+    static bool TryReadToken(ReadOnlySpan<char> row, int pos, out string token, out int end)
+    {
+        token = "";
+        end = pos;
+        int i = pos;
+        while (i < row.Length && row[i] != ',' && !char.IsWhiteSpace(row[i])) i++;
+        if (i == pos) return false;
+        token = row.Slice(pos, i - pos).ToString();
+        end = i;
+        return true;
+    }
+
+    /// <summary>Advance to the next "id" field anchor at or after
+    /// <paramref name="pos"/>.</summary>
+    static int FindIdAnchor(ReadOnlySpan<char> outp, int pos)
+    {
+        while (true)
+        {
+            int at = outp.Slice(pos).IndexOf("id", StringComparison.OrdinalIgnoreCase);
+            if (at < 0) return -1;
+            int i = pos + at + 2;
+            while (i < outp.Length && char.IsWhiteSpace(outp[i])) i++;
+            if (i < outp.Length && outp[i] == '=') return pos + at;
+            pos = pos + at + 2;
+        }
+    }
+
+    /// <summary>One row's fields, as far as they could be read. A field the
+    /// console did not print (or that the server garbled) stays absent rather
+    /// than defaulting to a plausible value.</summary>
+    internal readonly record struct PlayerRow(
+        bool HasId, int Id, bool HasHealth, int Health, bool HasPlatform, string Token, bool LoopbackIp);
+
+    /// <summary>Field-scan a raw listplayers response, one bounded window per
+    /// "id=" anchor. <see cref="NextPos"/> is where the next scan starts (past
+    /// the last field this row actually read, so rows stay non-overlapping the
+    /// way Regex.Matches was); the callers below apply their own row
+    /// acceptance rules.</summary>
+    internal static IEnumerable<(PlayerRow Row, int NextPos)> ScanPlayerRows(string outp)
+    {
+        int pos = 0;
+        while (pos < outp.Length)
+        {
+            int anchor = FindIdAnchor(outp, pos);
+            if (anchor < 0) yield break;
+            int rowEnd = Math.Min(outp.Length, anchor + MaxRowScanChars);
+            ReadOnlySpan<char> row = outp.AsSpan(anchor, rowEnd - anchor);
+
+            bool hasId = false, hasHealth = false, hasPlatform = false, loopback = false;
+            int id = 0, health = 0, p = 0, consumed = 2;
+            string token = "";
+            if (TrySkipField(row, ref p, "id") && TryReadUInt(row, p, out id, out int afterId))
+            {
+                hasId = true;
+                consumed = Math.Max(consumed, afterId);
+                if (afterId < row.Length && row[afterId] == ','
+                    && TrySkipField(row, ref afterId, "health"))
+                    hasHealth = TryReadUInt(row, afterId, out health, out int afterHealth);
+                consumed = Math.Max(consumed, afterId);
+            }
+            if (TrySkipField(row, ref p, "pltfmid")
+                && row.Slice(p).StartsWith(PlatformPrefix, StringComparison.OrdinalIgnoreCase)
+                && TryReadToken(row, p + PlatformPrefix.Length, out string t, out int afterToken))
+            {
+                hasPlatform = true;
+                token = t;
+                consumed = Math.Max(consumed, afterToken);
+            }
+            if (TrySkipField(row, ref p, "ip"))
+            {
+                loopback = row.Slice(p).StartsWith(LoopbackPrefix, StringComparison.OrdinalIgnoreCase);
+                consumed = Math.Max(consumed, p);
+            }
+            consumed = Math.Min(consumed, row.Length);
+
+            yield return (new PlayerRow(hasId, id, hasHealth, health, hasPlatform, token, loopback),
+                          anchor + consumed);
+            pos = anchor + consumed;
+        }
+    }
+
+    const string PlatformPrefix = "Local_";
+    const string FallbackTokenPrefix = "REFake";
+    const string LoopbackPrefix = "127.";
+
+    /// <summary>Living connected players from a raw listplayers response: id,
+    /// health, platform id and the loopback ip the console prints. Only rows
+    /// whose token passes <see cref="IsSafeCommandToken"/> are returned: the
+    /// token is server-controlled text that later becomes an admin command
+    /// argument, so an unsafe one is dropped, never sanitized.</summary>
+    internal static List<(int id, string token)> ParseLivePlayerRows(string outp, Action<string>? log = null)
+    {
+        var rows = new List<(int, string)>();
+        foreach (var (r, _) in ScanPlayerRows(outp))
+        {
+            if (!r.HasId || r.Id <= 0 || !r.HasHealth || r.Health <= 0
+                || !r.HasPlatform || !r.LoopbackIp)
+                continue;
+            if (IsSafeCommandToken(r.Token))
+                rows.Add((r.Id, r.Token));
+            else
+                log?.Invoke($"TELNET skipped unsafe player token (len={r.Token.Length})");
+        }
+        return rows;
+    }
+
+    /// <summary>Loose fallback for consoles that print the platform id and the
+    /// loopback ip but not health: id + "Local_REFakeN".</summary>
+    internal static List<(int id, string token)> ParseFallbackPlayerRows(string outp)
+    {
+        var rows = new List<(int, string)>();
+        foreach (var (r, _) in ScanPlayerRows(outp))
+        {
+            if (r.HasId && r.Id > 0 && r.HasPlatform && r.LoopbackIp
+                && r.Token.StartsWith(FallbackTokenPrefix, StringComparison.OrdinalIgnoreCase))
+                rows.Add((r.Id, r.Token));
+        }
+        return rows;
+    }
+
+    /// <summary>ids of living players from a raw listplayers response, for the
+    /// horde wave picker.</summary>
+    internal static List<int> ParseLivingPlayerIds(string outp)
+    {
+        var ids = new List<int>();
+        foreach (var (r, _) in ScanPlayerRows(outp))
+        {
+            if (r.HasId && r.Id > 0 && r.HasHealth && r.Health > 0)
+                ids.Add(r.Id);
+        }
+        return ids;
+    }
 
     // Allowlist for tokens replayed into admin commands. The kill targets come
     // from listplayers output (server-controlled text), so a crafted row must
@@ -172,32 +340,16 @@ public sealed partial class TelnetAdmin : IDisposable
     public int SpawnZombiesNearPlayers(string entityName = "zombieBoe", int perPlayer = 3)
     {
         string outp = Exec("listplayers");
-        // Prefer living connected bots only (skip health=0 leftovers from prior kills).
-        var live = new List<(int id, string name)>();
-        foreach (Match m in LivePlayerRowRegex().Matches(outp))
-        {
-            if (!int.TryParse(m.Groups[1].Value, out int id) || id <= 0) continue;
-            if (!int.TryParse(m.Groups[2].Value, out int hp) || hp <= 0) continue;
-            string token = m.Groups[3].Value;
-            if (!IsSafeCommandToken(token))
-            {
-                // Crafted/malformed row: never feed it back into kill/give.
-                _log?.Invoke($"TELNET skipped unsafe player token (len={token.Length})");
-                continue;
-            }
-            live.Add((id, token));
-        }
+        // Prefer living connected bots only (skip health=0 leftovers from prior kills);
+        // unsafe server-supplied tokens are dropped inside the parser.
+        var live = ParseLivePlayerRows(outp, _log);
         if (live.Count == 0)
         {
             // Loose fallback
-            foreach (Match m in FallbackPlayerRowRegex().Matches(outp))
-            {
-                if (int.TryParse(m.Groups[1].Value, out int id) && id > 0)
-                    live.Add((id, m.Groups[2].Value));
-            }
+            live = ParseFallbackPlayerRows(outp);
         }
         var ids = live.Select(x => x.id).Distinct().ToList();
-        var names = live.Select(x => x.name).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        var names = live.Select(x => x.token).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
         int spawned = 0;
         bool anySpawnPoint = false;
@@ -274,13 +426,7 @@ public sealed partial class TelnetAdmin : IDisposable
     public int SpawnWanderingHorde(int waves = 3, int targets = 2)
     {
         string outp = Exec("listplayers");
-        var ids = new List<int>();
-        foreach (Match m in PlayerIdHealthRegex().Matches(outp))
-        {
-            if (int.TryParse(m.Groups[1].Value, out int id) && id > 0
-                && int.TryParse(m.Groups[2].Value, out int hp) && hp > 0)
-                ids.Add(id);
-        }
+        var ids = ParseLivingPlayerIds(outp);
         if (ids.Count == 0) return 0;
         int spawned = 0;
         int hit = Math.Min(targets, ids.Count);
