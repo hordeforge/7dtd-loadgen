@@ -448,6 +448,19 @@ public sealed partial class TelnetAdmin : IDisposable
         return spawned;
     }
 
+    // The console answers a command with one short burst and then goes quiet;
+    // waitMs is an upper bound, not the cost of a command. Ending the window
+    // on ReadQuietGapMs of silence (well under the burst spacing of any real
+    // reply) turns a wave of N commands from N*waitMs into N round trips,
+    // which is the whole cost model of spawn pressure at cohort scale. The
+    // shortcut needs a burst to measure: a window that has seen nothing at all
+    // still waits out waitMs, so a slow console's banner and password prompt
+    // are never cut short.
+    internal const int ReadQuietGapMs = 100;
+    // Read-poll interval; fine enough that the quiet gap is measured, not the
+    // poll, and coarse enough to leave the loopbox to the server.
+    const int ReadPollMs = 10;
+
     void WriteLine(string s)
     {
         if (_stream == null) return;
@@ -466,6 +479,8 @@ public sealed partial class TelnetAdmin : IDisposable
         // not cut the wait short or stretch it past waitMs.
         var sw = Stopwatch.StartNew();
         var tmp = new byte[4096];
+        long lastDataMs = 0;
+        bool sawData = false;
         while (sw.ElapsedMilliseconds < waitMs)
         {
             try
@@ -473,10 +488,22 @@ public sealed partial class TelnetAdmin : IDisposable
                 if (_stream.DataAvailable)
                 {
                     int n = _stream.Read(tmp, 0, tmp.Length);
-                    if (n > 0) _buf.Append(_decoder.Decode(tmp.AsSpan(0, n)));
+                    if (n > 0)
+                    {
+                        _buf.Append(_decoder.Decode(tmp.AsSpan(0, n)));
+                        lastDataMs = sw.ElapsedMilliseconds;
+                        sawData = true;
+                    }
+                }
+                else if (sawData && sw.ElapsedMilliseconds - lastDataMs >= ReadQuietGapMs)
+                {
+                    // The console stopped talking. Output that arrives after
+                    // the window closes stays in _buf and is returned by the
+                    // next Exec, exactly as when a reply overran waitMs.
+                    break;
                 }
                 else
-                    Thread.Sleep(50);
+                    Thread.Sleep(ReadPollMs);
             }
             catch (Exception ex)
             {

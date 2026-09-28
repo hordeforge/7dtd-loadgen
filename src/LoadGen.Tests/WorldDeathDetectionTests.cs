@@ -58,7 +58,7 @@ public sealed class WorldDeathDetectionTests
         client.TryDetectWorldDeath("NetPackageEntityStatChanged", StatBody(171, 0f), opt, logs.Add);
 
         Assert.True(client.State.Died);
-        Assert.Equal("world_killed", client.State.DeathCause);
+        Assert.Equal(DeathCause.WorldKilled, client.State.DeathCause);
         Assert.Contains(logs, l => l.StartsWith("DEATH cause=world_killed"));
     }
 
@@ -94,7 +94,7 @@ public sealed class WorldDeathDetectionTests
         var client = Bot(171, out var opt);
         client.TryDetectWorldDeath("NetPackageEntityRemove", RemoveBody(171), opt, _ => { });
         Assert.True(client.State.Died);
-        Assert.Equal("world_death", client.State.DeathCause);
+        Assert.Equal(DeathCause.WorldDeath, client.State.DeathCause);
     }
 
     [Fact]
@@ -106,16 +106,42 @@ public sealed class WorldDeathDetectionTests
     }
 
     [Theory]
-    [InlineData("REFake3 died", "world_death")]
-    [InlineData("REFake3 drowned", "world_drown")]
-    [InlineData("REFake3 was killed by a zombie", "world_killed")]
-    [InlineData("REFake3 died from radiation", "world_radiation")]
-    public void OwnDeathChat_Kills_WithCause(string gmsg, string cause)
+    [InlineData("REFake3 died", DeathCause.WorldDeath)]
+    [InlineData("REFake3 drowned", DeathCause.WorldDrown)]
+    [InlineData("REFake3 was killed by a zombie", DeathCause.WorldKilled)]
+    [InlineData("REFake3 died from radiation", DeathCause.WorldRadiation)]
+    public void OwnDeathChat_Kills_WithCause(string gmsg, DeathCause cause)
     {
         var client = Bot(3, out var opt);
         client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(gmsg), opt, _ => { });
         Assert.True(client.State.Died);
         Assert.Equal(cause, client.State.DeathCause);
+    }
+
+    [Fact]
+    public void EveryCauseHasAStableReportName()
+    {
+        // The stats JSON, the deaths CSV and the log lines all render the
+        // cause through this mapping, so its spellings are report schema.
+        var expected = new Dictionary<DeathCause, string>
+        {
+            [DeathCause.None] = "none",
+            [DeathCause.DrownFatal] = "drown_fatal",
+            [DeathCause.Suicide] = "suicide",
+            [DeathCause.KilledExternal] = "killed_external",
+            [DeathCause.SuicideFallback] = "suicide_fallback",
+            [DeathCause.WorldDeath] = "world_death",
+            [DeathCause.WorldKilled] = "world_killed",
+            [DeathCause.WorldDrown] = "world_drown",
+            [DeathCause.WorldRadiation] = "world_radiation",
+            [DeathCause.ServerDisconnect] = "server_disconnect",
+            [DeathCause.TimeoutAlive] = "timeout_alive",
+            [DeathCause.RespawnTimeout] = "respawn_timeout",
+            [DeathCause.Exception] = "exception",
+        };
+        Assert.Equal(expected.Count, Enum.GetValues<DeathCause>().Length);
+        foreach (var (cause, name) in expected)
+            Assert.Equal(name, DeathCauseNames.Of(cause));
     }
 
     [Fact]
@@ -181,7 +207,7 @@ public sealed class WorldDeathDetectionTests
         client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(echo), opt, _ => { });
 
         Assert.True(client.State.Died);
-        Assert.Equal("world_death", client.State.DeathCause);
+        Assert.Equal(DeathCause.WorldDeath, client.State.DeathCause);
     }
 
     [Theory]

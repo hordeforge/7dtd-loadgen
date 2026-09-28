@@ -42,7 +42,7 @@ public static partial class Program
             $"turn={sm.TurnActions} chat={sm.ChatActions} attack={sm.AttackActions} " +
             $"drowns={sm.DrownActions} suicides={sm.SuicideActions} killed={sm.KilledActions} " +
             $"deaths={sm.DeathCount} respawns={sm.RespawnCount} " +
-            $"died={sm.Died} cause={sm.DeathCause} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
+            $"died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
         if (!string.IsNullOrEmpty(logPath))
             WriteArtifact("log", logPath, () => File.WriteAllLines(logPath, lines.Concat(sm.Log)));
         if (rc == 0)

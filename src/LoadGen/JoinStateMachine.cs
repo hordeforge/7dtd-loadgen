@@ -19,6 +19,52 @@ public enum JoinStage
     Disconnected,
 }
 
+/// <summary>Why a bot's current life ended. This was a free-form string on the
+/// state plus a second, near-identical enum inside ActionLoop kept in step by a
+/// hand-written translation table whose fallback silently relabelled an
+/// unrecognised cause as a world death. One enum, one meaning.</summary>
+public enum DeathCause
+{
+    None = 0,
+    DrownFatal,
+    Suicide,
+    KilledExternal,
+    SuicideFallback,
+    /// <summary>Server-driven death seen only as an entity removal.</summary>
+    WorldDeath,
+    /// <summary>Health reached zero (stat change, or a telnet kill).</summary>
+    WorldKilled,
+    WorldDrown,
+    WorldRadiation,
+    ServerDisconnect,
+    TimeoutAlive,
+    RespawnTimeout,
+    Exception,
+}
+
+/// <summary>Stable lowercase cause names for the stats JSON, the deaths CSV and
+/// the log lines. Renaming one is a report-schema change, so every name the
+/// reports emit is declared here.</summary>
+public static class DeathCauseNames
+{
+    public static string Of(DeathCause cause) => cause switch
+    {
+        DeathCause.DrownFatal => "drown_fatal",
+        DeathCause.Suicide => "suicide",
+        DeathCause.KilledExternal => "killed_external",
+        DeathCause.SuicideFallback => "suicide_fallback",
+        DeathCause.WorldDeath => "world_death",
+        DeathCause.WorldKilled => "world_killed",
+        DeathCause.WorldDrown => "world_drown",
+        DeathCause.WorldRadiation => "world_radiation",
+        DeathCause.ServerDisconnect => "server_disconnect",
+        DeathCause.TimeoutAlive => "timeout_alive",
+        DeathCause.RespawnTimeout => "respawn_timeout",
+        DeathCause.Exception => "exception",
+        _ => "none",
+    };
+}
+
 public sealed class JoinStateMachine
 {
     // Soak cohorts log continuously (walk/turn/chat/unparsed-frame lines) for
@@ -113,13 +159,10 @@ public sealed class JoinStateMachine
     public int DeathCount { get => _counters.DeathCount; set => _counters.DeathCount = value; }
     public int RespawnCount { get => _counters.RespawnCount; set => _counters.RespawnCount = value; }
     public int RejoinCount { get => _counters.RejoinCount; set => _counters.RejoinCount = value; }
-    /// <summary>
-    /// drown_fatal | suicide | killed_external | suicide_fallback |
-    /// world_death | world_killed | world_drown | world_radiation |
-    /// server_disconnect | timeout_alive | respawn_timeout |
-    /// exception | none
-    /// </summary>
-    public string DeathCause { get; set; } = "none";
+    /// <summary>Why the current life ended; <see cref="DeathCause.None"/>
+    /// while the bot is alive. Reports render it through
+    /// <see cref="DeathCauseNames.Of"/>.</summary>
+    public DeathCause DeathCause { get; set; } = DeathCause.None;
     /// <summary>False while the bot is alive in its current life.</summary>
     public bool Died { get; set; }
     /// <summary>Waiting for server PlayerId / SpawnedInWorld after RequestToSpawnPlayer.</summary>
@@ -152,7 +195,7 @@ public sealed class JoinStateMachine
     public void ClearDeathForNewLife()
     {
         Died = false;
-        DeathCause = "none";
+        DeathCause = DeathCause.None;
         AwaitingRespawn = false;
         GroundAdopted = false;
     }

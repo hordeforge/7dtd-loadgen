@@ -73,18 +73,6 @@ public static class ActionLoop
         Killed,
     }
 
-    public enum DeathCause
-    {
-        None = 0,
-        DrownFatal,
-        Suicide,
-        KilledExternal,
-        SuicideFallback,
-        WorldDeath,
-        ServerDisconnect,
-        TimeoutAlive,
-    }
-
     /// <summary>Per-run action counters; loop control + ACTION_SUMMARY evidence.</summary>
     sealed class Stats
     {
@@ -231,17 +219,19 @@ public static class ActionLoop
                 else if (!stats.Died && sm.Stage == JoinStage.Disconnected)
                 {
                     stats.Died = sm.Died;
-                    if (string.IsNullOrEmpty(sm.DeathCause) || sm.DeathCause == "none")
+                    if (sm.DeathCause == DeathCause.None)
                     {
-                        sm.DeathCause = "server_disconnect";
+                        sm.DeathCause = DeathCause.ServerDisconnect;
                         stats.Cause = DeathCause.ServerDisconnect;
                     }
                     else
                         SyncDeathFromState(sm, stats);
-                    log?.Invoke($"ACTION stop: disconnect cause={sm.DeathCause}");
+                    log?.Invoke(
+                        $"ACTION stop: disconnect cause={DeathCauseNames.Of(sm.DeathCause)}");
                 }
                 else if (!stats.Died)
-                    log?.Invoke($"ACTION stop: should_stop stage={sm.Stage} cause={sm.DeathCause}");
+                    log?.Invoke(
+                        $"ACTION stop: should_stop stage={sm.Stage} cause={DeathCauseNames.Of(sm.DeathCause)}");
                 break;
             }
             if (opt.MaxLifetimeMs > 0 && sw.ElapsedMilliseconds >= opt.MaxLifetimeMs)
@@ -249,7 +239,7 @@ public static class ActionLoop
                 if (!stats.Died && !sm.Died)
                 {
                     stats.Cause = DeathCause.TimeoutAlive;
-                    sm.DeathCause = "timeout_alive";
+                    sm.DeathCause = DeathCause.TimeoutAlive;
                     log?.Invoke(
                         $"ACTION timeout_alive after {sw.ElapsedMilliseconds}ms walks={stats.Walks} " +
                         $"pos=({x:0.#},{y:0.#},{z:0.#})");
@@ -564,25 +554,16 @@ public static class ActionLoop
             $"ACTION_SUMMARY mode={opt.Mode} walks={stats.Walks} jumps={stats.Jumps} crouch={stats.Crouches} " +
             $"aim={stats.Aims} turn={stats.Turns} strafe={stats.Strafes} look={stats.Looks} chat={stats.Chats} " +
             $"break={stats.BreakBlocks} dynamite={stats.Dynamite} attack={stats.Attacks} drowns={stats.Drowns} suicides={stats.Suicides} " +
-            $"killed={stats.Killed} died={stats.Died} cause={stats.Cause} " +
-            $"deathCause={sm.DeathCause} elapsedMs={sw.ElapsedMilliseconds} sent={sm.PackagesSent - sentBefore}");
+            $"killed={stats.Killed} died={stats.Died} cause={DeathCauseNames.Of(stats.Cause)} " +
+            $"deathCause={DeathCauseNames.Of(sm.DeathCause)} elapsedMs={sw.ElapsedMilliseconds} sent={sm.PackagesSent - sentBefore}");
     }
 
     static void SyncDeathFromState(JoinStateMachine sm, Stats stats)
     {
         stats.Died = sm.Died || stats.Died;
         if (stats.Cause != DeathCause.None) return;
-        stats.Cause = sm.DeathCause switch
-        {
-            "drown_fatal" => DeathCause.DrownFatal,
-            "suicide" => DeathCause.Suicide,
-            "suicide_fallback" => DeathCause.SuicideFallback,
-            "killed_external" => DeathCause.KilledExternal,
-            "world_death" => DeathCause.WorldDeath,
-            "server_disconnect" => DeathCause.ServerDisconnect,
-            "timeout_alive" => DeathCause.TimeoutAlive,
-            _ => sm.Died ? DeathCause.WorldDeath : DeathCause.None,
-        };
+        // The state already holds the cause; only the flag is a second fact.
+        stats.Cause = sm.Died ? sm.DeathCause : DeathCause.None;
     }
 
     static void ResolveIds(
@@ -810,7 +791,7 @@ public static class ActionLoop
             stats.Died = true;
             sm.Died = true;
             stats.Cause = DeathCause.DrownFatal;
-            sm.DeathCause = "drown_fatal";
+            sm.DeathCause = DeathCause.DrownFatal;
             log?.Invoke($"ACTION drown_fatal entity={entityId}");
         }
     }
@@ -828,7 +809,7 @@ public static class ActionLoop
         stats.Died = true;
         sm.Died = true;
         stats.Cause = fallback ? DeathCause.SuicideFallback : DeathCause.Suicide;
-        sm.DeathCause = fallback ? "suicide_fallback" : "suicide";
+        sm.DeathCause = stats.Cause;
         log?.Invoke($"ACTION suicide entity={entityId} fallback={fallback}");
     }
 
@@ -845,7 +826,7 @@ public static class ActionLoop
         stats.Died = true;
         sm.Died = true;
         stats.Cause = DeathCause.KilledExternal;
-        sm.DeathCause = "killed_external";
+        sm.DeathCause = DeathCause.KilledExternal;
         log?.Invoke($"ACTION killed entity={entityId}");
     }
 

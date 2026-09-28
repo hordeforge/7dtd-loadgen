@@ -296,6 +296,12 @@ public static partial class Program
         opt.CohortSize = count;
 
         using var spawnCts = new CancellationTokenSource();
+        // One shared console for the whole cohort's per-life grants. The bot
+        // enqueues and keeps walking: a synchronous telnet round trip inside
+        // the life loop cost every bot its action loop once per life.
+        using var provisioner = new TelnetProvisioner(
+            () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine),
+            Console.Error.WriteLine);
         Task? spawnTask = null;
         if (spawnZombies)
         {
@@ -395,30 +401,7 @@ public static partial class Program
                     LocalBindIp = GameJoinClient.LoopbackBindFor(clientId, attempt),
                     Bench = bench,
                     OnLifeStarted = entityId =>
-                    {
-                        try
-                        {
-                            using var admin = new TelnetAdmin(telnetHost, telnetPort, telnetPassword, log);
-                            if (admin.Connect())
-                            {
-                                string response = admin.Exec($"give {entityId} thrownDynamite 3");
-                                log?.Invoke($"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} count=3 response={response.Trim()}");
-                            }
-                            else
-                            {
-                                // Connect() already logged when a bot log exists; most
-                                // cohort members have none, so route to stderr like the
-                                // catch below or the missing dynamite load is invisible.
-                                (log ?? Console.Error.WriteLine)(
-                                    $"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} telnet connect failed {telnetHost}:{telnetPort}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            (log ?? Console.Error.WriteLine)(
-                                $"[{DateTime.UtcNow:O}] DYNAMITE_GIVE entity={entityId} failed={ex.GetType().Name}: {ex.Message}");
-                        }
-                    },
+                        provisioner.Enqueue($"give {entityId} thrownDynamite 3", entityId, log),
                     Log = log,
                     StateObserver = stateObserver,
                 };
@@ -442,20 +425,21 @@ public static partial class Program
                 // Intentional end of budget (walked until timeout) or hard fail without join.
                 // Recompute remaining fresh: a join attempt can burn most of the
                 // budget, so the pre-attempt value would let the loop overshoot.
-                string cause = last.DeathCause ?? "none";
+                DeathCause cause = last.DeathCause;
                 long remainMs = opt.TimeoutMs - sessionSw.ElapsedMilliseconds;
-                if (cause is "timeout_alive" || remainMs < 15_000)
+                if (cause == DeathCause.TimeoutAlive || remainMs < 15_000)
                     break;
                 // Backoff + deterministic per-client jitter so 1000 bots that fail
                 // together do not retry in unison (thundering herd on the server).
                 // clientId-based jitter keeps runs reproducible (no RNG).
                 int backoff(int baseMs, int step) =>
                     (int)Math.Min(15_000, baseMs + attempt * step + clientId % 500);
-                if (last.EverJoined && (last.Stage == JoinStage.Disconnected || cause is "server_disconnect"))
+                if (last.EverJoined && (last.Stage == JoinStage.Disconnected
+                    || cause == DeathCause.ServerDisconnect))
                 {
                     log?.Invoke(
                         $"[{DateTime.UtcNow:O}] REJOIN client={clientId} attempt={attempt} " +
-                        $"cause={cause} remainingMs={remainMs}");
+                        $"cause={DeathCauseNames.Of(cause)} remainingMs={remainMs}");
                     Thread.Sleep(backoff(2_000, 500));
                     continue;
                 }
@@ -622,7 +606,7 @@ public static partial class Program
                     var failState = new JoinStateMachine
                     {
                         EntityId = -1,
-                        DeathCause = "exception",
+                        DeathCause = DeathCause.Exception,
                         BotModeName = opt.Mode.ToString(),
                     };
                     failState.Fail("exception");
@@ -647,17 +631,20 @@ public static partial class Program
         double rate = count == 0 ? 0 : (double)pass / count;
 
         var byCause = results
-            .GroupBy(r => string.IsNullOrEmpty(r.s.DeathCause) ? "none" : r.s.DeathCause)
+            .GroupBy(r => r.s.DeathCause)
             .OrderByDescending(g => g.Count())
-            .Select(g => $"{g.Key}={g.Count()}")
+            .Select(g => $"{DeathCauseNames.Of(g.Key)}={g.Count()}")
             .ToList();
-        int worldKilled = results.Count(r => r.s.DeathCause is "world_killed" or "world_death");
-        int worldDrown = results.Count(r => r.s.DeathCause is "world_drown");
-        int worldRad = results.Count(r => r.s.DeathCause is "world_radiation");
-        int timedOut = results.Count(r => r.s.DeathCause is "timeout_alive");
-        int disc = results.Count(r => r.s.DeathCause is "server_disconnect");
-        int selfKill = results.Count(r => r.s.DeathCause is "drown_fatal" or "suicide" or "suicide_fallback" or "killed_external");
-        int diedEx = results.Count(r => r.s.DeathCause == "exception");
+        int worldKilled = results.Count(r =>
+            r.s.DeathCause is DeathCause.WorldKilled or DeathCause.WorldDeath);
+        int worldDrown = results.Count(r => r.s.DeathCause == DeathCause.WorldDrown);
+        int worldRad = results.Count(r => r.s.DeathCause == DeathCause.WorldRadiation);
+        int timedOut = results.Count(r => r.s.DeathCause == DeathCause.TimeoutAlive);
+        int disc = results.Count(r => r.s.DeathCause == DeathCause.ServerDisconnect);
+        int selfKill = results.Count(r => r.s.DeathCause
+            is DeathCause.DrownFatal or DeathCause.Suicide
+            or DeathCause.SuicideFallback or DeathCause.KilledExternal);
+        int diedEx = results.Count(r => r.s.DeathCause == DeathCause.Exception);
 
         var report =
             $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
@@ -672,7 +659,7 @@ public static partial class Program
             string.Join("\n", results.OrderBy(r => r.id).Take(30).Select(r =>
                 $"  id={r.id} rc={r.rc} mode={r.s.BotModeName} entity={r.s.EntityId} w={r.s.WalkActions} j={r.s.JumpActions} " +
                 $"deaths={r.s.DeathCount} respawns={r.s.RespawnCount} rejoins={r.s.RejoinCount} " +
-                $"lastDied={r.s.Died} cause={r.s.DeathCause}"));
+                $"lastDied={r.s.Died} cause={DeathCauseNames.Of(r.s.DeathCause)}"));
         if (bench is { } b)
         {
             var (wStart, wEnd) = b.WindowBounds;
@@ -738,7 +725,7 @@ public static partial class Program
                     $"{r.id},{r.rc},{r.s.BotModeName},{r.s.Stage},{r.s.EntityId},{r.s.WalkActions},{r.s.JumpActions}," +
                     $"{r.s.CrouchActions},{r.s.AimActions},{r.s.TurnActions},{r.s.StrafeActions},{r.s.LookActions},{r.s.ChatActions}," +
                     $"{r.s.BreakBlockActions},{r.s.AttackActions},{r.s.DrownActions},{r.s.SuicideActions},{r.s.KilledActions},{r.s.Died}," +
-                    $"{r.s.DeathCause},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}");
+                    $"{DeathCauseNames.Of(r.s.DeathCause)},{r.s.DeathCount},{r.s.RespawnCount},{r.s.RejoinCount}");
             }
             WriteArtifact("DEATH_CSV", csvPath, () => File.WriteAllText(csvPath, csv.ToString()));
         }

@@ -276,8 +276,8 @@ public sealed class GameJoinClient
                 State.Fail($"disconnected: {info.Reason}");
             else
             {
-                if (!State.Died && (State.DeathCause is "none" or null or ""))
-                    State.DeathCause = "server_disconnect";
+                if (!State.Died && State.DeathCause == DeathCause.None)
+                    State.DeathCause = DeathCause.ServerDisconnect;
                 State.Advance(JoinStage.Disconnected, info.Reason.ToString());
             }
         };
@@ -493,8 +493,8 @@ public sealed class GameJoinClient
 
                         // Each life gets a fresh death flag (respawn path clears it).
                         State.Died = false;
-                        if (State.DeathCause is "timeout_alive")
-                            State.DeathCause = "none";
+                        if (State.DeathCause == DeathCause.TimeoutAlive)
+                            State.DeathCause = DeathCause.None;
                         opt.OnLifeStarted?.Invoke(State.EntityId);
 
                         // Computed once per life: ShouldStop runs on every pace
@@ -525,7 +525,7 @@ public sealed class GameJoinClient
                                     if (WorldDeathBus.TryConsumeKill(botName, out _))
                                     {
                                         State.Died = true;
-                                        State.DeathCause = "world_killed";
+                                        State.DeathCause = DeathCause.WorldKilled;
                                         Log($"DEATH cause=world_killed entity={State.EntityId} via=telnet_kill name={botName}");
                                         return true;
                                     }
@@ -542,7 +542,7 @@ public sealed class GameJoinClient
                             State.DeathCount++;
                             opt.Bench?.OnDeath();
                             Log(
-                                $"DEATH #{State.DeathCount} entity={State.EntityId} cause={State.DeathCause} " +
+                                $"DEATH #{State.DeathCount} entity={State.EntityId} cause={DeathCauseNames.Of(State.DeathCause)} " +
                                 $"walks={State.WalkActions} jumps={State.JumpActions} " +
                                 $"pos=({State.PosX:0.#},{State.PosY:0.#},{State.PosZ:0.#}) " +
                                 $"mode={State.BotModeName} life={life}");
@@ -600,7 +600,7 @@ public sealed class GameJoinClient
                                 // dropout under load, not a successful session. Mark it so
                                 // the final gate does not score it as PASS.
                                 respawnTimedOut = true;
-                                State.DeathCause = "respawn_timeout";
+                                State.DeathCause = DeathCause.RespawnTimeout;
                                 Log(
                                     $"RESPAWN timeout awaiting spawn entity={State.EntityId} " +
                                     $"awaiting={State.AwaitingRespawn}");
@@ -613,10 +613,10 @@ public sealed class GameJoinClient
                         }
 
                         // No death this life: overall lifetime expired or action count done
-                        if (State.DeathCause is "timeout_alive" || opt.ActionCount > 0)
+                        if (State.DeathCause == DeathCause.TimeoutAlive || opt.ActionCount > 0)
                         {
                             Log(
-                                $"ALIVE_END entity={State.EntityId} cause={State.DeathCause} " +
+                                $"ALIVE_END entity={State.EntityId} cause={DeathCauseNames.Of(State.DeathCause)} " +
                                 $"walks={State.WalkActions} life={life}");
                         }
                         break;
@@ -626,7 +626,7 @@ public sealed class GameJoinClient
                     Log(
                         $"DISCONNECT entity={State.EntityId} deaths={State.DeathCount} " +
                         $"respawns={State.RespawnCount} walks={State.WalkActions} " +
-                        $"lastCause={State.DeathCause}");
+                        $"lastCause={DeathCauseNames.Of(State.DeathCause)}");
                     break;
                 }
 
@@ -664,7 +664,7 @@ public sealed class GameJoinClient
             Log(
                 $"PASS joined entity={State.EntityId} walks={State.WalkActions} jumps={State.JumpActions} " +
                 $"deaths={State.DeathCount} respawns={State.RespawnCount} " +
-                $"lastDied={State.Died} lastCause={State.DeathCause} stage={State.Stage}");
+                $"lastDied={State.Died} lastCause={DeathCauseNames.Of(State.DeathCause)} stage={State.Stage}");
             return 0;
         }
 
@@ -1046,7 +1046,7 @@ public sealed class GameJoinClient
             if (eid == State.EntityId && estat == 0 && value <= 0.01f)
             {
                 State.Died = true;
-                State.DeathCause = "world_killed";
+                State.DeathCause = DeathCause.WorldKilled;
                 log($"DEATH cause=world_killed entity={eid} via=EntityStatChanged health={value:0.##}");
             }
             return;
@@ -1061,7 +1061,7 @@ public sealed class GameJoinClient
                 if (eid == State.EntityId && State.EntityId > 0)
                 {
                     State.Died = true;
-                    State.DeathCause = "world_death";
+                    State.DeathCause = DeathCause.WorldDeath;
                     log($"DEATH cause=world_death entity={eid} via=entity_remove");
                 }
             }
@@ -1100,14 +1100,14 @@ public sealed class GameJoinClient
 
         State.Died = true;
         if (lower.Contains("drown"))
-            State.DeathCause = "world_drown";
+            State.DeathCause = DeathCause.WorldDrown;
         else if (lower.Contains("zombie") || lower.Contains("killed by"))
-            State.DeathCause = "world_killed";
+            State.DeathCause = DeathCause.WorldKilled;
         else if (lower.Contains("radiation"))
-            State.DeathCause = "world_radiation";
+            State.DeathCause = DeathCause.WorldRadiation;
         else
-            State.DeathCause = "world_death";
-        log($"DEATH cause={State.DeathCause} entity={State.EntityId} via=chat chars={text.Length}");
+            State.DeathCause = DeathCause.WorldDeath;
+        log($"DEATH cause={DeathCauseNames.Of(State.DeathCause)} entity={State.EntityId} via=chat chars={text.Length}");
     }
 
     // Whole-word substring match (allocation-free): "refake3" matches "refake3 died"

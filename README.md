@@ -222,7 +222,10 @@ Bot modes: `wander`, `mixed`, `chatty`, `combat`, `patrol`, `chaos`,
 `demolition`, `bait`, `kite`, and `traverse`. Demolition bots roam and repeatedly detonate
 real dynamite against terrain (falling-block, block-ticker, and chunk-resend
 pressure); `--max-dynamite` bounds charges per life (demolition default 200,
-others 3). Bait bots stand nearly still (tiny shuffle) so spawned zombies
+others 3). The per-life dynamite grant is issued over one cohort-shared telnet
+console by a background worker, so a bot never blocks its action loop on an
+admin round trip and the cohort opens one connection instead of one per life.
+Bait bots stand nearly still (tiny shuffle) so spawned zombies
 pursue a fixed cluster: pair with `7dtd-server-apm scenario run --rally` to measure
 AI/pathfinding/combat cost without chunk-streaming noise. Kite bots move in a
 slow continuous arc inside the leash so chasing zombies must repath every tick,

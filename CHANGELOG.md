@@ -17,6 +17,12 @@ under **Changed** with their migration path.
   `CHAT chars=<n>` instead of the server's chat text, which is player-typed
   free text plus the names the server puts in death messages. Comparison
   axes (counts, entity classes, banner, gamestats) are unchanged.
+- The per-life dynamite grant is issued over one cohort-shared telnet console
+  by a background worker. Bots no longer open a console connection and block
+  their action loop on a round trip once per life.
+- Telnet reads close when the console goes quiet instead of always waiting out
+  the read window, so a spawn wave of N commands costs N round trips rather
+  than N times the window. The window remains the upper bound.
 
 ### Fixed
 
@@ -42,6 +48,11 @@ under **Changed** with their migration path.
 - `tools/sut_capture.py` populates `reportedTotal` again. `TOTAL_ROW` was
   anchored with `^` but compiled without `re.MULTILINE`, so it only matched
   when the `Total of N in the game` line was the first line of the transcript.
+- `DeathCause` is one enum on `JoinStateMachine`. It was a free-form string
+  plus a near-identical `ActionLoop` enum kept in step by a hand-written
+  translation table whose fallback relabelled an unknown cause as a world
+  death. The reported cause names in the stats JSON, the deaths CSV and the
+  log lines are unchanged.
 
 ## [0.4.2] - 2026-09-21
 
