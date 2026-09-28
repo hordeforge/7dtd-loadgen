@@ -936,13 +936,12 @@ public static class PackageCodec
     public static string ReadBoundedString(BinaryReader r, string field)
     {
         long remaining = r.BaseStream.Length - r.BaseStream.Position;
-        // Accumulated in long, not int. Five 7-bit groups can set the int sign
-        // bit from the fourth group on (127 << 21 is 0xFE000000), so an int
-        // accumulator wrapped to a negative length, slipped past the
-        // "len > limit" bound, and reached ReadBytes as a negative count:
-        // ArgumentOutOfRangeException('count') instead of the contracted
-        // InvalidDataException. In long the value is the one the sender meant,
-        // and the bound below rejects it.
+        // 32 unsigned bits, accumulated in a long: the top group may legally
+        // reach 0x0F, which as an int sets the sign bit (127 << 21 is already
+        // 0xFE000000), and a negative length slipped past the "len > limit" bound
+        // to reach ReadBytes as ArgumentOutOfRangeException('count') instead of
+        // the contracted InvalidDataException. In long the value is the one the
+        // sender meant, and the bound below rejects it.
         long len = 0;
         int shift = 0, b;
         do
@@ -951,10 +950,10 @@ public static class PackageCodec
                 throw new InvalidDataException($"{field}: string length prefix is truncated");
             b = r.ReadByte();
             remaining--;
-            // 5 groups of 7 bits is the int range; a 6th group, or a top group
-            // above 0x0F, is a prefix no valid sender writes.
+            // 5 groups of 7 bits is the 32-bit range; a 6th group, or a top
+            // group above 0x0F, is a prefix no valid sender writes.
             if (shift > 28 || (shift == 28 && (b & 0x7F) > 0x0F))
-                throw new InvalidDataException($"{field}: string length prefix overflows int32");
+                throw new InvalidDataException($"{field}: string length prefix overflows 32 bits");
             len |= (long)(b & 0x7F) << shift;
             shift += 7;
         } while ((b & 0x80) != 0);

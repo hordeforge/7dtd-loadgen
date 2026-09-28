@@ -38,6 +38,11 @@ bots against EAC-off test servers only.
 required for it, and `make build` always uses the pinned NuGet LiteNetLib so
 binaries do not depend on a local install.
 
+Platform: Linux on x86-64, which is what CI runs (`ubuntu-latest`) and the only
+platform the runners and `make` lanes are written for. The load client itself
+(`src/LoadGen`) is .NET 8 and portable; the dedicated-start, scenario and bench
+scripts need bash, GNU coreutils and the Linux game server layout.
+
 Default dedicated install path:
 
 ```text

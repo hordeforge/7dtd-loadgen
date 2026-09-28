@@ -57,7 +57,7 @@ Inbound entry points (data arriving at this code):
 | UDP LiteNetLib wire from game server (join handshake, packages, position corrections) | **untrusted network data** | parsed by hand-written codec; queue capped | `src/LoadGen/GameJoinClient.cs:294-308,330-333,393`; `src/LoadGen/PackageCodec.cs` |
 | TCP telnet banner/responses from server (`listplayers` output, command echoes) | **untrusted network data** | parsed with bounded field scanning; only allowlisted tokens are replayed; results still feed new admin commands (see R6) | `src/LoadGen/TelnetAdmin.cs:39,66-82,125-166,185-189,361-364` |
 | In-process mock listener (self-test modes) | loopback test traffic | loopback only, ephemeral port | `src/LoadGen/MockGameServer.cs:65-77` |
-| Evidence files re-read by reporting tools (server log, telnet transcript, JSONL) | locally produced, untrusted on re-read | regex/JSON parsed with no schema guard; a malformed line surfaces as a traceback, and no path executes what it reads | `tools/sut_capture.py:47-50,162-169,310`; `scripts/sut_telnet.py:117-125,220` |
+| Evidence files re-read by reporting tools (server log, telnet transcript, JSONL) | locally produced, untrusted on re-read | regex/JSON parsed with no schema guard; a malformed line surfaces as a traceback, and no path executes what it reads | `tools/sut_capture.py:47-50,162-169,310`; `tools/sut_telnet.py:117-125,220` |
 
 Outbound privileged actions:
 

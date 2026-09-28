@@ -126,6 +126,9 @@ public sealed class PackageCodecFuzzTests
 
     static void InvokeAllBodyParsers(byte[] body, int iter)
     {
+        // LoginAnswer and PlayerDenied end in a 7-bit-length string, so they
+        // also throw InvalidDataException when the prefix outruns the body or
+        // MaxWireStringBytes; the shared allowlist covers all four.
         InvokeParser(() => _ = PackageCodec.ParsePackageIdsBody(body));
         InvokeParser(() => _ = PackageCodec.ParseLoginAnswerBody(body));
         InvokeParser(() => _ = PackageCodec.ParsePlayerDeniedBody(body));
@@ -203,7 +206,7 @@ public sealed class PackageCodecFuzzTests
 
             var ex = Record.Exception(() => InvokeAllBodyParsers(data, iter));
             if (ex != null)
-                Assert.Fail($"{ex.GetType().Name}: {ex.Message} bytes={Convert.ToHexString(data)}");
+                Assert.Fail($"{ex.GetType().Name}: {ex.Message} bytes={Convert.ToHexString(data)}\n{ex.StackTrace}");
         }
     }
 

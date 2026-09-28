@@ -91,6 +91,18 @@ public sealed class PackageCodecStringBoundsTests
     }
 
     [Fact]
+    public void RejectsALengthPrefixAboveIntMaxValue()
+    {
+        // 0xFFFFFFFF: the top group 0x0F is in range for 32 unsigned bits but
+        // sets the sign bit in an int, and a negative count reached ReadBytes
+        // as ArgumentOutOfRangeException instead of the contracted
+        // InvalidDataException. The fuzz gate hit this on random bytes.
+        byte[] prefix = { 0xFF, 0xFF, 0xFF, 0xFF, 0x0F };
+        using var r = Reader(prefix);
+        Assert.Throws<InvalidDataException>(() => PackageCodec.ReadBoundedString(r, "test"));
+    }
+
+    [Fact]
     public void RejectsATruncatedLengthPrefix()
     {
         using var r = Reader(new byte[] { 0x80 });

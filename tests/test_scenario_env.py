@@ -9,6 +9,7 @@ byte-identical and must never be parsed as shell. run_scenario.sh used to
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -17,7 +18,12 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL = ROOT / "scripts" / "scenario_env.py"
-BASH = "/bin/bash"
+# The reader is bash, not POSIX sh, so resolve it the way the scripts do
+# (env bash): a hardcoded /bin/bash misses distros that install it under
+# /usr/local/bin.
+BASH = shutil.which("bash") or "/bin/bash"
+requires_bash = pytest.mark.skipif(
+    shutil.which("bash") is None, reason="bash not on PATH")
 
 # The reader in run_scenario.sh, verbatim. A value is exported, never evaluated.
 READER = """
@@ -77,6 +83,7 @@ def test_export_emits_bare_key_value_lines(tmp_path):
         assert not line.startswith("export ")
 
 
+@requires_bash
 def test_shell_metacharacters_survive_verbatim(tmp_path):
     # Every one of these is a command substitution, a redirect, a glob, or a
     # quote. Under the old eval they were a code-execution surface; under the
@@ -88,6 +95,7 @@ def test_shell_metacharacters_survive_verbatim(tmp_path):
     assert not Path("/nonexistent-pwned").exists()
 
 
+@requires_bash
 def test_value_containing_equals_is_not_truncated(tmp_path):
     # `IFS='=' read -r key value` gives the last variable the rest of the line,
     # so an '=' inside the value must not split it.
@@ -132,6 +140,7 @@ def test_host_that_could_escape_the_tcp_probe_is_refused(tmp_path, host):
     assert not Path("/nonexistent-pwned").exists()
 
 
+@requires_bash
 def test_ordinary_host_still_exports(tmp_path):
     r = _export(_client_catalog(tmp_path, {"mode": "probe", "host": "10.0.0.5"}))
     assert r.returncode == 0, r.stderr
@@ -151,6 +160,7 @@ def test_server_script_outside_scripts_dir_is_refused(tmp_path):
     assert "refusing server script" in r.stderr
 
 
+@requires_bash
 def test_named_server_script_is_kept(tmp_path):
     r = _export(_catalog(tmp_path, {}))
     assert r.returncode == 0, r.stderr

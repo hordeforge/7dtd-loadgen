@@ -120,6 +120,15 @@ under **Changed** with their migration path.
 
 ### Fixed
 
+- `PackageCodec.ReadBoundedString` accumulated the 7-bit length prefix into an
+  `int`, so a top group of `0x0F` (a prefix above `int.MaxValue`, reachable with
+  five ordinary-looking continuation bytes) set the sign bit and reached
+  `BinaryReader.ReadBytes` as a negative count. A hostile or corrupt server
+  frame raised `ArgumentOutOfRangeException` out of the decoder, where every
+  other malformed-prefix case raises the contracted `InvalidDataException`. The
+  accumulator is a `long` bounded to 32 unsigned bits, and the fuzz gate's
+  LoginAnswer/PlayerDenied allowlists accept the bounded-string exception the
+  parsers have always thrown.
 - `--key`, `--password` and `--telnet-password` were refused only in join mode
   (and `--key` in probe). The other lanes had no branch for them, so the
   credential and its value sat unused in world-readable argv while the run
