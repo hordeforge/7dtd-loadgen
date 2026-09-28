@@ -73,6 +73,8 @@ help:
 	@echo "                          under workspace/bench/lapN (LAP=1 BENCH_ADMIN_PORT=8084)"
 	@echo "  make bench-report        Consolidate workspace/bench/lap* into bench-stock.md/json"
 	@echo "  make sbom                CycloneDX inventory of uv.lock + packages.lock.json"
+	@echo "  make coverage            C# unit-suite line coverage (TestResults/, the lane the"
+	@echo "                          coverage-badge CI job runs)"
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."

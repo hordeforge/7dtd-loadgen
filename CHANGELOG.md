@@ -129,6 +129,12 @@ under **Changed** with their migration path.
   accumulator is a `long` bounded to 32 unsigned bits, and the fuzz gate's
   LoginAnswer/PlayerDenied allowlists accept the bounded-string exception the
   parsers have always thrown.
+- The pytest CLI harness (`tests/loadgen_cli.py`) built the client without
+  `-p:GameDir=`, so on a dev box with the dedicated installed the gates ran a
+  binary compiled against the game's own LiteNetLib, which is not the one CI
+  builds or tests. It pins GameDir empty like every other build lane, and
+  `test_every_build_lane_pins_the_client_dependency_source` now scans
+  `tests/*.py` too, not just the Makefile and `scripts/*.sh`.
 - `--key`, `--password` and `--telnet-password` were refused only in join mode
   (and `--key` in probe). The other lanes had no branch for them, so the
   credential and its value sat unused in world-readable argv while the run
@@ -141,7 +147,11 @@ under **Changed** with their migration path.
   multi-gigabyte string and take the cohort down with the OutOfMemory.
   `PackageCodec.ReadBoundedString` checks the prefix against the body and a
   1 MiB ceiling before allocating; PackageIds mappings, login answers, denial
-  text and chat extraction all read through it.
+  text and chat extraction all read through it. A prefix whose top 7-bit group
+  sets the sign bit (`0x80 0x80 0x80 0x80 0x08`) accumulated into a negative
+  `int`, passed the ceiling check and reached `ReadBytes` as an
+  `ArgumentOutOfRangeException`; the accumulator is a `long` now, and
+  `BoundedString_PrefixWithSignBitSet_IsRejected` pins it.
 - `scripts/stats_pass_fail.py` raised `AttributeError` out of `main()` on a
   `stats.json` holding valid JSON of the wrong shape, where every other
   malformed input takes the documented `0 0` fallback with a stderr note. A

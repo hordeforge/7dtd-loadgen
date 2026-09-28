@@ -79,9 +79,15 @@ def test_every_build_lane_pins_the_client_dependency_source():
     non-empty and from the pinned NuGet package otherwise, so a build lane that
     omits -p:GameDir= produces one binary here and another on a box with the
     dedicated installed. Every lane names the source explicitly."""
-    lanes = [ROOT / "Makefile", *sorted((ROOT / "scripts").glob("*.sh"))]
+    lanes = [
+        ROOT / "Makefile",
+        *sorted((ROOT / "scripts").glob("*.sh")),
+        *(p for p in sorted((ROOT / "tests").glob("*.py")) if p.name != Path(__file__).name),
+    ]
     for lane in lanes:
         for line in lane.read_text(encoding="utf-8").splitlines():
+            # This gate names "dotnet build" in its own matcher; the file is
+            # excluded above.
             if "dotnet build" not in line or line.lstrip().startswith("#"):
                 continue
             assert "-p:GameDir=" in line, (

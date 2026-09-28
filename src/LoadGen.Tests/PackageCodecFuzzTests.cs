@@ -126,9 +126,11 @@ public sealed class PackageCodecFuzzTests
 
     static void InvokeAllBodyParsers(byte[] body, int iter)
     {
-        // LoginAnswer and PlayerDenied end in a 7-bit-length string, so they
-        // also throw InvalidDataException when the prefix outruns the body or
-        // MaxWireStringBytes; the shared allowlist covers all four.
+        // LoginAnswer and PlayerDenied end in a ReadBoundedString field, so a
+        // hostile 7-bit length prefix is rejected with InvalidDataException when
+        // it outruns the body or MaxWireStringBytes, not with the truncation
+        // exceptions ReadString itself raises; the shared allowlist covers all
+        // four parsers.
         InvokeParser(() => _ = PackageCodec.ParsePackageIdsBody(body));
         InvokeParser(() => _ = PackageCodec.ParseLoginAnswerBody(body));
         InvokeParser(() => _ = PackageCodec.ParsePlayerDeniedBody(body));
@@ -223,6 +225,18 @@ public sealed class PackageCodecFuzzTests
         BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(9), 14);
         BinaryPrimitives.WriteInt32LittleEndian(body.AsSpan(13), int.MaxValue);
         var ex = Record.Exception(() => PackageCodec.ParsePackageIdsBody(body));
+        Assert.IsType<InvalidDataException>(ex);
+    }
+
+    [Fact]
+    public void BoundedString_PrefixWithSignBitSet_IsRejected()
+    {
+        // 7-bit groups 0x80 0x80 0x80 0x80 0x08 encode 0x80000000. Inside an
+        // int accumulator that reads back negative, which slipped past the
+        // "length exceeds available bytes" guard and reached ReadBytes as an
+        // ArgumentOutOfRangeException. The prefix is legal, the length is not.
+        byte[] body = { 1, 0x80, 0x80, 0x80, 0x80, 0x08 };
+        var ex = Record.Exception(() => PackageCodec.ParseLoginAnswerBody(body));
         Assert.IsType<InvalidDataException>(ex);
     }
 

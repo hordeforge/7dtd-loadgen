@@ -38,7 +38,10 @@ def build() -> None:
     if _BUILT:
         return
     r = subprocess.run(
-        ["dotnet", "build", str(PROJ), "-c", "Release", "-v", "q"],
+        # -p:GameDir= pins the NuGet LiteNetLib, as every make and shell lane
+        # does: without it a dev box with the dedicated installed builds a
+        # different binary here than the one CI tests.
+        ["dotnet", "build", str(PROJ), "-c", "Release", "-v", "q", "-p:GameDir="],
         cwd=str(ROOT),
         env=dotnet_env(),
         capture_output=True,
