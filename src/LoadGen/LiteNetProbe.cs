@@ -7,11 +7,18 @@ namespace SevenDTD.LoadGen;
 
 public static class LiteNetProbe
 {
+    /// <summary>How long to keep polling after the peer connects while waiting
+    /// for the first application packet. Measured from the connect call, not
+    /// from probe start: a slow DNS resolution or connect handshake would
+    /// otherwise consume the whole window before the peer is even up.</summary>
+    private const int GraceAfterConnectMs = 1500;
+
     public static ProbeResult Run(
         string host, int port, string key, int timeoutMs, int clientId,
         Action<string>? writeLine = null, bool keepLines = true)
     {
         var lines = new List<string>();
+        var stages = new HashSet<string>();
         var sw = Stopwatch.StartNew();
         void Log(string msg)
         {
@@ -23,21 +30,14 @@ public static class LiteNetProbe
         try
         {
             using var udp = new UdpClient();
-            udp.Client.ReceiveTimeout = 500;
             udp.Connect(host, port);
             Log("STAGE udp_socket_open: ok");
+            stages.Add("udp_socket_open");
         }
         catch (Exception ex)
         {
             Log($"STAGE udp_socket_open: fail {ex.GetType().Name}: {ex.Message}");
-            return new ProbeResult
-            {
-                Pass = false,
-                Stages = new HashSet<string>(),
-                Connected = false,
-                Lines = lines,
-                ElapsedMs = sw.ElapsedMilliseconds,
-            };
+            return Fail(lines, stages, connected: false, disc: null, sw.ElapsedMilliseconds);
         }
 
         var listener = new EventBasedNetListener();
@@ -45,7 +45,6 @@ public static class LiteNetProbe
         bool connected = false, disconnected = false;
         string? disconnectReason = null;
         int packets = 0;
-        var stages = new HashSet<string> { "udp_socket_open" };
         listener.PeerConnectedEvent += peer =>
         {
             connected = true;
@@ -83,6 +82,7 @@ public static class LiteNetProbe
             Log("STAGE litenet_start: ok");
             var data = new NetDataWriter();
             if (!string.IsNullOrEmpty(key)) data.Put(key);
+            long connectStartMs = sw.ElapsedMilliseconds;
             var peer = net.Connect(host, port, data);
             if (peer == null)
             {
@@ -94,15 +94,18 @@ public static class LiteNetProbe
             while (sw.ElapsedMilliseconds < timeoutMs)
             {
                 net.PollEvents();
-                if (connected && (packets > 0 || sw.ElapsedMilliseconds > 1500)) break;
+                if (connected && (packets > 0 || sw.ElapsedMilliseconds - connectStartMs > GraceAfterConnectMs)) break;
                 if (disconnected && !connected) break;
                 Thread.Sleep(10);
             }
             net.PollEvents();
             sw.Stop();
-            bool pastSocket = stages.Contains("litenet_peer_connected") || stages.Contains("litenet_receive")
-                || stages.Contains("litenet_peer_disconnected") || stages.Contains("protocol_bytes");
-            bool pass = pastSocket || (stages.Contains("litenet_connect_call") && (connected || disconnectReason != null));
+            // The probe reached the server if the peer ever connected or the
+            // server ever hung up: a disconnect with a reason is as much proof
+            // of a live socket as a connect is. Every stage that implies one of
+            // those is set by the same events, so key off the two outcomes.
+            bool reachedServer = connected || disconnectReason != null;
+            bool pass = reachedServer && stages.Contains("litenet_connect_call");
             Log($"SUMMARY stages=[{string.Join(",", stages.OrderBy(s => s))}] connected={connected} packets={packets}");
             return new ProbeResult
             {

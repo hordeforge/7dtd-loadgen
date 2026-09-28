@@ -86,7 +86,7 @@ public static partial class Program
             $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={minPassRate:P0}");
         var summary = LoadRunner.Run(host, port, key, timeoutMs, count, concurrency, rampMs, quiet, idBase: clientId);
         if (!string.IsNullOrEmpty(logPath))
-            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, summary.ToReport()));
+            RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, summary.ToReportLines()));
         Console.WriteLine(summary.ToReport());
         if (!Program.JoinGatePass(summary.Pass, summary.Total, minPassRate))
         {

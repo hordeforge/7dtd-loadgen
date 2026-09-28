@@ -56,15 +56,38 @@ def telnet_ready(timeout_s: float = 180.0) -> bool:
     return False
 
 
+def _listening(port: int, proto: str) -> bool:
+    """Whether `port` is bound for `proto` ("t" or "u") on this host.
+
+    `ss` is the only way to see another process's socket in stdlib Python, and
+    this file already shells out to it for the pid. A game port is UDP and the
+    telnet port is TCP, so the protocol is an argument rather than a constant:
+    probing a UDP port with a TCP connect always fails, which reads as "the
+    server is down" while it is still holding the port.
+
+    An `ss` that cannot run reports the port as still bound, never as free: a
+    missing lookup must not be the evidence that lets a restart proceed
+    against a port the old server still holds.
+    """
+    try:
+        out = subprocess.run(
+            ["ss", f"-{proto}ln"], capture_output=True,
+            text=True, encoding="utf-8", errors="replace", check=False
+        ).stdout
+    except OSError as e:
+        print(f"[reconnect] cannot list {proto} ports via ss: {e}; "
+              "treating the port as still bound", file=sys.stderr)
+        return True
+    return any(f":{port} " in line for line in out.splitlines())
+
+
 def wait_gone(timeout_s: float = 60.0) -> bool:
     # Monotonic deadlines: an NTP step mid-wait must not truncate or extend it.
     deadline = time.monotonic() + timeout_s
     while time.monotonic() < deadline:
-        try:
-            with socket.create_connection(("127.0.0.1", GAME_PORT), timeout=2):
-                time.sleep(2)
-        except OSError:
+        if not _listening(GAME_PORT, "u"):
             return True
+        time.sleep(2)
     return False
 
 
@@ -75,16 +98,17 @@ def server_pid() -> int | None:
     because kill_server would then report a kill it never performed and the
     reconnect check would validate a session whose server never restarted.
     """
-    try:
-        out = subprocess.run(
-            ["ss", "-tlnp"], capture_output=True,
-            text=True, encoding="utf-8", errors="replace", check=False
-        ).stdout
-    except OSError as e:
-        raise ServerPidLookupFailed(f"ss -tlnp failed: {e}") from e
     # Telnet (8081) binds during boot before the game port (26900) - check
-    # both so a kill during startup still finds the server.
-    for port in (TELNET_PORT, GAME_PORT):
+    # both so a kill during startup still finds the server. The game port is
+    # UDP, so the two ports are listed under different protocols.
+    for port, proto in ((TELNET_PORT, "t"), (GAME_PORT, "u")):
+        try:
+            out = subprocess.run(
+                ["ss", f"-{proto}lnp"], capture_output=True,
+                text=True, encoding="utf-8", errors="replace", check=False
+            ).stdout
+        except OSError as e:
+            raise ServerPidLookupFailed(f"ss -{proto}lnp failed: {e}") from e
         for line in out.splitlines():
             if f":{port} " in line and "pid=" in line:
                 pid = line.split("pid=")[1].split(",")[0]

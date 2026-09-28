@@ -14,21 +14,32 @@ public sealed class LoadSummary
     public Dictionary<string, int> StageCounts { get; init; } = new();
     public List<string> FailSamples { get; init; } = new();
 
-    /// <summary>Cohort summary, LF-terminated: the report is saved as a run
-    /// artifact and parsed by the report lanes, so its bytes stay the same
+    /// <summary>Cohort summary as one entry per output line. The report is saved
+    /// as a run artifact and parsed by the report lanes, so the saved copy goes
+    /// through <see cref="RunReport.WriteLines"/> and its bytes stay the same
     /// whichever OS wrote the run.</summary>
+    public IReadOnlyList<string> ToReportLines()
+    {
+        var lines = new List<string>
+        {
+            $"LOAD_SUMMARY total={Total} pass={Pass} fail={Fail} passRate={PassRate:P2}",
+            $"LOAD_TIMING elapsedMs={ElapsedMs} p50={P50Ms} p95={P95Ms} p99={P99Ms}",
+            // protocolProgress is the same count as Pass (both are r.Pass); the
+            // label is kept because the LOAD_CONN line is read by operators.
+            $"LOAD_CONN connected={Connected} protocolProgress={Pass}",
+        };
+        if (StageCounts.Count > 0)
+            lines.Add("LOAD_STAGES " + string.Join(" ", StageCounts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}={kv.Value}")));
+        lines.AddRange(FailSamples.Take(20).Select(f => $"LOAD_FAIL_SAMPLE {f}"));
+        return lines;
+    }
+
+    /// <summary>LF-terminated form of <see cref="ToReportLines"/>, for the
+    /// console and the embedded event text that carries a summary inline.</summary>
     public string ToReport()
     {
         var sb = new System.Text.StringBuilder();
-        sb.Append($"LOAD_SUMMARY total={Total} pass={Pass} fail={Fail} passRate={PassRate:P2}\n");
-        sb.Append($"LOAD_TIMING elapsedMs={ElapsedMs} p50={P50Ms} p95={P95Ms} p99={P99Ms}\n");
-        // protocolProgress is the same count as Pass (both are r.Pass); the
-        // label is kept because the LOAD_CONN line is read by operators.
-        sb.Append($"LOAD_CONN connected={Connected} protocolProgress={Pass}\n");
-        if (StageCounts.Count > 0)
-            sb.Append("LOAD_STAGES " + string.Join(" ", StageCounts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}={kv.Value}")) + "\n");
-        foreach (var f in FailSamples.Take(20))
-            sb.Append($"LOAD_FAIL_SAMPLE {f}\n");
+        foreach (string line in ToReportLines()) sb.Append(line).Append('\n');
         return sb.ToString();
     }
 }

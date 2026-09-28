@@ -204,10 +204,10 @@ def join_ramped(target):
                LOADGEN_RAMP_MS=ramp_ms, LOADGEN_TIMEOUT="3600000", LOADGEN_BOT_MODE="wander",
                LOADGEN_ACTIONS="100000000", LOADGEN_NO_SPAWN="1", LOADGEN_SEED="7777",
                LOADGEN_QUIET="1",
-               # The profile itself holds this target's run lock (runlock.hold in
-               # main), and it is the only cohort this run starts. Without the
-               # opt-out the nested runner would read its own parent's lock and
-               # exit 4 before joining a single bot.
+               # The profile itself holds this target's run lock
+               # (runlock.acquire_or_exit in main), and it is the only cohort this
+               # run starts. Without the opt-out the nested runner would read its
+               # own parent's lock and exit 4 before joining a single bot.
                LOADGEN_ALLOW_OVERLAP="1")
     SCRATCH.mkdir(exist_ok=True)
     fh_path = SCRATCH / "bloodmoon_bots.log"
@@ -251,7 +251,19 @@ def set_gamestage(stage):
 
 
 def spawn_endgame(target):
+    """Spawn the endgame mix up to `target`, returning the reached count, or
+    None when the live count was never readable.
+
+    An unknown count is not a count of zero. `zombies_alive` reports -1 for an
+    unreadable snapshot, and -1 compares below every target, so a loop that
+    took it at face value would keep spawning into a server nobody is
+    measuring and then print the sentinel back as a reached ceiling.
+    """
     cur = zombies_alive()
+    if cur < 0:
+        log("  apm snapshot unavailable, so the live-zombie count is unknown - "
+            "aborting spawn rather than reporting an unverified ceiling")
+        return None
     stalls = 0
     telnet_fails = 0
     # A round that did not move the entity count is not proof that its batch
@@ -296,6 +308,10 @@ def spawn_endgame(target):
                 mi += 1
         telnet(cmds, settle=4)
         new = zombies_alive(len(ids))
+        if new < 0:
+            log("  apm snapshot unavailable mid-ramp, so the reached count is "
+                "unknown - stopping spawn rather than reporting an unverified ceiling")
+            return None
         log(f"  spawn: alive={new}/{target}" + (" (probe round)" if probe_next_round else ""))
         stalls = stalls + 1 if new <= cur + 2 else 0
         # Only a stalled round forces the next one to probe; a round that moved
@@ -409,9 +425,8 @@ def main():
         time.sleep(8)  # let the spawn churn settle before reading steady-state health
         h = health()
         log("=== LOAD ESTABLISHED ===")
-        if not h.get("readable"):
-            log(f"  apm snapshot unreadable: {h.get('error')}")
-        log(f"  players={h.get('players')}  zombies~{za}/{ZOMBIES}  "
+        reached = "unknown" if za is None else f"{za}/{ZOMBIES}"
+        log(f"  players={h.get('players')}  zombies~{reached}  "
             f"entityAlives={h.get('entityAlives')}")
         log(f"  frame={h.get('frameMs')}ms (budget {FRAME_BUDGET_MS}ms/frame)  "
             f"tickMax={h.get('tickMaxMs')}ms  "
@@ -421,6 +436,7 @@ def main():
         if not h.get("readable"):
             # A missing snapshot is not an over-budget server: say the load was
             # never measured instead of printing a verdict from a None frame.
+            log(f"  apm snapshot unreadable: {h.get('error')}")
             log("  VERDICT: UNKNOWN (no apm snapshot; the load was not measured)")
         elif not isinstance(frame, (int, float)):
             log("  VERDICT: UNKNOWN (snapshot has no unityDeltaMs; the load was not measured)")

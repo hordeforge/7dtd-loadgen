@@ -100,7 +100,7 @@ static class SelfTest
             try { server.Stop(); } catch (Exception) { /* release must not mask the result */ }
         }
         if (!string.IsNullOrEmpty(logPath))
-            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, $"self-test pass={pass} count={count}\n"));
+            RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, new[] { $"self-test pass={pass} count={count}" }));
         // Verdict: the PASS line is the result a caller reads, the FAIL line is a
         // diagnostic and belongs on stderr so stdout carries the result alone.
         (pass ? Console.Out : Console.Error).WriteLine(

@@ -28,6 +28,19 @@ CELL_MAX_CHARS = 80
 # a missing one in a markdown table, so an empty value reads as this.
 NO_VALUE = "?"
 
+# Past this an int no longer converts to a float it can represent: float()
+# raises OverflowError on the ones that overflow outright, and silently rounds
+# the rest. Either way the value is not something a report can reproduce, so it
+# is not a measurement, and neither reader below may raise on it.
+MAX_EXACT_FLOAT_INT = 2**53
+
+
+def _is_measurement(value: int | float) -> bool:
+    """Whether a JSON number is finite and small enough to convert to a float."""
+    if isinstance(value, int):
+        return abs(value) <= MAX_EXACT_FLOAT_INT
+    return math.isfinite(value)
+
 
 def as_dict(value: object) -> dict:
     """A parsed JSON value as a mapping, or an empty one."""
@@ -42,13 +55,13 @@ def as_list(value: object) -> list:
 def as_number(value: object) -> float | None:
     """A parsed JSON number, or None.
 
-    Booleans, numeric strings and non-finite floats are rejected: a cell that
-    reads "true" or "nan" is not a measurement, and the `:.1f` / `:.0f` format
-    downstream raises on both.
+    Booleans, numeric strings, non-finite floats and integers too large to
+    convert are rejected: a cell that reads "true" or "nan" is not a
+    measurement, and the `:.1f` / `:.0f` format downstream raises on both.
     """
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
-    return float(value) if math.isfinite(value) else None
+    return float(value) if _is_measurement(value) else None
 
 
 def as_int(value: object) -> int | None:
@@ -85,14 +98,17 @@ def as_sides(value: object) -> list[str]:
 def as_cell(value: object) -> str:
     """A value from a captured JSON file as one renderable table cell.
 
-    Containers and None become NO_VALUE rather than a bracketed dump, and line
-    breaks and pipes are collapsed because a captured value carrying either
-    would forge rows in the generated report.
+    Containers, None, non-finite numbers and integers too large to convert
+    become NO_VALUE rather than a bracketed dump, a "nan" or "inf", or a
+    float conversion that raises. Line breaks and pipes are collapsed because
+    a captured value carrying either would forge rows in the generated report.
     """
     if value is None or isinstance(value, (dict, list)):
         return NO_VALUE
     if isinstance(value, bool):
         return str(value)
+    if isinstance(value, (int, float)) and not _is_measurement(value):
+        return NO_VALUE
     text = f"{value:g}" if isinstance(value, (int, float)) else str(value)
     text = _CELL_SEPARATORS.sub(" ", text).strip()[:CELL_MAX_CHARS]
     return text or NO_VALUE

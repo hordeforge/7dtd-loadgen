@@ -28,13 +28,15 @@ public static partial class Program
             lines.Add(m);
         }
 
-        if (actions < 6)
+        if (actions < SelfTestJoin.MinActions)
         {
-            // The self-test needs one action of every kind it asserts on, so 6
-            // is a floor, not a default. The clamp is named in the log so a
-            // raised run is not mistaken for the one that was asked for.
-            Log("NOTE: --actions below the 6-action self-test floor, raised to 6");
-            actions = 6;
+            // The self-test needs one action of every kind it asserts on, so the
+            // floor is a floor, not a default. The clamp is named in the log so
+            // a raised run is not mistaken for the one that was asked for, and
+            // the manifest reports the count that ran.
+            Log($"NOTE: --actions below the {SelfTestJoin.MinActions}-action "
+                + "self-test floor, raised to the floor");
+            actions = SelfTestJoin.MinActions;
         }
 
         void Verdict(string m, bool ok)
@@ -69,9 +71,11 @@ public static partial class Program
             $"drowns={sm.DrownActions} suicides={sm.SuicideActions} killed={sm.KilledActions} " +
             $"deaths={sm.DeathCount} respawns={sm.RespawnCount} " +
             $"died={sm.Died} cause={DeathCauseNames.Of(sm.DeathCause)} entity={sm.EntityId} fail={sm.FailReason ?? "none"}");
+        Verdict(rc == 0 ? "PASS: self-test-join joined + actions" : "FAIL: self-test-join", rc == 0);
+        // After the verdict, not before: the artifact has to carry the run's
+        // last line, and Verdict is the line that appends it to `lines`.
         if (!string.IsNullOrEmpty(logPath))
             RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, lines.Concat(sm.Log)));
-        Verdict(rc == 0 ? "PASS: self-test-join joined + actions" : "FAIL: self-test-join", rc == 0);
 
         if (!string.IsNullOrEmpty(runManifestPath))
         {

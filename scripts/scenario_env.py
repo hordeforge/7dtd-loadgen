@@ -38,7 +38,7 @@ ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # The host is interpolated into a /dev/tcp path in run_scenario.sh, so it must
 # be a bare host name, IPv4, or bracketed IPv6 literal: no separators, no
 # whitespace, no shell or glob metacharacters.
-HOST_RE = re.compile(r"^[A-Za-z0-9._:-]+$")
+HOST_RE = re.compile(r"^(?:\[[0-9A-Fa-f:.]+\]|[A-Za-z0-9._:-]+)$")
 # The server script is run as `bash $ROOT/scripts/<value>`: a bare .sh filename
 # in that directory, nothing that can climb out of it.
 SERVER_SCRIPT_RE = re.compile(r"^[A-Za-z0-9._-]+\.sh$")
@@ -102,7 +102,7 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
         out.append(("LOADGEN_BOT_MODE", client["botMode"]))
     if client.get("death"):
         out.append(("LOADGEN_DEATH", client["death"]))
-    if client.get("rampMs"):
+    if client.get("rampMs") is not None:
         out.append(("LOADGEN_RAMP_MS", str(int(client["rampMs"]))))
     if client.get("maxDynamite") is not None:
         out.append(("LOADGEN_MAX_DYNAMITE", str(int(client["maxDynamite"]))))

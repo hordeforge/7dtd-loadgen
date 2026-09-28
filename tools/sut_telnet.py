@@ -15,7 +15,11 @@ the process table.
 Usage:
   sut_telnet.py <host> <port> [--commands gettime,listents,listplayers]
                 [--out PATH] [--settle-ms N] [--tail-sleep SECONDS]
-  sut_telnet.py <host> <port> --commands spawnentity,0,zombieBoe --allow-mutating
+  sut_telnet.py <host> <port> --commands "spawnentity 12 zombieBoe" --allow-mutating
+
+The comma separates commands, so a command's own arguments are space-separated
+and it must not contain one: "spawnentity,0,zombieBoe" would send three
+commands, not a spawnentity.
 """
 
 import argparse
@@ -138,7 +142,9 @@ def redact_identities(text: str) -> str:
         if "[type=" in line:
             line = BRACKET_PLAYER_NAME.sub(
                 lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
-        elif "deaths=" in line:
+        elif "deaths=" in line and "pos=" in line:
+            # Both halves: the branch is only the row shape ROW_NAME matches, so
+            # gating on one half alone lets the other half skip the redaction.
             line = ROW_NAME.sub(lambda m: m.group(1) + alias(m.group(2)) + m.group(3), line)
         line = BANNER_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
         line = CLIENT_ADDRESS.sub(lambda m: m.group(1) + REDACTED, line)
@@ -160,7 +166,7 @@ def drain(sock, deadline):
             break
         try:
             data = sock.recv(65536)
-        except (ConnectionResetError, OSError):
+        except OSError:  # includes ConnectionResetError from a server-side close
             break
         if not data:
             break

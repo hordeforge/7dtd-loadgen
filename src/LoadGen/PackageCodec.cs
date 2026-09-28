@@ -822,7 +822,11 @@ public static class PackageCodec
         ushort count = BinaryPrimitives.ReadUInt16LittleEndian(data.Slice(o, 2));
         o += 2;
 
-        if (payloadSize < 0 || o + payloadSize > data.Length)
+        // Compare via subtraction (o <= data.Length is guaranteed above) so a
+        // crafted payloadSize near int.MaxValue cannot overflow o+payloadSize
+        // into a negative that slips past the bound check and makes the Slice
+        // below throw.
+        if (payloadSize < 0 || payloadSize > data.Length - o)
             return list;
         if (encrypted != 0)
             return list; // EAC encryption not implemented

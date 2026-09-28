@@ -193,7 +193,7 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
                               f"{as_cell(z_case.get('detail'))}",
                 })
         findings = [as_cell(f) for f in as_list(d.get("findings"))]
-        if d.get("compared") is False:
+        if not d.get("compared"):
             verdict = "ONE-SIDE"
         elif deltas or findings:
             verdict = "DELTAS"

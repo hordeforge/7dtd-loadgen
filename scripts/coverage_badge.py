@@ -51,11 +51,17 @@ def main(argv: list[str]) -> int:
         # not die with a traceback inside the badge job.
         print(f"ERROR: cannot read cobertura XML {argv[1]}: {e}", file=sys.stderr)
         return 2
+    # A missing line-rate means the coverage step produced nothing, which is
+    # not 0% coverage: defaulting to "0" would publish a green badge for a run
+    # that measured nothing.
+    rate = root.get("line-rate")
+    if rate is None:
+        print(f"ERROR: {argv[1]} has no line-rate attribute", file=sys.stderr)
+        return 2
     try:
-        pct = round(float(root.get("line-rate", "0")) * 100)
+        pct = round(float(rate) * 100)
     except ValueError:
-        print(f"ERROR: {argv[1]} has no usable line-rate "
-              f"({root.get('line-rate')!r})", file=sys.stderr)
+        print(f"ERROR: {argv[1]} has no usable line-rate ({rate!r})", file=sys.stderr)
         return 2
     # Explicit UTF-8: a C-locale runner must not get a platform-default codec.
     Path(argv[2]).write_text(badge(pct, colour(pct)), encoding="utf-8", newline="\n")

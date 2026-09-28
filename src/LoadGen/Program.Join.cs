@@ -855,7 +855,11 @@ public static partial class Program
         }
         if (!string.IsNullOrEmpty(logPath))
         {
-            RunReport.WriteArtifact("log", logPath, () => File.WriteAllText(logPath, report + "\n"));
+            // Same writer as every other log artifact, so the bytes cannot drift
+            // with the host's newline convention. `report` is LF-joined and has
+            // no trailing terminator, so splitting it reproduces exactly the
+            // report plus its final newline.
+            RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, report.Split('\n')));
             var csvPath = Path.ChangeExtension(logPath, "_deaths.csv");
             var csv = new System.Text.StringBuilder();
             csv.Append(

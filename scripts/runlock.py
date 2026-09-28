@@ -59,8 +59,8 @@ def lock_path(host: str, port: str | int) -> Path:
 def acquire(host: str, port: str | int) -> int | None:
     """Take the target's lock, or return None when another run holds it.
 
-    Raises LockUnavailable when the lock file itself cannot be opened, so a
-    broken guard never reads as a busy one.
+    Raises LockUnavailable when the lock file itself cannot be opened, which
+    is not a refusal by a holder, so a broken guard never reads as a busy one.
 
     The returned fd must stay open for the life of the run: closing it (or
     exiting) releases the lock.
@@ -70,6 +70,8 @@ def acquire(host: str, port: str | int) -> int | None:
         path.parent.mkdir(parents=True, exist_ok=True)
         fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
     except OSError as e:
+        # An unwritable runtime dir must not read as "another run holds it":
+        # say why the guard is inert and let the operator decide.
         raise LockUnavailable(
             f"cannot open {path} ({e.__class__.__name__}: {e}); the overlap "
             f"guard is INACTIVE, so a second run on {host}:{port} would not "
@@ -96,11 +98,15 @@ def acquire_or_exit(host: str, port: str | int, what: str) -> int:
     try:
         fd = acquire(host, port)
     except LockUnavailable as e:
+        # The guard never ran. Saying "another run holds this" would send the
+        # operator to wait for a run that does not exist, and reusing the busy
+        # exit code would report an overlap that did not happen.
         print(f"ERROR: {e}", file=sys.stderr)
         print(f"       Refusing to run the {what} without the overlap guard.",
               file=sys.stderr)
         print("       Set XDG_RUNTIME_DIR (or TMPDIR) to a writable directory "
-              "and re-run.", file=sys.stderr)
+              "and re-run, or run with LOADGEN_ALLOW_OVERLAP=1 if you meant it.",
+              file=sys.stderr)
         raise SystemExit(LOCK_UNAVAILABLE_EXIT) from None
     if fd is None:
         print(

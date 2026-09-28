@@ -7,6 +7,12 @@ namespace SevenDTD.LoadGen;
 /// <see cref="GameJoinClient"/>, which is the join client and not a test host.</summary>
 public static class SelfTestJoin
 {
+    /// <summary>Floor on the action budget. The run below needs a death and a
+    /// respawn to reach its assertions, and a cohort smaller than that cannot
+    /// get there. The CLI clamps to this too so the reported action count is
+    /// the count that ran.</summary>
+    public const int MinActions = 12;
+
     public static int Run(int actionCount, int seed, Action<string>? log, out JoinStateMachine sm)
     {
         using var server = new MockGameServer(seed);
@@ -32,7 +38,7 @@ public static class SelfTestJoin
                 Port = server.Port,
                 PlayerName = "REFake",
                 TimeoutMs = 25_000,
-                ActionCount = Math.Max(actionCount, 12),
+                ActionCount = Math.Max(actionCount, MinActions),
                 ActionSeed = seed,
                 ClientId = 1,
                 Mode = ActionLoop.BotMode.Wander,

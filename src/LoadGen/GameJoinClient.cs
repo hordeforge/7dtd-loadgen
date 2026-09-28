@@ -1045,10 +1045,14 @@ public sealed class GameJoinClient
                     // now instead of looping until the (up to 1h) timeout.
                     State.Fail("player_id_invalid_entity");
                 else if (!State.IsJoined)
+                    // PlayerId can outrun the spawn request. Stash the id so the
+                    // respawn path and the summary can name it; the spawn package
+                    // still has to arrive to advance the stage.
                     State.EntityId = entityId;
-                // Already joined: ignore a duplicate PlayerId. Overwriting our
-                // established EntityId with a stray/second value would break all
-                // entity-keyed packet routing for the rest of the session.
+                // Otherwise the bot is already joined and this is a duplicate
+                // PlayerId: do nothing. Overwriting the established EntityId with
+                // a stray second value would break all entity-keyed packet routing
+                // for the rest of the session.
             }
             return;
         }
@@ -1162,8 +1166,11 @@ public sealed class GameJoinClient
         State.SpawnRequested = true;
         State.AwaitingRespawn = true;
         // Keep Died=true until spawn arrives so action loops do not restart early.
+        // Mask rather than Math.Abs: NetPackagePlayerSpawnedInWorld carries a
+        // raw int32 entity id with no range check, and Math.Abs(int.MinValue)
+        // throws, which would fault the bot task from inside the send path.
         var pkt = PackageCodec.BuildRequestToSpawnPlayer(
-            spawnReqId, chunkViewDim: 4 + (Math.Abs(State.EntityId) % 9));
+            spawnReqId, chunkViewDim: 4 + (int)(((long)State.EntityId & 0x7fffffff) % 9));
         if (!send(pkt))
         {
             State.AwaitingRespawn = false;
