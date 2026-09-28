@@ -176,7 +176,8 @@ public static partial class Program
     static readonly HashSet<string> ValueFlags = new(StringComparer.Ordinal)
     {
         "--actions", "--bench-warmup-ms", "--bench-window-ms", "--bot-mix",
-        "--concurrency", "--count", "--death", "--events-jsonl", "--host",
+        "--bot-mode", "--concurrency", "--count", "--death", "--events-jsonl",
+        "--host",
         "--horde-every-ms", "--horde-waves", "--id", "--log", "--max-dynamite",
         "--max-lives", "--min-pass-rate", "--name", "--observe-buff",
         "--observe-cvar", "--pace-ms", "--port", "--profile", "--ramp-ms",

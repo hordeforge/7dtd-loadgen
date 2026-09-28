@@ -496,3 +496,32 @@ def test_telnet_transcript_round_trips_through_the_capture_reader(tmp_path):
     surface = json.loads(r.stdout)
     assert surface["telnet"]["clockRateGameMinPerRealSec"] is not None, (
         "the reader could not derive a rate from the writer's own transcript")
+
+
+def test_report_survives_wrong_shaped_subobjects_when_both_sides_ran(tmp_path):
+    """Both sides readable, but their sub-blocks are the wrong type.
+
+    The NOT COMPARED path already classifies a side whose surface.json is
+    itself a bare list; this is the case it cannot reach. A capture whose
+    `log.severity` is null, whose `meta` is a list and whose `telnet.day` is a
+    scalar is still a readable run dir, and the join axis had already been
+    scored by the time a raw .get() on one of those raised: the report died
+    with a traceback and left no diff.json at all.
+    """
+    scenario = tmp_path / "scenario"
+    for side in ("stock", "zdtd"):
+        (scenario / side).mkdir(parents=True)
+        (scenario / side / "surface.json").write_text(json.dumps({
+            "join": {"pass": 4, "fail": 0},
+            "log": {"severity": None, "boot": 7},
+            "meta": [1, 2],
+            "telnet": {"day": 3, "entities": {"count": 5, "alive": 3}},
+            "saves": {"count": 1, "totalBytes": 2048, "files": {"world": 1}},
+        }), encoding="utf-8")
+    r = _py([str(TOOLS / "sut_report.py"), str(scenario)])
+    assert r.returncode == 0, r.stderr
+    diff = json.loads((scenario / "diff.json").read_text(encoding="utf-8"))
+    assert diff["compared"] is True
+    # The axes that were readable are still scored, not skipped.
+    assert "PASS joined" in (scenario / "REPORT.md").read_text(encoding="utf-8")
+    assert "entities total" in (scenario / "REPORT.md").read_text(encoding="utf-8")

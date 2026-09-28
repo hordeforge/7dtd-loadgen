@@ -233,3 +233,22 @@ def test_missing_playtest_root_warns_when_nothing_is_at_stake(tmp_path, monkeypa
 
     assert "loadgen scenarios only" in capsys.readouterr().err
     assert "scen-clean" in (out / "CONSOLIDATED.md").read_text(encoding="utf-8")
+
+
+def test_compare_verify_prints_every_verdict_the_report_can_emit():
+    """`make compare-verify` is the triage loop's verdict printer.
+
+    It filtered the generated table on a hand-written list of verdicts, so a
+    verdict this report added later printed nothing: the row vanished from the
+    triage output and read as "no entry here" rather than as the finding it is.
+    The filter is checked against VERDICT_ORDER so the two cannot drift.
+    """
+    from consolidated_report import VERDICT_ORDER
+
+    root = Path(__file__).resolve().parents[1]
+    makefile = (root / "Makefile").read_text(encoding="utf-8")
+    awk_lines = [ln for ln in makefile.splitlines() if "v==" in ln]
+    assert awk_lines, "the compare-verify verdict filter is gone from the Makefile"
+    for verdict in VERDICT_ORDER:
+        assert f'v=="{verdict}"' in makefile, (
+            f"make compare-verify never prints a {verdict} row")

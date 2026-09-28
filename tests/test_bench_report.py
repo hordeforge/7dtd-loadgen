@@ -244,3 +244,23 @@ def test_zone_less_stamps_are_not_a_wall(tmp_path):
     for lap, scenario in (("lap2", "naive"), ("lap3", "dst"), ("lap4", "mixed")):
         assert laps[lap]["scenarios"][scenario]["wallS"] is None, (
             f"{scenario} stamps published a wall from stamps that carry no zone")
+
+
+def test_missing_join_counts_read_as_na_not_a_python_repr(tmp_path):
+    """A run-meta with no summary and no stats.json has no join counts.
+
+    Interpolating the coerced None straight into the table published
+    "None/None" as the cohort's pass/fail cell, next to a wall, an APM verdict
+    and a bench window that all read n/a when the capture had nothing to say.
+    A reader counting parsed table cells reads "None" as evidence that the
+    value was absent, not as an unreported measurement.
+    """
+    _make_lap(tmp_path, "lap1", {"bench": {"scenario": "bench",
+                                           "hostLoadStart": "1.0",
+                                           "hostLoadEnd": "1.2"}})
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    md = (out / "bench-stock.md").read_text(encoding="utf-8")
+    assert "None" not in md, md
+    assert "| lap1 | bench | n/a |" in md, md
