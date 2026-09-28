@@ -16,10 +16,15 @@ GAME_NAME="${RE_GAME_NAME:-BotPoi_${WORLD_NAME}_${WORLD_GEN_SIZE}}"
 start=0
 [[ "${1:-}" == "--start" ]] && start=1
 
-# Guard: an empty GAME_NAME would make the wipe glob "Saves/*/" and rm -rf every
-# world. Never allow that.
-if [[ -z "${GAME_NAME// }" ]]; then
-  echo "reset_world: refusing to run with empty GAME_NAME (would wipe all saves)" >&2
+# Guard: GAME_NAME is a caller-supplied path component that reaches the rm -rf
+# below, so "../../.." retargets the delete outside the saves tree, and an
+# empty name makes the glob "Saves/*/" and wipes every world. Game names are
+# letters, digits, dot, dash and underscore; anything else is a mistake, and
+# the leading-alnum requirement rejects "", "   " and a name of dots.
+if [[ ! "$GAME_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+  echo "reset_world: refusing to run with GAME_NAME='$GAME_NAME'" >&2
+  echo "  it reaches 'rm -rf \$USERDATA/Saves/*/\$GAME_NAME'; use a game name of" >&2
+  echo "  letters, digits, dot, dash and underscore" >&2
   exit 1
 fi
 

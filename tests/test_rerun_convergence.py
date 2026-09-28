@@ -88,17 +88,23 @@ def test_reset_world_wipe_twice_leaves_the_same_state(tmp_path):
         sorted(str(p.relative_to(ud1)) for p in ud1.rglob("*"))
 
 
-def test_reset_world_refuses_empty_game_name_on_every_run(tmp_path):
+def test_reset_world_refuses_a_game_name_it_cannot_wipe_safely(tmp_path):
     marker_root = tmp_path / "ud"
     keep = _make_save(marker_root, WORLD_NAME, "Precious")
     decoy = _make_save(marker_root, WORLD_NAME, GAME_NAME)
+    outside = marker_root / "outside"
+    outside.mkdir()
+    (outside / "keep.txt").write_text("not a save", encoding="utf-8")
 
-    for attempt in (1, 2):
-        r = _reset(marker_root, game_name="   ")
-        assert r.returncode != 0, f"run {attempt}: whitespace GAME_NAME must be refused"
-        assert "refusing to run with empty GAME_NAME" in r.stderr
+    # Every one of these reaches `rm -rf "$USERDATA/Saves/*/$GAME_NAME"`, and
+    # a name outside the charset retargets that delete out of the saves tree.
+    for attempt, name in enumerate(("   ", "..", "../outside", "a/b", "Bot Poi"), start=1):
+        r = _reset(marker_root, game_name=name)
+        assert r.returncode != 0, f"run {attempt}: GAME_NAME={name!r} must be refused"
+        assert "refusing to run with GAME_NAME" in r.stderr
         # The refusal fires before any deletion: both saves survive every run.
         assert keep.exists() and decoy.exists()
+        assert (outside / "keep.txt").exists()
 
 
 # --- run_loadgen.sh overlap guard ------------------------------------------

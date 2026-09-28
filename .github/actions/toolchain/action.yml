@@ -11,9 +11,25 @@ runs:
     - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
       with:
         dotnet-version: 8.0.x
+    # The NuGet http cache holds the service index and per-package registration
+    # metadata restore consults before it can decide the global-packages
+    # folder is complete. At its default location it sits outside
+    # ~/.nuget/packages, so every run re-fetched it over the network even with
+    # a warm package cache. Point it at a path the cache step also restores,
+    # so the metadata travels with the packages. runner.temp keeps it out of
+    # the checkout (ruff walks the tree), and the mkdir keeps the path present
+    # on a cold run, where actions/cache validates paths before restoring.
+    - name: Place the NuGet http cache where the cache step reads it
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "NUGET_HTTP_CACHE_PATH=${{ runner.temp }}/nuget-http-cache" >> "$GITHUB_ENV"
+        mkdir -p "${{ runner.temp }}/nuget-http-cache"
     - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: ~/.nuget/packages
+        path: |
+          ~/.nuget/packages
+          ${{ runner.temp }}/nuget-http-cache
         key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/packages.lock.json') }}
         restore-keys: nuget-${{ runner.os }}-
     - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1

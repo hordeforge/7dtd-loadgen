@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Manual re-run: the badge publish writes to the badges branch, so a runner
+  # lost mid-push cannot be retried from the UI without landing an empty
+  # commit just to trigger a new push.
+  workflow_dispatch:
 
 # One run per ref: a fresh push cancels the superseded in-progress run
 # instead of queueing duplicate parallel jobs.
@@ -34,6 +38,16 @@ jobs:
     needs: loadgen
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Own group, overriding the workflow-level cancel-in-progress above. That
+    # setting is right for the test lane (a superseded push should stop
+    # spending runner minutes) and wrong here: this job mutates the badges
+    # branch, and cancelling it mid-push leaves a half-applied ref that the
+    # next run cannot fast-forward past. cancel-in-progress: false queues
+    # instead, so two close main pushes publish in order rather than racing
+    # two writers onto one ref.
+    concurrency:
+      group: ci-coverage-badge-${{ github.ref }}
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:

@@ -73,6 +73,15 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
+- The NuGet http cache moves under a path the CI cache step restores, so a warm
+  package cache no longer re-fetches the service index and registration
+  metadata on every run.
+- Both workflows take a manual dispatch: `ci.yml` to retry a badge publish
+  without an empty commit, `release.yml` to re-verify a tag. The release gate
+  checks out and reads the tag named in the dispatch input, not the branch the
+  run started from.
+- `make reset-world` and `make reset-world-4k` wrap `scripts/reset_world.sh`,
+  which had no entry point outside the script itself.
 - Latency percentiles cover the whole run. `PingStats` kept the first 200k RTT
   samples and dropped everything after them, so a long soak reported the
   opening window as the run and silently froze mid-run regressions. Past the
@@ -223,6 +232,13 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Fixed
 
+- The coverage badge no longer publishes under a cancel-in-progress group. Two
+  pushes to `main` seconds apart cancelled the first badge job mid-push to the
+  `badges` branch, leaving a ref the next run could not fast-forward past. The
+  job carries its own group and queues instead of cancelling.
+- `reset_world.sh` refused only an empty `RE_GAME_NAME`. A traversal value
+  reached `rm -rf "$USERDATA/Saves/*/$GAME_NAME"` and deleted outside the saves
+  tree. The name is now charset-checked before the wipe.
 - A host that does not route `127.0.0.0/8` can run a cohort. The per-bot
   preflight bind turned an unbindable `127.x.x.x` map address into a hard
   `FAIL udp`, so every bot past the first died and the run reported a

@@ -14,6 +14,14 @@ name: release
 on:
   push:
     tags: ["v*"]
+  # Re-run the gate by hand when a tag was pushed while the runner was down
+  # (or the tag is being retried after a failed verification).
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to verify, e.g. v0.4.2
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -28,6 +36,29 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # A manual dispatch checks out whatever ref the operator picked, which
+      # need not be the tag under verification. Resolve the tag here so the
+      # gate below always reads the commit the tag names, and fail by name
+      # when it does not exist.
+      - name: Resolve the tag being verified
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" != workflow_dispatch ]]; then exit 0; fi
+          # The token rides an http header, never a remote URL, and is scoped
+          # to this step: the checkout above persists no credentials, so
+          # nothing later in the lane can reuse it.
+          auth="http.https://github.com/.extraheader=AUTHORIZATION: bearer ${GITHUB_TOKEN}"
+          if ! git -c "$auth" fetch --depth 1 origin \
+                 "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"; then
+            echo "ERROR: tag '$RELEASE_TAG' not found in $GITHUB_REPOSITORY" >&2
+            exit 1
+          fi
+          git checkout -q "refs/tags/$RELEASE_TAG"
+          echo "resolved $RELEASE_TAG to $(git rev-parse --short HEAD)"
       - uses: ./.github/actions/toolchain
       # A tag is a release claim about this exact commit, and the ci workflow
       # does not run for tag pushes. Gate the tag on the same lane it gates a
@@ -35,9 +66,14 @@ jobs:
       - run: make test
       - name: Check the tag matches src/LoadGen/LoadGen.csproj
         shell: bash
+        env:
+          # A tag push names the tag in GITHUB_REF_NAME; a manual dispatch runs
+          # on a branch, so the requested tag is an input. Either way the
+          # resolve step above checked out that exact ref.
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          TAG="$RELEASE_TAG"
           MANIFEST="src/LoadGen/LoadGen.csproj"
           case "$TAG" in v*) ;; *) echo "ERROR: tag '$TAG' does not start with 'v'" >&2; exit 1;; esac
           SHIPPED="$(sed -n 's|.*<Version>\([^<]*\)</Version>.*|\1|p' "$MANIFEST" | head -1)"

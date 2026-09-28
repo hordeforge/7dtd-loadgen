@@ -10,7 +10,6 @@ left to a reviewer to re-derive on every edit.
   - the bench client is launched from an argv array, never a `bash -c` body
   - the CI checkouts do not persist GITHUB_TOKEN into .git/config
 """
-
 from __future__ import annotations
 
 import re
@@ -19,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 COMPARE_SUT = (ROOT / "scripts/compare_sut.sh").read_text(encoding="utf-8")
 BENCH = (ROOT / "scripts/bench_stock.sh").read_text(encoding="utf-8")
+RESET_WORLD = (ROOT / "scripts/reset_world.sh").read_text(encoding="utf-8")
 
 
 def _guards(text: str, variables: list[str]) -> None:
@@ -38,6 +38,7 @@ def test_evidence_path_inputs_are_validated():
     evidence root."""
     _guards(COMPARE_SUT, ["SCENARIO_ID", "WORLD_NAME", "HOST"])
     _guards(BENCH, ["LAP", "WORLD_NAME", "ADMIN_PORT"])
+    _guards(RESET_WORLD, ["GAME_NAME"])
 
 
 def test_bench_launches_the_client_without_a_shell_body():
@@ -65,3 +66,37 @@ def test_ci_checkouts_do_not_persist_the_token():
                 f"{workflow.name}: actions/checkout without persist-credentials "
                 "false leaves GITHUB_TOKEN in .git/config for later steps"
             )
+
+
+def test_badge_publish_is_not_cancellable_mid_push():
+    """The workflow-level group cancels a superseded push, which is right for
+    the test lane and wrong for the job that writes the badges branch: a cancel
+    mid-push leaves a ref the next run cannot fast-forward past. The publishing
+    job carries its own group, queued rather than cancelled."""
+    ci = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    job = ci.split("  coverage-badge:", 1)[1]
+    assert "cancel-in-progress: false" in job, (
+        "coverage-badge must override the workflow-level cancel-in-progress, or a "
+        "second push to main kills it mid-push to the badges branch"
+    )
+    assert "permissions:\n      contents: write" in job, (
+        "coverage-badge needs the job-scoped contents: write the badge push uses"
+    )
+
+
+def test_release_gate_verifies_the_dispatched_tag():
+    """A manual run must check out and read the tag it was asked about, not the
+    branch the dispatch happened to start from."""
+    release = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+    assert "workflow_dispatch:" in release, (
+        "release.yml has no manual trigger, so a tag pushed while the runner was "
+        "down can only be retried by pushing a new tag"
+    )
+    assert "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" in release, (
+        "the release gate must fetch the requested tag, not the dispatched ref"
+    )
+    assert 'GITHUB_REF_NAME"' not in release, (
+        "GITHUB_REF_NAME is the branch on a dispatch; the tag must come from "
+        "inputs.tag"
+    )
+

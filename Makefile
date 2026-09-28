@@ -34,7 +34,19 @@ endif
 #   make build GAME_DIR=/path/to/7 Days to Die Dedicated Server
 GAME_DIR ?=
 
-.PHONY: help doctor lint build selftest unittest unittest-one pytest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage sbom clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help doctor lint build selftest unittest unittest-one pytest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage sbom clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report reset-world reset-world-4k
+
+# Stop the dedicated and wipe the playthrough save, keeping the deterministic
+# generated world: the state a canonical benchmark run has to start from.
+# RE_GAME_NAME must match the dedicated's GameName, which is what
+# start_dedicated_prefab.sh derives from the world knobs.
+#   make reset-world         # stop + wipe, server left stopped
+#   make reset-world-4k      # wipe, then relaunch the default 4k RWG dedicated
+reset-world:
+	bash scripts/reset_world.sh
+
+reset-world-4k:
+	bash scripts/reset_world.sh --start
 
 help:
 	@echo "7dtd-loadgen"
@@ -55,6 +67,8 @@ help:
 	@echo "  make join                Join bots to stock dedicated (bots use port 26902)"
 	@echo "  make dedicated-realearth Start RealEarth dedicated (sibling project)"
 	@echo "  make join-realearth      Join bots to RealEarth dedicated"
+	@echo "  make reset-world         Stop the dedicated and wipe its playthrough save"
+	@echo "  make reset-world-4k      Same, then relaunch the default 4k RWG dedicated"
 	@echo "  make scenarios           List RealEarth loadgen scenario ids"
 	@echo "  make research-save-check Verify every probe save against the research codecs"
 	@echo "                          (7dtd-engine-research make save-roundtrip-all; needs the sibling repo)"
