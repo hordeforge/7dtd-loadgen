@@ -267,14 +267,20 @@ nohup ./7DaysToDieServer.x86_64 \
 echo $! >"$USERDATA/dedicated.pid"
 echo "started pid=$(cat "$USERDATA/dedicated.pid")"
 
-# RWG gen can take a while; allow up to ~10 min
+# RWG gen can take a while; allow up to ~10 min of sleeping. The loop's real
+# cost is the sleep plus a grep over a log that grows to hundreds of MB, so the
+# iteration count is not a duration: on a loaded host 300 rounds take far longer
+# than 600s, and a message reading "60 * 2s" sent the operator looking for a
+# 2-minute boot that had already run for ten. Every message below reports the
+# measured elapsed time instead.
 ready=0
+ready_start=$SECONDS
 for i in $(seq 1 300); do
   # grep, not rg: on hosts without ripgrep an rg-based ready probe never
   # matches (false "timeout waiting for StartGame", then kills a healthy
   # server) and the progress rg -n below aborts under pipefail.
   if grep -q "StartGame done" "$LOG" 2>/dev/null; then
-    echo "Server ready ($i * 2s)"
+    echo "Server ready after $(( SECONDS - ready_start ))s"
     grep -En "GameWorld|GameName|WorldGen|EnemySpawnMode|StartGame done|createWorld|Generating|RWG" "$LOG" 2>/dev/null | head -40 || true
     ready=1
     break
@@ -286,13 +292,13 @@ for i in $(seq 1 300); do
   fi
   # progress crumbs during long RWG gen
   if (( i % 15 == 0 )); then
-    echo "… still waiting (${i}*2s); last log lines:"
+    echo "… still waiting ($(( SECONDS - ready_start ))s); last log lines:"
     tail -3 "$LOG" 2>/dev/null || true
   fi
   sleep 2
 done
 if [[ "$ready" != "1" ]]; then
-  echo "ERROR: timeout waiting for StartGame" >&2
+  echo "ERROR: timeout waiting for StartGame after $(( SECONDS - ready_start ))s" >&2
   tail -60 "$LOG" || true
   # A half-booted server still holds the game + telnet ports and loads the
   # host; this script owns it, so stop it instead of orphaning it.

@@ -138,3 +138,28 @@ def test_release_gate_verifies_the_dispatched_tag():
         "inputs.tag"
     )
 
+
+def test_boot_waits_report_measured_elapsed_not_the_round_count():
+    """Every server-ready loop sleeps a fixed interval and then re-reads a log
+    that grows to hundreds of MB, so its round count is not a duration: 300
+    rounds of sleep 2 plus a growing grep took far longer than the "600s" the
+    old "60 * 2s" message implied, and an operator could not tell a slow boot
+    from a stuck one. The wait must be timed, and every message must print the
+    measured elapsed seconds."""
+    for name in ("start_dedicated_prefab.sh", "bench_stock.sh", "compare_sut.sh"):
+        text = (ROOT / "scripts" / name).read_text(encoding="utf-8")
+        assert "ready_start=$SECONDS" in text, (
+            f"{name}: the server-ready wait takes no start timestamp, so no "
+            "message can report how long the boot actually took"
+        )
+        assert re.search(r"\$\(\( SECONDS - ready_start \)\)s", text), (
+            f"{name}: the wait messages must print the measured elapsed seconds"
+        )
+        assert not re.search(r"not ready in \d+s", text), (
+            f"{name}: the timeout message claims the loop's nominal budget, not "
+            "the time the boot actually took"
+        )
+        assert not re.search(r"\$\{?i\}?\*\d+s", text), (
+            f"{name}: a duration taken from the round counter is not a duration"
+        )
+
