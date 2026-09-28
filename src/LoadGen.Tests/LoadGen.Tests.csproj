@@ -14,11 +14,14 @@
          fallback), which would make a shared lock file differ per machine. -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
+  <!-- Exact pins ([x.y.z]), not NuGet minimum ranges: a bare Version is a
+       floor, so restore floats to any later release of the same major. The
+       committed packages.lock.json is the second lock; this is the first. -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4" PrivateAssets="all" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="[17.14.1]" />
+    <PackageReference Include="coverlet.collector" Version="[6.0.4]" PrivateAssets="all" />
+    <PackageReference Include="xunit" Version="[2.9.3]" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="[3.1.5]" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../LoadGen/LoadGen.csproj" />

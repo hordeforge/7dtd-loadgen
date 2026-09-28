@@ -31,9 +31,11 @@
        would diverge from the protocol the bots emulate. 1.3.5 is the latest
        1.x release and adds an incoming-fragments limit when parsing
        untrusted server packets. The bracket range is an exact pin: a bare
-       1.3.5 is a minimum version, and this project has no packages.lock.json
-       (the game-DLL branch above makes one machine-dependent), so restore
-       would otherwise take the newest 1.x published since. -->
+       Version="1.3.5" is a minimum range in NuGet, so restore would float
+       to any later 1.x published after the pin; and this project has no
+       packages.lock.json (the game-DLL branch above makes one
+       machine-dependent), so restore would otherwise take the newest 1.x
+       published since. -->
   <ItemGroup Condition="!Exists('$(GameManaged)/LiteNetLib.dll')">
     <PackageReference Include="LiteNetLib" Version="[1.3.5]" />
   </ItemGroup>

@@ -53,6 +53,8 @@ workspace/bench/*/*/apm/**
 # purpose; the rules below keep that explicit.
 .gauntlet.lock
 *.lock
+# A lockfile is the build's input, not local state: re-include the ones this
+# repo ships so a regenerated uv.lock is still stageable.
 !uv.lock
 !packages.lock.json
 !*/packages.lock.json

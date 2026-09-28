@@ -76,6 +76,7 @@ Directory.Build.props  Shared C# build flags: LangVersion pin, PathMap, no
                        git queries at compile time (keeps artifacts
                        byte-identical across checkout paths)
 global.json            SDK pin: 8.0.x only (rollForward latestFeature)
+.python-version        Python pin: 3.11, the minor mypy analyses against
 src/LoadGen/       C# client (join, actions, death, respawn, telnet pressure)
 src/LoadGen.Tests/ C# unit tests (`make unittest`)
 scripts/           dedicated start + client/scenario/bench runners
@@ -85,7 +86,10 @@ tools/             report + comparison tooling
 
 Python test deps come from `uv.lock` (`make test` runs
 `uv run --locked --extra dev pytest`); do not bypass the lock with
-`uv run --with`.
+`uv run --with`. The interpreter is pinned by `.python-version` (3.11) and
+must stay the minor `[tool.mypy] python_version` analyses; `uv` resolves it,
+so a host with only a newer Python downloads the pinned one rather than
+silently running the gates elsewhere.
 
 ## Workload controls
 

@@ -1,6 +1,10 @@
 """scripts/loadgen_manifest.py: the 7dtd.loadgen.runner.v1 artifact written after
 every run_loadgen.sh cohort.
 
+Distinct from the per-client 7dtd.loadgen.run.v1 manifest the client writes
+itself via --run-manifest: the two carry different fields and share no id, so
+this suite pins the runner schema id as well as the fields.
+
 run_loadgen.sh feeds it the whole workload from the environment and treats a
 non-zero exit as a best-effort WARN, so a manifest that drops a field or
 mislabels a run stays silent: the record claims a configuration the cohort did
@@ -124,7 +128,7 @@ def test_non_numeric_numeric_field_fails_loud_instead_of_recording_zero(tmp_path
     # downstream lap summary, so the manifest is refused outright and the
     # caller keeps the client's own exit code. The write aborts naming the
     # offending field, and the file must not exist, so no half-populated
-    # artifact is left behind.
+    # artifact is left behind rather than a workload the cohort never ran.
     out, r = _write(tmp_path, {"LOADGEN_COUNT": "eight"})
     assert r["returncode"] != 0
     assert "LOADGEN_COUNT" in r["stderr"]
