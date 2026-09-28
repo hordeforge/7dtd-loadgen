@@ -8,6 +8,18 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+### Added
+
+- `make doctor` names a missing build or test tool (.NET 8 SDK, `shellcheck`,
+  `uv`) instead of leaving `make lint` to fail with `shellcheck: command not
+  found`. `make lint` and `make test` run it first, and `make build` reports
+  the missing SDK directly.
+- `make pytest-one T=<substring>` runs one Python gate, matching
+  `make unittest-one` for the C# suite. The full `uv run ... pytest` invocation
+  was documented only inside `make help` prose.
+- `CONTRIBUTING.md`: setup, the one-command verification (`make test`, the lane
+  CI runs), the edit-test loop, and where new tests and scenarios go.
+
 ### Changed
 
 - Per-player identifiers no longer reach kept run evidence. Telnet
@@ -36,6 +48,11 @@ under **Changed** with their migration path.
   rewritten with `sed -i` and the serverconfig templates go through
   `sbconfig.py`'s line-based insert, so a CRLF checkout changes what those
   tools match.
+- `make help` pointed at `../RUNBOOK.md`, which is not in this repository; it
+  now names the README sections that hold the port model, secrets and scaling.
+- `make compare-consolidated` ran `tools/consolidated_report.py` with the system
+  `python3`, bypassing the locked env every other Python lane uses. It now runs
+  under `uv run --locked` like `make bench-report`.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the

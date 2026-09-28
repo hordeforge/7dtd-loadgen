@@ -24,11 +24,12 @@ endif
 #   make build GAME_DIR=/path/to/7 Days to Die Dedicated Server
 GAME_DIR ?=
 
-.PHONY: help lint build selftest unittest unittest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help doctor lint build selftest unittest unittest-one pytest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
 	@echo ""
+	@echo "  make doctor              Preflight: name every missing build/test tool"
 	@echo "  make build               Build 7dtd-loadgen (GAME_DIR=<path> builds"
 	@echo "                           against a game install's LiteNetLib instead)"
 	@echo "  make lint                Static gates: shellcheck on scripts/, ruff +"
@@ -36,8 +37,7 @@ help:
 	@echo "  make selftest            In-process join + respawn CI gate"
 	@echo "  make unittest            C# unit tests (JoinStateMachine, RampDelay, JoinGate)"
 	@echo "  make unittest-one T=Pat  One C# test: class/method name substring"
-	@echo "                           (pytest single test: uv run --locked --extra"
-	@echo "                            dev pytest tests/test_loadgen.py -k name)"
+	@echo "  make pytest-one T=pat    One Python gate: name substring (pytest -k)"
 	@echo "  make test                lint + build + selftest + C# unit tests"
 	@echo "                           + pytest golden-wire/RealEarth gates"
 	@echo "  make dedicated-4k        Start RWG 4096 dedicated (POI/sleepers, no RealEarth)"
@@ -65,7 +65,8 @@ help:
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
-	@echo "See ../RUNBOOK.md for the full workflow, port model, dashboard access, and scaling."
+	@echo "Full workflow, port model, dashboard access and scaling: README.md"
+	@echo "(Quick start, Configuration reference, Host resource limits and scaling)."
 	@echo ""
 	@echo "Bot knobs:    LOADGEN_MODE(probe|join|self-test-join) LOADGEN_HOST LOADGEN_PORT"
 	@echo "              LOADGEN_COUNT LOADGEN_CONCURRENCY LOADGEN_RAMP_MS LOADGEN_TIMEOUT"
@@ -76,7 +77,50 @@ help:
 	@echo "              RE_GAME_NAME RE_DEDICATED_USERDATA RE_DEDICATED_FOREGROUND REALEARTH_ROOT"
 	@echo "              RE_SCENARIO_PACK=h500|everest  LOADGEN_LIVE_REALEARTH=1 (live pytest)"
 
+# Preflight for the lanes that shell out to tools the repo does not vendor.
+# Without it a missing binary surfaces as "<tool>: command not found" plus
+# make's Error 127, which reads as a broken checkout rather than an
+# uninstalled dependency. Runs from lint and test; `make build` only needs
+# dotnet, so it checks that alone.
+doctor:
+	@missing=""; \
+	for tool in dotnet uv shellcheck; do \
+	  found=$$(command -v "$$tool" 2>/dev/null || true); \
+	  if [ -n "$$found" ]; then \
+	    printf '  %-11s ok  %s\n' "$$tool" "$$found"; \
+	  else \
+	    printf '  %-11s MISSING\n' "$$tool"; \
+	    missing="$$missing $$tool"; \
+	  fi; \
+	done; \
+	sdk=$$(dotnet --version 2>/dev/null || true); \
+	if [ -n "$$sdk" ]; then \
+	  printf '  %-11s %s (global.json pins 8.0.x)\n' dotnet-sdk "$$sdk"; \
+	elif [ -z "$$missing" ]; then \
+	  printf '  %-11s MISSING: no .NET 8 SDK for global.json\n' dotnet-sdk; \
+	  missing="$$missing dotnet-sdk"; \
+	fi; \
+	if [ -n "$$missing" ]; then \
+	  echo ""; \
+	  case "$$missing" in *dotnet*) \
+	    echo "  dotnet     .NET 8 SDK: https://dotnet.microsoft.com/download/dotnet/8.0" >&2;; esac; \
+	  case "$$missing" in *uv*) \
+	    echo "  uv         curl -LsSf https://astral.sh/uv/install.sh | sh" >&2;; esac; \
+	  case "$$missing" in *shellcheck*) \
+	    echo "  shellcheck apt-get install shellcheck  (brew install shellcheck)" >&2;; esac; \
+	  exit 1; \
+	fi; \
+	echo "doctor: every build/test tool present"
+
 build:
+	@command -v dotnet >/dev/null 2>&1 || { \
+	  echo "ERROR: dotnet not on PATH; make build needs the .NET 8 SDK pinned in" >&2; \
+	  echo "       global.json. Install it (https://dotnet.microsoft.com/download)" >&2; \
+	  echo "       or run 'make doctor' for the full preflight. Rejected SDKs are" >&2; \
+	  echo "       not ignored: building against another major would emit a binary" >&2; \
+	  echo "       this repo's CI never produces." >&2; \
+	  exit 1; \
+	}
 	dotnet build "$(PROJ)" -c Release -v q -p:GameDir="$(GAME_DIR)"
 	@echo "OK → $(EXE)"
 
@@ -108,10 +152,22 @@ endif
 # Static analysis gates. Shellcheck covers scripts/*.sh (preinstalled on the
 # CI runner image); ruff and mypy run inside the locked uv env so every machine
 # analyses with the exact pinned versions. All three fail the make test lane.
-lint:
+lint: doctor
 	shellcheck "$(SCRIPTS)"/*.sh
 	@cd "$(ROOT)" && uv run --locked --extra dev ruff check .
 	@cd "$(ROOT)" && uv run --locked --extra dev mypy
+
+# One Python gate without the full-suite noise: make pytest-one T=test_procs
+# (T matches any substring of a test name). Mirrors unittest-one for the C#
+# side, so the edit-test loop never needs the raw uv invocation.
+pytest-one: doctor
+ifneq ($(T),)
+	@cd "$(ROOT)" && uv run --locked --extra dev pytest tests -q --tb=short -k "$(T)"
+else
+	@echo "ERROR: no test given; usage: make pytest-one T=<name-substring>" >&2
+	@echo "       e.g. make pytest-one T=test_run_scenario_env" >&2
+	@exit 1
+endif
 
 test: lint build selftest unittest
 	@if command -v uv >/dev/null; then \
@@ -215,8 +271,8 @@ compare-worlds:
 # Regenerate the consolidated stock-vs-zdtd overview from committed evidence
 # (all loadgen scenarios + all playtest suites). No servers are needed; the
 # view cannot drift from the runs because it is computed, not hand-maintained.
-compare-consolidated:
-	python3 tools/consolidated_report.py
+compare-consolidated: doctor
+	@cd "$(ROOT)" && uv run --locked python tools/consolidated_report.py
 
 # The triage loop's re-run phase in one command: refresh every canonical
 # scenario (both servers), regenerate the consolidated overview, print the

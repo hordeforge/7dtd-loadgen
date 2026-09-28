@@ -25,10 +25,18 @@ bots against EAC-off test servers only.
 
 ## Requirements
 
-- .NET 8 SDK
-- 7DTD dedicated server (live joins only; `make build` always uses the pinned
-  NuGet LiteNetLib so binaries do not depend on a local install)
-- Optional: `uv` for Python tests
+`make doctor` checks all of these at once and names whatever is missing:
+
+| Tool | Needed for | Version |
+|---|---|---|
+| .NET SDK | build, selftest, C# unit tests | 8.0.x (pinned in `global.json`) |
+| `shellcheck` | `make lint` on `scripts/*.sh` | any recent release |
+| `uv` + Python | pytest gates, ruff, mypy (locked env from `uv.lock`) | Python >= 3.11 (`pyproject.toml`) |
+| 7DTD dedicated server | live joins only | V3.2.0 |
+
+`make test` (the lane CI runs) needs all three tools; a game install is never
+required for it, and `make build` always uses the pinned NuGet LiteNetLib so
+binaries do not depend on a local install.
 
 Default dedicated install path:
 
@@ -43,6 +51,9 @@ game install's LiteNetLib instead of the pinned NuGet package:
 ## Quick start
 
 ```bash
+# Preflight: names any missing tool before a lane fails on it
+make doctor
+
 # Build
 make build
 
@@ -470,10 +481,21 @@ the sibling `7dtd-server-apm` project to decide whether a change improved perfor
 
 ## Development and cleanup
 
+New contributors: [`CONTRIBUTING.md`](CONTRIBUTING.md) is the runnable path
+(setup, verification, edit-test loop, layout).
+
 ```bash
 make selftest  # in-process mock join and respawn; no game server required
-make test      # build + self-test-join + C# unit tests + pytest gates
+make test      # lint + build + self-test-join + C# unit tests + pytest gates
+               # (this is the whole verification; CI runs exactly this)
 make clean     # remove C# bin/ and obj/
+```
+
+The edit-test loop, one test at a time:
+
+```bash
+make unittest-one T=JoinStateMachineTests   # C# test by name substring
+make pytest-one T=test_procs                # Python gate by name substring
 ```
 
 The mock tests validate protocol layouts and state transitions, but a live
