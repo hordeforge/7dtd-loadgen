@@ -26,6 +26,8 @@ import json
 import os
 import sys
 
+from json_shape import as_count, as_dict, as_int, as_number
+
 # Locale-independent text boundary: the rendered text comes from UTF-8 JSON
 # evidence, but a C-locale runner gives stdout an ASCII codec and print()
 # raises. See scenario_env.py for the same block and its reason.
@@ -41,17 +43,75 @@ def load(run_dir):
         return None
     # A corrupt/truncated surface.json (run killed mid-write) must classify that
     # side as missing (NOT COMPARED), not abort the whole report with a
-    # traceback - same policy as bench_report.py's lap consolidation.
+    # traceback - same policy as bench_report.py's lap consolidation. A
+    # well-formed document of the wrong shape (a list, a bare number) is the
+    # same class of damage: it is not a surface, and every axis lookup below
+    # would raise AttributeError/KeyError from the middle of a comparison.
     try:
         with open(p, encoding="utf-8") as fh:
-            return json.load(fh)
+            doc = json.load(fh)
     except (OSError, ValueError) as e:
         print(f"WARN: unreadable {p}; treating side as missing: {e}", file=sys.stderr)
         return None
+    if not isinstance(doc, dict):
+        print(f"WARN: {p} is a JSON {type(doc).__name__}, not an object; "
+              "treating side as missing", file=sys.stderr)
+        return None
+    return doc
+
+
+def _dirty(side_meta):
+    """True when a run-meta side block records a non-empty dirty-file count.
+
+    compare_sut.sh interpolates the count into a shell variable, so the field
+    arrives as a numeric string ("0", "1"); other writers use a number. int()
+    on the real payload raised on the first shape that was not its own.
+    """
+    value = as_dict(side_meta).get("dirtyFiles")
+    if isinstance(value, str):
+        value = value.strip()
+    count = as_int(value) if not isinstance(value, str) else None
+    if count is None and isinstance(value, str) and value.isdigit():
+        count = int(value)
+    return bool(count)
 
 
 def save_summary(s):
-    return f"{s.get('count', 0)} file(s), {s.get('totalBytes', 0) / 1024:.0f} KiB"
+    """`N file(s), M KiB` for a captured inventory.
+
+    Every value here comes from a cross-process capture, so both the count and
+    the byte total are coerced: a string total would raise on the division and
+    take the report down after the comparison was already computed.
+    """
+    count = as_count(s.get("count"))
+    total = as_number(s.get("totalBytes"))
+    count_cell = "n/a" if count is None else str(count)
+    size_cell = "n/a" if total is None else f"{total / 1024:.0f} KiB"
+    return f"{count_cell} file(s), {size_cell}"
+
+
+def write_outputs(out_dir, report, payload):
+    """Write REPORT.md + diff.json, or name the write failure.
+
+    The report IS this tool's output: an unhandled OSError here (read-only
+    workspace, missing scenario dir) loses every computed axis to a traceback
+    and still leaves the caller with no exit code to act on.
+    """
+    if not os.path.isdir(out_dir):
+        print(f"ERROR: scenario directory {out_dir} does not exist", file=sys.stderr)
+        return 1
+    try:
+        with open(os.path.join(out_dir, "REPORT.md"), "w",
+                  encoding="utf-8", newline="\n") as fh:
+            fh.write(report)
+        with open(os.path.join(out_dir, "diff.json"), "w",
+                  encoding="utf-8", newline="\n") as fh:
+            json.dump(payload, fh, indent=1, sort_keys=True)
+    except OSError as e:
+        print(f"ERROR: cannot write report into {out_dir}: "
+              f"{e.__class__.__name__}: {e}", file=sys.stderr)
+        return 1
+    return 0
 
 
 def main():
@@ -76,15 +136,17 @@ def main():
     # Auditability: what was under test and when.
     for side, s in (("stock", stock), ("zdtd", zdtd)):
         if s and s.get("meta"):
-            m = s["meta"]
-            lg_dirty = " (dirty)" if int(m.get("loadgen", {}).get("dirtyFiles", 0) or 0) else ""
-            zl_dirty = " (dirty)" if int(m.get("zdtd", {}).get("dirtyFiles", 0) or 0) else ""
+            m = as_dict(s["meta"])
+            # run-meta.json comes from the harness, and a dirty-tree count is
+            # the one field that must not be a coerced "0".
+            lg_dirty = " (dirty)" if _dirty(m.get("loadgen")) else ""
+            zl_dirty = " (dirty)" if _dirty(m.get("zdtd")) else ""
             lines.append(f"- {side}: ran {m.get('startedAt')} | "
-                         f"loadgen {m.get('loadgen', {}).get('git', '?')}{lg_dirty} | "
-                         f"zdtd {m.get('zdtd', {}).get('git', '?')}{zl_dirty} | "
-                         f"client count={m.get('client', {}).get('count', '?')} "
-                         f"actions={m.get('client', {}).get('actions', '?')} "
-                         f"timeout={m.get('client', {}).get('timeoutMs', '?')}ms")
+                         f"loadgen {as_dict(m.get('loadgen')).get('git', '?')}{lg_dirty} | "
+                         f"zdtd {as_dict(m.get('zdtd')).get('git', '?')}{zl_dirty} | "
+                         f"client count={as_dict(m.get('client')).get('count', '?')} "
+                         f"actions={as_dict(m.get('client')).get('actions', '?')} "
+                         f"timeout={as_dict(m.get('client')).get('timeoutMs', '?')}ms")
     lines.append("")
 
     if stock is None or zdtd is None:
@@ -96,23 +158,26 @@ def main():
                      " ran the same client scenario. Missing capability or a"
                      " failed boot is recorded here, not faked.")
         if stock:
-            lines.append(f"- join: {stock['join'].get('pass')} PASS / "
-                         f"{stock['join'].get('fail')} FAIL")
+            join = as_dict(stock.get("join"))
+            lines.append(f"- join: {join.get('pass')} PASS / {join.get('fail')} FAIL")
         if zdtd:
-            lines.append(f"- join: {zdtd['join'].get('pass')} PASS / "
-                         f"{zdtd['join'].get('fail')} FAIL")
-        report = "\n".join(lines) + "\n"
-        with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
-            fh.write(report)
-        with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
-            json.dump({"scenario": scenario, "compared": False,
-                       "ran": ran, "missing": "zdtd" if ran == "stock" else "stock",
-                       "findings": []}, fh, indent=1, sort_keys=True)
-        print(report)
+            join = as_dict(zdtd.get("join"))
+            lines.append(f"- join: {join.get('pass')} PASS / {join.get('fail')} FAIL")
+        rc = write_outputs(
+            out_dir, "\n".join(lines) + "\n",
+            {"scenario": scenario, "compared": False,
+             "ran": ran, "missing": "zdtd" if ran == "stock" else "stock",
+             "findings": []})
+        if rc:
+            return rc
+        print("\n".join(lines) + "\n")
         return 0
 
     # ---- Join outcome ----
-    sj, zj = stock["join"], zdtd["join"]
+    # Every axis is coerced here, once. A capture whose axis is missing or of
+    # the wrong type reads as n/a/0 for the rest of the report instead of
+    # raising KeyError/TypeError once the comparison is half written.
+    sj, zj = as_dict(stock.get("join")), as_dict(zdtd.get("join"))
     axes["join"] = {"stock": sj, "zdtd": zj}
     lines.append("## Join outcome\n")
     lines.append("| axis | stock | zdtd |")
@@ -120,7 +185,8 @@ def main():
     lines.append(f"| PASS joined | {sj.get('pass')} | {zj.get('pass')} |")
     lines.append(f"| FAIL | {sj.get('fail')} | {zj.get('fail')} |")
     if sj.get("pass") and zj.get("pass"):
-        lines.append(f"| first pass | `{sj['firstPass'][:64]}` | `{zj['firstPass'][:64]}` |")
+        lines.append(f"| first pass | `{str(sj.get('firstPass'))[:64]}` | "
+                     f"`{str(zj.get('firstPass'))[:64]}` |")
     if sj.get("pass", 0) != zj.get("pass", 0):
         findings.append(f"join: PASS count differs (stock={sj.get('pass')} "
                         f"zdtd={zj.get('pass')})")
@@ -133,7 +199,7 @@ def main():
         findings.append("join: zdtd had zero PASS joins")
 
     # ---- Log categories ----
-    sl, zl = stock["log"], zdtd["log"]
+    sl, zl = as_dict(stock.get("log")), as_dict(zdtd.get("log"))
     axes["log"] = {"stock": sl, "zdtd": zl}
     lines.append("\n## Server log (normalized; stock skips [ScriptOrder] frame noise)\n")
     lines.append("| axis | stock | zdtd |")
@@ -164,15 +230,18 @@ def main():
                         f"zdtd={zl['severity'].get('EXC', 0)})")
 
     # ---- Entity counts ----
-    st, zt = stock.get("telnet"), zdtd.get("telnet")
+    st, zt = as_dict(stock.get("telnet")) or None, as_dict(zdtd.get("telnet")) or None
     axes["telnet"] = {"stock": st, "zdtd": zt}
     lines.append("\n## Telnet snapshot (gettime / listents / listplayers)\n")
     if st and st.get("day"):
         lines.append(f"- stock day/time: Day {st['day'][0]}, {st['day'][1]}:{st['day'][2]}")
     if zt and zt.get("day"):
         lines.append(f"- zdtd day/time: Day {zt['day'][0]}, {zt['day'][1]}:{zt['day'][2]}")
-    sr = st.get("clockRateGameMinPerRealSec") if st else None
-    zr = zt.get("clockRateGameMinPerRealSec") if zt else None
+    # A rate that is not a number is a capture this reader cannot compare, not
+    # an axis to subtract: abs() on two strings would take the report down
+    # after the comparison was computed.
+    sr = as_number(st.get("clockRateGameMinPerRealSec")) if st else None
+    zr = as_number(zt.get("clockRateGameMinPerRealSec")) if zt else None
     if sr is not None and zr is not None:
         lines.append(f"- clock rate (game-min per real-sec): stock={sr} zdtd={zr} "
                      f"(60-min day = 0.4)")
@@ -184,15 +253,15 @@ def main():
                         "(clock-rate check unavailable)")
     lines.append("\n| axis | stock | zdtd |")
     lines.append("|---|---|---|")
-    se = st.get("entities", {}) if st else {}
-    ze = zt.get("entities", {}) if zt else {}
+    se = as_dict(st.get("entities")) if st else {}
+    ze = as_dict(zt.get("entities")) if zt else {}
     lines.append(f"| entities total | {se.get('count', 'n/a')} | {ze.get('count', 'n/a')} |")
     lines.append(f"| entities alive | {se.get('alive', 'n/a')} | {ze.get('alive', 'n/a')} |")
-    sp = st.get("players", {}) if st else {}
-    zp = zt.get("players", {}) if zt else {}
+    sp = as_dict(st.get("players")) if st else {}
+    zp = as_dict(zt.get("players")) if zt else {}
     lines.append(f"| players | {sp.get('count', 'n/a')} | {zp.get('count', 'n/a')} |")
     for side, e in (("stock", se), ("zdtd", ze)):
-        t = e.get("types") or {}
+        t = as_dict(e.get("types"))
         if t:
             types = ", ".join(f"{k}={v}" for k, v in sorted(t.items()))
             lines.append(f"- {side} entity types: {types}")
@@ -201,8 +270,8 @@ def main():
                         f"zdtd={ze.get('count')})")
 
     # ---- Server banner (identity/config the telnet console announces) ----
-    sb = (st or {}).get("banner") or {}
-    zb = (zt or {}).get("banner") or {}
+    sb = as_dict(st.get("banner")) if st else {}
+    zb = as_dict(zt.get("banner")) if zt else {}
     if sb or zb:
         lines.append("\n## Server banner (telnet greeting)\n")
         lines.append("| field | stock | zdtd |")
@@ -222,7 +291,7 @@ def main():
         lines.append(f"- zdtd unknown commands: {zt['unknownCommands']}")
 
     # ---- zdtd APM (reported, not compared: stock has no equivalent) ----
-    za = zdtd.get("apm")
+    za = as_dict(zdtd.get("apm"))
     if za:
         lines.append("\n## zdtd APM (last snapshot; no stock equivalent)\n")
         for k in ("ticks", "join_ok", "join_fail", "net_packets_in", "net_packets_out",
@@ -234,7 +303,7 @@ def main():
                          f"{za.get('tickP99Ns')} / {za.get('tickMaxNs')}")
 
     # ---- stock APM (7dtd-server-apm capture; reported, not compared: format differs) ----
-    sa = stock.get("apmStock")
+    sa = as_dict(stock.get("apmStock"))
     if sa:
         lines.append("\n## stock APM (7dtd-server-apm capture window; no zdtd equivalent format)\n")
         if sa.get("session"):
@@ -246,15 +315,15 @@ def main():
                          f"(full collections: {sa.get('gcFullCollections', 'n/a')})")
         if sa.get("layers"):
             lines.append("- layer scores: "
-                         + ", ".join(f"{k}={v}" for k, v in sorted(sa["layers"].items())))
-        for layer, vals in sorted((sa.get("signals") or {}).items()):
+                         + ", ".join(f"{k}={v}" for k, v in sorted(as_dict(sa["layers"]).items())))
+        for layer, vals in sorted(as_dict(sa.get("signals")).items()):
             if vals:
                 lines.append(f"- {layer}: "
-                             + ", ".join(f"{k}={v}" for k, v in sorted(vals.items())))
+                             + ", ".join(f"{k}={v}" for k, v in sorted(as_dict(vals).items())))
 
     # ---- Gamestats (compared on shared names) ----
-    sg = (st or {}).get("gamestats") or {}
-    zg = (zt or {}).get("gamestats") or {}
+    sg = as_dict(st.get("gamestats")) if st else {}
+    zg = as_dict(zt.get("gamestats")) if zt else {}
     if sg or zg:
         lines.append("\n## Gamestats (compared on shared names)\n")
         shared = sorted(set(sg) & set(zg))
@@ -284,13 +353,13 @@ def main():
         lines.append("\n## Gamestats\n- none captured on either side")
 
     # ---- Save inventory ----
-    ss, zs = stock["saves"], zdtd["saves"]
+    ss, zs = as_dict(stock.get("saves")), as_dict(zdtd.get("saves"))
     axes["saves"] = {"stock": ss, "zdtd": zs}
     lines.append("\n## Save files (presence + sizes; formats differ by design)\n")
     lines.append(f"- stock: {save_summary(ss)}")
     lines.append(f"- zdtd: {save_summary(zs)}")
-    lines.append(f"- stock keys: {', '.join(list(ss.get('files', {}))[:8]) or 'none'}")
-    lines.append(f"- zdtd keys: {', '.join(list(zs.get('files', {}))[:8]) or 'none'}")
+    lines.append(f"- stock keys: {', '.join(list(as_dict(ss.get('files')))[:8]) or 'none'}")
+    lines.append(f"- zdtd keys: {', '.join(list(as_dict(zs.get('files')))[:8]) or 'none'}")
     if not ss.get("files"):
         findings.append("saves: stock produced no save files")
     if not zs.get("files"):
@@ -307,11 +376,11 @@ def main():
                  "../zdtd-server/docs/PROVENANCE.md (divergence register).*")
 
     report = "\n".join(lines)
-    with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(report)
-    with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
-        json.dump({"scenario": scenario, "compared": True,
-                   "findings": findings, "axes": axes}, fh, indent=1, sort_keys=True)
+    rc = write_outputs(
+        out_dir, report,
+        {"scenario": scenario, "compared": True, "findings": findings, "axes": axes})
+    if rc:
+        return rc
     print(report)
     return 0
 

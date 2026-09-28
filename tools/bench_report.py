@@ -69,13 +69,19 @@ def apm_summary(run_dir: Path) -> dict:
                     # report one, a blank cell only looks empty.
                     verdict = as_cell(line.strip().split(":", 1)[-1])
                     break
-        except OSError:
-            pass
+        except OSError as e:
+            # The verdict cell is the only cost evidence this summary carries;
+            # swallowing the read fault publishes 'n/a' as if the capture had
+            # simply reported no verdict.
+            print(f"WARN: unreadable {log}: {e}; APM verdict omitted",
+                  file=sys.stderr)
     sessions = sorted((run_dir / "apm").glob("session_*/summary.json"))
     if sessions:
         try:
             s = json.loads(sessions[-1].read_text(encoding="utf-8"))
-        except (ValueError, OSError):
+        except (ValueError, OSError) as e:
+            print(f"WARN: unreadable {sessions[-1]}: {e}; APM layers omitted",
+                  file=sys.stderr)
             s = None
         for layer in as_list(as_dict(s).get("layers")):
             if not isinstance(layer, dict):

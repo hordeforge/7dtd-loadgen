@@ -312,3 +312,68 @@ def test_missing_telnet_on_one_side_does_not_crash(tmp_path):
     diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
     assert diff["compared"] is True
     assert any(f.startswith("telnet: entity count differs") for f in diff["findings"])
+
+
+def test_unknown_sut_name_is_refused(tmp_path):
+    """The two sides have different log grammars and save layouts. An
+    unrecognized name used to fall through to the zdtd rules for every axis and
+    emit a full, plausible surface of zero counts, which reads as a comparison."""
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    (run_dir / "server.log").write_text(
+        "2026-08-12T00:00:00 1.0 INF createWorld: Navezgane\n", encoding="utf-8")
+    r = _py([str(TOOLS / "sut_capture.py"), str(run_dir), "stokc"])
+    assert r.returncode == 2
+    assert r.stdout.strip() == ""
+    assert "unknown sut" in r.stderr
+
+
+def test_unreadable_run_dir_fails_with_a_named_error(tmp_path):
+    """A run dir that cannot be read (here: a file where the dir belongs) must
+    name the fault and exit non-zero, not raise a traceback the harness has to
+    guess at."""
+    not_a_dir = tmp_path / "run"
+    not_a_dir.write_text("not a directory\n", encoding="utf-8")
+    r = _py([str(TOOLS / "sut_capture.py"), str(not_a_dir), "stock"])
+    assert r.returncode == 2
+    assert r.stdout.strip() == ""
+    assert "ERROR" in r.stderr
+
+
+def test_report_survives_wrong_shaped_surface(tmp_path):
+    """surface.json is written by another process. Well-formed JSON of the
+    wrong shape (a bare list) or missing/wrong-typed axes must classify that
+    side as missing, not raise out of the middle of the report."""
+    scenario = tmp_path / "scenario"
+    for side in ("stock", "zdtd"):
+        (scenario / side).mkdir(parents=True)
+    (scenario / "stock" / "surface.json").write_text("[1, 2, 3]\n", encoding="utf-8")
+    (scenario / "zdtd" / "surface.json").write_text(
+        json.dumps({"join": {"pass": "3", "fail": None}, "log": "not-a-map",
+                    "telnet": {"entities": [], "players": 7, "banner": ["x"],
+                               "gamestats": None, "clockRateGameMinPerRealSec": "fast"},
+                    "saves": {"count": "two", "totalBytes": "big", "files": []},
+                    "meta": {"loadgen": {"git": "abc", "dirtyFiles": "2"}},
+                    "apmStock": {"layers": ["cpu"], "signals": 3}}),
+        encoding="utf-8")
+    r = _py([str(TOOLS / "sut_report.py"), str(scenario)])
+    assert r.returncode == 0, r.stderr
+    assert "NOT COMPARED" in r.stdout
+    diff = json.loads((scenario / "diff.json").read_text(encoding="utf-8"))
+    assert diff["compared"] is False
+
+
+def test_report_write_failure_exits_nonzero(tmp_path):
+    """The report IS the tool's output: a write that fails has to surface as a
+    named error and a non-zero exit, not a traceback after a finished run."""
+    scenario = tmp_path / "scenario"
+    (scenario / "stock").mkdir(parents=True)
+    (scenario / "zdtd").mkdir(parents=True)
+    for side in ("stock", "zdtd"):
+        (scenario / side / "surface.json").write_text(
+            json.dumps({"join": {"pass": 1, "fail": 0}}), encoding="utf-8")
+    # REPORT.md as a directory: the open() for writing fails on every path.
+    (scenario / "REPORT.md").mkdir()
+    r = _py([str(TOOLS / "sut_report.py"), str(scenario)])
+    assert r.returncode == 1
+    assert "cannot write report" in r.stderr

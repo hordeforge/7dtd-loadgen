@@ -103,6 +103,18 @@ public sealed class PackageCodecStringBoundsTests
     }
 
     [Fact]
+    public void RejectsAFifthGroupThatOverflowsTheSignBit()
+    {
+        // Five groups whose top group is 0x7F: above 0x0F it is not a 32-bit
+        // length at all, and in the old int accumulator the shift put a 1 in
+        // bit 31, making the length negative where no `len > limit` bound
+        // rejects it and BinaryReader.ReadBytes turns it into an
+        // ArgumentOutOfRangeException.
+        using var r = Reader(new byte[] { 0x8E, 0xFF, 0xFF, 0xFF, 0x7F });
+        Assert.Throws<InvalidDataException>(() => PackageCodec.ReadBoundedString(r, "test"));
+    }
+
+    [Fact]
     public void RejectsATruncatedLengthPrefix()
     {
         using var r = Reader(new byte[] { 0x80 });

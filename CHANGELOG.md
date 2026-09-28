@@ -32,6 +32,11 @@ under **Changed** with their migration path.
   telemetry must stop the sweep, not report a perfect frame), and
   `webdash_password_hash.py` (the game's `base64(MD5(utf8(pass)))` encoding).
   `LoadRunner.ResolveConcurrency` gained a C# gate for its cohort clamp.
+- Gates for the two comparison report readers and the reconnect validator's
+  server lookup: a wrong-shaped `surface.json`, a wrong-shaped
+  `playtest-compare.json`, a report that cannot be written, a refused run
+  capture, and a server-pid lookup that fails are all outcomes with a named
+  exit code now.
 - `ruff` runs an explicit rule set in `pyproject.toml` instead of ruff's
   default, which covered neither the 100-column cap (`E501`) nor import
   order, bugbear, return-shape or quote consistency. `make lint` now fails on
@@ -156,6 +161,36 @@ under **Changed** with their migration path.
   `stats.json` holding valid JSON of the wrong shape, where every other
   malformed input takes the documented `0 0` fallback with a stderr note. A
   non-object document is now the same documented fallback.
+- `PackageCodec.ReadBoundedString` accepted a 7-bit length prefix whose fifth
+  group was above `0x07`, so a hostile prefix shifted a 1 into the sign bit and
+  produced a negative length. It passed the `len > limit` check and reached
+  `BinaryReader.ReadBytes` as a count, which raised `ArgumentOutOfRangeException`
+  out of the parser instead of the codec's own `InvalidDataException`. Found by
+  the body-parser fuzz gate, which the stale per-parser allow-lists in
+  `PackageCodecFuzzTests` had let pass; the login and denial allow-lists now
+  carry `InvalidDataException` and a targeted test pins the overflow.
+- `tools/sut_capture.py` took the zdtd parsing rules for any run whose side
+  name it did not recognize, so a typo emitted a complete, plausible surface of
+  zero counts. An unknown name, and a run dir that does not exist, are refused
+  with a named error and exit 2.
+- `tools/sut_report.py` indexed `surface.json` axes directly, so well-formed
+  JSON of the wrong shape (a bare list, a missing or wrongly typed `saves`,
+  `log`, `telnet` block) raised out of the middle of a finished comparison, and
+  an unwritable scenario dir lost the report to a traceback. Axes are coerced at
+  the read boundary like the other report tools, a non-object surface classifies
+  that side as missing, and the report writes report the failure and exit 1.
+- `tools/consolidated_report.py` read the sibling `playtest-compare.json` the
+  same unguarded way (`stock.summary`, `case["case"]`, a numeric `wall`), which
+  a well-formed document of the wrong shape turned into an `AttributeError`,
+  `KeyError` or format fault that dropped every suite from the ledger. The
+  playtest evidence is coerced like the loadgen evidence.
+- `scripts/validate_reconnect.py` reported a failed server-pid lookup (a missing
+  `ss`) as "no server pid found (already down)", so the validator reported a kill
+  it never performed and then measured a rejoin against a server it never
+  restarted. A failed lookup is now its own error and refuses the kill.
+- `tools/bench_report.py` swallowed an unreadable `apm.log` and an unreadable
+  APM `summary.json`, publishing "n/a" verdicts and no layers as if the capture
+  had simply reported nothing. Both now name the file and the fault.
 - `capacity_ceiling` returned the last in-budget row rather than the highest,
   so an endgame zombie dying mid-sweep (a later round reporting fewer alives
   than an earlier one) under-reported the ceiling. The docstring said

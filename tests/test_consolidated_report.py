@@ -118,3 +118,29 @@ def test_one_sided_evidence_without_a_diff_is_stale_not_dropped(tmp_path):
     assert "1 STALE" in md
     assert "## loadgen/scen-stale - STALE" in md
     assert "ran: ['zdtd']" in md
+
+
+def test_wrong_shaped_playtest_evidence_survives(tmp_path):
+    """playtest-compare.json is written by 7dtd-playtest. Well-formed JSON of
+    the wrong shape must still land in the ledger with a verdict, not raise out
+    of the collector and take every other suite's row with it."""
+    pt = tmp_path / "pt" / "suite-weird"
+    pt.mkdir(parents=True)
+    (pt / "playtest-compare.json").write_text(json.dumps({
+        "compared": True,
+        "stock": {"summary": ["not", "a", "map"], "wall": "12 min"},
+        "zdtd": 7,
+        "cases": ["not-a-case", {"stock": "PASS", "zdtd": {"status": "FAIL"}}],
+        "findings": {"not": "a list"},
+    }), encoding="utf-8")
+    _write(tmp_path / "pt" / "suite-clean" / "playtest-compare.json",
+           _playtest_compare(5, 5, [{"case": "c1", "stock": {"status": "PASS"},
+                                     "zdtd": {"status": "PASS"}}]))
+
+    rows = collect_playtest(tmp_path / "pt")
+    by_id = {r["id"]: r for r in rows}
+    assert by_id["suite-clean"]["verdict"] == "CLEAN"
+    assert by_id["suite-weird"]["verdict"] == "DELTAS"
+    assert by_id["suite-weird"]["wall"] == {"stock": None, "zdtd": None}
+    assert all(isinstance(f, str) for f in by_id["suite-weird"]["findings"])
+    assert "suite-weird" in render(rows)

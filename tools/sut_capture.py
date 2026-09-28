@@ -32,6 +32,10 @@ from json_shape import as_cell, as_dict, as_list, as_number
 # with the hour wrapping back to 0 at game midnight.
 GAME_MINUTES_PER_DAY = 1440
 
+# The two servers this tool knows how to parse. Each side has its own log
+# grammar and save layout, so the name selects the rules for every axis.
+SUTS = ("stock", "zdtd")
+
 
 def _file_size(path: str) -> int | None:
     """Size of a listed file, or None when it vanished before the stat.
@@ -420,6 +424,33 @@ def main():
         print(__doc__, file=sys.stderr)
         return 2
     run_dir, sut = sys.argv[1], sys.argv[2]
+    # The two sides are parsed by different rules (stock: timestamped severity
+    # lines, .7rg inventories; zdtd: "zdtd:"/"  " prefixed lines, world/).
+    # An unrecognized name took the zdtd branch of every axis, so a typo
+    # produced a full, plausible surface with empty counts: a silent wrong
+    # comparison is worse than a refused one.
+    if sut not in SUTS:
+        print(f"ERROR: unknown sut {sut!r}; expected one of {', '.join(SUTS)}",
+              file=sys.stderr)
+        return 2
+    # A missing run dir means the premise of the capture is broken, not that
+    # this run has no data: every axis would come back {"missing": true} and
+    # the surface would read as a captured-but-empty run.
+    if not os.path.isdir(run_dir):
+        print(f"ERROR: run dir {run_dir} does not exist", file=sys.stderr)
+        return 2
+    try:
+        return capture(run_dir, sut)
+    except OSError as e:
+        # An unreadable run dir (a permission or vanished-path fault) would
+        # otherwise end as a traceback with no surface written and no exit code
+        # the harness can read.
+        print(f"ERROR: reading run dir {run_dir} for sut {sut}: "
+              f"{e.__class__.__name__}: {e}", file=sys.stderr)
+        return 2
+
+
+def capture(run_dir, sut):
     telnet = telnet_snapshot(run_dir)
     surface = {
         "sut": sut,

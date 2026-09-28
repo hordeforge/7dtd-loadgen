@@ -35,6 +35,10 @@ GAME_PORT = 26900
 TELNET_PORT = 8081
 
 
+class ServerPidLookupFailed(RuntimeError):
+    """The server PID could not be determined, as opposed to being absent."""
+
+
 def telnet_ready(timeout_s: float = 180.0) -> bool:
     deadline = time.monotonic() + timeout_s
     while time.monotonic() < deadline:
@@ -59,28 +63,38 @@ def wait_gone(timeout_s: float = 60.0) -> bool:
 
 
 def server_pid() -> int | None:
+    """PID of the dedicated server, or None when the lookup succeeded and the
+    server is not listening. Raises ServerPidLookupFailed when the lookup
+    itself failed: a missing or broken `ss` must not read as "already down",
+    because kill_server would then report a kill it never performed and the
+    reconnect check would validate a session whose server never restarted.
+    """
     try:
         out = subprocess.run(
             ["ss", "-tlnp"], capture_output=True,
             text=True, encoding="utf-8", errors="replace", check=False
         ).stdout
     except OSError as e:
-        # A missing/failing ss must not masquerade later as "no server pid
-        # (already down)": say why the lookup failed.
-        print(f"[reconnect] server pid lookup failed: {e}", file=sys.stderr)
-        return None
+        raise ServerPidLookupFailed(f"ss -tlnp failed: {e}") from e
     # Telnet (8081) binds during boot before the game port (26900) - check
     # both so a kill during startup still finds the server.
     for port in (TELNET_PORT, GAME_PORT):
         for line in out.splitlines():
             if f":{port} " in line and "pid=" in line:
                 pid = line.split("pid=")[1].split(",")[0]
+                if not pid.isdigit():
+                    raise ServerPidLookupFailed(
+                        f"ss reported a non-numeric pid {pid!r} for port {port}")
                 return int(pid)
     return None
 
 
 def kill_server() -> bool:
-    pid = server_pid()
+    try:
+        pid = server_pid()
+    except ServerPidLookupFailed as e:
+        print(f"[reconnect] cannot find the server to kill: {e}", file=sys.stderr)
+        return False
     if pid is None:
         print("[reconnect] no server pid found (already down)")
         return True
@@ -113,7 +127,14 @@ def stop_server() -> None:
     bloodmoon_profile/capacity_sweep): a server left behind keeps holding the
     game + telnet ports and loading the host until someone notices. A
     half-booted one holds them too, so every exit path stops it."""
-    pid = server_pid()
+    try:
+        pid = server_pid()
+    except ServerPidLookupFailed as e:
+        # Teardown still has to report; a server that outlives the run is the
+        # expensive miss here, so say the stop did not happen.
+        print(f"[reconnect] teardown: cannot look up the server pid ({e}); "
+              "it may still be running", file=sys.stderr)
+        return
     if pid is None:
         print("[reconnect] teardown: server already down")
         return
