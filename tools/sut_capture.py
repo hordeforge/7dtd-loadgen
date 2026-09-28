@@ -135,7 +135,12 @@ def log_categories(path, sut):
 
 
 def telnet_snapshot(run_dir):
-    """Parse the telnet.txt transcript into day/entities/players facts."""
+    """Parse the telnet.txt transcript into day/entities/players counts.
+
+    Player rows are counted and discarded here rather than at the caller:
+    per-player identity has no place in a committed comparison, and the
+    snapshot is the single point every consumer goes through.
+    """
     p = os.path.join(run_dir, "telnet.txt")
     if not os.path.exists(p):
         # Every entity/day/clock axis comes from this transcript, so its absence
@@ -156,7 +161,7 @@ def telnet_snapshot(run_dir):
         if m:
             banner[key] = m.group(1).strip()
     entities = []
-    players = []
+    player_count = 0
     for line in text.splitlines():
         if "lifetime=" in line and "dead=" in line:
             m = ENTITY_ROW.match(line)
@@ -169,12 +174,7 @@ def telnet_snapshot(run_dir):
         elif "deaths=" in line and "pos=" in line:
             m = PLAYER_ROW.match(line)
             if m:
-                # The name is reported verbatim, the way the console printed
-                # it, so a bare "name=bot1" stays comparable across servers
-                # whose bracketed form differs. Stripped only, because it
-                # lands in a report cell where a trailing newline would forge
-                # a row.
-                players.append({"id": int(m.group(2)), "name": m.group(3).strip()})
+                player_count += 1
     totals = [int(n) for n in TOTAL_ROW.findall(text)]
     total = totals[-1] if totals else None
     types = {}
@@ -235,7 +235,7 @@ def telnet_snapshot(run_dir):
                      "alive": sum(1 for e in entities if not e["dead"]),
                      "dead": sum(1 for e in entities if e["dead"]),
                      "types": types},
-        "players": {"count": len(players), "rows": players},
+        "players": {"count": player_count},
         "gamestats": gamestats,
         "clockRateGameMinPerRealSec": rate,
         "reportedTotal": total,
@@ -409,12 +409,6 @@ def main():
         return 2
     run_dir, sut = sys.argv[1], sys.argv[2]
     telnet = telnet_snapshot(run_dir)
-    if telnet is not None:
-        # The snapshot keeps the parsed player rows for in-process callers, but
-        # a listplayers row names a player and the committed surface is an
-        # artifact the harness publishes alongside the run: only the count
-        # crosses over, so no per-player identity lands in kept evidence.
-        telnet["players"] = {"count": telnet["players"]["count"]}
     surface = {
         "sut": sut,
         "meta": run_meta(run_dir),

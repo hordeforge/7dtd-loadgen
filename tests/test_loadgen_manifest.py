@@ -27,16 +27,30 @@ TOOL = ROOT / "scripts" / "loadgen_manifest.py"
 REQUIRED = {
     "LOADGEN_MODE": "join",
     "LOADGEN_HOST": "127.0.0.1",
+    "LOADGEN_PORT": "26902",
+    # A manifest is written for every cohort, so the run's identity and shape
+    # are inputs, not placeholders: the tool refuses to record a run whose
+    # result, target, or workload it does not know. The optional knobs below
+    # are the ones each test varies.
+    "LOADGEN_RC": "0",
+    "LOADGEN_COUNT": "8",
+    "LOADGEN_CONCURRENCY": "4",
+    "LOADGEN_TIMEOUT": "1800000",
+    "LOADGEN_ACTIONS": "64",
+    "LOADGEN_RAMP_MS": "3000",
     "LOADGEN_MANIFEST_PATH": "",  # set per test
 }
 
 
-def _write(tmp_path: Path, env_overrides: dict[str, str]) -> tuple[Path, dict]:
+def _write(tmp_path: Path, env_overrides: dict[str, str],
+           unset: tuple[str, ...] = ()) -> tuple[Path, dict]:
     out = tmp_path / "loadgen_manifest.json"
     env = {k: v for k, v in os.environ.items() if not k.startswith("LOADGEN_")}
     env.update(REQUIRED)
     env["LOADGEN_MANIFEST_PATH"] = str(out)
     env.update(env_overrides)
+    for name in unset:
+        env.pop(name, None)
     r = subprocess.run(
         [sys.executable, str(TOOL)],
         capture_output=True, text=True, encoding="utf-8",
@@ -52,12 +66,6 @@ def _write(tmp_path: Path, env_overrides: dict[str, str]) -> tuple[Path, dict]:
 
 def test_manifest_records_the_workload_and_result(tmp_path):
     out, r = _write(tmp_path, {
-        "LOADGEN_PORT": "26902",
-        "LOADGEN_COUNT": "8",
-        "LOADGEN_CONCURRENCY": "4",
-        "LOADGEN_TIMEOUT": "1800000",
-        "LOADGEN_ACTIONS": "64",
-        "LOADGEN_RAMP_MS": "3000",
         "LOADGEN_BOT_MODE": "mixed",
         "LOADGEN_BOT_MIX": "traverse:35,combat:20",
         "LOADGEN_DEATH": "drown",
@@ -100,7 +108,9 @@ def test_nonzero_client_exit_is_recorded_as_a_failed_run(tmp_path):
 
 
 def test_unset_optional_knobs_fall_back_to_documented_placeholders(tmp_path):
-    _, r = _write(tmp_path, {})
+    _, r = _write(tmp_path, {}, unset=(
+        "LOADGEN_BOT_MIX", "LOADGEN_SPAWN_PER_PLAYER", "LOADGEN_SPAWN_EVERY_MS",
+    ))
     assert r["returncode"] == 0, r["stderr"]
     workload = r["doc"]["workload"]
     assert workload["botMode"] == "auto"
@@ -109,10 +119,10 @@ def test_unset_optional_knobs_fall_back_to_documented_placeholders(tmp_path):
     assert workload["seed"] == "default"
     assert workload["maxDynamite"] == "default"
     assert workload["spawnEntity"] == "default"
-    for key in ("clients", "concurrency", "timeoutMs", "actionsPerClient",
-                "rampMs", "spawnPerPlayer", "spawnEveryMs"):
-        assert workload[key] == 0, key
-    assert r["doc"]["target"]["port"] == 0
+    # An optional int the runner did not set is null, not 0: a recorded zero
+    # reads as a measured count in every downstream lap summary.
+    assert workload["spawnPerPlayer"] is None
+    assert workload["spawnEveryMs"] is None
     assert r["doc"]["scenarioId"] is None
 
 

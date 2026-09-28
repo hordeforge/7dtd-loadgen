@@ -182,6 +182,11 @@ public sealed class TelnetReadWindowTests
 
 public sealed class TelnetProvisionerTests
 {
+    /// <summary>How much faster the enqueue loop must be than console delivery.
+    /// Each grant costs the bot a lock and a queue add, and the console a TCP
+    /// round trip, so the margin is structural rather than a timing guess.</summary>
+    const int EnqueueLeadOverDelivery = 10;
+
     [Fact]
     public void CohortSharesOneConsoleConnection()
     {
@@ -193,28 +198,28 @@ public sealed class TelnetProvisionerTests
             () => new TelnetAdmin("127.0.0.1", console.Port, password: "", log: null),
             _ => { });
 
-        var sw = System.Diagnostics.Stopwatch.StartNew();
         const int Grants = 40;
+        var enqueue = System.Diagnostics.Stopwatch.StartNew();
         for (int i = 0; i < Grants; i++)
             provisioner.Enqueue($"give {i} thrownDynamite 3", i, null);
-        sw.Stop();
-        int receivedBeforeDrain = console.Received.Count;
+        enqueue.Stop();
 
+        var delivery = System.Diagnostics.Stopwatch.StartNew();
         Assert.True(console.WaitForCommands(Grants, 30_000),
             $"only {console.Received.Count}/{Grants} grants reached the console");
+        delivery.Stop();
         provisioner.Dispose();
         Assert.Equal(0, provisioner.Dropped);
 
-        // Enqueueing is the bot's cost and must not scale with the console. The
-        // proof is structural, not a wall-clock budget: a loop that waits on a
-        // round trip per grant has necessarily delivered all of them by the
-        // time it returns, while queue appends outrun the console by orders of
-        // magnitude. A millisecond bound tight enough to catch the blocking
-        // shape also fails on a loaded CI runner through preemption alone, and
-        // a gate that red for the wrong reason stops being read.
-        Assert.True(receivedBeforeDrain < Grants,
-            $"all {Grants} grants reached the console before the enqueue loop returned "
-            + $"({sw.ElapsedMilliseconds}ms): the bot loop is blocking on the console");
+        // Enqueueing is the bot's cost and must not scale with the console.
+        // The invariant is a ratio, not a wall-clock bound: delivering the same
+        // grants costs one TCP round trip each, so an enqueue loop that blocked
+        // on the console could not finish materially sooner than delivery. A
+        // millisecond threshold would only measure how loaded the runner is.
+        Assert.True(enqueue.ElapsedMilliseconds * EnqueueLeadOverDelivery
+                    < delivery.ElapsedMilliseconds,
+            $"enqueueing {Grants} grants took {enqueue.ElapsedMilliseconds}ms against "
+            + $"{delivery.ElapsedMilliseconds}ms of delivery: the bot loop is blocking on the console");
 
         int give = console.Received.Count(c => c.StartsWith("give ", StringComparison.Ordinal));
         Assert.Equal(Grants, give);
