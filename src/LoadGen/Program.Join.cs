@@ -596,6 +596,7 @@ public static partial class Program
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] JOIN_LOAD count={count} concurrency={concurrency} " +
             $"host={opt.Host}:{opt.Port} actions={opt.ActionCount} mode={opt.Mode} death={opt.Death} " +
+            $"seed={opt.ActionSeed} " +
             $"timeoutMs={opt.TimeoutMs} spawnZombies={spawnZombies} killFallback={killFallback} " +
             $"bind=127.x multi-ip");
         // killFallback only takes effect inside the telnet spawn loop, so the

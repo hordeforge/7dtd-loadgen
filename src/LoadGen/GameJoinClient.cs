@@ -1203,7 +1203,7 @@ public sealed class GameJoinClient
     /// <summary>In-process join against <see cref="MockGameServer"/> (shipped path for CI).</summary>
     public static int RunSelfTestJoin(int actionCount, int seed, Action<string>? log, out JoinStateMachine sm)
     {
-        using var server = new MockGameServer();
+        using var server = new MockGameServer(seed);
         server.Start(0);
         using var cts = new CancellationTokenSource();
         var poll = Task.Run(() =>

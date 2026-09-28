@@ -12,6 +12,21 @@ public static class WorldDeathBus
 {
     static readonly ConcurrentDictionary<string, long> KilledTickMs = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>A kill older than this is stale and must not respawn anyone.</summary>
+    public const long KillTtlMs = 120_000;
+
+    /// <summary>Monotonic ms-since-boot source. Real runs use the process
+    /// clock; tests substitute a virtual one so the TTL boundary is reachable
+    /// without waiting two minutes.</summary>
+    internal static Func<long> MonotonicMs { get; set; } = () => Environment.TickCount64;
+
+    /// <summary>Test seam: drop pending kills and restore the real clock.</summary>
+    internal static void ResetForTests()
+    {
+        KilledTickMs.Clear();
+        MonotonicMs = () => Environment.TickCount64;
+    }
+
     /// <summary>
     /// Identity comparison form for player names on the death path (this bus
     /// and chat-based detection): Unicode NFC. The argv-configured bot name
@@ -27,10 +42,10 @@ public static class WorldDeathBus
     public static void NotifyKilled(string playerName)
     {
         if (string.IsNullOrWhiteSpace(playerName)) return;
-        // Monotonic ms-since-boot (Environment.TickCount64): producer and
-        // consumer share this process, and a wall-clock step (NTP sync, VM
-        // resume) must neither expire a fresh kill early nor keep a stale one.
-        KilledTickMs[NormalizeIdentity(playerName.Trim())] = Environment.TickCount64;
+        // Monotonic ms-since-boot: producer and consumer share this process,
+        // and a wall-clock step (NTP sync, VM resume) must neither expire a
+        // fresh kill early nor keep a stale one.
+        KilledTickMs[NormalizeIdentity(playerName.Trim())] = MonotonicMs();
     }
 
     /// <summary>True if this name was killed recently (consumes the event).</summary>
@@ -40,7 +55,6 @@ public static class WorldDeathBus
         if (string.IsNullOrWhiteSpace(playerName)) return false;
         if (!KilledTickMs.TryRemove(NormalizeIdentity(playerName.Trim()), out killedAtTickMs))
             return false;
-        // Ignore stale kills older than 2 minutes
-        return Environment.TickCount64 - killedAtTickMs < 120_000;
+        return MonotonicMs() - killedAtTickMs < KillTtlMs;
     }
 }

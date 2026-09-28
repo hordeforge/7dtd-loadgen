@@ -5,6 +5,9 @@ namespace SevenDTD.LoadGen;
 
 public static class LoadRunner
 {
+    /// <summary>How many cohort probes keep and print their transcript.</summary>
+    const int LoggedProbeCount = 8;
+
     /// <summary>Probe-cohort concurrency: default to a wide pool-derived cap so
     /// short-lived probes overlap, always clamped to the cohort size. Shared by
     /// the probe and self-test lanes so both scale identically.</summary>
@@ -20,11 +23,10 @@ public static class LoadRunner
         int rampMs, bool quiet, int idBase = 1)
     {
         concurrency = Math.Max(1, Math.Min(concurrency, count));
-        var results = new System.Collections.Concurrent.ConcurrentBag<ProbeResult>();
+        var results = new System.Collections.Concurrent.ConcurrentBag<(int id, ProbeResult r)>();
         var gate = new SemaphoreSlim(concurrency, concurrency);
         var swAll = Stopwatch.StartNew();
         var tasks = new Task[count];
-        int nextId = 0;
         for (int i = 0; i < count; i++)
         {
             int slot = i;
@@ -38,35 +40,46 @@ public static class LoadRunner
                         int delay = Program.RampDelayMs(slot, count, rampMs);
                         if (delay > 0) await Task.Delay(delay).ConfigureAwait(false);
                     }
-                    int id = idBase + Interlocked.Increment(ref nextId) - 1;
-                    Action<string>? log = quiet ? null : (msg => { if (id < idBase + 8) Console.WriteLine(msg); });
+                    // Id from the cohort slot, never from a shared counter: a
+                    // counter hands ids out in thread-wakeup order, so the same
+                    // run replays under a different id per bot.
+                    int id = idBase + slot;
+                    bool keepLines = !quiet && id < idBase + LoggedProbeCount;
                     ProbeResult r;
                     try
                     {
-                        r = LiteNetProbe.Run(host, port, key, timeoutMs, id, log, keepLines: !quiet && id < idBase + 8);
+                        r = LiteNetProbe.Run(host, port, key, timeoutMs, id, null, keepLines: keepLines);
                     }
                     // Isolate: one faulting probe must not take Task.WaitAll down
                     // with an AggregateException and destroy the whole cohort summary.
                     catch (Exception ex)
                     {
-                        log?.Invoke($"EX: {ex.GetType().Name}: {ex.Message}");
+                        var lines = new List<string>();
+                        if (keepLines) lines.Add($"[{DateTime.UtcNow:O}] [fake#{id}] EX: {ex.GetType().Name}: {ex.Message}");
                         r = new ProbeResult
                         {
                             Pass = false,
                             Stages = new HashSet<string>(),
                             Connected = false,
-                            Lines = new List<string>(),
+                            Lines = lines,
                             ElapsedMs = 0,
                         };
                     }
-                    results.Add(r);
+                    results.Add((id, r));
                 }
                 finally { gate.Release(); }
             });
         }
         Task.WaitAll(tasks);
         swAll.Stop();
-        var list = results.ToList();
+        // Id order, not completion order: the cohort transcript is a replay
+        // artifact, and a bag enumerates in whatever order probes finished.
+        var ordered = results.OrderBy(x => x.id).ToList();
+        if (!quiet)
+            foreach (var (_, r) in ordered.Take(LoggedProbeCount))
+                foreach (string line in r.Lines)
+                    Console.WriteLine(line);
+        var list = ordered.Select(x => x.r).ToList();
         var latencies = list.Select(r => r.ElapsedMs).OrderBy(x => x).ToArray();
         long Pct(double p)
         {

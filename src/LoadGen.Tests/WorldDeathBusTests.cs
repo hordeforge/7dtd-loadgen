@@ -78,4 +78,29 @@ public sealed class WorldDeathBusTests
         // consumable (a telnet glitch must not respawn an arbitrary bot).
         Assert.False(WorldDeathBus.TryConsumeKill(blank, out _));
     }
+
+    [Fact]
+    public void StaleKill_Rejected_AndConsumed()
+    {
+        // Virtual clock: the two-minute TTL is otherwise unreachable from a test.
+        long now = 1_000_000;
+        WorldDeathBus.MonotonicMs = () => now;
+        try
+        {
+            var name = UniqueName("stale");
+            WorldDeathBus.NotifyKilled(name);
+            now += WorldDeathBus.KillTtlMs;
+            Assert.False(WorldDeathBus.TryConsumeKill(name, out var at));
+            // Consumed either way: a rejected stale kill must not respawn on
+            // the next poll either.
+            Assert.Equal(1_000_000, at);
+            Assert.False(WorldDeathBus.TryConsumeKill(name, out _));
+
+            var fresh = UniqueName("fresh");
+            WorldDeathBus.NotifyKilled(fresh);
+            now += WorldDeathBus.KillTtlMs - 1;
+            Assert.True(WorldDeathBus.TryConsumeKill(fresh, out _));
+        }
+        finally { WorldDeathBus.ResetForTests(); }
+    }
 }

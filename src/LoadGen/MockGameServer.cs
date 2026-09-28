@@ -30,7 +30,16 @@ public sealed class MockGameServer : IDisposable
     readonly NetManager _net;
     readonly ConcurrentDictionary<int, Guid> _challenges = new();
     readonly ConcurrentDictionary<int, bool> _authed = new();
+    // Challenge values come from a seeded stream, not OS entropy: the mock is
+    // the join harness the self-test lane replays, and a fresh Guid per peer
+    // makes the wire bytes differ on every run of the same seed. The value is
+    // an echo nonce for a loopback test double, not a secret.
+    readonly Random _challengesRng;
+    readonly object _challengesRngLock = new();
     int _nextEntity = 100;
+
+    /// <summary>Challenge seed used when a caller passes none.</summary>
+    public const int DefaultSeed = 0x5f3759df;
 
     // Counters are bumped inside LiteNetLib event handlers, which run on
     // whichever thread calls Poll(); increment them atomically so two pollers
@@ -60,8 +69,9 @@ public sealed class MockGameServer : IDisposable
     public int ChallengesSent => _challengesSent;
     public int ChallengesOk => _challengesOk;
 
-    public MockGameServer()
+    public MockGameServer(int seed = DefaultSeed)
     {
+        _challengesRng = new Random(seed);
         _net = new NetManager(_listener)
         {
             AutoRecycle = true,
@@ -94,7 +104,9 @@ public sealed class MockGameServer : IDisposable
 
     void OnPeerConnected(NetPeer peer)
     {
-        var challenge = Guid.NewGuid();
+        var bytes = new byte[16];
+        lock (_challengesRngLock) _challengesRng.NextBytes(bytes);
+        var challenge = new Guid(bytes);
         _challenges[peer.Id] = challenge;
         var buf = new byte[PackageCodec.ChallengeSize];
         buf[0] = PackageCodec.ChallengeChannelMarker;
