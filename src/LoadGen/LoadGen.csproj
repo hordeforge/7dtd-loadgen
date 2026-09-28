@@ -37,7 +37,7 @@
        machine-dependent), so restore would otherwise take the newest 1.x
        published since. -->
   <ItemGroup Condition="!Exists('$(GameManaged)/LiteNetLib.dll')">
-    <PackageReference Include="LiteNetLib" Version="[1.3.5]" />
+    <PackageReference Include="LiteNetLib" Version="[2.1.4]" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="LoadGen.Tests" />
