@@ -842,15 +842,19 @@ public sealed class GameJoinClient
         Action<string> log,
         Action<byte[]> enqueue)
     {
-        // PackageIds is always id 0 until remapped; see the content heuristic
-        // gated by the stage check below.
-        string? typeName = State.TryGetTypeName(id, out var mappedName) ? mappedName : null;
-        if (typeName != null && opt.StateObserver != null)
+        // Routing is an array index, not a string chain: this method runs for
+        // every received package of every bot for the whole session, and the
+        // kind table answers the only question the dispatch below asks. The
+        // type name is resolved only by the paths that report it (the observer
+        // and a log line), so a joined bot's steady entity/chunk traffic does
+        // not probe the reverse map at all.
+        PackageKind kind = State.KindOf(id);
+        if (opt.StateObserver != null && State.TryGetTypeName(id, out var observedType))
         {
-            try { opt.StateObserver.Observe(typeName, body); }
+            try { opt.StateObserver.Observe(observedType, body); }
             catch (Exception ex)
             {
-                log($"OBSERVER parse_error type={typeName} bodyLen={body.Length} error={RunReport.SafeText(ex.Message)}");
+                log($"OBSERVER parse_error type={observedType} bodyLen={body.Length} error={RunReport.SafeText(ex.Message)}");
             }
             // A dead events sink is evidence loss, not a parse problem: report it
             // once with the real cause (the observer latches and stays quiet).
@@ -862,6 +866,9 @@ public sealed class GameJoinClient
         }
         if (!State.EverJoined)
         {
+            // PackageIds is always id 0 until remapped; see the content
+            // heuristic gated by the stage check below.
+            string? typeName = State.TryGetTypeName(id, out var preJoinType) ? preJoinType : null;
             // After join, high-volume entity/chunk packages would flood logs for
             // hour-long runs. The noisy-type scan lives inside this pre-join
             // branch on purpose: once joined it is dead work, and the receive
@@ -877,10 +884,11 @@ public sealed class GameJoinClient
             else if (typeName != null && !noisy)
                 log($"RECV type={typeName} id={id} bodyLen={body.Length}");
         }
-        else if (typeName is "NetPackageSimpleChat" or "NetPackageChat" or "NetPackageGameMessage"
-                 or "NetPackagePlayerDenied" or "NetPackagePlayerSpawnedInWorld" or "NetPackagePlayerId")
+        else if (kind is PackageKind.SimpleChat or PackageKind.Chat or PackageKind.GameMessage
+                 or PackageKind.PlayerDenied or PackageKind.PlayerSpawnedInWorld
+                 or PackageKind.PlayerId)
         {
-            log($"RECV type={typeName} id={id} bodyLen={body.Length}");
+            log($"RECV type={State.TypeNameOrEmpty(id)} id={id} bodyLen={body.Length}");
         }
 
         // One-time handshake step: guard BOTH recognition paths by stage so a
@@ -889,7 +897,7 @@ public sealed class GameJoinClient
         // first: once mappings are in, this whole check costs one comparison
         // per package instead of a dictionary lookup on every received frame.
         if (State.Stage < JoinStage.PackageIdsReceived
-            && (typeName == "NetPackagePackageIds"
+            && (kind == PackageKind.PackageIds
                 || (id == 0 && body.Length > 16
                     && !State.PackageIds.ContainsKey("NetPackagePlayerLogin"))))
         {
@@ -912,7 +920,7 @@ public sealed class GameJoinClient
         }
 
         // Server waits for client to echo AuthConfirmation before AuthFinalizer proceeds.
-        if (typeName == "NetPackageAuthConfirmation")
+        if (kind == PackageKind.AuthConfirmation)
         {
             if (State.TryGetPackageId("NetPackageAuthConfirmation", out ushort confId))
             {
@@ -923,7 +931,7 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName == "NetPackageAuthState")
+        if (kind == PackageKind.AuthState)
         {
             try
             {
@@ -944,7 +952,7 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName == "NetPackagePlayerLoginAnswer")
+        if (kind == PackageKind.PlayerLoginAnswer)
         {
             try
             {
@@ -979,9 +987,9 @@ public sealed class GameJoinClient
         }
 
         // After world info / spawn points, request spawn once
-        if (typeName is "NetPackageWorldInfo" or "NetPackageWorldSpawnPoints" or "NetPackageGameStats")
+        if (kind is PackageKind.WorldInfo or PackageKind.WorldSpawnPoints or PackageKind.GameStats)
         {
-            log($"STAGE {typeName} received bodyLen={body.Length}");
+            log($"STAGE {State.TypeNameOrEmpty(id)} received bodyLen={body.Length}");
             if (!State.SpawnRequested
                 && State.TryGetPackageId("NetPackageRequestToSpawnPlayer", out ushort spawnReqId))
             {
@@ -997,7 +1005,7 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName == "NetPackagePlayerSpawnedInWorld")
+        if (kind == PackageKind.PlayerSpawnedInWorld)
         {
             try
             {
@@ -1015,7 +1023,7 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName == "NetPackagePlayerId")
+        if (kind == PackageKind.PlayerId)
         {
             // After RequestToSpawnPlayer the server creates the entity and sends PlayerId
             // (not NetPackagePlayerSpawnedInWorld). Body starts with entityId:i32.
@@ -1057,7 +1065,7 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName == "NetPackagePlayerDenied")
+        if (kind == PackageKind.PlayerDenied)
         {
             try
             {
@@ -1079,7 +1087,7 @@ public sealed class GameJoinClient
         // they float over real terrain, which breaks server-side spawn-point
         // search near the player and makes spawned zombies unable to reach us.
         if (State.EverJoined && State.EntityId > 0
-            && typeName is "NetPackageEntityPosAndRot" or "NetPackageEntityTeleport")
+            && kind is PackageKind.EntityPosAndRot or PackageKind.EntityTeleport)
         {
             try
             {
@@ -1120,7 +1128,7 @@ public sealed class GameJoinClient
 
         // After join: best-effort world-death signals (stat health, chat GMSG, entity remove).
         if (State.EverJoined && !State.Died)
-            TryDetectWorldDeath(typeName, body, opt, log);
+            TryDetectWorldDeath(kind, body, opt, log);
     }
 
     void ApplySpawn(int entityId, float x, float y, float z, Action<string> log, string via)
@@ -1186,9 +1194,9 @@ public sealed class GameJoinClient
     /// NetPackageEntityStatChanged body (from Assembly-CSharp write IL):
     /// entityId:i32, instigatorId:i32, enumStat:u8 (0=Health), value:f32, max:f32, maxMod:f32.
     /// </summary>
-    internal void TryDetectWorldDeath(string? typeName, byte[] body, Options opt, Action<string> log)
+    internal void TryDetectWorldDeath(PackageKind kind, byte[] body, Options opt, Action<string> log)
     {
-        if (typeName == "NetPackageEntityStatChanged" && body.Length >= 21 && State.EntityId > 0)
+        if (kind == PackageKind.EntityStatChanged && body.Length >= 21 && State.EntityId > 0)
         {
             int eid = BinaryPrimitives.ReadInt32LittleEndian(body.AsSpan(0));
             byte estat = body[8];
@@ -1203,8 +1211,8 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName is "NetPackageEntityRemove" or "NetPackageEntityDespawn"
-            or "NetPackageRemoveEntity" or "NetPackageEntityDestroy")
+        if (kind is PackageKind.EntityRemove or PackageKind.EntityDespawn
+            or PackageKind.RemoveEntity or PackageKind.EntityDestroy)
         {
             if (body.Length >= 4)
             {
@@ -1219,8 +1227,8 @@ public sealed class GameJoinClient
             return;
         }
 
-        if (typeName is not ("NetPackageSimpleChat" or "NetPackageChat"
-            or "NetPackageGameMessage" or "NetPackageChatMessage"))
+        if (kind is not (PackageKind.SimpleChat or PackageKind.Chat
+            or PackageKind.GameMessage or PackageKind.ChatMessage))
             return;
 
         string text = ExtractPrintable(body);

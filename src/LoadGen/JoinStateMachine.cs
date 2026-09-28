@@ -19,6 +19,74 @@ public enum JoinStage
     Disconnected,
 }
 
+/// <summary>What the client does with a received package, decided from its
+/// type name once instead of on every frame. <see cref="PackageKinds"/> owns
+/// the name-to-kind table; <see cref="JoinStateMachine.KindOf"/> answers per
+/// id in O(1) from an array the reverse map fills.</summary>
+public enum PackageKind
+{
+    /// <summary>The server has not sent PackageIds yet, or the id is not in
+    /// its table (an empty mapping entry lands here too).</summary>
+    Unmapped = 0,
+    /// <summary>Mapped, but no handler claims it: entity motion, chunks,
+    /// water, tile entities. The bulk of a joined session's traffic.</summary>
+    Other,
+    PackageIds,
+    AuthConfirmation,
+    AuthState,
+    PlayerLoginAnswer,
+    WorldInfo,
+    WorldSpawnPoints,
+    GameStats,
+    PlayerSpawnedInWorld,
+    PlayerId,
+    PlayerDenied,
+    EntityPosAndRot,
+    EntityTeleport,
+    EntityStatChanged,
+    EntityRemove,
+    EntityDespawn,
+    RemoveEntity,
+    EntityDestroy,
+    SimpleChat,
+    Chat,
+    GameMessage,
+    ChatMessage,
+}
+
+/// <summary>Single source of truth for the name-to-kind mapping. Both the
+/// reverse-map build and any caller naming a type resolve through here, so a
+/// handler and the table that routes to it cannot drift apart.</summary>
+public static class PackageKinds
+{
+    public static PackageKind Of(string? typeName) => typeName switch
+    {
+        "NetPackagePackageIds" => PackageKind.PackageIds,
+        "NetPackageAuthConfirmation" => PackageKind.AuthConfirmation,
+        "NetPackageAuthState" => PackageKind.AuthState,
+        "NetPackagePlayerLoginAnswer" => PackageKind.PlayerLoginAnswer,
+        "NetPackageWorldInfo" => PackageKind.WorldInfo,
+        "NetPackageWorldSpawnPoints" => PackageKind.WorldSpawnPoints,
+        "NetPackageGameStats" => PackageKind.GameStats,
+        "NetPackagePlayerSpawnedInWorld" => PackageKind.PlayerSpawnedInWorld,
+        "NetPackagePlayerId" => PackageKind.PlayerId,
+        "NetPackagePlayerDenied" => PackageKind.PlayerDenied,
+        "NetPackageEntityPosAndRot" => PackageKind.EntityPosAndRot,
+        "NetPackageEntityTeleport" => PackageKind.EntityTeleport,
+        "NetPackageEntityStatChanged" => PackageKind.EntityStatChanged,
+        "NetPackageEntityRemove" => PackageKind.EntityRemove,
+        "NetPackageEntityDespawn" => PackageKind.EntityDespawn,
+        "NetPackageRemoveEntity" => PackageKind.RemoveEntity,
+        "NetPackageEntityDestroy" => PackageKind.EntityDestroy,
+        "NetPackageSimpleChat" => PackageKind.SimpleChat,
+        "NetPackageChat" => PackageKind.Chat,
+        "NetPackageGameMessage" => PackageKind.GameMessage,
+        "NetPackageChatMessage" => PackageKind.ChatMessage,
+        null => PackageKind.Unmapped,
+        _ => PackageKind.Other,
+    };
+}
+
 /// <summary>Why a bot's current life ended. One enum, one meaning: the state
 /// and the action loop report the same cause rather than translating between
 /// parallel representations.</summary>
@@ -80,6 +148,13 @@ public sealed class JoinStateMachine
     /// <summary>Reverse of <see cref="PackageIds"/> so the per-package type
     /// lookup on the receive hot path is O(1) instead of scanning every mapping.</summary>
     readonly Dictionary<ushort, string> _typeNamesById = new();
+    /// <summary>What the client does with each id, indexed by id. The receive
+    /// path runs per package per bot for a whole session, so routing by a
+    /// twenty-way string comparison chain on the resolved name was work done
+    /// once per frame that this table does once per session. Ids the server
+    /// left empty are <see cref="PackageKind.Unmapped"/>, matching
+    /// <see cref="TryGetTypeName"/>'s miss.</summary>
+    PackageKind[] _kindsById = Array.Empty<PackageKind>();
     /// <summary>Compat version from NetPackagePackageIds (for VersionAuthorizer LongStringNoBuild).</summary>
     public PackageCodec.VersionInfo ServerVersion { get; set; } = PackageCodec.GameVersion;
     public int EntityId { get; set; } = -1;
@@ -255,6 +330,17 @@ public sealed class JoinStateMachine
         return false;
     }
 
+    /// <summary>Type name for a log line that has no other source for it, or
+    /// "" when the id is not in the table.</summary>
+    public string TypeNameOrEmpty(ushort id) =>
+        _typeNamesById.TryGetValue(id, out var name) ? name : "";
+
+    /// <summary>What the client does with a received id, in O(1) and without
+    /// a dictionary probe. <see cref="PackageKind.Unmapped"/> covers both an
+    /// id past the end of the table and one the server left empty.</summary>
+    public PackageKind KindOf(ushort id) =>
+        id < _kindsById.Length ? _kindsById[id] : PackageKind.Unmapped;
+
     public void ApplyPackageMappings(string[] mappings)
     {
         PackageIds.Clear();
@@ -266,8 +352,12 @@ public sealed class JoinStateMachine
         // Rebuild from the final forward map so the reverse view always agrees
         // with it (duplicate names keep the last index on both sides).
         _typeNamesById.Clear();
+        _kindsById = new PackageKind[mappings.Length];
         foreach (var kv in PackageIds)
+        {
             _typeNamesById[kv.Value] = kv.Key;
+            _kindsById[kv.Value] = PackageKinds.Of(kv.Key);
+        }
         Advance(JoinStage.PackageIdsReceived, $"count={mappings.Length}");
     }
 

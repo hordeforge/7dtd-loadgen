@@ -55,7 +55,7 @@ public sealed class WorldDeathDetectionTests
     {
         var client = Bot(171, out var opt);
         var logs = new List<string>();
-        client.TryDetectWorldDeath("NetPackageEntityStatChanged", StatBody(171, 0f), opt, logs.Add);
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityStatChanged"), StatBody(171, 0f), opt, logs.Add);
 
         Assert.True(client.State.Died);
         Assert.Equal(DeathCause.WorldKilled, client.State.DeathCause);
@@ -68,7 +68,7 @@ public sealed class WorldDeathDetectionTests
     public void PositiveHealth_DoesNotKill(float health)
     {
         var client = Bot(171, out var opt);
-        client.TryDetectWorldDeath("NetPackageEntityStatChanged", StatBody(171, health), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityStatChanged"), StatBody(171, health), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -76,7 +76,7 @@ public sealed class WorldDeathDetectionTests
     public void OtherBotsHealthZero_DoesNotKillUs()
     {
         var client = Bot(171, out var opt);
-        client.TryDetectWorldDeath("NetPackageEntityStatChanged", StatBody(172, 0f), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityStatChanged"), StatBody(172, 0f), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -84,7 +84,7 @@ public sealed class WorldDeathDetectionTests
     public void TruncatedStatBody_Ignored()
     {
         var client = Bot(171, out var opt);
-        client.TryDetectWorldDeath("NetPackageEntityStatChanged", new byte[20], opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityStatChanged"), new byte[20], opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -92,7 +92,7 @@ public sealed class WorldDeathDetectionTests
     public void EntityRemove_OurEntity_Kills()
     {
         var client = Bot(171, out var opt);
-        client.TryDetectWorldDeath("NetPackageEntityRemove", RemoveBody(171), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityRemove"), RemoveBody(171), opt, _ => { });
         Assert.True(client.State.Died);
         Assert.Equal(DeathCause.WorldDeath, client.State.DeathCause);
     }
@@ -101,7 +101,7 @@ public sealed class WorldDeathDetectionTests
     public void EntityRemove_OtherEntity_DoesNotKill()
     {
         var client = Bot(171, out var opt);
-        client.TryDetectWorldDeath("NetPackageEntityDestroy", RemoveBody(172), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageEntityDestroy"), RemoveBody(172), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -113,7 +113,7 @@ public sealed class WorldDeathDetectionTests
     public void OwnDeathChat_Kills_WithCause(string gmsg, DeathCause cause)
     {
         var client = Bot(3, out var opt);
-        client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(gmsg), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageGameMessage"), ChatBody(gmsg), opt, _ => { });
         Assert.True(client.State.Died);
         Assert.Equal(cause, client.State.DeathCause);
     }
@@ -150,7 +150,7 @@ public sealed class WorldDeathDetectionTests
         // The documented whole-word rule: "refake33 died" must not flip bot
         // refake3 (one bot's GMSG used to kill differently-numbered bots).
         var client = Bot(3, out var opt);
-        client.TryDetectWorldDeath("NetPackageSimpleChat", ChatBody("REFake33 died"), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageSimpleChat"), ChatBody("REFake33 died"), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -161,7 +161,7 @@ public sealed class WorldDeathDetectionTests
         // 'player'" fallback killed bystander bots on unrelated chatter.
         var client = Bot(3, out var opt);
         client.TryDetectWorldDeath(
-            "NetPackageGameMessage", ChatBody("zombie horde incoming, players beware"), opt, _ => { });
+            PackageKinds.Of("NetPackageGameMessage"), ChatBody("zombie horde incoming, players beware"), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -169,7 +169,7 @@ public sealed class WorldDeathDetectionTests
     public void OurNameWithoutDeathWords_DoesNotKill()
     {
         var client = Bot(3, out var opt);
-        client.TryDetectWorldDeath("NetPackageSimpleChat", ChatBody("REFake3 says hi"), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageSimpleChat"), ChatBody("REFake3 says hi"), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -177,8 +177,8 @@ public sealed class WorldDeathDetectionTests
     public void ShortOrEmptyChat_Ignored()
     {
         var client = Bot(3, out var opt);
-        client.TryDetectWorldDeath("NetPackageSimpleChat", ChatBody(""), opt, _ => { });
-        client.TryDetectWorldDeath("NetPackageSimpleChat", ChatBody("abc"), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageSimpleChat"), ChatBody(""), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageSimpleChat"), ChatBody("abc"), opt, _ => { });
         Assert.False(client.State.Died);
     }
 
@@ -204,7 +204,7 @@ public sealed class WorldDeathDetectionTests
         // "Zoé 7"; an echo of the bare name is a different player.
         string echo = (nfdConfig ? nfcName : nfdName) + "7 died";
 
-        client.TryDetectWorldDeath("NetPackageGameMessage", ChatBody(echo), opt, _ => { });
+        client.TryDetectWorldDeath(PackageKinds.Of("NetPackageGameMessage"), ChatBody(echo), opt, _ => { });
 
         Assert.True(client.State.Died);
         Assert.Equal(DeathCause.WorldDeath, client.State.DeathCause);

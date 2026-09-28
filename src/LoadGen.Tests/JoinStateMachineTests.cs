@@ -82,6 +82,42 @@ public sealed class JoinStateMachineTests
     }
 
     [Fact]
+    public void KindOf_AgreesWithReverseMap_ForEveryId()
+    {
+        // The receive path routes by kind, but still reports the name. If the
+        // two tables disagree, a package is handled under a type name that was
+        // never logged, so the pair is pinned together here.
+        var sm = new JoinStateMachine();
+        sm.ApplyPackageMappings(new[]
+        {
+            "NetPackagePackageIds", "NetPackagePlayerLogin", "", "NetPackageChat",
+            "NetPackageEntityStatChanged", "NetPackageEntityPosAndRot", "NetPackageChunk",
+        });
+
+        for (ushort id = 0; id < 8; id++)
+        {
+            bool mapped = sm.TryGetTypeName(id, out var name);
+            PackageKind kind = sm.KindOf(id);
+            Assert.Equal(mapped, kind != PackageKind.Unmapped);
+            if (mapped)
+                Assert.Equal(PackageKinds.Of(name), kind);
+        }
+        Assert.Equal(PackageKind.PackageIds, sm.KindOf(0));
+        Assert.Equal(PackageKind.Chat, sm.KindOf(3));
+        Assert.Equal(PackageKind.EntityStatChanged, sm.KindOf(4));
+        // A mapped type with no handler is Other, not Unmapped: the difference
+        // is what the pre-join "unmapped id" log line keys on.
+        Assert.Equal(PackageKind.Other, sm.KindOf(6));
+        // Past the end of the table.
+        Assert.Equal(PackageKind.Unmapped, sm.KindOf(999));
+
+        // No mappings yet: every id is unmapped, which is what the id==0
+        // PackageIds heuristic reads before the table exists.
+        var fresh = new JoinStateMachine();
+        Assert.Equal(PackageKind.Unmapped, fresh.KindOf(0));
+    }
+
+    [Fact]
     public void ApplyPackageMappings_Reapply_DropsStaleReverseIds()
     {
         var sm = new JoinStateMachine();
