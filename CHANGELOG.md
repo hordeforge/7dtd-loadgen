@@ -207,6 +207,22 @@ under **Changed** with their migration path.
   provably-dead-option sweep removed from `GameJoinClient.Options`. The
   self-test's move out of `Program` carried the stale initializer with it, so
   `make build` failed with `CS0117` and no C# or Python gate could run.
+- `tools/sut_capture.py` derived the game-clock rate from the `ts=` markers
+  without the monotonic component by subtracting the two parsed stamps inside
+  a `ValueError`-only guard. A transcript whose first `gettime` marker carries
+  an offset (`...Z`, `...+00:00`) and whose last one does not made that
+  subtraction raise `TypeError`, which took `telnet_snapshot` down and lost
+  the entity, player and gamestats axes over one unusable interval. The mixed
+  naive/aware pair is the same unparseable-stamp class as a malformed date and
+  now costs the rate axis alone, matching the guard `tools/bench_report.py`
+  `iso_delta` already uses. Gated by
+  `test_mixed_offset_markers_cost_the_rate_axis_not_the_capture`.
+- `scripts/bloodmoon_profile.py` prefixed its console log with local wall time
+  while every other stamp the repo writes is UTC (the profile's own save name,
+  the runner manifest, the client event lines). On a host that is not at UTC the
+  profile timeline sat a zone offset away from the evidence it is read against,
+  and at a fall-back transition the local clock repeated an hour, so two distinct
+  moments of one run printed the same prefix. The prefix is UTC.
 - `PackageCodec.ReadBoundedString` accumulated the 7-bit length prefix into an
   `int`, so a top group of `0x0F` (a prefix above `int.MaxValue`, reachable with
   five ordinary-looking continuation bytes) set the sign bit and reached

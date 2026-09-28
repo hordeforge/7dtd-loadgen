@@ -237,7 +237,15 @@ def telnet_snapshot(run_dir):
                 t0 = datetime.fromisoformat(first[0])
                 t1 = datetime.fromisoformat(last[0])
                 dt_s = (t1 - t0).total_seconds()
-            except ValueError:
+            except (ValueError, TypeError):
+                # TypeError is the mixed-awareness case: one marker carrying an
+                # offset ("...Z", "...+00:00") and the other carrying none makes
+                # the subtraction raise rather than return a number. That is
+                # the same class of unparseable stamp as a malformed date, and
+                # it must cost this one axis, not the whole capture: a raised
+                # exception here aborts telnet_snapshot and takes the entity,
+                # player and gamestats axes down with the rate. Same guard and
+                # the same reason as tools/bench_report.py iso_delta.
                 dt_s = None
         if dt_s is not None and dt_s > 0:
             # gm() counts absolute game minutes, so a session that straddles

@@ -76,7 +76,12 @@ ENDGAME_MIX = (
 
 
 def log(msg):
-    print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
+    # UTC, like every other stamp this repo writes (the save name below, the
+    # runner manifest, the client's event lines). A local prefix puts the
+    # profile's own timeline a zone offset away from the evidence it is read
+    # against, and at a fall-back transition the local clock repeats an hour,
+    # so two different moments in one run print the same prefix.
+    print(f"[{time.strftime('%H:%M:%S', time.gmtime())}] {msg}", flush=True)
 
 
 def decode_stream(chunks):

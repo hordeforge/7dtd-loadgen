@@ -160,6 +160,31 @@ def test_banner_counts_and_axes_survive_a_well_formed_transcript(tmp_path: Path)
     assert snap["clockRateGameMinPerRealSec"] == pytest.approx(1 / 60, rel=1e-2)
 
 
+def test_mixed_offset_markers_cost_the_rate_axis_not_the_capture(tmp_path: Path) -> None:
+    """A transcript whose first gettime marker is offset-aware and whose last
+    one carries no offset cannot be subtracted. The TypeError that raises is
+    the same unparseable-stamp class as a malformed date: it must drop the
+    clock-rate axis, not abort telnet_snapshot and take the entity, player and
+    gamestats axes with it."""
+    text = "\n".join([
+        "# ts=2026-08-12T00:00:04Z cmd=gettime",
+        "Day 42, 13:37",
+        "# ts=2026-08-12T00:01:04 cmd=gettime",
+        "Day 42, 13:38",
+        ("  1. id=171, name=zombieBoe, pos=10, 20, 30, lifetime=00:01:02, "
+         "remote=127.0.0.1:26900, dead=False"),
+        "Total of 3 in the game",
+        "GameStat.FPS = 60",
+    ]) + "\n"
+    snap = sut_capture.telnet_snapshot(str(_write_transcript(tmp_path, text)))
+
+    assert snap is not None
+    assert snap["clockRateGameMinPerRealSec"] is None
+    assert snap["reportedTotal"] == 3
+    assert snap["entities"]["count"] == 1
+    assert snap["gamestats"] == {"FPS": "60"}
+
+
 def test_banner_value_stops_at_its_own_line(tmp_path: Path) -> None:
     """A valueless banner line must not absorb the row printed under it.
 
