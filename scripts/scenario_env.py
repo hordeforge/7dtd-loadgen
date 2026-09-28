@@ -23,6 +23,13 @@ import sys
 from pathlib import Path
 
 ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# The host is interpolated into a /dev/tcp path in run_scenario.sh, so it must
+# be a bare host name, IPv4, or bracketed IPv6 literal: no separators, no
+# whitespace, no shell or glob metacharacters.
+HOST_RE = re.compile(r"^[A-Za-z0-9._:-]+$")
+# The server script is run as `bash $ROOT/scripts/<value>`: a bare .sh filename
+# in that directory, nothing that can climb out of it.
+SERVER_SCRIPT_RE = re.compile(r"^[A-Za-z0-9._-]+\.sh$")
 
 
 def load(path: str) -> dict:
@@ -47,7 +54,11 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     server = sc.get("server")
     mode = client.get("mode", "probe")
     port = int(client.get("port", defs.get("port", 26902)))  # bot data port = ServerPort+2
-    host = client.get("host", defs.get("host", "127.0.0.1"))
+    host = str(client.get("host", defs.get("host", "127.0.0.1")))
+    if not HOST_RE.match(host):
+        print(f"ERROR: scenario {scenario_id}: refusing host {host!r} "
+              "(not a bare host name, IPv4, or bracketed IPv6 literal)", file=sys.stderr)
+        return 1
 
     out: list[tuple[str, str]] = [
         ("LOADGEN_SCENARIO_ID", sc["id"]),
@@ -79,7 +90,12 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
     if sc.get("priority"):
         out.append(("LOADGEN_PRIORITY", str(sc["priority"])))
     if server:
-        out.append(("LOADGEN_SERVER_SCRIPT", server.get("script", "")))
+        server_script = str(server.get("script", ""))
+        if not SERVER_SCRIPT_RE.match(server_script):
+            print(f"ERROR: scenario {scenario_id}: refusing server script {server_script!r} "
+                  "(must be a bare *.sh name in scripts/)", file=sys.stderr)
+            return 1
+        out.append(("LOADGEN_SERVER_SCRIPT", server_script))
         for k, v in (server.get("env") or {}).items():
             out.append((k, str(v)))
     else:

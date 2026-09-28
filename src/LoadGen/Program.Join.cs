@@ -229,6 +229,14 @@ public static partial class Program
         using var eventWriterOwned = eventWriter;
         if (!IsValidPort(telnetPort))
             return InvalidArg("--telnet-port", telnetPort.ToString(), "an integer 1..65535");
+        // Every --spawn-entity entry is interpolated into a level-0 admin
+        // command, so a value carrying extra arguments must be rejected here
+        // rather than silently dropped at the console.
+        string[] spawnEntityParts = spawnEntity.Split(',',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (spawnEntityParts.Any(p => !TelnetAdmin.IsSafeCommandToken(p)))
+            return InvalidArg("--spawn-entity", spawnEntity,
+                "a comma-separated list matching [A-Za-z0-9._-]+ per entry");
         if (!IsValidMinPassRate(minPassRate))
             return InvalidArg("--min-pass-rate", minPassRate.ToString(), "a fraction between 0 and 1");
         if (opt.TimeoutMs <= 0)

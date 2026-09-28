@@ -62,9 +62,17 @@ if [[ -n "${LOADGEN_SERVER_SCRIPT:-}" && "$START_SERVER" == "1" ]]; then
   # port and /dev/tcp is TCP-only, so probing it can never succeed. The telnet
   # admin port is a real TCP listener that comes up once the server is ready.
   READY_PORT="${LOADGEN_TELNET_PORT:-8081}"
+  # A scenario value reaches the environment as data; keep it data here too.
+  # bash -c with the host and port spliced into the command string would run
+  # whatever a scenario file puts in "host" (--file takes any path), so the
+  # probe opens the socket with a redirect in this shell instead of a command.
+  if [[ ! "$READY_PORT" =~ ^[0-9]{1,5}$ ]] || ((10#$READY_PORT > 65535)); then
+    echo "ERROR: LOADGEN_TELNET_PORT must be an integer 0..65535 (got '$READY_PORT')" >&2
+    exit 2
+  fi
   server_ready=0
   for _ in $(seq 1 90); do
-    if bash -c "echo >/dev/tcp/${LOADGEN_HOST}/${READY_PORT}" 2>/dev/null; then
+    if ( exec 3<>"/dev/tcp/${LOADGEN_HOST}/${READY_PORT}" ) 2>/dev/null; then
       echo "telnet port ${READY_PORT} open"
       server_ready=1
       break

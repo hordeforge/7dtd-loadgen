@@ -139,6 +139,9 @@ if [[ -f "$SERVERADMIN_SEED" ]] && ! grep -q 'name="admin"' "$SERVERADMIN" 2>/de
   # identities stay local: export RE_ADMIN_STEAM_ID64 / RE_ADMIN_EOS_ID to have
   # your own ids substituted into the seeded copy (never written back to the repo).
   cp "$SERVERADMIN_SEED" "$SERVERADMIN"
+  # Credential file: the webuser password hash must not be world-readable on a
+  # shared host, and the default umask (022) would leave it at 644.
+  chmod 600 "$SERVERADMIN"
   if [[ "${RE_ADMIN_STEAM_ID64:-}" =~ ^[0-9]{17}$ ]]; then
     sed -i "s/76561198000000001/${RE_ADMIN_STEAM_ID64}/g" "$SERVERADMIN"
   fi
@@ -192,6 +195,8 @@ python3 "$SBCONFIG" render \
   --set "DayLightLength=12" \
   --set "BuildCreate=false" \
   --set "DynamicMeshEnabled=$DYNAMIC_MESH"
+# The rendered config carries TelnetPassword: keep it owner-readable only.
+chmod 600 "$TMPCFG"
 
 LOG="$USERDATA/server_prefab_${WORLD_NAME}_${WORLD_GEN_SIZE}_$(date +%Y-%m-%d__%H-%M-%S).txt"
 echo "$LOG" >"$USERDATA/dedicated.logpath"

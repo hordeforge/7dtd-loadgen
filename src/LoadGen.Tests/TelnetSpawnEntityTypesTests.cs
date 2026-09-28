@@ -38,4 +38,11 @@ public sealed class TelnetSpawnEntityTypesTests
     [InlineData(" a , b ", new[] { "a", "b" })]
     public void ExplicitList_IsKept_TrimmedInOrder(string entityName, string[] expected)
         => Assert.Equal(expected, TelnetAdmin.ResolveSpawnEntityTypes(entityName));
+
+    [Theory]
+    [InlineData("zombieBoe kill 1", new[] { "zombieBoe", "zombieSteve", "zombieArlene" })]
+    [InlineData("zombieBoe\nshutdown", new[] { "zombieBoe", "zombieSteve", "zombieArlene" })]
+    [InlineData("zombieBoe, kill 1", new[] { "zombieBoe" })]
+    public void EntryThatCouldCarryArguments_IsDropped(string entityName, string[] expected)
+        => Assert.Equal(expected, TelnetAdmin.ResolveSpawnEntityTypes(entityName));
 }

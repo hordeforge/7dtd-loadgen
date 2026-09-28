@@ -98,6 +98,25 @@ SPAWN_EVERY_MS="${COMPARE_SPAWN_EVERY_MS:-${CAT_SPAWN_EVERY:-}}"
 SNAPSHOT_DELAY_MS="${COMPARE_SNAPSHOT_DELAY_MS:-${CAT_SNAPSHOT_DELAY:-0}}"
 WORLD_NAME="${WORLD_NAME:-${COMPARE_WORLD:-Navezgane}}"
 HOST="${COMPARE_HOST:-127.0.0.1}"
+
+# Free-text knobs reach run-meta.json below and the client command line. A
+# quote or backslash there breaks the JSON the report tools parse, so accept
+# only the shapes a host, a port, and an entity class can take.
+if [[ ! "$HOST" =~ ^[A-Za-z0-9._:-]+$ ]]; then
+  echo "ERROR: COMPARE_HOST must match [A-Za-z0-9._:-]+ (got '$HOST')" >&2
+  exit 2
+fi
+if [[ -n "$SPAWN_ENTITY" && ! "$SPAWN_ENTITY" =~ ^[A-Za-z0-9._,-]+$ ]]; then
+  echo "ERROR: spawn entity list must match [A-Za-z0-9._,-]+ (got '$SPAWN_ENTITY')" >&2
+  exit 2
+fi
+for numeric in "$COUNT" "$ACTIONS" "$TIMEOUT_MS" "$SPAWN_PER_PLAYER" \
+               "$SPAWN_EVERY_MS" "$SNAPSHOT_DELAY_MS"; do
+  if [[ ! "$numeric" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: workload knobs must be non-negative integers (got '$numeric')" >&2
+    exit 2
+  fi
+done
 # Stock-side cost axis via the sibling 7dtd-server-apm tool (bridge must be installed
 # in the stock dedicated server; see ../7dtd-server-apm). COMPARE_APM=0 disables;
 # COMPARE_APM_SECONDS sizes the window (default 30s, aligned with the telnet

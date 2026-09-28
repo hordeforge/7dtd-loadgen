@@ -153,13 +153,16 @@ public sealed partial class TelnetAdmin : IDisposable
     /// <summary>Comma list from --spawn-entity to concrete entity classes. A
     /// comma-only list (" , ") splits to zero entries under RemoveEmptyEntries,
     /// and the spawn loop then divides by zero on types.Length every wave; an
-    /// empty selection means the default mix, same as an unset value.</summary>
+    /// empty selection means the default mix, same as an unset value. Entries
+    /// that could carry extra arguments into `spawnentity <id> <type>` are
+    /// dropped: only the allowlisted token shape reaches the console.</summary>
     internal static string[] ResolveSpawnEntityTypes(string? entityName)
     {
         if (string.IsNullOrWhiteSpace(entityName)) return DefaultSpawnEntityTypes;
         string[] parts = entityName.Split(',',
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return parts.Length > 0 ? parts : DefaultSpawnEntityTypes;
+        string[] safe = Array.FindAll(parts, IsSafeCommandToken);
+        return safe.Length > 0 ? safe : DefaultSpawnEntityTypes;
     }
 
     /// <summary>

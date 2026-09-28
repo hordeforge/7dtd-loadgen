@@ -13,6 +13,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 TOOL = ROOT / "scripts" / "scenario_env.py"
 BASH = "/bin/bash"
@@ -106,3 +108,50 @@ def test_non_identifier_env_key_is_refused(tmp_path):
     r = _export(_catalog(tmp_path, {"not a key": "x"}))
     assert r.returncode == 1
     assert "refusing env key" in r.stderr
+
+
+def _client_catalog(tmp_path: Path, client: dict) -> Path:
+    doc = {"scenarios": [{"id": "t1", "title": "test", "client": client}]}
+    path = tmp_path / "client.json"
+    path.write_text(json.dumps(doc), encoding="utf-8")
+    return path
+
+
+@pytest.mark.parametrize("host", [
+    "127.0.0.1; touch /nonexistent-pwned",
+    "127.0.0.1 $(id)",
+    "host name",
+    "../../etc",
+])
+def test_host_that_could_escape_the_tcp_probe_is_refused(tmp_path, host):
+    # run_scenario.sh opens /dev/tcp/<host>/<port>; a host with separators or
+    # whitespace is no longer a host there.
+    r = _export(_client_catalog(tmp_path, {"mode": "probe", "host": host}))
+    assert r.returncode == 1
+    assert "refusing host" in r.stderr
+    assert not Path("/nonexistent-pwned").exists()
+
+
+def test_ordinary_host_still_exports(tmp_path):
+    r = _export(_client_catalog(tmp_path, {"mode": "probe", "host": "10.0.0.5"}))
+    assert r.returncode == 0, r.stderr
+    assert _read_back(r.stdout, "LOADGEN_HOST") == "10.0.0.5"
+
+
+def test_server_script_outside_scripts_dir_is_refused(tmp_path):
+    # run_scenario.sh runs `bash $ROOT/scripts/<script>`; a path escapes it.
+    doc = {"scenarios": [{
+        "id": "t1", "title": "test", "client": {"mode": "probe"},
+        "server": {"script": "../../../tmp/evil.sh"},
+    }]}
+    path = tmp_path / "srv.json"
+    path.write_text(json.dumps(doc), encoding="utf-8")
+    r = _export(path)
+    assert r.returncode == 1
+    assert "refusing server script" in r.stderr
+
+
+def test_named_server_script_is_kept(tmp_path):
+    r = _export(_catalog(tmp_path, {}))
+    assert r.returncode == 0, r.stderr
+    assert _read_back(r.stdout, "LOADGEN_SERVER_SCRIPT") == "start.sh"
