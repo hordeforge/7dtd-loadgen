@@ -658,7 +658,7 @@ public static partial class Program
                 return 0;
             }
             Console.Error.WriteLine(
-                $"FAIL: passRate={singlePassRate:P2} < minPassRate={minPassRate:P2}");
+                $"FAIL: passRate={ArtifactFormat.Percent(singlePassRate)} < minPassRate={ArtifactFormat.Percent(minPassRate)}");
             return 1;
         }
 
@@ -804,7 +804,7 @@ public static partial class Program
 
         var (joinCount, joinP50, joinP95, joinMax) = JoinLatency.Summary(results.Select(r => r.s.JoinMs));
         var report =
-            $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={rate:P2} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
+            $"JOIN_SUMMARY total={count} pass={pass} fail={count - pass} passRate={ArtifactFormat.Percent(rate)} mode={opt.Mode} death={opt.Death} respawn={opt.Respawn}\n" +
             $"JOIN_LATENCY joined={joinCount} p50Ms={joinP50} p95Ms={joinP95} maxMs={joinMax}\n" +
             $"JOIN_ACTIONS walks={cohort.Walks} jumps={cohort.Jumps} crouch={cohort.Crouches} aim={cohort.Aims} turn={cohort.Turns} " +
             $"strafe={cohort.Strafes} look={cohort.Looks} chat={cohort.Chats} break={cohort.Breaks} " +
@@ -827,9 +827,9 @@ public static partial class Program
             double jps = wStart > 0 ? pass * 1000.0 / wStart : 0;
             Console.WriteLine(
                 $"BENCH_SUMMARY warmupMs={b.WarmupMs} windowMs={b.WindowMs} " +
-                $"actionsInWindow={wActions} actionsPerSec={aps:0.00} " +
+                $"actionsInWindow={wActions} actionsPerSec={ArtifactFormat.Fixed(aps, 2)} " +
                 $"deathsInWindow={wDeaths} respawnsInWindow={wRespawns} " +
-                $"joinRatePerSec={jps:0.000} activeMin={activeMin} activeMax={activeMax} " +
+                $"joinRatePerSec={ArtifactFormat.Fixed(jps, 3)} activeMin={activeMin} activeMax={activeMax} " +
                 $"activeAtWindowStart={b.ActiveAtWindowStart} activeAtWindowEnd={b.ActiveAtWindowEnd}");
         }
         Console.WriteLine(report);
@@ -901,8 +901,8 @@ public static partial class Program
         bool gatePass = JoinGatePass(pass, count, minPassRate);
         (gatePass ? Console.Out : Console.Error).WriteLine(
             gatePass
-                ? $"PASS: join total={count} passRate={rate:P2}"
-                : $"FAIL: passRate={rate:P2} < minPassRate={minPassRate:P2}");
+                ? $"PASS: join total={count} passRate={ArtifactFormat.Percent(rate)}"
+                : $"FAIL: passRate={ArtifactFormat.Percent(rate)} < minPassRate={ArtifactFormat.Percent(minPassRate)}");
         return gatePass ? 0 : 1;
     }
 

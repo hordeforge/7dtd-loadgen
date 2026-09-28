@@ -76,24 +76,24 @@ public static partial class Program
             // Same gate as the multi-client lane: a 0 bar passes a failed probe.
             if (Program.JoinGatePass(result.Pass ? 1 : 0, 1, minPassRate))
                 return 0;
-            Console.Error.WriteLine($"FAIL: passRate={(result.Pass ? 1.0 : 0.0):P2} < minPassRate={minPassRate:P2}");
+            Console.Error.WriteLine($"FAIL: passRate={ArtifactFormat.Percent(result.Pass ? 1.0 : 0.0)} < minPassRate={ArtifactFormat.Percent(minPassRate)}");
             return 1;
         }
 
         concurrency = LoadRunner.ResolveConcurrency(concurrency, count);
         Console.WriteLine(
             $"[{DateTime.UtcNow:O}] LOAD start host={host} port={port} count={count} " +
-            $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={minPassRate:P0}");
+            $"concurrency={concurrency} timeoutMs={timeoutMs} minPassRate={ArtifactFormat.Percent0(minPassRate)}");
         var summary = LoadRunner.Run(host, port, key, timeoutMs, count, concurrency, rampMs, quiet, idBase: clientId);
         if (!string.IsNullOrEmpty(logPath))
             RunReport.WriteArtifact("log", logPath, () => RunReport.WriteLines(logPath, summary.ToReportLines()));
         Console.WriteLine(summary.ToReport());
         if (!Program.JoinGatePass(summary.Pass, summary.Total, minPassRate))
         {
-            Console.Error.WriteLine($"FAIL: passRate={summary.PassRate:P2} < minPassRate={minPassRate:P2}");
+            Console.Error.WriteLine($"FAIL: passRate={ArtifactFormat.Percent(summary.PassRate)} < minPassRate={ArtifactFormat.Percent(minPassRate)}");
             return 1;
         }
-        Console.WriteLine($"PASS: load {summary.Total} clients passRate={summary.PassRate:P2}");
+        Console.WriteLine($"PASS: load {summary.Total} clients passRate={ArtifactFormat.Percent(summary.PassRate)}");
         return 0;
     }
 }

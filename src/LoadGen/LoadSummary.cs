@@ -22,7 +22,7 @@ public sealed class LoadSummary
     {
         var lines = new List<string>
         {
-            $"LOAD_SUMMARY total={Total} pass={Pass} fail={Fail} passRate={PassRate:P2}",
+            $"LOAD_SUMMARY total={Total} pass={Pass} fail={Fail} passRate={ArtifactFormat.Percent(PassRate)}",
             $"LOAD_TIMING elapsedMs={ElapsedMs} p50={P50Ms} p95={P95Ms} p99={P99Ms}",
             // protocolProgress is the same count as Pass (both are r.Pass); the
             // label is kept because the LOAD_CONN line is read by operators.

@@ -270,6 +270,19 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   it begin minutes late. The stamp is taken at the client launch and the end is
   recorded as its own `endedAt`; `tools/sut_report.py` renders the interval.
   Gated by `test_run_meta_start_stamp_is_taken_at_the_run_not_after_it`.
+- `pingAvgMs` is not scaled by the decimation stride. `PingStats` halves its
+  retained sample set past 200k RTT samples and keeps one in
+  `pingSampleStride`; the mean was then multiplied by that stride, so a soak
+  reported twice the true average ping at one halving and four times at two.
+  The retained set is a systematic every-Nth subsample of the stream, so its
+  mean already estimates the run mean. The spike count stays scaled: it is a
+  count, not a location statistic.
+- The report lines format numbers with the ambient culture. `LOAD_SUMMARY`,
+  `JOIN_SUMMARY` and `BENCH_SUMMARY` write pass rates and per-second rates
+  through `{x:P2}` / `{x:0.00}`, so an operator on a comma-decimal locale wrote
+  `passRate=98,55 %` into evidence that `scripts/` and `tools/` parse, while
+  `--min-pass-rate` was already read with the invariant spelling. One
+  `ArtifactFormat` helper writes the digits for both ends.
 - The coverage badge no longer publishes under a cancel-in-progress group. Two
   pushes to `main` seconds apart cancelled the first badge job mid-push to the
   `badges` branch, leaving a ref the next run could not fast-forward past. The

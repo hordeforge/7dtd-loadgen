@@ -56,11 +56,13 @@ public static class PingStats
         get { lock (Gate) return Samples.Count; }
     }
 
-    /// <summary><c>count</c> and <c>stride</c> describe the whole run: the first
-    /// <c>stride</c> samples were exact, the rest are uniform over the decimation.
-    /// The average and the spike count are scaled back up by <c>stride</c>; the
-    /// percentiles and the max are reported as they stand, because an order
-    /// statistic over a uniform subsample already estimates the run's.</summary>
+    /// <summary>count and every derived value cover the whole run: the first
+    /// <c>stride</c> samples were exact, the rest are uniform over the
+    /// decimation, so the spike count is a scaled estimate and <c>stride</c>
+    /// says how far. The mean and the percentiles are not scaled: the
+    /// retained set is a systematic every-Nth subsample of the stream, so its
+    /// mean already estimates the run mean. Multiplying it by the stride
+    /// reported 2x the true average at one halving and 4x at two.</summary>
     public static (int count, double avg, int p50, int p95, int max, int spikes, int stride) Summary()
     {
         lock (Gate)
@@ -69,7 +71,7 @@ public static class PingStats
             var sorted = Samples.OrderBy(x => x).ToList();
             int Pct(double p) => sorted[Math.Min(sorted.Count - 1, (int)(p * (sorted.Count - 1)))];
             return ((int)Math.Min(_recorded, int.MaxValue),
-                Math.Round(sorted.Average() * _stride, 1),
+                Math.Round(sorted.Average(), 1),
                 Pct(0.5), Pct(0.95), sorted[^1],
                 (int)Math.Min(sorted.Count(s => s >= 150) * (long)_stride, int.MaxValue),
                 _stride);

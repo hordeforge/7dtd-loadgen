@@ -85,6 +85,29 @@ public sealed class PingStatsTests
     }
 
     [Fact]
+    public void Decimation_LeavesTheMeanUnscaled()
+    {
+        PingStats.ResetForTests();
+        try
+        {
+            // 200k samples of 1 ms, then a tail of 100 ms. The tail average
+            // over the whole run is (200000*1 + 500*100) / 200500 = 1.24 ms.
+            // The retained set is every Nth sample of the same stream, so its
+            // mean already estimates that; scaling it by the stride reported
+            // 2.5 ms and would double again at every later halving.
+            for (int i = 0; i < 200_000; i++)
+                PingStats.Record(1);
+            for (int i = 0; i < 500; i++)
+                PingStats.Record(100);
+
+            var summary = PingStats.Summary();
+            Assert.Equal(2, summary.stride);
+            Assert.Equal(1.2, summary.avg, 1);
+        }
+        finally { PingStats.ResetForTests(); }
+    }
+
+    [Fact]
     public void Decimation_ScalesSpikeCountToTheRun()
     {
         PingStats.ResetForTests();
