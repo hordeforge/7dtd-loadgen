@@ -254,7 +254,13 @@ def main():
             # the one field that must not be a coerced "0".
             lg_dirty = " (dirty)" if _dirty(m.get("loadgen")) else ""
             zl_dirty = " (dirty)" if _dirty(m.get("zdtd")) else ""
-            lines.append(f"- {side}: ran {m.get('startedAt')} | "
+            # "ran <stamp>" read as the start of the run; the harness stamps
+            # endedAt too, so the interval is shown and a reader can bound the
+            # run instead of guessing which end they are looking at.
+            ran = m.get("startedAt")
+            ended = m.get("endedAt")
+            when = f"{ran} -> {ended}" if ended else str(ran)
+            lines.append(f"- {side}: ran {when} | "
                          f"loadgen {as_dict(m.get('loadgen')).get('git', '?')}{lg_dirty} | "
                          f"zdtd {as_dict(m.get('zdtd')).get('git', '?')}{zl_dirty} | "
                          f"client count={as_dict(m.get('client')).get('count', '?')} "

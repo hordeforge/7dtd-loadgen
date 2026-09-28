@@ -40,13 +40,19 @@ def iso_delta(a: str, b: str) -> float | None:
     run: clamping it to 0.0 published 0 as a measured wall and then blamed
     the 100% repeatability delta on host contention.
 
-    One stamp carrying a UTC offset and the other not is the same class of
-    input as a malformed one, and the subtraction is what raises for it, so
-    the arithmetic shares the guard.
+    A stamp carrying no offset names a wall time, not an instant, and the span
+    of two of them is the span of whatever zone the writer happened to be in.
+    One aware and one naive stamp is the same defect in a louder form, and the
+    subtraction is what raises for it; the guard covers both, so a run-meta
+    written by a local-time producer (or hand-edited into local time) reads as
+    n/a rather than as a wall offset by the host's UTC offset, and by an extra
+    hour on the far side of a DST transition.
     """
     try:
         ta = dt.datetime.fromisoformat(a)
         tb = dt.datetime.fromisoformat(b)
+        if ta.tzinfo is None or tb.tzinfo is None:
+            return None
         span = (tb - ta).total_seconds()
     except (ValueError, TypeError, OverflowError):
         return None

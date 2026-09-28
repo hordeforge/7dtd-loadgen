@@ -205,3 +205,42 @@ def test_wall_ends_before_it_starts_is_unmeasured_not_zero(tmp_path):
     assert "n/a (missing wall)" in md
     payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
     assert payload["laps"]["lap2"]["scenarios"]["bench"]["wallS"] is None
+
+
+def test_zone_less_stamps_are_not_a_wall(tmp_path):
+    """A stamp carrying no offset names a wall time, not an instant.
+
+    Subtracting two of them yields a span in whatever zone the writer was in,
+    so the wall this publishes is the real one only on a host that happens to
+    sit at UTC: on Europe/Warsaw it is short by the offset, and an hour short
+    on the far side of a DST transition. bench_stock.sh writes both stamps
+    with `date -u`, so a zone-less pair is evidence from a writer that is not
+    this harness, and the honest reading is n/a.
+    """
+    base = {"scenario": "bench", "summary": {"pass": 16, "fail": 0},
+            "hostLoadStart": "1.0", "hostLoadEnd": "1.2",
+            "bench": {"actionsPerSec": 280.0}}
+    naive = dict(base, startUtc="2026-08-22T10:00:00", endUtc="2026-08-22T10:01:00")
+    # A DST fall-back pair. zdump -v -c 2026,2027 Europe/Warsaw: 2026-10-25
+    # 00:59:59 UT is 02:59:59 CEST and 01:00:00 UT is 02:00:00 CET, so local
+    # 02:00-02:59 happens twice. A zone-less 02:30 -> 02:45 is 15 s on the
+    # first pass and 75 s on the second: the same two stamps, an hour apart,
+    # and nothing in the evidence says which run it was.
+    dst = dict(base, startUtc="2026-10-25T02:30:00", endUtc="2026-10-25T02:45:00")
+    aware = dict(base, startUtc="2026-08-22T10:00:00Z", endUtc="2026-08-22T10:01:00Z")
+    mixed = dict(base, startUtc="2026-08-22T10:00:00", endUtc="2026-08-22T10:01:00Z")
+    # One lap per shape; the scenario name is the evidence dir, so each lap
+    # gets its own scenario key rather than overwriting one row.
+    _make_lap(tmp_path, "lap1", {"bench": aware})
+    _make_lap(tmp_path, "lap2", {"naive": naive})
+    _make_lap(tmp_path, "lap3", {"dst": dst})
+    _make_lap(tmp_path, "lap4", {"mixed": mixed})
+    out = tmp_path / "out"
+    r = _run(tmp_path, out)
+    assert r.returncode == 0, r.stderr
+    payload = json.loads((out / "bench-stock.json").read_text(encoding="utf-8"))
+    laps = payload["laps"]
+    assert laps["lap1"]["scenarios"]["bench"]["wallS"] == 60.0
+    for lap, scenario in (("lap2", "naive"), ("lap3", "dst"), ("lap4", "mixed")):
+        assert laps[lap]["scenarios"][scenario]["wallS"] is None, (
+            f"{scenario} stamps published a wall from stamps that carry no zone")

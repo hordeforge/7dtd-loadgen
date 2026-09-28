@@ -84,6 +84,44 @@ def test_badge_publish_is_not_cancellable_mid_push():
     )
 
 
+def test_run_meta_start_stamp_is_taken_at_the_run_not_after_it():
+    """`startedAt` must be stamped where the client launches.
+
+    The run-meta heredoc is assembled after `wait "$CLIENT_PID"` and after the
+    bounded APM-capture wait, so a `date -u` written there is the end of the
+    run plus the capture tail. A reader correlating a scenario against the
+    server log, or against another day's run, saw it start minutes late. The
+    stamp belongs at the launch; the end is recorded as its own field.
+    """
+    launch = COMPARE_SUT.index('RUN_STARTED_AT="$(date -u')
+    assert launch < COMPARE_SUT.index("CLIENT_PID=$!"), (
+        "the run start stamp is taken after the client has already been waited on"
+    )
+    meta = COMPARE_SUT.index('"startedAt"')
+    assert '"startedAt": "$RUN_STARTED_AT"' in COMPARE_SUT, (
+        "run-meta must carry the launch-time stamp, not a fresh date at write time"
+    )
+    assert meta > launch, (
+        "startedAt is stamped before the variable that holds the launch time exists"
+    )
+    assert '"endedAt"' in COMPARE_SUT, (
+        "the end of the run must be recorded under its own name, not by leaving "
+        "startedAt to carry the end"
+    )
+
+
+def test_bench_run_meta_measures_the_run_between_two_stamps():
+    """bench_stock.sh takes t0 before the client launches and t1 after both the
+    client and the APM capture are done, and bench_report.py turns the pair into
+    the per-scenario wall. The two stamps must bracket the work, not both sit on
+    one side of it."""
+    start = BENCH.index("t0=$(date -u")
+    end = BENCH.index("t1=$(date -u")
+    assert start < BENCH.index("CLIENT_PID=$!") < end, (
+        "the bench wall must start before the client launches and end after it exits"
+    )
+
+
 def test_release_gate_verifies_the_dispatched_tag():
     """A manual run must check out and read the tag it was asked about, not the
     branch the dispatch happened to start from."""

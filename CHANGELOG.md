@@ -249,6 +249,27 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Fixed
 
+- `tools/bench_report.py iso_delta` and `tools/sut_capture.py` accepted a pair
+  of stamps that carry no UTC offset and subtracted them as instants. A stamp
+  with no offset names a wall time, so the span of two of them is a span in
+  whatever zone the writer was in: the published per-scenario wall was short by
+  the host's UTC offset on any non-UTC host, and across a DST fall-back
+  (`zdump -v -c 2026,2027 Europe/Warsaw`: 2026-10-25 00:59:59 UT is 02:59:59
+  CEST, 01:00:00 UT is 02:00:00 CET) the same two zone-less stamps are 15 s or
+  75 s of real time and nothing in the evidence says which. Both harnesses
+  write their stamps with `date -u` or a `"...Z"` marker, so a zone-less pair is
+  evidence from a writer that is not this harness; it now reads as `n/a` and
+  costs one axis rather than publishing an offset-inflated measurement. Gated
+  by `test_zone_less_stamps_are_not_a_wall` and
+  `test_zone_less_markers_cost_the_rate_axis_not_the_capture`.
+- `scripts/compare_sut.sh` stamped `run-meta.json`'s `startedAt` with a live
+  `date -u` inside the metadata heredoc, which is assembled after
+  `wait "$CLIENT_PID"` and after the bounded APM-capture wait. The field named
+  the start of the run and carried its end plus the capture tail, so a reader
+  correlating a scenario against the server log or against another day's run saw
+  it begin minutes late. The stamp is taken at the client launch and the end is
+  recorded as its own `endedAt`; `tools/sut_report.py` renders the interval.
+  Gated by `test_run_meta_start_stamp_is_taken_at_the_run_not_after_it`.
 - The coverage badge no longer publishes under a cancel-in-progress group. Two
   pushes to `main` seconds apart cancelled the first badge job mid-push to the
   `badges` branch, leaving a ref the next run could not fast-forward past. The

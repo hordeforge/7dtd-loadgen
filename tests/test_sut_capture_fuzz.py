@@ -185,6 +185,38 @@ def test_mixed_offset_markers_cost_the_rate_axis_not_the_capture(tmp_path: Path)
     assert snap["gamestats"] == {"FPS": "60"}
 
 
+def test_zone_less_markers_cost_the_rate_axis_not_the_capture(tmp_path: Path) -> None:
+    """Markers with no mono component and no offset on either stamp.
+
+    A stamp with no offset names a wall time, not an instant, so subtracting
+    two of them measures the interval in the writer's zone rather than in real
+    time. On a host not at UTC the derived game-clock rate is off by the UTC
+    offset, and across a DST fall-back (zdump -v -c 2026,2027 Europe/Warsaw:
+    2026-10-25 00:59:59 UT is 02:59:59 CEST, 01:00:00 UT is 02:00:00 CET) local
+    02:00-02:59 happens twice, so the same pair of stamps is 15 s or 75 s of
+    real time and nothing in the transcript says which. The honest reading is
+    no rate, and the rest of the capture still stands.
+    """
+    rows = ["Day 42, 13:37", "Day 42, 13:38"]
+    text = "\n".join([
+        "# ts=2026-10-25T02:30:00 cmd=gettime",
+        rows[0],
+        "# ts=2026-10-25T02:45:00 cmd=gettime",
+        rows[1],
+        ("  1. id=171, name=zombieBoe, pos=10, 20, 30, lifetime=00:01:02, "
+         "remote=127.0.0.1:26900, dead=False"),
+        "Total of 3 in the game",
+        "GameStat.FPS = 60",
+    ]) + "\n"
+    snap = sut_capture.telnet_snapshot(str(_write_transcript(tmp_path, text)))
+
+    assert snap is not None
+    assert snap["clockRateGameMinPerRealSec"] is None
+    assert snap["reportedTotal"] == 3
+    assert snap["entities"]["count"] == 1
+    assert snap["gamestats"] == {"FPS": "60"}
+
+
 def test_banner_value_stops_at_its_own_line(tmp_path: Path) -> None:
     """A valueless banner line must not absorb the row printed under it.
 

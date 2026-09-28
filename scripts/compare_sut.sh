@@ -384,6 +384,15 @@ EOF
   # background so the telnet snapshot happens while the bot is connected
   # (stock and zdtd both kick players when the client times out; a snapshot
   # after the client exits always reads 0 players).
+  #
+  # startedAt is taken here, at the launch, not where run-meta.json is written
+  # below. The metadata block is assembled after `wait "$CLIENT_PID"` and after
+  # the bounded APM-capture wait, so a stamp taken there is the end of the run
+  # plus the capture tail: a reader correlating a run against the server log
+  # or another day's run saw the scenario start minutes after it did. The end
+  # stamp is recorded separately rather than relabeled, so a reader can bound
+  # the run instead of guessing which end it is looking at.
+  RUN_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   LOADGEN_MODE=join LOADGEN_COUNT="$COUNT" LOADGEN_ACTIONS="$ACTIONS" \
     LOADGEN_TIMEOUT="$TIMEOUT_MS" LOADGEN_HOST="$HOST" LOADGEN_PORT="$BOT_PORT" \
     LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" \
@@ -478,7 +487,8 @@ EOF
   "scenario": "$SCENARIO_ID",
   "sut": "$sut",
   "runId": "$RUN_ID",
-  "startedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "startedAt": "$RUN_STARTED_AT",
+  "endedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "hostLoad": "$HOST_LOAD",
   "client": {"count": "$COUNT", "actions": "$ACTIONS", "timeoutMs": "$TIMEOUT_MS", "host": "$HOST",
              "spawnEntity": "$SPAWN_ENTITY", "spawnPerPlayer": "$SPAWN_PER_PLAYER", "spawnEveryMs": "$SPAWN_EVERY_MS"},
