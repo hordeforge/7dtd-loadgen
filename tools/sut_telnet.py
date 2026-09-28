@@ -129,12 +129,13 @@ def main():
         if "password" in text:
             if password is None:
                 print("sut_telnet: server asks for a password but none was given", file=sys.stderr)
-                return 2
-            sock.sendall((password + "\n").encode())
-            deadline = time.monotonic() + 10
-            transcript += drain(sock, deadline)
+                rc = 2
+            else:
+                sock.sendall((password + "\n").encode())
+                deadline = time.monotonic() + 10
+                transcript += drain(sock, deadline)
 
-        cmds = [c.strip() for c in args.commands.split(",") if c.strip()]
+        cmds = [] if rc != 0 else [c.strip() for c in args.commands.split(",") if c.strip()]
         for idx, cmd in enumerate(cmds):
             if args.tail_sleep > 0 and idx == len(cmds) - 1:
                 time.sleep(args.tail_sleep)

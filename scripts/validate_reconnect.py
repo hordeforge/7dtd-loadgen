@@ -188,10 +188,11 @@ def main() -> int:
                if log_path.exists() else "")
         joins = out.count("STAGE Joined")
         rejoin_lines = [ln for ln in out.splitlines() if "REJOIN" in ln]
-        joined_lines = [ln for ln in out.splitlines() if "PASS joined" in ln]
+        joined_lines = [ln for ln in out.splitlines() if "JOINED entity=" in ln]
         # A rejoin is any retry past the first join attempt per bot. Success = at
         # least one bot logged a REJOIN after the server came back, and at least
-        # one PASS joined overall.
+        # one bot in the world ("JOINED entity="; "PASS joined" is the
+        # session-end summary, written only at disconnect).
         ok = joins >= 1 and len(rejoin_lines) >= 1 and len(joined_lines) >= 1
         print(f"[reconnect] joins={joins} rejoin events={len(rejoin_lines)} joined={len(joined_lines)} "
               f"log={log_path.name}")

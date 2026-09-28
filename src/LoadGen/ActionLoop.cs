@@ -171,10 +171,9 @@ public static class ActionLoop
 
         bool endless = opt.ActionCount <= 0;
         bool clientDeath = opt.Death != DeathMethod.None;
-        // Finite client-death runs keep a death window near the end; endless never self-kills.
-        int n = endless
-            ? int.MaxValue
-            : Math.Max(opt.ActionCount, opt.Mode == BotMode.Wander ? 24 : 12);
+        // --actions N is the live-step count verbatim; the wall-clock budget
+        // estimator and the workload scenarios are sized from the requested N.
+        int n = endless ? int.MaxValue : opt.ActionCount;
         int deathAt = clientDeath && !endless ? DeathAtStep(n) : int.MaxValue;
 
         int paceMs = opt.PaceMs >= 0 ? opt.PaceMs : opt.Mode switch

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Write the loadgen run manifest (7dtd.loadgen.run.v1) from LOADGEN_* env.
+"""Write the runner manifest (7dtd.loadgen.runner.v1) from LOADGEN_* env.
 
 Called by scripts/run_loadgen.sh after the client exits; every input arrives
-via the environment, and LOADGEN_MANIFEST_PATH is the output file.
+via the environment, and LOADGEN_MANIFEST_PATH is the output file. This is the
+wrapper's own record of the run (target, workload, exit code). The per-client
+run manifest (schema 7dtd.loadgen.run.v1) is written by the client itself via
+--run-manifest; the two carry different fields and must not share an id.
 """
 
 from __future__ import annotations
@@ -26,9 +29,10 @@ def integer(name: str) -> int:
 
 
 manifest = {
-    "schema": "7dtd.loadgen.run.v1",
+    "schema": "7dtd.loadgen.runner.v1",
     "endedAt": datetime.now(UTC).isoformat(),
     "mode": os.environ["LOADGEN_MODE"],
+    "scenarioId": os.environ.get("LOADGEN_SCENARIO_ID") or None,
     "target": {"host": os.environ["LOADGEN_HOST"], "port": integer("LOADGEN_PORT")},
     "workload": {
         "clients": integer("LOADGEN_COUNT"),
@@ -37,6 +41,7 @@ manifest = {
         "actionsPerClient": integer("LOADGEN_ACTIONS"),
         "rampMs": integer("LOADGEN_RAMP_MS"),
         "botMode": os.environ.get("LOADGEN_BOT_MODE") or "auto",
+        "botMix": os.environ.get("LOADGEN_BOT_MIX") or None,
         "deathMode": os.environ.get("LOADGEN_DEATH") or "auto",
         "seed": os.environ.get("LOADGEN_SEED") or "default",
         "maxDynamite": os.environ.get("LOADGEN_MAX_DYNAMITE") or "default",

@@ -55,12 +55,14 @@ public static partial class Program
             if (!string.IsNullOrEmpty(logPath))
                 WriteArtifact("log", logPath, () => WriteLines(logPath, result.Lines));
             if (!result.Pass)
-            {
                 Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] FAIL: no LiteNetLib protocol progress");
-                return 1;
-            }
-            Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] PASS: protocol progress beyond socket open");
-            return 0;
+            else
+                Console.WriteLine($"[{DateTime.UtcNow:O}] [fake#{clientId}] PASS: protocol progress beyond socket open");
+            // Same gate as the multi-client lane: a 0 bar passes a failed probe.
+            if (Program.JoinGatePass(result.Pass ? 1 : 0, 1, minPassRate))
+                return 0;
+            Console.WriteLine($"FAIL: passRate={(result.Pass ? 1.0 : 0.0):P2} < minPassRate={minPassRate:P2}");
+            return 1;
         }
 
         concurrency = LoadRunner.ResolveConcurrency(concurrency, count);

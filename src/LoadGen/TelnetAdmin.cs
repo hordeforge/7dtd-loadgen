@@ -302,6 +302,12 @@ public sealed partial class TelnetAdmin : IDisposable
         }
         try
         {
+            // Drop whatever the server said since the previous command: every
+            // caller matches this command's own response text, and a retained
+            // earlier line (a "No spawn point" from the first bot, a "Gave" from
+            // the first kill) would make every later command in the session
+            // match it as well.
+            _buf.Clear();
             WriteLine(cmd);
             return ReadAvailable(500);
         }
@@ -415,15 +421,14 @@ public sealed partial class TelnetAdmin : IDisposable
         return spawned + killed;
     }
 
-    // Rotating index so successive hordes target different areas of the cohort.
-    int _hordeCursor;
-
     /// <summary>Spawn a wandering horde: a concentrated scout-horde burst aimed at
     /// a rotating subset of players. Scouts spawn at distance and path in as a
     /// group, exercising long-range pathfinding, group cohesion, and the spawn
     /// manager - distinct from the steady spawn-on-player trickle. `waves` scout
-    /// calls per targeted player; `targets` players per horde.</summary>
-    public int SpawnWanderingHorde(int waves = 3, int targets = 2)
+    /// calls per targeted player; `targets` players per horde. `cursor` is owned
+    /// by the caller (each wave runs a fresh session), so successive hordes
+    /// target different areas of the cohort.</summary>
+    public int SpawnWanderingHorde(int waves, int targets, ref int cursor)
     {
         string outp = Exec("listplayers");
         var ids = ParseLivingPlayerIds(outp);
@@ -432,7 +437,7 @@ public sealed partial class TelnetAdmin : IDisposable
         int hit = Math.Min(targets, ids.Count);
         for (int t = 0; t < hit; t++)
         {
-            int id = ids[(_hordeCursor + t) % ids.Count];
+            int id = ids[(cursor + t) % ids.Count];
             for (int w = 0; w < Math.Max(1, waves); w++)
             {
                 string r = Exec($"spawnscouts {id}");
@@ -443,7 +448,7 @@ public sealed partial class TelnetAdmin : IDisposable
         }
         // Advance by the number actually targeted (not requested), so rotation
         // stays even when targets > player count.
-        _hordeCursor = (_hordeCursor + hit) % ids.Count;
+        cursor = (cursor + hit) % ids.Count;
         _log?.Invoke($"TELNET wandering_horde targets={hit} waves={waves} units~={spawned}");
         return spawned;
     }

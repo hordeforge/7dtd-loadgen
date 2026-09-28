@@ -209,6 +209,10 @@ def main() -> int:
     ap.add_argument("--require-laps", type=int, default=0)
     args = ap.parse_args()
 
+    if not args.laps_dir.is_dir():
+        print(f"ERROR: no lap evidence under {args.laps_dir} (not a directory)",
+              file=sys.stderr)
+        return 2
     lap_dirs = sorted(
         d for d in args.laps_dir.iterdir()
         if d.is_dir()

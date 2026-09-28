@@ -86,7 +86,9 @@ if ! catalog_row="$(python3 "$ROOT/scripts/sut_catalog.py" get "$SCENARIO_ID")";
   echo "ERROR: scenario '$SCENARIO_ID' not resolvable from scripts/scenarios/sut.json (try --list)" >&2
   exit 1
 fi
-read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY <<<"$catalog_row"
+# Pipe-separated so an omitted middle field stays an empty column instead of
+# collapsing and shifting every field after it (tab is IFS whitespace to bash).
+IFS='|' read -r CAT_COUNT CAT_ACTIONS CAT_TIMEOUT CAT_SPAWN_ENT CAT_SPAWN_PER CAT_SPAWN_EVERY CAT_SNAPSHOT_DELAY <<<"$catalog_row"
 COUNT="${COMPARE_COUNT:-${CAT_COUNT:-1}}"
 ACTIONS="${COMPARE_ACTIONS:-${CAT_ACTIONS:-0}}"
 TIMEOUT_MS="${COMPARE_TIMEOUT_MS:-${CAT_TIMEOUT:-60000}}"

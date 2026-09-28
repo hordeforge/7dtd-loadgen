@@ -276,8 +276,9 @@ def save_inventory(run_dir, sut):
                 names = sorted(os.listdir(region))
                 files["Region/file_count"] = len(names)
     keys = sorted(files)
-    total = sum(files[k] for k in keys)
-    return {"count": len(keys), "totalBytes": total,
+    total = sum(v for k, v in files.items() if not k.endswith("file_count"))
+    return {"count": len([k for k in keys if not k.endswith("file_count")]),
+            "totalBytes": total,
             "files": {k: files[k] for k in keys[:80]}}
 
 

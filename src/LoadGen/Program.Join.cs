@@ -40,6 +40,10 @@ public static partial class Program
                 : "retest";
         int spawnEveryMs = 20_000;
         int spawnPerPlayer = 4;
+        // Telnet wave cadence floors: a faster cadence is never run, and the
+        // effective value is logged when a request lands under the floor.
+        const int MinSpawnEveryMs = 5_000;
+        const int MinHordeEveryMs = 15_000;
         string spawnEntity = "zombieBoe";
         // Benchmark mode: joins settle during warm-up, the measurement window is
         // [warmupMs, warmupMs+windowMs) after the cohort start, and the stats-json
@@ -194,6 +198,12 @@ public static partial class Program
 
         if (count < 1) count = 1;
 
+        // --bot-mix overrides --mode, so a mix entry naming wander must stay
+        // wander: --mode's --bot-mix-independent conversion (Wander+!WanderUntilDeath
+        // to Mixed) is a --mode behavior and must not apply to a mix entry.
+        if (botMix.Count > 0)
+            opt.WanderUntilDeath = true;
+
         // Demolition's raised per-life cap applies only when the caller did not
         // pin one: an explicit --max-dynamite N bounds charges per life for
         // every mode ("demolition default 200, others 3"). The per-client mode
@@ -297,12 +307,17 @@ public static partial class Program
         Task? spawnTask = null;
         if (spawnZombies)
         {
+            int spawnIntervalMs = Math.Max(MinSpawnEveryMs, spawnEveryMs);
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] ZOMBIE_SPAWN telnet={telnetHost}:{telnetPort} " +
-                $"everyMs={spawnEveryMs} perPlayer={spawnPerPlayer} entity={spawnEntity}");
+                $"everyMs={spawnIntervalMs} perPlayer={spawnPerPlayer} entity={spawnEntity}");
+            if (spawnIntervalMs != spawnEveryMs)
+                Console.WriteLine(
+                    $"[{DateTime.UtcNow:O}] WARN --spawn-every-ms {spawnEveryMs} raised to the " +
+                    $"{MinSpawnEveryMs} ms floor (a faster wave cadence is not run)");
             // First wave after bots have had a chance to join.
             spawnTask = RunTelnetPressureLoop("spawn", spawnCts.Token,
-                startDelayMs: 8_000, intervalMs: Math.Max(5_000, spawnEveryMs),
+                startDelayMs: 8_000, intervalMs: spawnIntervalMs,
                 errorBackoffMs: 10_000,
                 () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine)
                 {
@@ -335,14 +350,22 @@ public static partial class Program
         Task? hordeTask = null;
         if (hordeEveryMs > 0)
         {
+            int hordeIntervalMs = Math.Max(MinHordeEveryMs, hordeEveryMs);
             Console.WriteLine(
                 $"[{DateTime.UtcNow:O}] WANDERING_HORDE telnet={telnetHost}:{telnetPort} "
-                + $"everyMs={hordeEveryMs} waves={hordeWaves}");
+                + $"everyMs={hordeIntervalMs} waves={hordeWaves}");
+            if (hordeIntervalMs != hordeEveryMs)
+                Console.WriteLine(
+                    $"[{DateTime.UtcNow:O}] WARN --horde-every-ms {hordeEveryMs} raised to the " +
+                    $"{MinHordeEveryMs} ms floor (a faster horde cadence is not run)");
+            // Each wave opens a fresh telnet session, so the rotation cursor
+            // lives here rather than on the (per-wave) admin.
+            int hordeCursor = 0;
             hordeTask = RunTelnetPressureLoop("horde", spawnCts.Token,
-                startDelayMs: 20_000, intervalMs: Math.Max(15_000, hordeEveryMs),
+                startDelayMs: 20_000, intervalMs: hordeIntervalMs,
                 errorBackoffMs: 15_000,
                 () => new TelnetAdmin(telnetHost, telnetPort, telnetPassword, Console.WriteLine),
-                admin => admin.SpawnWanderingHorde(hordeWaves, 2));
+                admin => admin.SpawnWanderingHorde(hordeWaves, 2, ref hordeCursor));
         }
 
         // Per-bot session: rejoin on early disconnect until overall wall clock expires.
@@ -522,7 +545,14 @@ public static partial class Program
                         System.Text.Json.JsonSerializer.Serialize(payload1, ArtifactJsonOpts) + "\n"));
             if (!string.IsNullOrEmpty(runManifestPath))
                 WriteJoinManifest(runManifestPath, scenarioId, payload1, new[] { (opt.ClientId, rc, sm) });
-            return rc;
+            // The pass-rate gate is the exit-code contract at every cohort size:
+            // a single bot that failed is 0/1, which a 0 bar passes.
+            double singlePassRate = rc == 0 ? 1.0 : 0.0;
+            if (JoinGatePass(rc == 0 ? 1 : 0, 1, minPassRate))
+                return 0;
+            Console.WriteLine(
+                $"FAIL: passRate={singlePassRate:P2} < minPassRate={minPassRate:P2}");
+            return 1;
         }
 
         // Each bot's RunWithRejoin is synchronous and blocks its pool thread for the

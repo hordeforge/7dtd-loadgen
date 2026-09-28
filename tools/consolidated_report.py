@@ -72,10 +72,28 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
             rows.append(_unreadable_row("loadgen", scenario_dir.name, err))
             continue
         if d is None:
+            # No diff.json: a one-sided run (`make compare-sut SUT=zdtd`) still
+            # left evidence, and silently dropping it hides the run entirely.
+            present = [s for s in ("stock", "zdtd") if (scenario_dir / s).is_dir()]
+            if not present:
+                continue
+            rows.append({
+                "tool": "loadgen",
+                "id": scenario_dir.name,
+                "compared": False,
+                "ran": present,
+                "missing": [s for s in ("stock", "zdtd") if s not in present],
+                "verdict": "STALE",
+                "findings": [],
+                "summary": None,
+            })
             continue
-        verdict = "ONE-SIDE" if d.get("compared") is False else (
-            "DELTAS" if d.get("findings") else "CLEAN"
-        )
+        if not d.get("compared"):
+            verdict = "ONE-SIDE"
+        elif d.get("findings"):
+            verdict = "DELTAS"
+        else:
+            verdict = "CLEAN"
         rows.append({
             "tool": "loadgen",
             "id": scenario_dir.name,
@@ -149,7 +167,8 @@ def render(rows: list[dict]) -> str:
               "playtest playtest-compare.json). CLEAN = both sides ran with no "
               "differences; DELTAS = differences recorded as findings (triage, "
               "never faked); ONE-SIDE = only one server ran (never counted as "
-              "compared). UNREADABLE = evidence present but unparseable.\n")]
+              "compared). UNREADABLE = evidence present but unparseable; "
+              "STALE = one side's evidence present, no diff.json written.\n")]
     lines.append("| tool | id | verdict | stock | zdtd | wall s | findings |")
     lines.append("|---|---|---|---|---|---|---|")
     for r in rows:
@@ -164,8 +183,11 @@ def render(rows: list[dict]) -> str:
             wall = r.get("wall") or {}
             wall_cell = f"{fmt_wall(wall.get('stock'))} / {fmt_wall(wall.get('zdtd'))}"
         else:
-            stock_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "stock" else "n/a")
-            zdtd_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "zdtd" else "n/a")
+            ran = r["ran"]
+            ran_stock = ran == "stock" or (isinstance(ran, list) and "stock" in ran)
+            ran_zdtd = ran == "zdtd" or (isinstance(ran, list) and "zdtd" in ran)
+            stock_cell = "ran" if r["compared"] else ("ran" if ran_stock else "n/a")
+            zdtd_cell = "ran" if r["compared"] else ("ran" if ran_zdtd else "n/a")
             wall_cell = "n/a"
         lines.append(f"| {r['tool']} | {r['id']} | {r['verdict']} | {stock_cell} "
                      f"| {zdtd_cell} | {wall_cell} | {len(r['findings'])} |")
@@ -174,7 +196,7 @@ def render(rows: list[dict]) -> str:
         if r["verdict"] == "CLEAN":
             continue
         lines.append(f"## {r['tool']}/{r['id']} - {r['verdict']}\n")
-        if r["verdict"] == "ONE-SIDE":
+        if r["verdict"] in ("ONE-SIDE", "STALE"):
             lines.append(f"- ran: {r.get('ran')} | missing: {r.get('missing')} "
                          f"(missing capability or failed run; not compared)\n")
             continue
@@ -194,7 +216,8 @@ def render(rows: list[dict]) -> str:
     lines.insert(1, f"\nCompared entries: {clean}/{total} CLEAN, "
                     f"{sum(1 for r in rows if r['verdict'] == 'DELTAS')} DELTAS, "
                     f"{sum(1 for r in rows if r['verdict'] == 'ONE-SIDE')} ONE-SIDE, "
-                    f"{sum(1 for r in rows if r['verdict'] == 'UNREADABLE')} UNREADABLE.\n")
+                    f"{sum(1 for r in rows if r['verdict'] == 'UNREADABLE')} UNREADABLE, "
+                    f"{sum(1 for r in rows if r['verdict'] == 'STALE')} STALE.\n")
     return "\n".join(lines) + "\n"
 
 

@@ -135,6 +135,19 @@ def alive():
         return -1
 
 
+def zombies_alive(players=None):
+    """Live non-player entities. `entityAlives` is the whole live-entity list,
+    so counting it directly reports players as spawned zombies and makes every
+    spawn loop stop short of its target. `players` is a count the caller already
+    has (or None to read it from the same snapshot class)."""
+    total = alive()
+    if total < 0:
+        return -1
+    if players is None:
+        players = snap_players()
+    return max(0, total - max(0, players))
+
+
 def start_server():
     # Unique save per run: reusing a save from a crashed/saturated run reloads its
     # persisted entities + stale player profiles and poisons the load (bot churn).
@@ -214,7 +227,7 @@ def set_gamestage(stage):
 
 
 def spawn_endgame(target):
-    cur = alive()
+    cur = zombies_alive()
     stalls = 0
     telnet_fails = 0
     while cur < target and stalls < 4:
@@ -251,7 +264,7 @@ def spawn_endgame(target):
                 cmds.append(f"spawnentity {pid} {ENDGAME_MIX[mi % len(ENDGAME_MIX)]}")
                 mi += 1
         telnet(cmds, settle=4)
-        new = alive()
+        new = zombies_alive(len(ids))
         log(f"  spawn: alive={new}/{target}")
         stalls = stalls + 1 if new <= cur + 2 else 0
         cur = new

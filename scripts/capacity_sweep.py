@@ -31,10 +31,12 @@ APM_DIR = Path(os.environ.get("RE_APM_DIR") or Path(__file__).resolve().parents[
 
 
 def frame_alive():
-    """One (frame_ms, entity_alives) reading, or None when the APM snapshot is
+    """One (frame_ms, zombies_alive) reading, or None when the APM snapshot is
     unreadable. Mapping lost telemetry to 0 read as a perfect frame: every sweep
     round reported 'ok', the over-budget stop never fired, and the final
-    CAPACITY number was fabricated from data that was never received."""
+    CAPACITY number was fabricated from data that was never received. Players
+    are subtracted from the live-entity count: the sweep reports a zombie
+    ceiling, not a live-entity count inflated by the joined cohort."""
     try:
         d = B.snapshot()
     except B.SnapshotUnavailable as e:
@@ -45,7 +47,10 @@ def frame_alive():
     if frame_ms is None:
         return None
     alives = w.get("entityAlives")
-    return float(frame_ms), int(alives) if alives is not None else 0
+    if alives is None:
+        return float(frame_ms), 0
+    players = w.get("players") or 0
+    return float(frame_ms), max(0, int(alives) - int(players))
 
 
 def main():

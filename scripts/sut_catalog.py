@@ -3,11 +3,13 @@
 
 Subcommands:
   list     print one scenario id per line (file order)
-  get ID   print "count actions timeoutMs spawnEntity spawnPerPlayer
-           spawnEveryMs snapshotDelayMs" fields; empty string for a field the
-           scenario omits. Unknown ids and unreadable catalogs exit non-zero
-           with a message on stderr so a caller never mistakes a typo for the
-           default workload.
+  get ID   print the count, actions, timeoutMs, spawnEntity, spawnPerPlayer,
+           spawnEveryMs and snapshotDelayMs fields in that order, one column
+           per field, pipe-separated: a field the scenario omits prints as an
+           empty column (whitespace-separated rows collapse runs of blanks and
+           shift every later field). Unknown ids and unreadable catalogs
+           exit non-zero with a message on stderr so a caller never mistakes a
+           typo for the default workload.
 """
 
 from __future__ import annotations
@@ -47,7 +49,7 @@ def main() -> int:
             print(f"ERROR: unknown scenario id: {args[1]} (try 'sut_catalog.py list')",
                   file=sys.stderr)
             return 1
-        print(" ".join(str(s.get(f, "")) for f in FIELDS))
+        print("|".join(str(s.get(f, "")) for f in FIELDS))
         return 0
     print(__doc__, file=sys.stderr)
     return 2
