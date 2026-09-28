@@ -164,6 +164,7 @@ public sealed class BenchClockTests
         Assert.True(sampled.Wait(TimeSpan.FromSeconds(5)), "samplers did not run");
         try
         {
+            Assert.True(sampled.Wait(TimeSpan.FromSeconds(30)), "sampler workers did not start");
             for (int i = 0; i < 200; i++)
             {
                 int min = c.ActiveMin;

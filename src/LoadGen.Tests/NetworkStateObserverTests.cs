@@ -22,6 +22,33 @@ public sealed class NetworkStateObserverTests
     }
 
     [Fact]
+    public void EveryEvent_CarriesAParsableUtcWallClock()
+    {
+        // The event file is read next to the console transcript and the
+        // server-side capture; elapsedMs alone cannot place an event on either
+        // clock, so each line must carry a round-trip UTC stamp.
+        var events = new List<string>();
+        var observer = new NetworkStateObserver(
+            4, new[] { "atomicProtection" }, new[] { "buffAtomicProtected" }, events.Add);
+
+        DateTime before = DateTime.UtcNow.AddSeconds(-1);
+        observer.Joined(171);
+        observer.Observe("NetPackageModifyCVar", CVar(171, "atomicProtection", 0.5f, 0));
+        observer.Observe("NetPackageAddRemoveBuff", Buff(171, "buffAtomicProtected", true));
+
+        Assert.NotEmpty(events);
+        foreach (string line in events)
+        {
+            using var doc = JsonDocument.Parse(line);
+            JsonElement t = doc.RootElement.GetProperty("t");
+            DateTime stamped = DateTime.Parse(
+                t.GetString()!, System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.RoundtripKind);
+            Assert.InRange(stamped, before, DateTime.UtcNow.AddSeconds(1));
+        }
+    }
+
+    [Fact]
     public void Joined_EmitsExplicitStateForInactiveWatchedBuff()
     {
         var events = new List<string>();

@@ -446,7 +446,7 @@ public static partial class Program
                     // log is null for most cohort members; route to stderr so the
                     // fault is never invisible (summary only carries the count).
                     (log ?? Console.Error.WriteLine)(
-                        $"[{DateTime.UtcNow:O}] join#{clientId} EX {FaultText($"attempt {attempt}", ex)}");
+                        FaultLine($"join#{clientId} attempt {attempt}", ex));
                 }
                 last = c.State;
                 totals.AddCounters(last);
@@ -658,8 +658,7 @@ public static partial class Program
                 {
                     // Unconditional: a cohort-wide fault must never be invisible
                     // just because the bot's console log was throttled off.
-                    Console.Error.WriteLine(
-                        $"[{DateTime.UtcNow:O}] join#{id} EX {FaultText("session", ex)}");
+                    Console.Error.WriteLine(FaultLine($"join#{id} session", ex));
                     var failState = new JoinStateMachine
                     {
                         EntityId = -1,

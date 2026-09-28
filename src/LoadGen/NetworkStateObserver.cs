@@ -67,6 +67,12 @@ public sealed class NetworkStateObserver
             botId = _botId,
             entityId,
             seq = NextSequence(),
+            // Wall clock in the same round-trip UTC shape the console lines
+            // carry. elapsedMs alone orders a bot's events among themselves;
+            // without a clock an event file cannot be lined up against the
+            // console transcript or a server-side capture, which is what tells
+            // a bot-side state change from a server-side one.
+            t = $"{DateTime.UtcNow:O}",
             elapsedMs = _clock.ElapsedMilliseconds,
         });
         var buffs = BuffsFor(entityId);
@@ -214,6 +220,7 @@ public sealed class NetworkStateObserver
         active,
         source,
         seq = NextSequence(),
+        t = $"{DateTime.UtcNow:O}",
         elapsedMs = _clock.ElapsedMilliseconds,
     });
 

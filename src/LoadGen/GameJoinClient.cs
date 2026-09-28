@@ -15,11 +15,13 @@ namespace SevenDTD.LoadGen;
 public sealed class GameJoinClient
 {
     /// <summary>Live LiteNetLib managers, for graceful disconnect on process exit
-    /// (hard kills otherwise leave server-side player ghosts that deny later joins).</summary>
+    /// (hard kills otherwise leave server-side player ghosts that deny later joins).
+    /// The value is the owning client's id, so a teardown fault from the sweep
+    /// names the bot whose manager died instead of an unattributed line.</summary>
     // Dictionary (not a bag) so a finished client removes its own manager: a bag
     // grows unbounded across rejoins, leaking sockets + memory and letting
     // DisconnectAllActive double-stop already-stopped managers.
-    public static readonly System.Collections.Concurrent.ConcurrentDictionary<LiteNetLib.NetManager, byte> ActiveNets = new();
+    public static readonly System.Collections.Concurrent.ConcurrentDictionary<LiteNetLib.NetManager, int> ActiveNets = new();
 
     /// <summary>0 = no shutdown pass yet; 1 = a pass is running or done.</summary>
     static int _shutdownPassStarted;
@@ -81,23 +83,25 @@ public sealed class GameJoinClient
             // This is the last teardown pass on the way out of the process, so
             // one dead manager must not stop the sweep reaching the rest; there
             // is no later stage that could observe the fault anyway.
-            foreach (var n in ActiveNets.Keys)
+            foreach (var (n, clientId) in ActiveNets)
             {
                 try { n.DisconnectAll(); }
-                catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("shutdown disconnect", ex)); }
+                catch (Exception ex) { Console.Error.WriteLine(Program.FaultLine($"shutdown disconnect join#{clientId}", ex)); }
             }
             System.Threading.Thread.Sleep(200);
-            foreach (var n in ActiveNets.Keys)
+            foreach (var (n, clientId) in ActiveNets)
             {
                 try { n.Stop(); }
-                catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("shutdown stop", ex)); }
+                catch (Exception ex) { Console.Error.WriteLine(Program.FaultLine($"shutdown stop join#{clientId}", ex)); }
             }
         }
     }
 
     /// <summary>Stop a manager and drop it from the live set (idempotent). Every
-    /// Run() exit path must call this so no UDP socket or manager leaks.</summary>
-    static void StopNet(LiteNetLib.NetManager net)
+    /// Run() exit path must call this so no UDP socket or manager leaks. The
+    /// client id rides the fault line: a release that throws is otherwise one
+    /// of the few run events with no bot attached to it.</summary>
+    static void StopNet(LiteNetLib.NetManager net, int clientId)
     {
         ActiveNets.TryRemove(net, out _);
         // Releasing a socket must never mask the run's own result: this runs on
@@ -105,7 +109,7 @@ public sealed class GameJoinClient
         lock (SweepGate)
         {
             try { net.Stop(); }
-            catch (Exception ex) { Console.Error.WriteLine(Program.FaultText("net stop", ex)); }
+            catch (Exception ex) { Console.Error.WriteLine(Program.FaultLine($"net stop join#{clientId}", ex)); }
         }
     }
 
@@ -224,7 +228,7 @@ public sealed class GameJoinClient
         };
 
         NetPeer? peer = null;
-        ActiveNets[net] = 0;
+        ActiveNets[net] = opt.ClientId;
         var sendQueue = new Queue<byte[]>();
         var inbox = new Queue<byte[]>();
         object gate = new();
@@ -326,7 +330,7 @@ public sealed class GameJoinClient
             // path without a line is invisible for every other bot: the run
             // just reports a pass-rate drop with no cause.
             Log($"FAIL litenet_start bind={bindIp}");
-            StopNet(net);
+            StopNet(net, opt.ClientId);
             return 1;
         }
         State.Advance(JoinStage.LiteNetStarted);
@@ -340,7 +344,7 @@ public sealed class GameJoinClient
         {
             State.Fail("litenet_connect_null");
             Log($"FAIL litenet_connect_null host={opt.Host}:{opt.Port} bind={bindIp}");
-            StopNet(net);
+            StopNet(net, opt.ClientId);
             return 1;
         }
         // Join latency is measured from the connect request: everything after
@@ -662,8 +666,13 @@ public sealed class GameJoinClient
             // Skipped once a shutdown sweep started: the sweep owns every live
             // manager at that point, and two threads mutating one NetManager is
             // exactly the race this file forbids.
-            // A dead socket throws here; the finally below still releases the
-            // manager, and this courtesy BYE has no result to report.
+            // A dead socket throws here and the finally below still releases
+            // the manager, so the bot's own result is unaffected either way.
+            // The throw is not always the dead socket: PollEvents dispatches
+            // this bot's listener handlers, so a fault inside a handler
+            // (malformed GMSG, a package body that does not parse) surfaces
+            // here too. Swallowing that would let the run report a pass for a
+            // bot whose event handling died, so the fault is reported.
             if (!ShutdownRequested)
                 try
                 {
@@ -683,13 +692,13 @@ public sealed class GameJoinClient
                     }
                     Thread.Sleep(120);
                 }
-                catch (Exception) { }
+                catch (Exception ex) { Console.Error.WriteLine(Program.FaultLine($"disconnect drain join#{opt.ClientId}", ex)); }
         }
         finally
         {
             // Guarantee the socket + manager are released on every path,
             // including an exception inside the poll/action loop.
-            StopNet(net);
+            StopNet(net, opt.ClientId);
         }
 
         // Success: reached joined and ran actions (or skip-actions). World death or

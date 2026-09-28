@@ -16,6 +16,7 @@ public sealed class JsonLineEventWriter : IDisposable
         (long)(FlushIntervalMs * System.Diagnostics.Stopwatch.Frequency / 1000.0);
 
     readonly StreamWriter _writer;
+    readonly string TargetPath;
     readonly object _gate = new();
     long _lastFlushTicks;
 
@@ -33,6 +34,7 @@ public sealed class JsonLineEventWriter : IDisposable
             NewLine = "\n",
         };
         _lastFlushTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+        TargetPath = fullPath;
     }
 
     public void Write(string json)
@@ -71,8 +73,9 @@ public sealed class JsonLineEventWriter : IDisposable
             try { _writer.Dispose(); }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(
-                    $"[{DateTime.UtcNow:O}] ERROR closing events sink: {ex.GetType().Name}: {ex.Message}");
+                // A fault here costs the run the tail of its event evidence, so
+                // it goes on stderr in the same shape as every other fault.
+                Console.Error.WriteLine(Program.FaultLine($"closing events sink {TargetPath}", ex));
             }
         }
     }

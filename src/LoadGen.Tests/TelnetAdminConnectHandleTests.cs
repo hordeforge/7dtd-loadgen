@@ -14,9 +14,10 @@ public sealed class TelnetAdminConnectHandleTests
 {
     const int WarmupAttempts = 5;
     const int MeasuredAttempts = 20;
-    // One fd per leaked connect handle would make the delta 20. The margin
-    // covers xunit running sibling test classes in parallel, which open their
-    // own sockets and files while the attempts run.
+    // One fd per leaked connect handle would make every round grow 20.
+    const int MeasuredRounds = 3;
+    // Margin for the siblings that run in parallel with this class; the
+    // round minimum, not the worst round, is what is asserted.
     const int AllowedFdGrowth = 8;
 
     [Fact]
@@ -30,13 +31,23 @@ public sealed class TelnetAdminConnectHandleTests
         // Port 1 refuses instantly, so the attempts cost no wall clock and the
         // connect wait is still taken on the failing path.
         ConnectAttempts(WarmupAttempts);
-        int before = OpenFileDescriptors(fdDir);
 
-        ConnectAttempts(MeasuredAttempts);
+        // fd count is process-wide, and xunit runs sibling test classes in
+        // parallel inside this process, so a single window also charges their
+        // sockets to these connects. Three rounds and the smallest growth: a
+        // leaked handle per connect grows every round, a parallel test's
+        // socket lands in one of them.
+        var growth = new int[MeasuredRounds];
+        for (int round = 0; round < MeasuredRounds; round++)
+        {
+            int before = OpenFileDescriptors(fdDir);
+            ConnectAttempts(MeasuredAttempts);
+            growth[round] = OpenFileDescriptors(fdDir) - before;
+        }
 
-        int after = OpenFileDescriptors(fdDir);
-        Assert.True(after - before <= AllowedFdGrowth,
-            $"fd count grew {before} -> {after} over {MeasuredAttempts} telnet connects");
+        Assert.True(growth.Min() <= AllowedFdGrowth,
+            $"fd count grew by [{string.Join(",", growth)}] over "
+            + $"{MeasuredAttempts} telnet connects in {MeasuredRounds} rounds");
     }
 
     static void ConnectAttempts(int attempts)

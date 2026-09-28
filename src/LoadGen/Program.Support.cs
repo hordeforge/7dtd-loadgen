@@ -30,6 +30,14 @@ public static partial class Program
             : "";
     }
 
+    /// <summary>One stderr fault line in the shape every other fault in the
+    /// client uses: UTC timestamp, ERROR level, then the fault. A teardown
+    /// fault that arrives without those two fields is indistinguishable from
+    /// a bot's own log line in a long cohort transcript, and the level is what
+    /// a grep for the run's errors keys on.</summary>
+    internal static string FaultLine(string context, Exception ex) =>
+        $"[{DateTime.UtcNow:O}] ERROR {FaultText(context, ex)}";
+
     /// <summary>Write line-oriented artifact text with LF terminators and no
     /// BOM, whatever the host's Environment.NewLine is. Client logs and JSONL
     /// sinks are read by the Python report lanes and diffed as evidence, so
@@ -60,8 +68,7 @@ public static partial class Program
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine(
-                $"[{DateTime.UtcNow:O}] ERROR {FaultText($"writing {label} {path}", ex)}");
+            Console.Error.WriteLine(FaultLine($"writing {label} {path}", ex));
         }
     }
 
@@ -77,8 +84,7 @@ public static partial class Program
         }
         catch (AggregateException ex)
         {
-            Console.Error.WriteLine(
-                $"[{DateTime.UtcNow:O}] ERROR {FaultText($"{name} task faulted", ex.GetBaseException())}");
+            Console.Error.WriteLine(FaultLine($"{name} task faulted", ex.GetBaseException()));
         }
         catch (OperationCanceledException) { }
     }
