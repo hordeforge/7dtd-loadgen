@@ -58,9 +58,9 @@ demand and honest client outcomes, not emulation of the complete game client.
 ## Workload quality
 
 - [x] Add named workload profiles for probe, join burst, steady wander,
-  death/respawn soak, and mixed actions. (Implemented: `--profile`
-  probe|join-burst|steady-wander|death-soak|mixed, presets before arg loop,
-  documented in README 2026-08-10.)
+  death/respawn soak, and mixed actions. (Implemented 2026-08-10; the current
+  `--profile` list, including `bench` added 2026-08-22, is the canonical copy
+  in the residual table below.)
 - [x] Add deterministic ramp-up and ramp-down controls to avoid accidental
   connection spikes. (Ramp-up: `--ramp-ms` linear stagger, validated
   2026-08-10. Ramp-down: per-bot graceful `DisconnectAll` at each session end
