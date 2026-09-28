@@ -111,7 +111,7 @@ public sealed class PackageCodecFuzzTests
         typeof(FormatException),        // 7-bit string length prefix with too many bytes
         typeof(IOException),            // ReadString decoded a negative string length
         typeof(OverflowException),      // negative mapping count -> negative array size
-        typeof(InvalidDataException),   // bounded mapping count or malformed package body
+        typeof(InvalidDataException),   // bounded string/mapping count or malformed package body
     };
 
     // Every body parser is held to the same allowlist. Narrower per-parser
@@ -236,6 +236,21 @@ public sealed class PackageCodecFuzzTests
         // "length exceeds available bytes" guard and reached ReadBytes as an
         // ArgumentOutOfRangeException. The prefix is legal, the length is not.
         byte[] body = { 1, 0x80, 0x80, 0x80, 0x80, 0x08 };
+        var ex = Record.Exception(() => PackageCodec.ParseLoginAnswerBody(body));
+        Assert.IsType<InvalidDataException>(ex);
+    }
+
+    [Fact]
+    public void ParseLoginAnswer_SignBitLengthPrefix_IsRejectedNotPassedToReadBytes()
+    {
+        // A five-group prefix whose top group is above 0x07 sets the sign bit.
+        // The bound test then passed the negative length to ReadBytes, which
+        // threw ArgumentOutOfRangeException out of the parser.
+        var body = new byte[6];
+        body[0] = 1;                                  // allowed
+        body[1] = 0xFF; body[2] = 0xFF;               // groups 0..1
+        body[3] = 0xFF; body[4] = 0xFF;               // groups 2..3
+        body[5] = 0x7F;                               // top group: 0x7F << 28
         var ex = Record.Exception(() => PackageCodec.ParseLoginAnswerBody(body));
         Assert.IsType<InvalidDataException>(ex);
     }

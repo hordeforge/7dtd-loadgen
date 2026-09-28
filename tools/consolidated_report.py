@@ -231,10 +231,15 @@ def render(rows: list[dict]) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     playtest_default = ROOT / ".." / "7dtd-playtest" / "workspace" / "comparison-playtest"
-    ap.add_argument("--playtest-root", default=str(playtest_default))
-    ap.add_argument("--out", default=str(ROOT / "workspace" / "comparison"))
+    ap.add_argument("--playtest-root", default=str(playtest_default),
+                    help="7dtd-playtest comparison-playtest dir "
+                         "(default: %(default)s)")
+    ap.add_argument("--out", default=str(ROOT / "workspace" / "comparison"),
+                    help="dir for CONSOLIDATED.md + CONSOLIDATED.json "
+                         "(default: %(default)s)")
     args = ap.parse_args()
     rows = collect_loadgen(Path(args.out)) + collect_playtest(Path(args.playtest_root))
     if not rows:

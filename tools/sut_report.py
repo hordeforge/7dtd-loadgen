@@ -55,6 +55,9 @@ def save_summary(s):
 
 
 def main():
+    if sys.argv[1:] in (["-h"], ["--help"]):
+        print(__doc__)
+        return 0
     if len(sys.argv) != 2:
         print(__doc__, file=sys.stderr)
         return 2

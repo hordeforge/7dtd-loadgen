@@ -126,9 +126,10 @@ def resolve_password() -> str | None:
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("host")
-    ap.add_argument("port", type=int)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("host", help="dedicated console host")
+    ap.add_argument("port", type=int, help="dedicated console port (telnet port)")
     ap.add_argument("--commands", default="gettime,listents,listplayers",
                     help="comma-separated commands to run after connect")
     ap.add_argument("--out", default="-", help="transcript path ('-' = stdout)")
@@ -161,9 +162,10 @@ def main():
         sock = socket.create_connection((args.host, args.port), timeout=10)
     except OSError as e:
         # A dead console is the common case; a clean message beats an
-        # unhandled-exception traceback in harness logs.
+        # unhandled-exception traceback in harness logs. Exit 1, not 2: the
+        # invocation was well formed, the console was not answering.
         print(f"sut_telnet: connect {args.host}:{args.port} failed: {e}", file=sys.stderr)
-        return 2
+        return 1
     sock.settimeout(0.2)
     transcript = bytearray()
 
@@ -177,7 +179,7 @@ def main():
         if "password" in text:
             if password is None:
                 print("sut_telnet: server asks for a password but none was given", file=sys.stderr)
-                rc = 2
+                rc = 1
             else:
                 sock.sendall((password + "\n").encode())
                 deadline = time.monotonic() + 10
@@ -204,7 +206,7 @@ def main():
         # A dropped session mid-run must still flush the partial transcript
         # (evidence up to the drop) and signal the failure to the caller.
         print(f"sut_telnet: session {args.host}:{args.port} dropped: {e}", file=sys.stderr)
-        rc = 2
+        rc = 1
     finally:
         try:
             sock.sendall(b"exit\n")
@@ -224,7 +226,7 @@ def main():
             # surface as a clean named error (matching the connect/drop paths),
             # not a traceback that discards the exit-code contract.
             print(f"sut_telnet: cannot write transcript {args.out}: {e}", file=sys.stderr)
-            return 2
+            return 1
     return rc
 
 

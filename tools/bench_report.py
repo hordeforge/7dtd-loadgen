@@ -248,10 +248,16 @@ def render_md(laps: list[tuple[str, dict]]) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--laps-dir", type=Path, default=Path("workspace/bench"))
-    ap.add_argument("--out", type=Path, default=None)
-    ap.add_argument("--require-laps", type=int, default=0)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--laps-dir", type=Path, default=Path("workspace/bench"),
+                    help="root holding lap<N> dirs (default: %(default)s)")
+    ap.add_argument("--out", type=Path, default=None,
+                    help="output dir for bench-stock.md + .json "
+                         "(default: --laps-dir)")
+    ap.add_argument("--require-laps", type=int, default=0,
+                    help="fail unless at least N laps have evidence (default: "
+                         "%(default)s, no minimum)")
     args = ap.parse_args()
 
     if not args.laps_dir.is_dir():

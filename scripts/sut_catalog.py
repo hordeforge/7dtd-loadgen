@@ -35,6 +35,9 @@ FIELDS = ("count", "actions", "timeoutMs", "spawnEntity",
 
 def main() -> int:
     args = sys.argv[1:]
+    if args in (["-h"], ["--help"]):
+        print(__doc__)
+        return 0
     if len(args) == 1 and args[0] == "list":
         try:
             doc = json.loads(CATALOG.read_text(encoding="utf-8"))

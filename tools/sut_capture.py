@@ -413,6 +413,9 @@ def run_meta(run_dir):
 
 
 def main():
+    if sys.argv[1:] in (["-h"], ["--help"]):
+        print(__doc__)
+        return 0
     if len(sys.argv) != 3:
         print(__doc__, file=sys.stderr)
         return 2

@@ -274,19 +274,6 @@ public static partial class Program
         if (args.Any(a => a == "--mixed-actions"))
             return RemovedFlag("--mixed-actions", "--mode mixed");
 
-        // Same hoisting for the credential flags. They stay in KnownFlags
-        // because --help and the per-mode parsers still name them, but a
-        // parser with no branch for one drops the flag and its value, so the
-        // secret stayed in world-readable argv and the run proceeded with no
-        // password. README states the refusal holds in every mode.
-        foreach (var a in args)
-        {
-            if (a == "--key" || a == "--password")
-                return SecretFlagRemoved(a, "LOADGEN_KEY");
-            if (a == "--telnet-password")
-                return SecretFlagRemoved(a, "LOADGEN_TELNET_PASSWORD");
-        }
-
         var unknown = UnknownFlag(args);
         if (unknown != null)
         {

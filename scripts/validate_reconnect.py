@@ -134,8 +134,10 @@ def stop_server() -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--players", type=int, default=8)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--players", type=int, default=8,
+                    help="cohort size (default: %(default)s)")
     ap.add_argument("--hold-before-kill", type=float, default=40.0,
                     help="seconds of walking before kill")
     ap.add_argument("--hold-after-restart", type=float, default=30.0,
