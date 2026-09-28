@@ -141,7 +141,11 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
 
 def main() -> int:
     args = sys.argv[1:]
+    if args and args[0] in ("-h", "--help"):
+        print((__doc__ or "").strip())
+        return 0
     if not args:
+        print("usage: scenario_env.py --list [FILE] | export FILE ID", file=sys.stderr)
         print(__doc__, file=sys.stderr)
         return 2
     if args[0] == "--list":
@@ -151,6 +155,10 @@ def main() -> int:
         return 0
     if args[0] == "export" and len(args) == 3:
         return export_scenario(load(args[1]), args[2])
+    if args[0] == "export":
+        print("usage: scenario_env.py export FILE ID", file=sys.stderr)
+    else:
+        print(f"unknown subcommand {args[0]!r}", file=sys.stderr)
     print(__doc__, file=sys.stderr)
     return 2
 

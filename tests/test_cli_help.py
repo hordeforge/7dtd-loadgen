@@ -22,6 +22,8 @@ HAND_ROLLED = [
     "scripts/stats_pass_fail.py",
     "scripts/sut_catalog.py",
     "scripts/coverage_badge.py",
+    "scripts/scenario_env.py",
+    "scripts/webdash_password_hash.py",
     "tools/sut_capture.py",
     "tools/sut_report.py",
 ]
@@ -68,3 +70,44 @@ def test_argparse_help_carries_the_module_docstring(script: str) -> None:
     # way to learn what the tool reads or writes.
     first_line = (ROOT / script).read_text(encoding="utf-8").splitlines()[1]
     assert first_line.strip('"') in r.stdout
+
+
+SHELL_LANES = [
+    "scripts/compare_sut.sh",
+    "scripts/run_scenario.sh",
+    "scripts/bench_stock.sh",
+]
+
+
+def _run_shell(script: str, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["bash", str(ROOT / script), *args], cwd=str(ROOT),
+        capture_output=True, text=True, encoding="utf-8",
+        errors="replace", timeout=60, check=False,
+    )
+
+
+@pytest.mark.parametrize("script", SHELL_LANES)
+@pytest.mark.parametrize("flag", ["-h", "--help"])
+def test_shell_lane_help_goes_to_stdout_and_exits_zero(script: str, flag: str) -> None:
+    # These lanes boot a dedicated server, so --help has to be answered before
+    # any of that; the assertion that it returns at all is the check.
+    r = _run_shell(script, flag)
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip(), "help printed nothing to stdout"
+    assert r.stderr == ""
+
+
+@pytest.mark.parametrize("script", SHELL_LANES)
+def test_shell_lane_value_flag_without_a_value_is_a_usage_error(script: str) -> None:
+    # `$2` under `set -u` aborts with a bash "unbound variable" message and
+    # exit 1: an operator sees an internal shell error instead of the missing
+    # argument. Each lane below takes a value, so the pair is unambiguous.
+    value_flag = {"scripts/bench_stock.sh": "--lap", "scripts/run_scenario.sh": "--file"}.get(
+        script, "--scenario"
+    )
+    r = _run_shell(script, value_flag)
+    assert r.returncode == 2, r.stderr
+    assert r.stdout == ""
+    assert "unbound variable" not in r.stderr
+

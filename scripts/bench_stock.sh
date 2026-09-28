@@ -20,8 +20,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LAP="1"
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --lap) LAP="$2"; shift 2 ;;
-    *) echo "unknown arg: $1" >&2; exit 2 ;;
+    -h|--help) sed -n '8,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --lap)
+      [[ $# -ge 2 ]] || { echo "ERROR: --lap needs a value" >&2; exit 2; }
+      LAP="$2"; shift 2 ;;
+    *) echo "unknown arg: $1" >&2; echo "try '$0 --help'" >&2; exit 2 ;;
   esac
 done
 

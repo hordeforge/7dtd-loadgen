@@ -563,6 +563,21 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   target" (exit 4) from "the lock file could not be opened" (exit 5). Both
   returned the same message, so an unwritable `XDG_RUNTIME_DIR` sent the
   operator to wait for a run that was not there, with the guard inert.
+- A malformed numeric flag names itself. `--count abc` reported
+  `FAIL: bad argument value` with no flag, so the operator had to scan a whole
+  cohort command line to find the typo. The error now reads
+  `FAIL: bad value for --count`.
+- Every shell lane answers `-h`/`--help` on stdout with exit 0.
+  `bench_stock.sh` sent `--help` to `unknown arg` on stderr with exit 2, while
+  `compare_sut.sh` and `run_scenario.sh` did it the other way. `scenario_env.py`
+  and `webdash_password_hash.py` printed their usage on stderr with exit 2.
+- A value flag with nothing after it is a usage error, not a bash crash.
+  `--lap`, `--file`, `--scenario`, `--sut` and `--world` read `$2` under
+  `set -u`, which aborted with `unbound variable` and exit 1. They now report
+  the missing value and exit 2.
+- `webdash_password_hash.py` rejects stray arguments. It read the password from
+  the environment and ignored argv, so a mistyped invocation silently hashed
+  whatever `RE_ADMIN_WEB_PASSWORD` held.
 
 ## [0.4.2] - 2026-09-21
 

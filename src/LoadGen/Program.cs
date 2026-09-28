@@ -158,6 +158,55 @@ public static partial class Program
         return 2;
     }
 
+    /// <summary>Every flag the parsers read a value from, i.e. the tokens in
+    /// <see cref="KnownFlags"/> minus the standalone switches. Used only to
+    /// attribute a parse failure to the flag that caused it.</summary>
+    static readonly HashSet<string> ValueFlags = new(StringComparer.Ordinal)
+    {
+        "--actions", "--bench-warmup-ms", "--bench-window-ms", "--bot-mix",
+        "--concurrency", "--count", "--death", "--events-jsonl", "--host",
+        "--horde-every-ms", "--horde-waves", "--id", "--log", "--max-dynamite",
+        "--max-lives", "--min-pass-rate", "--name", "--observe-buff",
+        "--observe-cvar", "--pace-ms", "--port", "--profile", "--ramp-ms",
+        "--respawn-delay-ms", "--respawn-timeout-ms", "--run-manifest",
+        "--scenario-id", "--seed", "--spawn-entity", "--spawn-every-ms",
+        "--spawn-per-player", "--stats-json", "--telnet-host", "--telnet-port",
+        "--timeout",
+    };
+
+    /// <summary>The value-taking flag responsible for a numeric parse
+    /// failure, or null when it cannot be pinned down. A malformed value is
+    /// named by the parser's own FormatException message, so argv lookup
+    /// attributes it exactly; an overflowing int carries no value in its
+    /// message, so that case falls back to the first flag whose value is a
+    /// number that does not fit an int. A value that is not a number at all
+    /// is not blamed without a quote to match, so returning null leaves the
+    /// bare exception message in place rather than guessing.</summary>
+    internal static string? BadValueFlag(string[] args, string message)
+    {
+        int open = message.IndexOf('\'');
+        if (open >= 0)
+        {
+            int close = message.IndexOf('\'', open + 1);
+            if (close > open)
+            {
+                string quoted = message[(open + 1)..close];
+                for (int i = 1; i < args.Length; i++)
+                    if (args[i] == quoted && ValueFlags.Contains(args[i - 1]))
+                        return args[i - 1];
+            }
+        }
+        for (int i = 1; i < args.Length; i++)
+        {
+            if (!ValueFlags.Contains(args[i - 1])) continue;
+            if (long.TryParse(args[i], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out long v)
+                && (v < int.MinValue || v > int.MaxValue))
+                return args[i - 1];
+        }
+        return null;
+    }
+
     /// <summary>Reject a credential passed on the command line. Deliberately
     /// never echoes the value, and fails instead of ignoring the flag: silently
     /// dropping it would connect with no password at all. Credentials arrive
@@ -325,9 +374,14 @@ public static partial class Program
         // must fail as a clean usage error, not an unhandled-exception stack
         // trace. Parse sites use int/double.Parse, whose failure modes are
         // exactly these two types; wider exception families stay visible.
+        // The flag is named: "bad argument value" alone leaves the operator
+        // hunting through a cohort's worth of numeric flags.
         catch (Exception ex) when (ex is FormatException or OverflowException)
         {
-            Console.Error.WriteLine($"FAIL: bad argument value: {ex.Message} (see --help)");
+            var flag = BadValueFlag(args, ex.Message);
+            Console.Error.WriteLine(flag is null
+                ? $"FAIL: bad argument value: {ex.Message} (see --help)"
+                : $"FAIL: bad value for {flag}: {ex.Message} (see --help)");
             return 2;
         }
     }

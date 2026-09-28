@@ -44,10 +44,16 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+# A value flag with nothing after it reads `$2`, and under `set -u` that aborts
+# with a bash "unbound variable" message and exit 1: an internal shell error
+# instead of the missing argument. Every value flag routes through here.
+need_value() { [[ -n "$2" ]] || { echo "ERROR: $1 needs a value" >&2; exit 2; }; }
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --scenario) SCENARIO_ID="$2"; shift 2 ;;
+    --scenario) need_value --scenario "${2+set}"; SCENARIO_ID="$2"; shift 2 ;;
     --sut)
+      need_value --sut "${2+set}"
       case "$2" in
         stock) SUTS="stock" ;;
         zdtd) SUTS="zdtd" ;;
@@ -55,7 +61,7 @@ while [[ $# -gt 0 ]]; do
         *) echo "ERROR: --sut must be stock|zdtd|all" >&2; exit 2 ;;
       esac
       shift 2 ;;
-    --world) WORLD_NAME="$2"; shift 2 ;;
+    --world) need_value --world "${2+set}"; WORLD_NAME="$2"; shift 2 ;;
     --list)
       python3 "$ROOT/scripts/sut_catalog.py" list
       exit 0 ;;

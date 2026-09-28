@@ -17,7 +17,9 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --list|-l) LIST=1; shift ;;
     --start-server) START_SERVER=1; shift ;;
-    --file) SCENARIO_FILE="$2"; shift 2 ;;
+    --file)
+      [[ $# -ge 2 ]] || { echo "ERROR: --file needs a path" >&2; exit 2; }
+      SCENARIO_FILE="$2"; shift 2 ;;
     -h|--help)
       echo "Usage: $0 [--list] [--start-server] [--file path.json] <scenario-id>"
       exit 0
