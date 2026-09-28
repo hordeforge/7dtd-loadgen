@@ -181,8 +181,12 @@ endif
 # Static analysis gates. Shellcheck covers scripts/*.sh (preinstalled on the
 # CI runner image); ruff and mypy run inside the locked uv env so every machine
 # analyses with the exact pinned versions. All three fail the make test lane.
+# -x follows `source`d files so the helpers (python_env.sh, harness_lib.sh) are
+# analysed in their callers' context, not just on their own. Without it a
+# variable set in a sourced helper is invisible to the caller's rules, so
+# SC2154 and friends only fire on the half of the code shellcheck can see.
 lint: doctor
-	shellcheck "$(SCRIPTS)"/*.sh
+	shellcheck -x -P "$(SCRIPTS)" "$(SCRIPTS)"/*.sh
 	@cd "$(ROOT)" && uv run --locked --extra dev ruff check .
 	@cd "$(ROOT)" && uv run --locked --extra dev mypy
 

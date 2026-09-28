@@ -84,6 +84,20 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
+- `ruff` selects `PGH` and `PLE`. Both are defect categories that were never
+  enabled rather than disabled on purpose: `PGH` covers a blanket `type: ignore`
+  or `# noqa`, and `PLE` covers a bad `__all__`, a bare `raise` outside a
+  handler, and a duplicate class base. The tree is clean under both today, so
+  they cost nothing and close a silent path to a bad merge.
+- `mypy` runs with `warn_unused_configs`. The typing ratchet holds 22 modules
+  to `disallow_untyped_defs` by name, and an overrides block that matches
+  nothing is not an error by default: renaming or deleting one of those
+  modules dropped it back to untyped with nothing failing. A stale entry is
+  now one.
+- `make lint` runs `shellcheck -x`. The lane analyzed each `scripts/*.sh` in
+  isolation, so a variable set in a sourced helper was invisible to the
+  caller's rules and `SC2154` and its neighbours only saw half the code.
+  Proven clean on the tree as it stands.
 - The SDK analyzer security category (injection, weak crypto, DTD parsing,
   unsafe memory code, certificate validation) is enabled rule by rule in
   `.editorconfig`. The category ships disabled, and a client that parses an
