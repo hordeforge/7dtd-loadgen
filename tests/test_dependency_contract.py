@@ -118,6 +118,30 @@ def test_nuget_packages_are_exactly_pinned():
             )
 
 
+def test_nuget_advisories_fail_the_build():
+    """A published advisory has to stop the lane, not sit in the restore log.
+
+    NuGet audits during restore, but reports NU19xx as warnings, and
+    TreatWarningsAsErrors does not reach restore diagnostics. The audit runs
+    over the resolved graph (NuGetAuditMode=all, the SDK default is 'direct'),
+    and the four severity codes are errors, so a vulnerable transitive test
+    package fails `make unittest` like any other gate.
+    """
+    props = (ROOT / "Directory.Build.props").read_text(encoding="utf-8")
+    assert "<NuGetAudit>true</NuGetAudit>" in props, (
+        "NuGet restore auditing is off: advisories would go unreported"
+    )
+    assert "<NuGetAuditMode>all</NuGetAuditMode>" in props, (
+        "NuGetAuditMode is not 'all', so only direct dependencies are audited"
+    )
+    errors = re.search(r"<WarningsAsErrors>(.*?)</WarningsAsErrors>", props, re.DOTALL)
+    assert errors, "Directory.Build.props promotes nothing to an error"
+    for code in ("NU1901", "NU1902", "NU1903", "NU1904"):
+        assert code in errors.group(1), (
+            f"{code} is an advisory severity bucket that does not fail the build"
+        )
+
+
 def test_lock_files_are_tracked():
     """A lock file nobody can commit pins nothing, so .gitignore must not eat it."""
     tracked = subprocess.run(

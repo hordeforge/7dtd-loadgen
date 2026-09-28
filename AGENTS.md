@@ -91,6 +91,13 @@ must stay the minor `[tool.mypy] python_version` analyses; `uv` resolves it,
 so a host with only a newer Python downloads the pinned one rather than
 silently running the gates elsewhere.
 
+A new dependency needs a reason recorded here (or in `README.md`) that beats
+writing it: the tree is stdlib-only on the Python side and one NuGet package
+(`LiteNetLib`, exact-pinned) on the client. `tests/test_dependency_contract.py`
+is the gate: it fails an unpinned range, an uncommitted lock, a dev extra no
+lane runs, an import nothing declared, and a NuGet audit posture dropped from
+`Directory.Build.props`. `make sbom` renders both lock files as CycloneDX.
+
 ## Workload controls
 
 Common knobs: `--count`, `--concurrency`, `--timeout`, `--mode`, `--actions`,

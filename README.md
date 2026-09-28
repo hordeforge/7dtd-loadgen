@@ -48,6 +48,23 @@ Override with `-p:GameDir=...` or `SEVENDTD_SERVER_DIR`. To build against a
 game install's LiteNetLib instead of the pinned NuGet package:
 `make build GAME_DIR=/path/to/dedicated`.
 
+## Dependencies
+
+Three surfaces, all pinned: `uv.lock` (Python tooling, every download
+sha256-hashed) and `src/LoadGen.Tests/packages.lock.json` (the .NET test
+graph, content-hashed). The shipped client itself has no Python runtime
+dependency and one .NET package, LiteNetLib, exact-pinned because a bare
+NuGet version is a minimum that floats. Dependabot tracks all three, CI
+actions included.
+
+NuGet audits during restore over the whole resolved graph, and a published
+advisory (NU1901-NU1904) fails the lane rather than scrolling past in the log.
+
+`make sbom` writes the CycloneDX inventory of both lock files to
+`workspace/sbom/7dtd-loadgen.cdx.json`: every resolved package with the hash
+its lock recorded, for scanners and for whoever reads a release without
+checking out the tree.
+
 ## Quick start
 
 ```bash

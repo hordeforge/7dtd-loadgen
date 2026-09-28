@@ -21,5 +21,17 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Restore-time vulnerability audit. NuGet checks advisories during
+         restore already, but it reports them as warnings, and TreatWarningsAsErrors
+         does not cover restore diagnostics, so an advisory in the locked
+         transitive test graph (or in the LiteNetLib fallback) was something a
+         reader had to notice in the log. AuditMode=all widens the SDK default
+         ('direct') to the whole resolved graph, and the NU1901-NU1904 codes
+         below are the four severity buckets, so an advisory fails the lane the
+         dependency-contract gate runs in. NU1905 (a source that serves no
+         advisory data) stays a warning: an offline mirror is not a finding. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
   </PropertyGroup>
 </Project>

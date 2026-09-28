@@ -24,7 +24,7 @@ endif
 #   make build GAME_DIR=/path/to/7 Days to Die Dedicated Server
 GAME_DIR ?=
 
-.PHONY: help doctor lint build selftest unittest unittest-one pytest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
+.PHONY: help doctor lint build selftest unittest unittest-one pytest-one join dedicated dedicated-4k dedicated-realearth join-realearth scenarios test coverage sbom clean research-save-check compare-sut compare-list compare-all compare-worlds compare-consolidated compare-verify bench-stock bench-report
 
 help:
 	@echo "7dtd-loadgen"
@@ -62,6 +62,7 @@ help:
 	@echo "                          profile; per-scenario APM + stats-json + hostLoad evidence"
 	@echo "                          under workspace/bench/lapN (LAP=1 BENCH_ADMIN_PORT=8084)"
 	@echo "  make bench-report        Consolidate workspace/bench/lap* into bench-stock.md/json"
+	@echo "  make sbom                CycloneDX inventory of uv.lock + packages.lock.json"
 	@echo "  make clean               Remove build outputs"
 	@echo ""
 	@echo "Ports: 26900 = game client (Connect to IP); 26902 = LiteNet bot port (LOADGEN_PORT)."
@@ -259,6 +260,15 @@ bench-stock:
 
 bench-report:
 	uv run --locked python "$(ROOT)/tools/bench_report.py" --laps-dir "$(ROOT)/workspace/bench"
+
+# What this release resolves to, as a document a scanner can read: every
+# package in uv.lock and in the .NET lock files with the hash each lock
+# recorded. Computed from the locks, so it cannot claim a version the tree
+# does not resolve.
+SBOM ?= $(ROOT)/workspace/sbom/7dtd-loadgen.cdx.json
+sbom:
+	@cd "$(ROOT)" && uv run --locked python scripts/sbom.py --output "$(SBOM)"
+	@echo "OK → $(SBOM)"
 
 # Same scenario (join-fast) on every supported world: the world matrix.
 # Each world keeps its own evidence dir (join-fast-<world>). Worlds that

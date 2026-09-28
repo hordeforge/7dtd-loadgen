@@ -47,6 +47,8 @@ workspace/bench/*/*/apm/**
 !workspace/bench/*/*/apm/
 !workspace/bench/*/*/apm/session_*/
 !workspace/bench/*/*/apm/session_*/summary.json
+# make sbom: regenerated from the committed lock files on demand, never shipped.
+workspace/sbom/
 # Local harness lock markers, not dependency locks: a broad `*.lock` also
 # swallows uv.lock and packages.lock.json, so a newly added lock file would
 # never be committable. uv.lock and src/*/packages.lock.json are tracked on

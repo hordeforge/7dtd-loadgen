@@ -71,6 +71,7 @@ module = [
     "loadgen_cli",
     "loadgen_manifest",
     "procs",
+    "sbom",
     "scenario_env",
     "stats_pass_fail",
     "sut_catalog",

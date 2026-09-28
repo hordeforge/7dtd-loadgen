@@ -10,6 +10,12 @@ under **Changed** with their migration path.
 
 ### Added
 
+- `make sbom` writes a CycloneDX 1.6 inventory of both lock files
+  (`workspace/sbom/7dtd-loadgen.cdx.json`, override with `SBOM=<path>`): every
+  resolved package, PyPI and NuGet, with the hash its lock recorded. Stdlib
+  only, computed from the locks so it cannot claim a version the tree does not
+  resolve, and gated by `tests/test_sbom.py`. A release previously shipped no
+  machine-readable inventory at all.
 - `make doctor` names a missing build or test tool (.NET 8 SDK, `shellcheck`,
   `uv`) instead of leaving `make lint` to fail with `shellcheck: command not
   found`. `make lint` and `make test` run it first, and `make build` reports
@@ -75,6 +81,12 @@ under **Changed** with their migration path.
   restore took whatever 1.x was newest at build time. A dependency contract
   gate (`tests/test_dependency_contract.py`) now checks the pin, the dev extras,
   the `uv.lock` hashes, and the lock files' presence in git.
+- A NuGet advisory now fails the lane. Restore auditing was left at the SDK
+  defaults, and `TreatWarningsAsErrors` does not reach restore diagnostics, so
+  a vulnerable package in the locked test graph or the LiteNetLib fallback was
+  a warning in a log nobody reads. `Directory.Build.props` audits the whole
+  resolved graph (`NuGetAuditMode=all`) and promotes NU1901-NU1904 to errors;
+  `tests/test_dependency_contract.py` holds that posture.
 - Per-player identifiers no longer reach kept run evidence. Telnet
   transcripts pseudonymize each player name (`player-1`, ...) and replace
   `pltfmid`, `crossid` and `ip` with `redacted`; `surface.json` keeps the
