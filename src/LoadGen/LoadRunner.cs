@@ -88,12 +88,11 @@ public static class LoadRunner
             return latencies[idx];
         }
         var stageCounts = new Dictionary<string, int>(StringComparer.Ordinal);
-        int connected = 0, protocolProgress = 0;
+        int connected = 0;
         var fails = new List<string>();
         foreach (var r in list)
         {
             if (r.Connected) connected++;
-            if (r.Pass) protocolProgress++;
             foreach (var s in r.Stages)
             {
                 stageCounts.TryGetValue(s, out int c);
@@ -113,7 +112,6 @@ public static class LoadRunner
             P95Ms = Pct(0.95),
             P99Ms = Pct(0.99),
             Connected = connected,
-            ProtocolProgress = protocolProgress,
             StageCounts = stageCounts,
             FailSamples = fails,
         };

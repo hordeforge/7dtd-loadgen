@@ -26,7 +26,6 @@ public static partial class Program
         int concurrency = 0;
         double minPassRate = 1.0;
         bool modeSet = false;
-        bool deathSet = false;
         bool timeoutSet = false;
         // Height-test worlds have empty prefabs → no natural zeds; telnet-spawn by default on join.
         bool spawnZombies = true;
@@ -70,12 +69,10 @@ public static partial class Program
             case "probe": // one bot, bounded steps, no death: join + handshake health
                 count = 1; concurrency = 1; opt.ActionCount = 20;
                 opt.TimeoutMs = 120_000; timeoutSet = true;
-                deathSet = true; opt.Death = ActionLoop.DeathMethod.None;
                 break;
             case "join-burst": // many simultaneous joins, short steps, no death
                 count = 24; concurrency = 24; opt.ActionCount = 10;
                 opt.TimeoutMs = 120_000; timeoutSet = true;
-                deathSet = true; opt.Death = ActionLoop.DeathMethod.None;
                 break;
             case "steady-wander": // endless wander for a soak window
                 count = 8; concurrency = 8; opt.ActionCount = 0;
@@ -84,13 +81,13 @@ public static partial class Program
             case "death-soak": // combat + self-kill + respawn loop
                 count = 6; concurrency = 6; opt.ActionCount = 60;
                 opt.Mode = ActionLoop.BotMode.Combat; modeSet = true;
-                opt.Death = ActionLoop.DeathMethod.Suicide; deathSet = true;
+                opt.Death = ActionLoop.DeathMethod.Suicide;
                 opt.Respawn = true; opt.MaxLives = 0;
                 opt.TimeoutMs = 600_000; timeoutSet = true;
                 break;
             case "mixed": // weighted wander/combat mix with deaths and respawns
                 count = 12; concurrency = 12; opt.Mode = ActionLoop.BotMode.Mixed; modeSet = true;
-                opt.Death = ActionLoop.DeathMethod.Suicide; deathSet = true;
+                opt.Death = ActionLoop.DeathMethod.Suicide;
                 opt.Respawn = true;
                 opt.TimeoutMs = 600_000; timeoutSet = true;
                 break;
@@ -170,10 +167,7 @@ public static partial class Program
             else if (args[i] == "--death" && i + 1 < args.Length)
             {
                 if (ActionLoop.TryParseDeath(args[++i], out var death))
-                {
                     opt.Death = death;
-                    deathSet = true;
-                }
             }
             else if (args[i] == "--pace-ms" && i + 1 < args.Length)
                 opt.PaceMs = int.Parse(args[++i]);
@@ -270,8 +264,6 @@ public static partial class Program
             opt.Mode = ActionLoop.BotMode.Wander;
             opt.WanderUntilDeath = true;
         }
-        if (!deathSet)
-            opt.Death = ActionLoop.DeathMethod.None;
 
         // Wall-clock budget: long for endless world-death walks; short estimate when --actions N set.
         if (!timeoutSet)

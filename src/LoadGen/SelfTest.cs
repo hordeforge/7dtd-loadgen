@@ -41,7 +41,7 @@ static class SelfTest
         // so a wildcard bind would expose an unauthenticated game-protocol echo
         // service to the local network for the test's duration. The probe and
         // cohort both target 127.0.0.1, which the loopback bind serves.
-        if (!server.Start(System.Net.IPAddress.Loopback, System.Net.IPAddress.IPv6Loopback, port < 0 ? 0 : port))
+        if (!server.Start(System.Net.IPAddress.Loopback, System.Net.IPAddress.IPv6Loopback, port))
         {
             Console.Error.WriteLine(
                 "FAIL: self-test host could not listen on loopback"

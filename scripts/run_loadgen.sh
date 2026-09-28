@@ -99,6 +99,9 @@ LOG="${SCRATCH_OUT:-$ROOT/src/LoadGen/bin}/simulated_client.log"
 mkdir -p "$(dirname "$LOG")"
 
 args=()
+# Optional join knob: forwarded only when the env override is non-empty, so an
+# unset env leaves the client's own default in place.
+opt() { if [[ -n "$2" ]]; then args+=("$1" "$2"); fi; }
 case "$MODE" in
   self-test-join)
     args+=(--self-test-join --actions "$ACTIONS" --log "$LOG")
@@ -112,23 +115,23 @@ case "$MODE" in
     # Secrets are NOT forwarded as argv (ps-visible). The client reads
     # LOADGEN_KEY / LOADGEN_TELNET_PASSWORD from its inherited environment;
     # an explicit flag on the CLI still overrides the env.
-    if [[ -n "$BOT_MIX" ]]; then args+=(--bot-mix "$BOT_MIX"); fi
-    if [[ -n "$BOT_MODE" ]]; then args+=(--mode "$BOT_MODE"); fi
-    if [[ -n "$DEATH" ]]; then args+=(--death "$DEATH"); fi
-    if [[ -n "$PACE_MS" ]]; then args+=(--pace-ms "$PACE_MS"); fi
-    if [[ -n "$SPAWN_ENTITY" ]]; then args+=(--spawn-entity "$SPAWN_ENTITY"); fi
-    if [[ -n "$SPAWN_PER_PLAYER" ]]; then args+=(--spawn-per-player "$SPAWN_PER_PLAYER"); fi
-    if [[ -n "$SPAWN_EVERY_MS" ]]; then args+=(--spawn-every-ms "$SPAWN_EVERY_MS"); fi
-    if [[ -n "$TELNET_HOST" ]]; then args+=(--telnet-host "$TELNET_HOST"); fi
-    if [[ -n "$TELNET_PORT" ]]; then args+=(--telnet-port "$TELNET_PORT"); fi
-    if [[ -n "$BENCH_WARMUP_MS" ]]; then args+=(--bench-warmup-ms "$BENCH_WARMUP_MS"); fi
-    if [[ -n "$BENCH_WINDOW_MS" ]]; then args+=(--bench-window-ms "$BENCH_WINDOW_MS"); fi
-    if [[ -n "$HORDE_EVERY_MS" ]]; then args+=(--horde-every-ms "$HORDE_EVERY_MS"); fi
-    if [[ -n "$HORDE_WAVES" ]]; then args+=(--horde-waves "$HORDE_WAVES"); fi
-    if [[ -n "$MAX_DYNAMITE" ]]; then args+=(--max-dynamite "$MAX_DYNAMITE"); fi
+    opt --bot-mix "$BOT_MIX"
+    opt --mode "$BOT_MODE"
+    opt --death "$DEATH"
+    opt --pace-ms "$PACE_MS"
+    opt --spawn-entity "$SPAWN_ENTITY"
+    opt --spawn-per-player "$SPAWN_PER_PLAYER"
+    opt --spawn-every-ms "$SPAWN_EVERY_MS"
+    opt --telnet-host "$TELNET_HOST"
+    opt --telnet-port "$TELNET_PORT"
+    opt --bench-warmup-ms "$BENCH_WARMUP_MS"
+    opt --bench-window-ms "$BENCH_WINDOW_MS"
+    opt --horde-every-ms "$HORDE_EVERY_MS"
+    opt --horde-waves "$HORDE_WAVES"
+    opt --max-dynamite "$MAX_DYNAMITE"
     if [[ -n "$NO_SPAWN" ]]; then args+=(--no-spawn-zombies); fi
-    if [[ -n "$SEED" ]]; then args+=(--seed "$SEED"); fi
-    if [[ -n "${LOADGEN_STATS_JSON:-}" ]]; then args+=(--stats-json "$LOADGEN_STATS_JSON"); fi
+    opt --seed "$SEED"
+    opt --stats-json "${LOADGEN_STATS_JSON:-}"
     if [[ "$RAMP_MS" != "0" ]]; then args+=(--ramp-ms "$RAMP_MS"); fi
     ;;
   *)

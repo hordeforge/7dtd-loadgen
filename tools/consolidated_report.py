@@ -162,8 +162,7 @@ def render(rows: list[dict]) -> str:
             stock_cell = f"{s.get('pass', 0)}/{s.get('fail', 0)}/{s.get('skip', 0)}"
             zdtd_cell = f"{z.get('pass', 0)}/{z.get('fail', 0)}/{z.get('skip', 0)}"
             wall = r.get("wall") or {}
-            wf = lambda v: f"{v:.1f}" if v is not None else "n/a"
-            wall_cell = f"{wf(wall.get('stock'))} / {wf(wall.get('zdtd'))}"
+            wall_cell = f"{fmt_wall(wall.get('stock'))} / {fmt_wall(wall.get('zdtd'))}"
         else:
             stock_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "stock" else "n/a")
             zdtd_cell = "ran" if r["compared"] else ("ran" if r["ran"] == "zdtd" else "n/a")
