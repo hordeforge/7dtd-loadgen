@@ -370,11 +370,11 @@ EOF
   # the telnet snapshot below. Runs detached; we wait for it after the client.
   APM_PID=""
   if [[ "$sut" == "stock" && "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] \
-     && command -v uv >/dev/null; then
+     && [[ -f "$APM_PROJECT/uv.lock" ]] && command -v uv >/dev/null; then
     APM_DIR="$run_dir/apm"
     mkdir -p "$APM_DIR"
     SEVENDTD_APM_DIR="$APM_DIR" SEVENDTD_TELNET_PASSWORD="$TELNET_PASSWORD" \
-      uv run --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
+      uv run --locked --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
       --telnet-port "$TELNET_PORT" >"$run_dir/apm.log" 2>&1 &
     APM_PID=$!
     echo "  apm capture started (${APM_SECONDS}s, no-app; window aligns with snapshot)"

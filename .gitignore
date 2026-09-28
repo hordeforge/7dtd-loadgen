@@ -47,7 +47,15 @@ workspace/bench/*/*/apm/**
 !workspace/bench/*/*/apm/
 !workspace/bench/*/*/apm/session_*/
 !workspace/bench/*/*/apm/session_*/summary.json
+# Local harness lock markers, not dependency locks: a broad `*.lock` also
+# swallows uv.lock and packages.lock.json, so a newly added lock file would
+# never be committable. uv.lock and src/*/packages.lock.json are tracked on
+# purpose; the rules below keep that explicit.
+.gauntlet.lock
 *.lock
+!uv.lock
+!packages.lock.json
+!*/packages.lock.json
 
 # Local scratch and one-off repro artifacts.
 .scratch/

@@ -146,7 +146,11 @@ for sc in "${scenarios[@]}"; do
   # with the measurement window (start after the warm-up); otherwise capture
   # over the connected window immediately.
   APM_PID=""
-  if [[ "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] && command -v uv >/dev/null; then
+  # The APM env must resolve from its own uv.lock: a capture that re-resolves
+  # mid-run measures a different build than the last lap. Skip the capture when
+  # the sibling has no lock rather than silently floating it.
+  if [[ "$COMPARE_APM" != "0" ]] && [[ -d "$APM_PROJECT" ]] && [[ -f "$APM_PROJECT/uv.lock" ]] \
+     && command -v uv >/dev/null; then
     if [[ "$sc" == "bench" ]]; then
       sleep $((BENCH_WARMUP_MS / 1000))
     else
@@ -154,7 +158,7 @@ for sc in "${scenarios[@]}"; do
     fi
     mkdir -p "$run_dir/apm"
     SEVENDTD_APM_DIR="$run_dir/apm" SEVENDTD_TELNET_PASSWORD="$TELNET_PASSWORD" \
-      uv run --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
+      uv run --locked --project "$APM_PROJECT" 7dtd-server-apm capture --seconds "$APM_SECONDS" --no-app \
         --telnet-port "$ADMIN_PORT" >"$run_dir/apm.log" 2>&1 &
     APM_PID=$!
   fi

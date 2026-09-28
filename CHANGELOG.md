@@ -37,6 +37,12 @@ under **Changed** with their migration path.
   open gap is honest: the V3.2.0 b10 pin has golden-wire coverage but no
   recorded live join, and the `PackageIds` head fixtures are still the
   V3.0.1/V3.1.0 captures.
+- The NuGet LiteNetLib fallback is pinned to exactly `[1.3.5]`. A bare
+  `Version="1.3.5"` is a minimum-version range, and `LoadGen.csproj` carries no
+  `packages.lock.json` (the game-DLL branch makes one machine-dependent), so
+  restore took whatever 1.x was newest at build time. A dependency contract
+  gate (`tests/test_dependency_contract.py`) now checks the pin, the dev extras,
+  the `uv.lock` hashes, and the lock files' presence in git.
 - Per-player identifiers no longer reach kept run evidence. Telnet
   transcripts pseudonymize each player name (`player-1`, ...) and replace
   `pltfmid`, `crossid` and `ip` with `redacted`; `surface.json` keeps the
@@ -78,6 +84,10 @@ under **Changed** with their migration path.
   included) could reach `surface.json` and the report. The gap is now spaces
   and tabs, so a banner value stops at its own line. The transcript fuzz gate
   covers it, and now asserts the player axis stays a count.
+- The SUT capture fuzz gate still asserted the pre-pseudonymization
+  `players.rows` shape, so every transcript raised `KeyError: 'rows'`. It pins
+  the count-only player axis now, and asserts the player name from a matched
+  row never reaches the snapshot.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the

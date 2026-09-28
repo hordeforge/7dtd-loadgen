@@ -126,7 +126,7 @@ def test_huge_transcript_scan_stays_linear(tmp_path: Path) -> None:
     assert elapsed < 10.0, f"telnet snapshot took {elapsed:.1f}s on {len(hostile)} bytes"
 
 
-def test_banner_and_rows_survive_a_well_formed_transcript(tmp_path: Path) -> None:
+def test_banner_counts_and_axes_survive_a_well_formed_transcript(tmp_path: Path) -> None:
     text = "\n".join(SEEDS) + "\n"
     snap = sut_capture.telnet_snapshot(str(_write_transcript(tmp_path, text)))
 
@@ -139,7 +139,9 @@ def test_banner_and_rows_survive_a_well_formed_transcript(tmp_path: Path) -> Non
     # to its type= value.
     assert snap["entities"]["types"]["name=zombieBoe"] == 1
     assert snap["entities"]["types"]["EntityPlayer"] == 1
-    # The player row is counted and then dropped: the name is player-typed.
+    # The player row is counted and then dropped: the name and id are
+    # player-typed free text and must not survive into kept evidence in any
+    # form.
     assert snap["players"] == {"count": 1}
     assert PLAYER_NAME not in json.dumps(snap)
     assert snap["reportedTotal"] == 3
