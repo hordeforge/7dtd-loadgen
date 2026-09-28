@@ -11,8 +11,12 @@ namespace SevenDTD.LoadGen.Tests;
 /// exit path has to stop its manager, including the failed-Start branch and a
 /// throw out of Start, or the cohort ends holding one live socket per probe.
 /// The check is the process's own fd table: a probe that never released its
-/// socket shows up as growth no matter which branch it took.
+/// socket shows up as growth no matter which branch it took. The fd table is
+/// shared with every other test running in this process, so the class joins the
+/// non-parallel collection: a sibling test opening a socket between the baseline
+/// sample and the final count reads as a leak that is not one.
 /// </summary>
+[Collection("process-shutdown-sweep")]
 public sealed class LiteNetProbeLifecycleTests
 {
     static int OpenFdCount()

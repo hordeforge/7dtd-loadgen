@@ -32,23 +32,17 @@ revision's field meanings.
 Usage: python3 tools/sut_report.py <scenario_dir>
 """
 
-import io
 import json
 import os
 import re
 import sys
 
 from json_shape import as_count, as_dict, as_int, as_number
+from utf8_stdio import use_utf8_stdio
+
+use_utf8_stdio()
 
 DIFF_SCHEMA = "7dtd.loadgen.diff.v1"
-
-# Locale-independent text boundary: the rendered text comes from UTF-8 JSON
-# evidence, but a C-locale runner gives stdout an ASCII codec and print()
-# raises. See scenario_env.py for the same block and its reason.
-if isinstance(sys.stdout, io.TextIOWrapper):
-    sys.stdout.reconfigure(encoding="utf-8")
-if isinstance(sys.stderr, io.TextIOWrapper):
-    sys.stderr.reconfigure(encoding="utf-8")
 
 
 def load(run_dir):

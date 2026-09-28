@@ -32,21 +32,15 @@ clone without it would otherwise rewrite the ledger smaller and exit 0.
 from __future__ import annotations
 
 import argparse
-import io
 import json
 import sys
 from collections import Counter
 from pathlib import Path
 
 from json_shape import as_cell, as_dict, as_list, as_number, as_sides
+from utf8_stdio import use_utf8_stdio
 
-# Locale-independent text boundary: the rendered text comes from UTF-8 JSON
-# evidence, but a C-locale runner gives stdout an ASCII codec and print()
-# raises. See scenario_env.py for the same block and its reason.
-if isinstance(sys.stdout, io.TextIOWrapper):
-    sys.stdout.reconfigure(encoding="utf-8")
-if isinstance(sys.stderr, io.TextIOWrapper):
-    sys.stderr.reconfigure(encoding="utf-8")
+use_utf8_stdio()
 
 ROOT = Path(__file__).resolve().parents[1]
 

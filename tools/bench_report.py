@@ -15,20 +15,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import io
 import json
 import sys
 from pathlib import Path
 
 from json_shape import as_cell, as_count, as_dict, as_int, as_list, as_number
+from utf8_stdio import use_utf8_stdio
 
-# Locale-independent text boundary: the rendered text comes from UTF-8 JSON
-# evidence, but a C-locale runner gives stdout an ASCII codec and print()
-# raises. See scenario_env.py for the same block and its reason.
-if isinstance(sys.stdout, io.TextIOWrapper):
-    sys.stdout.reconfigure(encoding="utf-8")
-if isinstance(sys.stderr, io.TextIOWrapper):
-    sys.stderr.reconfigure(encoding="utf-8")
+use_utf8_stdio()
 
 TOLERANCE = 0.20  # per-scenario wall repeatability bound
 
