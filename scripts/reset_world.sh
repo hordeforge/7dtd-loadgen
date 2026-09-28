@@ -28,6 +28,17 @@ if [[ ! "$GAME_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
   exit 1
 fi
 
+# Overlap guard: this script stops the dedicated and wipes its save, so a reset
+# raced against a bench lap or a comparison destroys the world that run is
+# measuring, and both report numbers from a world neither measured. Same lock
+# file, tag and exit code as the boot, the cohort runner and runlock.py, keyed
+# on the LiteNet join port (ServerPort + 2) the runners default to.
+# shellcheck source=scripts/harness_lib.sh
+source "$ROOT/scripts/harness_lib.sh"
+JOIN_PORT="$(sed -n 's|.*name="ServerPort" value="\([0-9]*\)".*|\1|p' \
+  "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
+acquire_run_lock "${RE_LOCK_HOST:-127.0.0.1}" "$(( ${JOIN_PORT:-26900} + 2 ))" 9 "world reset"
+
 # Stop any running dedicated server (comm is truncated to 15 chars).
 if pids=$(pgrep -x 7DaysToDieServe); then
   echo "reset_world: stopping server pids: $pids"
@@ -53,5 +64,7 @@ echo "reset_world: wiped $wiped save(s); generated world kept for deterministic 
 
 if [[ "$start" == "1" ]]; then
   echo "reset_world: relaunching dedicated"
-  exec "$ROOT/scripts/start_dedicated_prefab.sh"
+  # The lock is already held here, and the boot takes the same one: the opt-out
+  # is the nested case, the same one the load profiles pass to their own lanes.
+  LOADGEN_ALLOW_OVERLAP=1 exec "$ROOT/scripts/start_dedicated_prefab.sh"
 fi

@@ -47,6 +47,18 @@ Workspace root guide: [`hordeforge/.github` MODDING_BEST_PRACTICES.md](https://g
     `runlock.py` separates contention (exit 4, the shell runner's code) from a
     lock file it could not open (exit 5): the guard is inert in the second
     case, so it must not be read as "wait for the other run".
+    The two orchestrators hold the same lock across the whole measured run,
+    not only around their boot: `compare_sut.sh` takes the stock and zdtd join
+    ports on fds 9 and 8, `bench_stock.sh` takes the stock one, and each passes
+    `LOADGEN_ALLOW_OVERLAP=1` to the `start_dedicated_prefab.sh` and
+    `run_loadgen.sh` it starts, which is the same nested case the profiles use.
+    `reset_world.sh` takes it too: it stops the dedicated and wipes the save,
+    so a reset raced against a measured run destroys the world that run is
+    measuring, and it passes the opt-out to the boot it execs with `--start`.
+    One implementation owns the file name, tag and exit code:
+    `acquire_run_lock` in `scripts/harness_lib.sh`, which every shell lane and
+    `runlock.py` must agree with byte for byte
+    (`tests/test_harness_contract.py`).
 11. **Remote text into a log line goes through `RunReport.ScrubLineUnsafe`**
     (or `RunReport.SafeText`, which caps as well). `char.IsControl` is not the
     test: it is false for U+2028 and U+2029, and the Python report lanes read

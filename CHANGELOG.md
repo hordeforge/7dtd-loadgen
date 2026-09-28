@@ -144,6 +144,20 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   target `host:port`, with the same lock file name and the same exit 4 as
   `run_loadgen.sh`, so the lanes exclude each other; `LOADGEN_ALLOW_OVERLAP=1`
   stays the deliberate opt-out.
+- The measured-run lanes (`compare_sut.sh`, `bench_stock.sh`) and
+  `reset_world.sh` now hold the per-target overlap lock for the whole run, not
+  only around their boot. The boot's lock is released once the server is
+  launched, so a second comparison or bench lap that only contended at boot
+  still ran `pkill -x 7DaysToDieServe` (or bound the same zdtd port pair) and
+  stopped the first run's dedicated mid-measurement; both then reported a diff
+  or a bench number from a world neither measured. `reset_world.sh` stopped the
+  dedicated and wiped its save with no lock at all, so a `make reset-world`
+  during a lap destroyed the world that lap was measuring. All three now take
+  the same lock file, tag and exit 4 as `run_loadgen.sh`,
+  `start_dedicated_prefab.sh` and `scripts/runlock.py`, and pass
+  `LOADGEN_ALLOW_OVERLAP=1` to the boot and cohort they start themselves. The
+  lock moved into one helper, `acquire_run_lock` in `scripts/harness_lib.sh`,
+  so the shell lanes cannot drift from `runlock.py`'s file name.
 - `compare_sut.sh` regenerates `REPORT.md` / `diff.json` on every invocation
   instead of only after a both-sides run, and each invocation stamps a
   `runId` into both sides' `run-meta.json`. A one-sided rerun

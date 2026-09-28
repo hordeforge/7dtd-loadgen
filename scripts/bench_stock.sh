@@ -119,6 +119,15 @@ for sc_args in "${SCEN_MATRIX[@]}"; do
 done
 
 # Pre-flight: the admin port must be bindable (docker owns 8081/8082 on this host).
+# Overlap guard first, and for the whole lap: the boot below opens with
+# `pkill -x 7DaysToDieServe` and the cohort binds the same LiteNet port the
+# matrix runs against, so a second lap started while this one measures would
+# stop this lap's server mid-run and clobber the same evidence dir. Same lock
+# file, tag and exit code as run_loadgen.sh, start_dedicated_prefab.sh and
+# scripts/runlock.py. The boot and the cohort this lane starts itself pass
+# LOADGEN_ALLOW_OVERLAP=1: the lock is already held here, and they would
+# otherwise refuse their own parent.
+acquire_run_lock 127.0.0.1 26902 9 "bench lap"
 if grep -q ":$ADMIN_PORT " <<<"$(ss -tln 2>/dev/null || true)"; then
   echo "ERROR: admin telnet port $ADMIN_PORT already in use; set BENCH_ADMIN_PORT" >&2
   exit 1
@@ -138,6 +147,7 @@ echo "matrix: $SCEN_KEYS"
 USERDATA="$OUT/userdata"
 RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="bench_stock_lap${LAP}" \
   RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 RE_TELNET_PORT="$ADMIN_PORT" \
+  LOADGEN_ALLOW_OVERLAP=1 \
   bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$OUT/boot.log" 2>&1 &
 BOOT_PID=$!
 # Arm the exit trap before the ready wait: the boot script writes the pidfile
@@ -182,6 +192,7 @@ for sc in "${scenarios[@]}"; do
     LOADGEN_TELNET_HOST=127.0.0.1 LOADGEN_TELNET_PORT="$ADMIN_PORT"
     LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD"
     LOADGEN_STATS_JSON="$run_dir/stats.json"
+    LOADGEN_ALLOW_OVERLAP=1
   )
   # Bench profile: --profile bench sets its own ramp/warmup/window/timeout.
   if [[ "$sc" == "bench" ]]; then
