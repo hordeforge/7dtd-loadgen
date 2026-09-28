@@ -8,6 +8,13 @@ under **Changed** with their migration path.
 
 ## [Unreleased]
 
+### Fixed
+
+- `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
+  a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
+  so every pressure wave and every per-bot dynamite give leaked a handle for the
+  life of the run. The connect now waits on the `ConnectAsync` task.
+
 ## [0.4.2] - 2026-09-21
 
 ### Removed

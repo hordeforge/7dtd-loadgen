@@ -76,14 +76,24 @@ public sealed partial class TelnetAdmin : IDisposable
         try
         {
             _tcp = new TcpClient { NoDelay = true };
-            var ar = _tcp.BeginConnect(_host, _port, null, null);
-            if (!ar.AsyncWaitHandle.WaitOne(timeoutMs))
+            // ConnectAsync plus a bounded wait, not BeginConnect: IAsyncResult.
+            // AsyncWaitHandle materializes a kernel-backed ManualResetEvent that
+            // only disposing the result releases, and nothing here ever disposed
+            // it, so every pressure wave and every per-bot dynamite give leaked a
+            // handle for the life of the run. A failed connect surfaces from Wait
+            // as AggregateException, which the catch below already logs and tears
+            // down.
+            var connect = _tcp.ConnectAsync(_host, _port);
+            if (!connect.Wait(timeoutMs))
             {
                 _log?.Invoke($"TELNET connect timeout {_host}:{_port}");
+                // Disposing the socket below faults the still-pending connect;
+                // observe that fault so the abandoned task cannot resurface as
+                // an unobserved task exception later in the run.
+                _ = connect.ContinueWith(static t => t.Exception, TaskScheduler.Default);
                 Dispose();
                 return false;
             }
-            _tcp.EndConnect(ar);
             _stream = _tcp.GetStream();
             _stream.ReadTimeout = 2000;
             _stream.WriteTimeout = 2000;
