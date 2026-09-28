@@ -122,6 +122,69 @@ def test_bench_run_meta_measures_the_run_between_two_stamps():
     )
 
 
+def test_measured_runs_hold_the_overlap_lock_for_the_whole_run():
+    """The orchestrators boot the server AND measure it, so the guard has to be
+    held across the measurement, not only around the boot. start_dedicated_prefab.sh
+    opens with `pkill -x 7DaysToDieServe` and the zdtd side binds a fixed port
+    pair: a second comparison or bench lap that only contends at boot still kills
+    the first run's dedicated once it launches, and both report numbers from a
+    world neither measured."""
+    for name, text in (("compare_sut.sh", COMPARE_SUT), ("bench_stock.sh", BENCH)):
+        assert "acquire_run_lock" in text, (
+            f"{name} boots and measures a server without taking the per-target "
+            "overlap lock; a second run would stop the first one's dedicated "
+            "mid-measurement"
+        )
+        # The lanes the orchestrator starts itself must not refuse their own
+        # parent, which is the lock holder.
+        assert "LOADGEN_ALLOW_OVERLAP=1" in text, (
+            f"{name} holds the lock itself, so the boot and the cohort it starts "
+            "need LOADGEN_ALLOW_OVERLAP=1 or they exit 4 against their own parent"
+        )
+    # The lock is taken before anything destructive: the evidence rm -rf, the
+    # port pre-flight and the boot all come after it.
+    assert COMPARE_SUT.index("acquire_run_lock") < COMPARE_SUT.index('rm -rf "$run_dir"')
+    assert BENCH.index("acquire_run_lock") < BENCH.index(
+        'bash "$ROOT/scripts/start_dedicated_prefab.sh"'
+    )
+    # reset_world.sh stops the dedicated and wipes its save, so it is the same
+    # hazard: a reset during a measured run destroys the world being measured.
+    assert RESET_WORLD.index("acquire_run_lock") < RESET_WORLD.index(
+        "pgrep -x 7DaysToDieServe"
+    ), "reset_world.sh kills the dedicated without holding the target lock"
+    assert "LOADGEN_ALLOW_OVERLAP=1 exec" in RESET_WORLD, (
+        "the reset holds the lock, so the boot it execs needs the opt-out"
+    )
+
+
+def test_overlap_lock_has_one_implementation():
+    """The lock file name, tag and exit code are a shared contract with
+    scripts/runlock.py. A second inline copy in a shell script is a tag that can
+    drift from the Python guard, and a lane that stops contending for the same
+    file without anyone noticing."""
+    callers = {
+        "compare_sut.sh": COMPARE_SUT,
+        "bench_stock.sh": BENCH,
+        "run_loadgen.sh": (ROOT / "scripts/run_loadgen.sh").read_text(encoding="utf-8"),
+        "start_dedicated_prefab.sh": (
+            ROOT / "scripts/start_dedicated_prefab.sh"
+        ).read_text(encoding="utf-8"),
+        "reset_world.sh": RESET_WORLD,
+    }
+    for name, text in callers.items():
+        assert "harness_lib.sh" in text, f"{name} does not source harness_lib.sh"
+        code = "\n".join(
+            line for line in text.splitlines() if not line.lstrip().startswith("#")
+        )
+        assert "flock" not in code, (
+            f"{name} locks inline; call acquire_run_lock from "
+            "scripts/harness_lib.sh so one implementation owns the tag"
+        )
+    # Two distinct fds: a second `exec 9>` would close the first lock.
+    assert 'acquire_run_lock "$HOST" "$((STOCK_SERVER_PORT + 2))" 9' in COMPARE_SUT
+    assert 'acquire_run_lock "$HOST" "$((ZDTD_SERVER_PORT + 2))" 8' in COMPARE_SUT
+
+
 def test_release_gate_verifies_the_dispatched_tag():
     """A manual run must check out and read the tag it was asked about, not the
     branch the dispatch happened to start from."""

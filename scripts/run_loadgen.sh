@@ -9,6 +9,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=scripts/python_env.sh
 source "$ROOT/scripts/python_env.sh"
+# shellcheck source=scripts/harness_lib.sh
+source "$ROOT/scripts/harness_lib.sh"
 DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.cache/dotnet-sdk}"
 export PATH="${DOTNET_ROOT}:${PATH}"
 HOST="${LOADGEN_HOST:-127.0.0.1}"
@@ -87,20 +89,7 @@ fi
 # not the target, so they never take the lock. Deliberate overlaps opt out
 # with LOADGEN_ALLOW_OVERLAP=1.
 case "$MODE" in
-  join|probe)
-    if [[ "${LOADGEN_ALLOW_OVERLAP:-0}" != "1" ]] && command -v flock >/dev/null 2>&1; then
-      lock_tag="$(printf '%s' "${HOST}-${PORT}" | tr -c 'A-Za-z0-9._-' '_')"
-      LOCK_FILE="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/7dtd-loadgen-${lock_tag}.lock"
-      exec 9>"$LOCK_FILE"
-      if ! flock -n 9; then
-        echo "ERROR: another loadgen run holds $LOCK_FILE (target $HOST:$PORT)." >&2
-        echo "       A second cohort would kick-rejoin the first (identical bot names)," >&2
-        echo "       double the telnet world pressure, and clobber shared output files." >&2
-        echo "       Wait for it to finish, stop it, or set LOADGEN_ALLOW_OVERLAP=1." >&2
-        exit 4
-      fi
-    fi
-    ;;
+  join|probe) acquire_run_lock "$HOST" "$PORT" 9 "cohort" ;;
 esac
 
 # The runner's own status goes to stderr: the client's stdout is the run

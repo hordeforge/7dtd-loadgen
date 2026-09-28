@@ -177,6 +177,30 @@ TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 TELNET_PORT_STOCK="${COMPARE_TELNET_PORT_STOCK:-8081}"
 TELNET_PORT_ZDTD="${COMPARE_TELNET_PORT_ZDTD:-8082}"
 
+# Overlap guard (rerun safety), held for the WHOLE comparison rather than
+# around each boot. Both sides start with a step a second comparison would
+# undo: the stock side's start_dedicated_prefab.sh opens with
+# `pkill -x 7DaysToDieServe` and the zdtd side binds the same 27120/8082 pair,
+# and both sides rm -rf and rewrite the same evidence dir. A lock released when
+# the server comes up only excludes a second BOOT; the first run's server then
+# dies mid-measurement and both report numbers from a world neither measured.
+# Same lock file, tag and exit code as run_loadgen.sh and scripts/runlock.py, so
+# a comparison and a cohort or a Python profile exclude each other. The lanes
+# this script starts itself pass LOADGEN_ALLOW_OVERLAP=1 below: the lock is
+# already held here, and they would otherwise refuse their own parent.
+#   fd 9 = stock join port, fd 8 = zdtd join port (one lock per side, both held)
+# Bots speak LiteNetLib, so both are the server port + 2.
+STOCK_SERVER_PORT="$(sed -n 's/.*name="ServerPort" value="\([0-9]*\)".*/\1/p' \
+  "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
+STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
+ZDTD_SERVER_PORT="${RE_SUT_PORT:-27120}"
+case "$SUTS" in
+  *stock*) acquire_run_lock "$HOST" "$((STOCK_SERVER_PORT + 2))" 9 "comparison" ;;
+esac
+case "$SUTS" in
+  *zdtd*) acquire_run_lock "$HOST" "$((ZDTD_SERVER_PORT + 2))" 8 "comparison" ;;
+esac
+
 echo "=== compare scenario '$SCENARIO_ID' on: $SUTS (count=$COUNT actions=$ACTIONS) ==="
 
 # One id per invocation, stamped into every side's run-meta.json. A comparison
@@ -224,9 +248,8 @@ for sut in $SUTS; do
       # game client's "Connect to IP" port; a bot connect there fails.
       # POSIX sed, not GNU-grep -oP: busybox/BSD grep have no -P, and losing
       # this lookup would silently fall back to the stale default port below.
-      STOCK_SERVER_PORT="$(sed -n 's/.*name="ServerPort" value="\([0-9]*\)".*/\1/p' \
-        "$ROOT/scripts/serverconfig_loadgen.xml" | head -1)"
-      STOCK_SERVER_PORT="${STOCK_SERVER_PORT:-26900}"
+      # STOCK_SERVER_PORT is resolved once at the top, where the overlap lock
+      # is keyed on the same port.
       # Admin console must actually bind: without it every telnet axis is a
       # silent phantom. Fail loudly when the port is already taken.
       TELNET_PORT="$TELNET_PORT_STOCK"
@@ -238,6 +261,7 @@ for sut in $SUTS; do
       RE_WORLD_NAME="$WORLD_NAME" RE_GAME_NAME="${SCENARIO_ID}_stock" \
         RE_DEDICATED_USERDATA="$USERDATA" RE_MAX_ZOMBIES=16 \
         RE_TELNET_PORT="$TELNET_PORT" \
+        LOADGEN_ALLOW_OVERLAP=1 \
         bash "$ROOT/scripts/start_dedicated_prefab.sh" >"$run_dir/boot.log" 2>&1 &
       BOOT_PID=$!
       # Arm the cleanup trap BEFORE the ready wait: the boot script writes the
@@ -316,7 +340,7 @@ EOF
         echo "  ERROR: admin telnet port $TELNET_PORT already in use (unrelated service?); pick free ports via COMPARE_TELNET_PORT_STOCK/COMPARE_TELNET_PORT_ZDTD" >&2
         exit 1
       fi
-      RE_SUT_PORT=27120 RE_SUT_ADMIN_PORT="$TELNET_PORT" RE_SUT_WORLD="$run_dir/world" \
+      RE_SUT_PORT="$ZDTD_SERVER_PORT" RE_SUT_ADMIN_PORT="$TELNET_PORT" RE_SUT_WORLD="$run_dir/world" \
         RE_SUT_WORLD_NAME="$WORLD_NAME" RE_SUT_SERVERCONFIG="$ZDTD_CFG" \
         RE_SUT_LOGFILE="$run_dir/server.log" \
         bash "$ROOT/scripts/sut_zdtd.sh" >"$run_dir/boot.log" 2>&1 &
@@ -340,7 +364,7 @@ EOF
         exit 1
       fi
       echo "  zdtd ready (challenge line in server.log)"
-      BOT_PORT=$((27120 + 2))  # zdtd binds LiteNetLib on --port + 2
+      BOT_PORT=$((ZDTD_SERVER_PORT + 2))  # zdtd binds LiteNetLib on --port + 2
       TELNET_CMD="gettime,getgamestat,listents,listplayers,gettime"
       ;;
   esac
@@ -405,6 +429,7 @@ EOF
     LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
     LOADGEN_TELNET_HOST="$HOST" LOADGEN_TELNET_PORT="$TELNET_PORT" \
     LOADGEN_TELNET_PASSWORD="$TELNET_PASSWORD" \
+    LOADGEN_ALLOW_OVERLAP=1 \
     bash "$ROOT/scripts/run_loadgen.sh" >"$run_dir/loadgen.log" 2>&1 &
   CLIENT_PID=$!
   joined=0

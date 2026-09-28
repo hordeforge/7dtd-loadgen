@@ -49,6 +49,8 @@ esac
 
 # shellcheck source=scripts/python_env.sh
 source "$ROOT/scripts/python_env.sh"
+# shellcheck source=scripts/harness_lib.sh
+source "$ROOT/scripts/harness_lib.sh"
 DS_DIR="${SEVENDTD_SERVER_DIR:-$HOME/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server}"
 USERDATA="${RE_DEDICATED_USERDATA:-$HOME/.cache/7dtd-loadgen}"
 # RWG = generate; otherwise must exist under Data/Worlds/
@@ -105,19 +107,7 @@ JOIN_PORT="$(sed -n 's/.*name="ServerPort" value="\([0-9]*\)".*/\1/p' "$CONFIG_S
 JOIN_PORT="${JOIN_PORT:-26900}"
 JOIN_PORT=$((JOIN_PORT + 2))
 LOCK_HOST="${RE_LOCK_HOST:-127.0.0.1}"
-if [[ "${LOADGEN_ALLOW_OVERLAP:-0}" != "1" ]] && command -v flock >/dev/null 2>&1; then
-  lock_tag="$(printf '%s' "${LOCK_HOST}-${JOIN_PORT}" | tr -c 'A-Za-z0-9._-' '_')"
-  LOCK_FILE="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/7dtd-loadgen-${lock_tag}.lock"
-  exec 9>"$LOCK_FILE"
-  if ! flock -n 9; then
-    echo "ERROR: another loadgen run holds $LOCK_FILE (target $LOCK_HOST:$JOIN_PORT)." >&2
-    echo "       Booting here would stop that run's dedicated mid-measurement," >&2
-    echo "       and both would report numbers from a world neither measured." >&2
-    echo "       Wait for it to finish, stop it, or set LOADGEN_ALLOW_OVERLAP=1" >&2
-    echo "       if you meant it." >&2
-    exit 4
-  fi
-fi
+acquire_run_lock "$LOCK_HOST" "$JOIN_PORT" 9 "dedicated boot"
 
 if [[ ! -f "$SBCONFIG" ]]; then
   echo "ERROR: serverconfig renderer not found: $SBCONFIG (set SANDBOX_ROOT)" >&2
@@ -281,7 +271,7 @@ cd "$DS_DIR"
 # seconds later. Holding it across the launch would make RE_DEDICATED_FOREGROUND=1
 # (the mode that never returns) exclude every join against its own server for
 # as long as the server runs.
-exec 9>&-
+release_run_lock 9
 if [[ "${RE_DEDICATED_FOREGROUND:-0}" == "1" ]]; then
   echo "starting in foreground (RE_DEDICATED_FOREGROUND=1)"
   exec ./7DaysToDieServer.x86_64 \
