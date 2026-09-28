@@ -98,6 +98,17 @@ lab session. Two rules keep their identifiers out of the kept evidence:
 - `tools/sut_capture.py` keeps the player count only; it never copies a
   name or an entity id into `surface.json`.
 
+## Console commands in the snapshot driver
+
+`tools/sut_telnet.py` is a health probe as well as a snapshot capture, and the
+harness re-runs it on every probe, so any world-changing command it sends is
+sent again on each pass. It therefore refuses the mutating console verbs
+(`spawnentity`, `givexp`, `giveitem`, `kick`, `kickall`, `ban`, `save`, `time`,
+`exec`, ...) before the console socket is opened, and reports exit 2 naming the
+commands it dropped. `--allow-mutating` is the opt-in for a run that really
+means to apply them; the profiling lanes that spawn entities do not use this
+driver.
+
 The client log follows the same rule for chat: `CHAT chars=<n>` and
 `DEATH ... via=chat chars=<n>` record that a message arrived and how long it
 was, never the text, which is player-typed free text plus the names the server

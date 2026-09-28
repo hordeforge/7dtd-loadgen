@@ -230,6 +230,13 @@ def spawn_endgame(target):
     cur = zombies_alive()
     stalls = 0
     telnet_fails = 0
+    # A round that did not move the entity count is not proof that its batch
+    # failed: the count is read from a fresh APM snapshot, and an autosave or a
+    # late snapshot can report the pre-round number. Re-sending the full batch
+    # then stacks a second copy of every entity in it on a server nobody
+    # despawns, so a stalled round is followed by a single-entity probe round
+    # and the count gets a chance to catch up.
+    probe_next_round = False
     while cur < target and stalls < 4:
         ids = player_ids()
         if not ids:  # listplayers can time out under load; retry before believing it
@@ -258,15 +265,18 @@ def spawn_endgame(target):
         # ~1 cycle of the mix distributed across players per round.
         cmds = []
         mi = 0
-        per = max(1, (target - cur) // max(1, len(ids)) // 4 + 1)
+        per = 1 if probe_next_round else max(1, (target - cur) // max(1, len(ids)) // 4 + 1)
         for pid in ids:
             for _ in range(per):
                 cmds.append(f"spawnentity {pid} {ENDGAME_MIX[mi % len(ENDGAME_MIX)]}")
                 mi += 1
         telnet(cmds, settle=4)
         new = zombies_alive(len(ids))
-        log(f"  spawn: alive={new}/{target}")
+        log(f"  spawn: alive={new}/{target}" + (" (probe round)" if probe_next_round else ""))
         stalls = stalls + 1 if new <= cur + 2 else 0
+        # Only a stalled round forces the next one to probe; a round that moved
+        # the count resumes full batches.
+        probe_next_round = new <= cur + 2
         cur = new
     return cur
 

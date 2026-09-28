@@ -5,6 +5,8 @@ Also covers transcript redaction of per-player identifiers."""
 
 from __future__ import annotations
 
+import sys
+
 import sut_telnet
 
 
@@ -77,3 +79,45 @@ def test_entity_class_names_are_not_pseudonymized():
     assert "EntityZombie" in out
     assert "player-" not in out
 
+
+
+def test_read_commands_are_not_mutating():
+    for cmd in ("gettime", "getgamestat", "listents", "listplayers", "apm dump",
+                "GETTIME", "  listplayers  "):
+        assert not sut_telnet.mutating_command(cmd), cmd
+
+
+def test_world_changing_commands_are_mutating():
+    for cmd in ("spawnentity 12 zombieBoe", "givexp 12 5000000", "kickall",
+                "kick Steve", "KICKALL", "save", "time 1 0", "ban 7656119 10 Steve"):
+        assert sut_telnet.mutating_command(cmd), cmd
+
+
+def test_mutating_command_is_refused_before_the_socket_opens(capsys, monkeypatch):
+    def _boom(*_a, **_k):
+        raise AssertionError("console was opened for a refused command")
+
+    monkeypatch.setattr(sut_telnet.socket, "create_connection", _boom)
+    monkeypatch.setattr(sys, "argv", ["sut_telnet", "127.0.0.1", "8081",
+                                      "--commands", "gettime,spawnentity 12 zombieBoe"])
+    assert sut_telnet.main() == 2
+    assert "refusing world-changing commands" in capsys.readouterr().err
+
+
+def test_allow_mutating_opts_in(monkeypatch, capsys):
+    sent: list[str] = []
+
+    class FakeSock:
+        def settimeout(self, _timeout): pass
+        def sendall(self, data): sent.append(data.decode())
+        def close(self): pass
+
+    monkeypatch.setattr(sut_telnet.socket, "create_connection",
+                        lambda *_a, **_k: FakeSock())
+    monkeypatch.setattr(sut_telnet, "drain", lambda _sock, _deadline: b"banner")
+    monkeypatch.setattr(sys, "argv", ["sut_telnet", "127.0.0.1", "8081",
+                                      "--commands", "spawnentity 12 zombieBoe",
+                                      "--allow-mutating", "--settle-ms", "0"])
+    assert sut_telnet.main() == 0
+    assert "spawnentity 12 zombieBoe\n" in sent
+    capsys.readouterr()

@@ -155,3 +155,81 @@ def test_overlap_guard_passes_a_free_target_and_stops_at_sdk_check(tmp_path):
     assert r.returncode != 4, out
     assert "another loadgen run holds" not in out
     assert "dotnet SDK not found" in out
+
+
+# --- bench_stock.sh lap reuse ------------------------------------------------
+
+BENCH = ROOT / "scripts" / "bench_stock.sh"
+
+
+def _bench_env(out: Path, force: str | None = None) -> dict[str, str]:
+    env = os.environ.copy()
+    env["BENCH_OUT"] = str(out)
+    if force is not None:
+        env["BENCH_LAP_FORCE"] = force
+    else:
+        env.pop("BENCH_LAP_FORCE", None)
+    return env
+
+
+def _busy_port_env(tmp_path: Path, out: Path) -> dict[str, str]:
+    """Env whose pre-flight stops at the busy-admin-port check: a stub `ss`
+    reports the bench admin port as taken, so the script exits 1 there instead
+    of booting a dedicated server. Everything before that point (the lap guard)
+    has already run."""
+    env = _bench_env(out, "1")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    ss = bin_dir / "ss"
+    ss.write_text(
+        "#!/usr/bin/env python3\n"
+        "import os, sys\n"
+        "if '8084' in os.environ.get('BENCH_ADMIN_PORT', ''):\n"
+        "    sys.stdout.write('tcp LISTEN 0 128 127.0.0.1:8084 0.0.0.0:*\\n')\n",
+        encoding="utf-8")
+    ss.chmod(0o755)
+    env["PATH"] = f"{bin_dir}{os.pathsep}{env['PATH']}"
+    env["BENCH_ADMIN_PORT"] = "8084"
+    return env
+
+
+def test_bench_refuses_to_reuse_a_measured_lap(tmp_path):
+    out = tmp_path / "lap1"
+    keep = out / "userdata" / "Saves" / "Navezgane" / "bench_stock_lap1"
+    keep.mkdir(parents=True)
+    evidence = out / "bench-stock.md"
+    evidence.write_text("committed lap report\n", encoding="utf-8")
+
+    r = subprocess.run([BASH, str(BENCH), "--lap", "1"], env=_bench_env(out),
+                       capture_output=True, text=True, timeout=60, check=False)
+
+    # Refuse, loudly, before the save or the APM dir is touched: a rerun that
+    # reused them would measure the previous lap's world.
+    assert r.returncode == 2, (r.stdout, r.stderr)
+    assert "already exists" in r.stderr
+    # The prior lap's evidence and save are untouched.
+    assert evidence.read_text(encoding="utf-8") == "committed lap report\n"
+    assert keep.is_dir()
+
+
+def test_bench_force_replaces_the_lap_rather_than_merging_into_it(tmp_path):
+    out = tmp_path / "lap1"
+    stale_session = out / "bench" / "apm" / "session_stale" / "summary.json"
+    stale_session.parent.mkdir(parents=True)
+    stale_session.write_text("{}", encoding="utf-8")
+    stale = out / "bench" / "stats.json"
+    stale.write_text("{}", encoding="utf-8")
+
+    r = subprocess.run([BASH, str(BENCH), "--lap", "1"],
+                       env=_busy_port_env(tmp_path, out),
+                       capture_output=True, text=True, timeout=60, check=False)
+
+    # With the force flag the lap converges to an empty dir, so the run starts
+    # from a fresh save and cannot inherit the stale APM session dir.
+    assert not stale_session.exists(), (r.stdout, r.stderr)
+    assert not stale.exists()
+    assert out.is_dir()
+    # It got past the guard and into the pre-flight, which the stubbed busy
+    # admin port ends.
+    assert r.returncode == 1, (r.stdout, r.stderr)
+    assert "already in use" in r.stderr

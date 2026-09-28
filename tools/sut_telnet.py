@@ -13,6 +13,7 @@ the process table.
 
 Usage:
   sut_telnet.py <host> <port> [--commands gettime,listents,listplayers] [--out PATH]
+  sut_telnet.py <host> <port> --commands spawnentity,0,zombieBoe --allow-mutating
 """
 
 import argparse
@@ -32,6 +33,29 @@ BRACKET_PLAYER_NAME = re.compile(r"(\[type=EntityPlayer[^,\]]*,\s*name=)([^,\]]+
 # listplayers rows: "0. id=171, <name>, pos=(...)".
 ROW_NAME = re.compile(r"^(\s*\d+\. id=\d+, )(.+?)(, pos=)")
 REDACTED = "redacted"
+
+# Console verbs whose second execution changes the world in a way the first
+# did not: they create entities, grant progress, evict or ban players, move the
+# clock, or write the save. This driver is a health probe and a snapshot
+# capture, and both re-run it against the same server, so an unguarded mutating
+# command repeats its effect on every probe. Reject them by name; --allow-mutating
+# is the opt-in for the profiling lanes that really mean to spawn.
+MUTATING_VERBS = frozenset({
+    "addxp", "ban", "cexec", "cm", "cmds", "exec", "giveitem", "givexp",
+    "kick", "kickall", "kill", "remove", "save", "shutdown", "spawnentity",
+    "teleport", "time", "tp", "unban",
+})
+
+
+def mutating_command(cmd: str) -> bool:
+    """True when the console command's verb is in MUTATING_VERBS.
+
+    Matched on the leading token only, case-insensitively, so an argument value
+    ("kick Steve") cannot smuggle a verb past the check.
+    """
+    verb = cmd.strip().split(maxsplit=1)
+    return bool(verb) and verb[0].lower() in MUTATING_VERBS
+
 
 
 def redact_identities(text: str) -> str:
@@ -105,7 +129,22 @@ def main():
                     help="extra sleep before the LAST command (widens the interval "
                          "between two repeated commands, e.g. gettime, so rate "
                          "measurements are not quantized to whole game-minutes)")
+    ap.add_argument("--allow-mutating", action="store_true",
+                    help="permit world-changing console commands (spawnentity, "
+                         "givexp, kick, save, time, ...); refused by default "
+                         "because this driver re-runs as a health probe")
     args = ap.parse_args()
+
+    cmds = [c.strip() for c in args.commands.split(",") if c.strip()]
+    refused = [c for c in cmds if mutating_command(c)]
+    if refused and not args.allow_mutating:
+        # Refused before the socket opens: a rejected run has not yet put one
+        # copy of the command on the server.
+        print(f"sut_telnet: refusing world-changing commands {refused}; "
+              "pass --allow-mutating if the run really means to apply them "
+              "(this driver is a health probe and repeats on every probe)",
+              file=sys.stderr)
+        return 2
 
     password = resolve_password()
 
@@ -135,6 +174,8 @@ def main():
                 deadline = time.monotonic() + 10
                 transcript += drain(sock, deadline)
 
+        # A failed banner/password handshake leaves rc non-zero; running the
+        # command list then would send them into a session that is not ours.
         cmds = [] if rc != 0 else [c.strip() for c in args.commands.split(",") if c.strip()]
         for idx, cmd in enumerate(cmds):
             if args.tail_sleep > 0 and idx == len(cmds) - 1:

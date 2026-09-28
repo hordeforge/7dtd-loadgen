@@ -195,7 +195,15 @@ make bench-report             # consolidate all laps -> bench-stock.md/.json
 BENCH_LAPS_ONLY=1 make bench-stock   # fast smoke: bench profile only
 BENCH_ADMIN_PORT=8084 make bench-stock   # admin telnet (docker owns 8081/8082)
 COMPARE_APM=0 make bench-stock       # skip the cost capture
+BENCH_LAP_FORCE=1 make bench-stock LAP=1   # replace an already-measured lap
 ```
+
+A lap number is one measured run, so `bench-stock` refuses to reuse
+`workspace/bench/lap<N>`: booting it again would load the same save (the
+previous lap's entities, claims and player profiles) and add a second APM
+session to the dir, so the rerun would measure the wrong world and
+`bench-report` would summarize whichever session sorts last. `BENCH_LAP_FORCE=1`
+replaces the lap instead of merging into it.
 
 The bench client mode: `--profile bench` presets the cohort (16 bots,
 15s ramp, 30s warm-up, 60s window, no telnet world pressure) and

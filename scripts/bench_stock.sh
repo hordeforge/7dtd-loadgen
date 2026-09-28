@@ -12,6 +12,8 @@
 #         COMPARE_APM        0 disables the APM capture (default 1)
 #         COMPARE_APM_SECONDS  capture size (default 30)
 #         BENCH_LAPS_ONLY    1 runs only the bench profile (CI-ish smoke)
+#         BENCH_OUT          evidence dir override (default workspace/bench/lap<N>)
+#         BENCH_LAP_FORCE    1 replaces an existing lap dir instead of refusing
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,7 +32,22 @@ APM_SECONDS="${COMPARE_APM_SECONDS:-30}"
 APM_PROJECT="$ROOT/../7dtd-server-apm"
 TELNET_PASSWORD="${COMPARE_TELNET_PASSWORD:-retest}"
 BENCH_LAPS_ONLY="${BENCH_LAPS_ONLY:-0}"
-OUT="$ROOT/workspace/bench/lap$LAP"
+OUT="${BENCH_OUT:-$ROOT/workspace/bench/lap$LAP}"
+# A lap number is one measured run. Reusing it would boot the SAME save
+# (bench_stock_lap<LAP> under this dir's userdata) and append a second apm
+# session_*, so the rerun would measure a world still carrying the previous
+# lap's entities and bench_report.py would silently summarize whichever session
+# sorts last. Replace the lap, never merge into it; the operator opts in to
+# discarding the old evidence by naming the force flag.
+if [[ -e "$OUT" ]]; then
+  if [[ "${BENCH_LAP_FORCE:-0}" != "1" ]]; then
+    echo "ERROR: $OUT already exists (lap $LAP already measured)." >&2
+    echo "       Rerunning it would reuse its save and corrupt the comparison." >&2
+    echo "       Pick another --lap, or set BENCH_LAP_FORCE=1 to replace it." >&2
+    exit 2
+  fi
+  rm -rf "$OUT"
+fi
 mkdir -p "$OUT"
 
 # A harness that dies mid-lap (set -e abort, SIGINT) must not leave the booted
