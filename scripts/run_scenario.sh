@@ -112,12 +112,10 @@ if [[ "${LOADGEN_MODE}" == "self-test-join" ]]; then
   if [[ -n "${LOADGEN_SCENARIO_ID:-}" ]]; then
     SCEN_ARGS+=(--scenario-id "$LOADGEN_SCENARIO_ID")
   fi
-  if [[ -x "$EXE" ]]; then
-    "$EXE" --self-test-join --actions "$ACTIONS" --seed "$SEED" "${SCEN_ARGS[@]}" "${MANIFEST_ARGS[@]}"
-  else
-    dotnet exec "$ROOT/src/LoadGen/bin/Release/net8.0/7dtd-loadgen.dll" \
-      --self-test-join --actions "$ACTIONS" --seed "$SEED" "${SCEN_ARGS[@]}" "${MANIFEST_ARGS[@]}"
-  fi
+  # No dotnet-exec fallback: the make build above either produced the apphost
+  # or exited non-zero under set -e, and make selftest invokes the same path
+  # with no fallback either.
+  "$EXE" --self-test-join --actions "$ACTIONS" --seed "$SEED" "${SCEN_ARGS[@]}" "${MANIFEST_ARGS[@]}"
   exit $?
 fi
 
