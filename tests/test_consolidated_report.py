@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from consolidated_report import collect_loadgen, collect_playtest, render
+from consolidated_report import DIFF_SCHEMA, collect_loadgen, collect_playtest, render
 
 
 def _write(path: Path, data: dict) -> None:
@@ -33,13 +33,16 @@ def test_clean_deltas_and_one_side(tmp_path):
     deltas = tmp_path / "lg" / "scen-deltas"
     _write(deltas / "diff.json", {"compared": True, "findings": ["clock rate differs"]})
     one = tmp_path / "lg" / "scen-one"
-    _write(one / "diff.json", {"compared": False, "ran": "stock", "missing": "zdtd"})
+    _write(one / "diff.json", {"schema": DIFF_SCHEMA, "compared": False,
+                               "ran": ["stock"], "missing": ["zdtd"]})
 
     rows = collect_loadgen(tmp_path / "lg")
     by_id = {r["id"]: r for r in rows}
     assert by_id["scen-clean"]["verdict"] == "CLEAN"
     assert by_id["scen-deltas"]["verdict"] == "DELTAS"
     assert by_id["scen-one"]["verdict"] == "ONE-SIDE"
+    assert by_id["scen-one"]["ran"] == ["stock"]
+    assert by_id["scen-one"]["missing"] == ["zdtd"]
 
     # playtest: one CLEAN suite, one DELTAS (status delta).
     pt = tmp_path / "pt"
@@ -57,8 +60,43 @@ def test_clean_deltas_and_one_side(tmp_path):
 
     md = render(rows + prows)
     assert "CLEAN" in md and "DELTAS" in md and "ONE-SIDE" in md
-    assert "scen-one" in md and "missing: zdtd" in md
+    assert "scen-one" in md and "missing: ['zdtd']" in md
     assert "delta c1" in md
+
+
+def test_legacy_scalar_sides_read_as_the_list_shape(tmp_path):
+    """diff.json written before the sides became lists names them as a bare
+    string. Committed evidence keeps that shape, so the reader coerces it at
+    the boundary and classifies it exactly as the list form."""
+    lg = tmp_path / "lg"
+    _write(lg / "scen-legacy" / "diff.json",
+           {"compared": False, "ran": "stock", "missing": "zdtd"})
+    _write(lg / "scen-listed" / "diff.json",
+           {"schema": DIFF_SCHEMA, "compared": False,
+            "ran": ["stock"], "missing": ["zdtd"]})
+
+    rows = collect_loadgen(lg)
+    by_id = {r["id"]: r for r in rows}
+    assert by_id["scen-legacy"]["ran"] == ["stock"]
+    assert by_id["scen-legacy"]["missing"] == ["zdtd"]
+    assert by_id["scen-legacy"]["verdict"] == "ONE-SIDE"
+    # The two shapes are indistinguishable downstream, table included.
+    md = render([by_id["scen-legacy"]])
+    assert "scen-legacy | ONE-SIDE | ran | n/a | n/a | 0 |" in md
+    assert "ran: ['stock'] | missing: ['zdtd']" in md
+
+
+def test_a_diff_from_another_report_revision_is_unreadable(tmp_path):
+    """A diff.json stamped with a schema this reader does not implement has
+    different field meanings. Scoring it under this revision's meanings would
+    report a verdict from a document it cannot read."""
+    lg = tmp_path / "lg"
+    _write(lg / "scen-future" / "diff.json",
+           {"schema": "7dtd.loadgen.diff.v2", "compared": True, "findings": []})
+
+    rows = collect_loadgen(lg)
+    assert [r["verdict"] for r in rows] == ["UNREADABLE"]
+    assert "7dtd.loadgen.diff.v2" in rows[0]["findings"][0]
 
 
 def test_no_evidence_is_an_error(tmp_path):

@@ -67,6 +67,21 @@ def as_count(value: object) -> int | None:
     return count if count is not None and count >= 0 else None
 
 
+def as_sides(value: object) -> list[str]:
+    """Which comparison sides a capture names, always as a list.
+
+    diff.json names sides in two shapes: the one-sided path wrote a bare string
+    ("stock"), the stale and consolidated paths write a list. Every reader
+    downstream works on the list form, so the scalar is accepted here, at the
+    boundary, and nowhere else.
+    """
+    if isinstance(value, str):
+        return [value] if value else []
+    if not isinstance(value, list):
+        return []
+    return [s for s in value if isinstance(s, str) and s]
+
+
 def as_cell(value: object) -> str:
     """A value from a captured JSON file as one renderable table cell.
 

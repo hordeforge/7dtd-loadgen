@@ -135,6 +135,14 @@ puts in death messages.
 
 ## Status semantics
 
+`diff.json` stamps `schema: 7dtd.loadgen.diff.v1`, the same versioned id the
+other evidence files carry. `ran` and `missing` always name sides as a list,
+including the one-sided case, so one field has one shape for every reader.
+`consolidated_report.py` reads a diff written before the id was stamped
+(no `schema` key, sides as a bare string) as v1, and lists a diff stamped with
+any other id as UNREADABLE rather than scoring it with the wrong field
+meanings.
+
 - Both sides ran -> `compared: true` in diff.json, findings list every axis
   delta.
 - One side only -> `compared: false`, REPORT says NOT COMPARED. A scenario is

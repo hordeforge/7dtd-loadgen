@@ -18,6 +18,11 @@ A difference is a FINDING to triage (zdtd bug vs harness artifact vs known
 divergence), never a pass to fake. If only one side ran, the scenario is
 reported as NOT COMPARED, never as compared.
 
+diff.json carries DIFF_SCHEMA, the same versioned id every other evidence
+file in this repo stamps. A capture from a different revision of the report
+is listed as UNREADABLE by consolidated_report.py rather than read with this
+revision's field meanings.
+
 Usage: python3 tools/sut_report.py <scenario_dir>
 """
 
@@ -28,6 +33,8 @@ import re
 import sys
 
 from json_shape import as_count, as_dict, as_int, as_number
+
+DIFF_SCHEMA = "7dtd.loadgen.diff.v1"
 
 # Locale-independent text boundary: the rendered text comes from UTF-8 JSON
 # evidence, but a C-locale runner gives stdout an ASCII codec and print()
@@ -217,15 +224,15 @@ def main():
         lines.append(f"- re-run both sides together to compare them: "
                      f"`./scripts/compare_sut.sh --scenario {scenario} --sut all`\n")
         report = "\n".join(lines) + "\n"
-        with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8", newline="\n") as fh:
-            fh.write(report)
-        with open(os.path.join(out_dir, "diff.json"), "w", encoding="utf-8", newline="\n") as fh:
-            json.dump({"scenario": scenario, "compared": False, "stale": True,
-                       "ran": ["stock", "zdtd"],
-                       "runIds": {"stock": sid, "zdtd": zid},
-                       "findings": [(f"sides are from different invocations "
-                                     f"(stock={sid}, zdtd={zid}); re-run --sut all")]},
-                      fh, indent=1, sort_keys=True)
+        rc = write_outputs(out_dir, report,
+                           {"schema": DIFF_SCHEMA, "scenario": scenario,
+                            "compared": False, "stale": True,
+                            "ran": ["stock", "zdtd"],
+                            "runIds": {"stock": sid, "zdtd": zid},
+                            "findings": [(f"sides are from different invocations "
+                                          f"(stock={sid}, zdtd={zid}); re-run --sut all")]})
+        if rc:
+            return rc
         print(report, file=sys.stderr)
         return 0
 
@@ -265,8 +272,8 @@ def main():
             lines.append(f"- join: {join.get('pass')} PASS / {join.get('fail')} FAIL")
         rc = write_outputs(
             out_dir, "\n".join(lines) + "\n",
-            {"scenario": scenario, "compared": False,
-             "ran": ran, "missing": "zdtd" if ran == "stock" else "stock",
+            {"schema": DIFF_SCHEMA, "scenario": scenario, "compared": False,
+             "ran": [ran], "missing": ["zdtd" if ran == "stock" else "stock"],
              "findings": []})
         if rc:
             return rc
@@ -478,7 +485,8 @@ def main():
     report = "\n".join(lines)
     rc = write_outputs(
         out_dir, report,
-        {"scenario": scenario, "compared": True, "findings": findings, "axes": axes})
+        {"schema": DIFF_SCHEMA, "scenario": scenario, "compared": True,
+         "findings": findings, "axes": axes})
     if rc:
         return rc
     print(report)

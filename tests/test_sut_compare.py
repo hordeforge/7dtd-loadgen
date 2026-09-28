@@ -245,8 +245,9 @@ def test_not_compared_when_one_side_missing(tmp_path):
     assert r.returncode == 0, r.stderr
     diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
     assert diff["compared"] is False
-    assert diff["ran"] == "stock"
-    assert diff["missing"] == "zdtd"
+    assert diff["ran"] == ["stock"]
+    assert diff["missing"] == ["zdtd"]
+    assert diff["schema"] == "7dtd.loadgen.diff.v1"
     assert "NOT COMPARED" in (tmp_path / "scenario" / "REPORT.md").read_text(encoding="utf-8")
 
 
@@ -266,7 +267,7 @@ def test_corrupt_surface_json_treated_as_missing(tmp_path):
     assert "NOT COMPARED" in report
     diff = json.loads((tmp_path / "scenario" / "diff.json").read_text(encoding="utf-8"))
     assert diff["compared"] is False
-    assert diff["missing"] == "stock"
+    assert diff["missing"] == ["stock"]
 
 
 def test_clock_rate_prefers_monotonic_markers(tmp_path):

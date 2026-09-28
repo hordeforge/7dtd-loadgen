@@ -30,7 +30,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from json_shape import as_cell, as_dict, as_list, as_number
+from json_shape import as_cell, as_dict, as_list, as_number, as_sides
 
 # Locale-independent text boundary: the rendered text comes from UTF-8 JSON
 # evidence, but a C-locale runner gives stdout an ASCII codec and print()
@@ -44,6 +44,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # Verdict labels in the order the header line reports them.
 VERDICT_ORDER = ("CLEAN", "DELTAS", "ONE-SIDE", "UNREADABLE", "STALE")
+
+# The diff.json contract this reader understands. Evidence written before the
+# id was stamped carries none and is read as this version; evidence stamped
+# with any other id comes from a different report revision, whose field
+# meanings are not these, so it is listed as UNREADABLE instead of scored.
+DIFF_SCHEMA = "7dtd.loadgen.diff.v1"
 
 
 def _load_json(p: Path) -> tuple[dict | None, str | None]:
@@ -103,6 +109,13 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
                 "summary": None,
             })
             continue
+        schema = d.get("schema")
+        if schema is not None and schema != DIFF_SCHEMA:
+            err = (f"{scenario_dir.name}/diff.json: schema {schema!r}, "
+                   f"this report reads {DIFF_SCHEMA}")
+            print(f"WARN: {err}", file=sys.stderr)
+            rows.append(_unreadable_row("loadgen", scenario_dir.name, err))
+            continue
         if d.get("stale"):
             # Both sides hold evidence, but from different invocations: a
             # one-sided rerun replaced one of them. That is neither a comparison
@@ -130,8 +143,8 @@ def collect_loadgen(compare_root: Path) -> list[dict]:
             "tool": "loadgen",
             "id": scenario_dir.name,
             "compared": bool(d.get("compared")),
-            "ran": d.get("ran"),
-            "missing": d.get("missing"),
+            "ran": as_sides(d.get("ran")),
+            "missing": as_sides(d.get("missing")),
             "verdict": verdict,
             "findings": findings,
             "summary": None,
@@ -186,8 +199,8 @@ def collect_playtest(playtest_root: Path) -> list[dict]:
             "tool": "playtest",
             "id": suite_dir.name,
             "compared": bool(d.get("compared")),
-            "ran": d.get("ran"),
-            "missing": d.get("missing"),
+            "ran": as_sides(d.get("ran")),
+            "missing": as_sides(d.get("missing")),
             "verdict": verdict,
             "findings": findings,
             "deltas": deltas,
@@ -223,9 +236,8 @@ def render(rows: list[dict]) -> str:
             wall_cell = f"{fmt_wall(wall.get('stock'))} / {fmt_wall(wall.get('zdtd'))}"
         else:
             ran = r["ran"]
-            ran_sides = [ran] if isinstance(ran, str) else (ran or [])
-            stock_cell = "ran" if r["compared"] or "stock" in ran_sides else "n/a"
-            zdtd_cell = "ran" if r["compared"] or "zdtd" in ran_sides else "n/a"
+            stock_cell = "ran" if r["compared"] or "stock" in ran else "n/a"
+            zdtd_cell = "ran" if r["compared"] or "zdtd" in ran else "n/a"
             wall_cell = "n/a"
         lines.append(f"| {r['tool']} | {r['id']} | {r['verdict']} | {stock_cell} "
                      f"| {zdtd_cell} | {wall_cell} | {len(r['findings'])} |")
