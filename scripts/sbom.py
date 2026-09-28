@@ -9,6 +9,11 @@ it: stdlib TOML and json, one pass, deterministic output.
 
 Only the resolved versions are listed. A lock file has no license metadata, so
 the license section stays empty rather than guessing from a name.
+
+Scope separates the two NuGet populations. A package the shipped client
+declares is `required`: it is compiled into the released binary, and a
+consumer triaging an advisory has to see it. Everything else restores into the
+test project and is `optional`.
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import re
 import sys
 import tomllib
 import uuid
@@ -27,6 +33,9 @@ SPEC_VERSION = "1.6"
 BOM_FORMAT = "CycloneDX"
 LOCK_TOML = ROOT / "uv.lock"
 NUGET_LOCKS = sorted((ROOT / "src").glob("*/packages.lock.json"))
+PACKAGE_REFERENCE = re.compile(r"<PackageReference\b[^>]*>")
+ATTRIBUTE = re.compile(r'([A-Za-z]+)="([^"]*)"')
+EXACT_PIN = re.compile(r"^\[([^,\]]+)\]$")
 # Namespace for the deterministic serialNumber: uuid5 of the project's own
 # UUID, so the same tree always yields the same document and a re-run diff is
 # empty. uuid.NAMESPACE_DNS is arbitrary but fixed.
@@ -65,7 +74,42 @@ def pypi_components(lock: dict[str, Any]) -> list[dict[str, Any]]:
     return components
 
 
-def nuget_components(lock_path: Path) -> list[dict[str, Any]]:
+def client_packages() -> dict[str, tuple[str, str]]:
+    """Package id -> (id, pinned version) for the shipped client's own references.
+
+    Read from the Exe project rather than named, so a project rename or a
+    second client moves the set with it. A tree with no Exe project raises:
+    every NuGet component would otherwise fall back to `optional`, which is
+    how the one dependency that actually ships got mislabelled as test-only.
+    """
+    packages: dict[str, tuple[str, str]] = {}
+    clients = 0
+    for csproj in sorted((ROOT / "src").glob("*/*.csproj")):
+        text = csproj.read_text(encoding="utf-8")
+        if "<OutputType>Exe</OutputType>" not in text:
+            continue
+        clients += 1
+        for element in PACKAGE_REFERENCE.findall(text):
+            attributes = dict(ATTRIBUTE.findall(element))
+            name = attributes.get("Include")
+            version = attributes.get("Version", "")
+            if not name:
+                continue
+            pin = EXACT_PIN.match(version)
+            if not pin:
+                raise ValueError(
+                    f"{csproj.name}: {name} is pinned as {version!r}, not an exact "
+                    "[x.y.z] pin; the SBOM cannot state a version a restore may float"
+                )
+            packages[name.lower()] = (name, pin.group(1))
+    if clients == 0:
+        raise ValueError("no src/*/*.csproj builds an Exe, so no client package is known")
+    return packages
+
+
+def nuget_components(
+    lock_path: Path, client: dict[str, tuple[str, str]]
+) -> list[dict[str, Any]]:
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
     project = lock_path.parent.name
     components: list[dict[str, Any]] = []
@@ -81,9 +125,9 @@ def nuget_components(lock_path: Path) -> list[dict[str, Any]]:
                 "name": name,
                 "version": version,
                 "purl": f"pkg:nuget/{name}@{version}",
-                # Nothing here reaches the shipped client: these restore into
-                # the test project only.
-                "scope": "optional",
+                # The client's own packages reach the released binary; the rest
+                # restore into the test project only.
+                "scope": "required" if name.lower() in client else "optional",
                 "properties": [
                     {"name": "7dtd:project", "value": project},
                     {"name": "7dtd:framework", "value": framework},
@@ -103,8 +147,27 @@ def build() -> dict[str, Any]:
     lock = tomllib.loads(LOCK_TOML.read_text(encoding="utf-8"))
     version = project_version(lock)
     components = pypi_components(lock)
+    client = client_packages()
     for lock_path in NUGET_LOCKS:
-        components.extend(nuget_components(lock_path))
+        components.extend(nuget_components(lock_path, client))
+    listed = {c["name"].lower() for c in components}
+    for key, (name, pinned) in sorted(client.items()):
+        if key in listed:
+            continue
+        # Declared by the client but no lock resolved it: with a game install
+        # present the DLL branch wins and restore never sees the package. It is
+        # still what the fallback build ships, so it is listed with the pin and
+        # no hash rather than dropped.
+        components.append(
+            {
+                "type": "library",
+                "name": name,
+                "version": pinned,
+                "purl": f"pkg:nuget/{name}@{pinned}",
+                "scope": "required",
+                "properties": [{"name": "7dtd:resolved", "value": "declared-only"}],
+            }
+        )
     components.sort(key=lambda c: c["purl"])
     # No purl on the root component. The shipped artifact is the C# client,
     # not a distribution on PyPI, and a pkg:pypi/7dtd-loadgen identifier points

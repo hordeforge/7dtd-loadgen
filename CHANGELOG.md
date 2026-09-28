@@ -23,6 +23,13 @@ migration step, and it is filed under **Changed** (a behavior change) or under
   resolve, and gated by `tests/test_sbom.py`. A release previously shipped no
   machine-readable inventory at all. The `vX.Y.Z` tag lane renders the same
   document into the run summary, so the inventory outlives the runner.
+- The SBOM scopes its NuGet entries by what they reach. `LiteNetLib` is the one
+  package compiled into the client, and it restores through the test project's
+  lock as a transitive entry, so the inventory marked it `optional` like the
+  test graph and a scanner triaging an advisory against it would skip the
+  shipped client. It is `required` now, and a client package no lock resolved
+  (the game-DLL branch of the build) is listed from its pin rather than
+  dropped.
 - The SBOM's root component no longer claims `pkg:pypi/7dtd-loadgen`. The
   shipped artifact is the C# client and nobody publishes that name on PyPI, so
   the identifier pointed a scanner at a package that does not exist.

@@ -12,10 +12,14 @@ from __future__ import annotations
 
 import base64
 import json
+import shutil
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
+
+import pytest
+import sbom
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL = ROOT / "scripts" / "sbom.py"
@@ -94,6 +98,72 @@ def test_every_locked_nuget_package_is_listed_with_its_content_hash(tmp_path):
                     "name": "7dtd:framework",
                     "value": framework,
                 } in listed[purl]["properties"]
+
+
+def test_the_clients_own_package_is_required_not_test_only(tmp_path):
+    """The one package compiled into the release must not read as test-only.
+
+    LiteNetLib reaches the shipped binary (it parses server packets, so an
+    advisory against it matters to a consumer), but it restores through the
+    test project's lock, where it is a transitive entry. A blanket "the .NET
+    graph is the test project" scope told a scanner to ignore it.
+    """
+    listed = by_purl(render(tmp_path))
+    client = sbom.client_packages()
+    assert set(client) == {"litenetlib"}, "the client's dependency set changed; re-read this test"
+    for name, version in client.values():
+        purl = f"pkg:nuget/{name}@{version}"
+        assert purl in listed, f"{purl} ships but is missing from the SBOM"
+        assert listed[purl]["scope"] == "required", f"{purl} is marked optional"
+
+
+def test_declared_but_unresolved_client_package_is_still_listed(tmp_path, monkeypatch):
+    """A conditional the locks never resolved must not drop out of the inventory.
+
+    LoadGen references the game DLL instead of the package when a game install
+    is present, so the package is absent from the graph on those machines. The
+    fallback build still ships it, so the SBOM names it from the pin.
+    """
+    tree = tmp_path / "tree"
+    (tree / "src" / "Client").mkdir(parents=True)
+    shutil.copy(ROOT / "uv.lock", tree / "uv.lock")
+    (tree / "src" / "Client" / "Client.csproj").write_text(
+        '<Project Sdk="Microsoft.NET.Sdk">\n'
+        "  <PropertyGroup>\n"
+        "    <OutputType>Exe</OutputType>\n"
+        "  </PropertyGroup>\n"
+        '  <ItemGroup>\n'
+        '    <PackageReference Include="Ghost.Wire" Version="[9.9.9]" />\n'
+        "  </ItemGroup>\n"
+        "</Project>\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sbom, "ROOT", tree)
+    components = {c["purl"]: c for c in sbom.build()["components"]}
+    purl = "pkg:nuget/Ghost.Wire@9.9.9"
+    assert purl in components, "a client dependency no lock resolved vanished from the SBOM"
+    assert components[purl]["scope"] == "required"
+    assert {"name": "7dtd:resolved", "value": "declared-only"} in components[purl]["properties"]
+
+
+def test_a_floating_client_pin_fails_loud(tmp_path, monkeypatch):
+    """A bare NuGet version is a floor, so the SBOM cannot state a version."""
+    tree = tmp_path / "tree"
+    (tree / "src" / "Client").mkdir(parents=True)
+    (tree / "src" / "Client" / "Client.csproj").write_text(
+        '<Project Sdk="Microsoft.NET.Sdk">\n'
+        "  <PropertyGroup>\n"
+        "    <OutputType>Exe</OutputType>\n"
+        "  </PropertyGroup>\n"
+        '  <ItemGroup>\n'
+        '    <PackageReference Include="Ghost.Wire" Version="9.9.9" />\n'
+        "  </ItemGroup>\n"
+        "</Project>\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sbom, "ROOT", tree)
+    with pytest.raises(ValueError, match="exact"):
+        sbom.client_packages()
 
 
 def test_render_is_deterministic(tmp_path):
