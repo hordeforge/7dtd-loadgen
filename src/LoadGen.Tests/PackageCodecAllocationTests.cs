@@ -85,6 +85,78 @@ public sealed class PackageCodecAllocationTests
         Assert.NotSame(firstBody, second[0].body);
     }
 
+    [Fact]
+    public void ReceiveBodyParsers_SteadyState_DoNotAllocate()
+    {
+        // NetPackageEntityPosAndRot and NetPackageEntityAliveFlags are among
+        // the highest-volume packages on a busy world, decoded for every entity
+        // the server moves. They are fixed-width, so they read the body span
+        // directly; a MemoryStream plus BinaryReader per packet was steady
+        // receive-path garbage at cohort scale.
+        byte[] pos = BuildPosAndRotBody(useQ: false, onGround: true);
+        byte[] quat = BuildPosAndRotBody(useQ: true, onGround: false);
+        byte[] flags = [7, 0, 0, 0, 0x04, 0x01];
+
+        // Warm any lazy one-time state before measuring.
+        _ = PackageCodec.ParsePosAndRotBody(pos);
+        _ = PackageCodec.ParseAliveFlagsBody(flags);
+
+        const int iterations = 2000;
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < iterations; i++)
+        {
+            _ = PackageCodec.ParsePosAndRotBody(pos);
+            _ = PackageCodec.ParsePosAndRotBody(quat);
+            _ = PackageCodec.ParseAliveFlagsBody(flags);
+        }
+        long delta = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        // Nothing at all: these three decode into a stack tuple of primitives.
+        Assert.Equal(0, delta);
+    }
+
+    [Fact]
+    public void ReceiveBodyParsers_ReadTheSameFieldsAsTheStreamDecoder()
+    {
+        // The span decoder replaced a BinaryReader over a MemoryStream. Pin the
+        // decoded values, including the rotation form moving the onGround byte.
+        var euler = PackageCodec.ParsePosAndRotBody(BuildPosAndRotBody(useQ: false, onGround: true));
+        Assert.Equal((11, 1.5f, 2.5f, 3.5f, true), euler);
+
+        var quat = PackageCodec.ParsePosAndRotBody(BuildPosAndRotBody(useQ: true, onGround: false));
+        Assert.Equal((11, 1.5f, 2.5f, 3.5f, false), quat);
+
+        // Below the 30-byte minimum is the harmless sentinel, not a throw.
+        Assert.Equal((0, 0f, 0f, 0f, false), PackageCodec.ParsePosAndRotBody(new byte[29]));
+
+        // A body that declares quaternion rotation but stops early still fails
+        // the way the stream decoder did.
+        Assert.Throws<EndOfStreamException>(
+            () => PackageCodec.ParsePosAndRotBody(BuildPosAndRotBody(useQ: true, onGround: true)[..32]));
+
+        Assert.Equal((7, 0x0104), PackageCodec.ParseAliveFlagsBody([7, 0, 0, 0, 0x04, 0x01]));
+        Assert.Throws<EndOfStreamException>(() => PackageCodec.ParseAliveFlagsBody([7, 0, 0, 0, 0x04]));
+    }
+
+    /// <summary>PosAndRot body for the given rotation form, with the fields the
+    /// decoder returns set to recognisable values.</summary>
+    static byte[] BuildPosAndRotBody(bool useQ, bool onGround)
+    {
+        int len = useQ
+            ? PackageCodec.PosAndRotOnGroundQuatOffset + 1
+            : PackageCodec.PosAndRotOnGroundEulerOffset + 1;
+        var body = new byte[len];
+        BinaryPrimitives.WriteInt32LittleEndian(body, 11);
+        BinaryPrimitives.WriteSingleLittleEndian(body.AsSpan(4), 1.5f);
+        BinaryPrimitives.WriteSingleLittleEndian(body.AsSpan(8), 2.5f);
+        BinaryPrimitives.WriteSingleLittleEndian(body.AsSpan(12), 3.5f);
+        body[PackageCodec.PosAndRotUseQOffset] = useQ ? (byte)1 : (byte)0;
+        body[useQ
+            ? PackageCodec.PosAndRotOnGroundQuatOffset
+            : PackageCodec.PosAndRotOnGroundEulerOffset] = onGround ? (byte)1 : (byte)0;
+        return body;
+    }
+
     internal static byte[] BuildTwoPackageFrame(
         ushort idA = 3, byte[]? bodyA = null, ushort idB = 4, byte[]? bodyB = null)
     {

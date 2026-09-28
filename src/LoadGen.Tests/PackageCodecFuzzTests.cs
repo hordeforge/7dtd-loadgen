@@ -228,6 +228,22 @@ public sealed class PackageCodecFuzzTests
         Assert.IsType<InvalidDataException>(ex);
     }
 
+    [Theory]
+    // 5th length group at or above 0x08 sets the int sign bit. A negative
+    // length must be rejected as a contracted InvalidDataException before it
+    // reaches ReadBytes, which would raise ArgumentOutOfRangeException.
+    [InlineData(0x08)]
+    [InlineData(0x0F)]
+    [InlineData(0x7F)]
+    public void BoundedString_NegativeLengthPrefix_ThrowsInvalidData(byte topGroup)
+    {
+        // allowed:i32(true) then a 5-group 7-bit length whose top group
+        // carries the sign bit: 0x80 (continue) x4 then the top group.
+        var body = new byte[] { 1, 0x80, 0x80, 0x80, 0x80, topGroup };
+        var ex = Record.Exception(() => PackageCodec.ParseLoginAnswerBody(body));
+        Assert.IsType<InvalidDataException>(ex);
+    }
+
     [Fact]
     public void BoundedString_PrefixWithSignBitSet_IsRejected()
     {

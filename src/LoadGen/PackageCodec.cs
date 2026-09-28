@@ -1023,6 +1023,14 @@ public static class PackageCodec
         return (entityId, x, y, z);
     }
 
+    /// <summary>Body layout of NetPackageEntityPosAndRot, fixed width:
+    /// entityId:i32, pos x/y/z:f32, bUseQRotation:u8, rotation (3 f32 euler or
+    /// 4 f32 quaternion), onGround:u8. Offsets are constants because nothing
+    /// in the body is variable-length.</summary>
+    internal const int PosAndRotUseQOffset = 16;
+    internal const int PosAndRotOnGroundEulerOffset = 29;
+    internal const int PosAndRotOnGroundQuatOffset = 33;
+
     public static (int entityId, float x, float y, float z, bool onGround) ParsePosAndRotBody(byte[] body)
     {
         // Minimum non-quaternion body = int32 id + 3 floats + useQ + 3 floats +
@@ -1032,35 +1040,38 @@ public static class PackageCodec
         // (34 bytes) is still guarded by the caller's try/catch.
         if (body == null || body.Length < 30)
             return (0, 0f, 0f, 0f, false);
-        using var ms = new MemoryStream(body);
-        using var r = new BinaryReader(ms, Encoding.UTF8);
-        int entityId = r.ReadInt32();
-        float x = r.ReadSingle();
-        float y = r.ReadSingle();
-        float z = r.ReadSingle();
-        bool useQ = r.ReadBoolean();
-        if (!useQ)
-        {
-            _ = r.ReadSingle();
-            _ = r.ReadSingle();
-            _ = r.ReadSingle();
-        }
-        else
-        {
-            _ = r.ReadSingle();
-            _ = r.ReadSingle();
-            _ = r.ReadSingle();
-            _ = r.ReadSingle();
-        }
-        bool onGround = r.ReadBoolean();
-        return (entityId, x, y, z, onGround);
+        // One of the highest-volume packages on a busy world, decoded for every
+        // entity the server moves: read the fixed-width fields straight off the
+        // span. A MemoryStream plus BinaryReader per packet was steady receive-
+        // path garbage at cohort scale, and the rotation block is discarded
+        // here, so only the onGround offset depends on the rotation form.
+        var span = body.AsSpan();
+        bool useQ = span[PosAndRotUseQOffset] != 0;
+        int onGroundOffset = useQ
+            ? PosAndRotOnGroundQuatOffset
+            : PosAndRotOnGroundEulerOffset;
+        if (span.Length < onGroundOffset + 1)
+            throw new EndOfStreamException(
+                $"PosAndRot body declares {(useQ ? "quaternion" : "euler")} rotation "
+                + $"but is {span.Length} bytes");
+        return (
+            BinaryPrimitives.ReadInt32LittleEndian(span),
+            BinaryPrimitives.ReadSingleLittleEndian(span.Slice(4)),
+            BinaryPrimitives.ReadSingleLittleEndian(span.Slice(8)),
+            BinaryPrimitives.ReadSingleLittleEndian(span.Slice(12)),
+            span[onGroundOffset] != 0);
     }
 
     public static (int entityId, ushort flags) ParseAliveFlagsBody(byte[] body)
     {
-        using var ms = new MemoryStream(body);
-        using var r = new BinaryReader(ms, Encoding.UTF8);
-        return (r.ReadInt32(), r.ReadUInt16());
+        // Fixed 6-byte body, decoded per alive-flags package on the mock
+        // server's poll loop: no stream and no reader per call.
+        if (body.Length < 6)
+            throw new EndOfStreamException($"AliveFlags body is {body.Length} bytes, want 6");
+        var span = body.AsSpan();
+        return (
+            BinaryPrimitives.ReadInt32LittleEndian(span),
+            BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(4)));
     }
 
     /// <summary>
