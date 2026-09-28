@@ -17,6 +17,36 @@
 #   RE_WORLD_NAME=RWG RE_WORLD_GEN_SIZE=4096 RE_WORLD_GEN_SEED=botpoi4k ./scripts/start_dedicated_prefab.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Answered before anything else: this script stops the running dedicated,
+# quarantines mods and boots a server, so a `--help` that fell through would
+# kill the operator's server. The world is configured by the RE_* environment
+# variables, so the flag list is the only argument surface.
+usage() {
+  cat <<EOF
+Usage: $0
+
+Start a stock 7DTD dedicated on a prefab world (bots' POI/sleeper pressure).
+Everything is configured by the environment:
+
+  RE_WORLD_NAME       stock world to run: RWG (default, generated),
+                      Pregen06k01, Navezgane, ...
+  RE_WORLD_GEN_SIZE   RWG map size, default 4096
+  RE_WORLD_GEN_SEED   RWG seed, default botpoi4k
+  RE_GAME_NAME        save name, default BotPoi_<world>_<size>
+  RE_SERVER_MAX_PLAYERS  ServerMaxPlayerCount, default 64
+  RE_DEDICATED_USERDATA  server userdata, default ~/.cache/7dtd-loadgen
+  SEVENDTD_SERVER_DIR     dedicated install, default the Steam library
+
+Flags: -h, --help print this text.
+EOF
+}
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+  "") ;;
+  *) echo "ERROR: $0 takes no arguments, got '$1' (see --help)" >&2; exit 2 ;;
+esac
+
 # shellcheck source=scripts/python_env.sh
 source "$ROOT/scripts/python_env.sh"
 DS_DIR="${SEVENDTD_SERVER_DIR:-$HOME/.local/share/Steam/steamapps/common/7 Days to Die Dedicated Server}"

@@ -295,6 +295,19 @@ public static partial class Program
         return null;
     }
 
+    /// <summary>The value-taking flag left with no value after it, or null.
+    /// Every parser in the tree reads a value only when another argv token
+    /// follows the flag, so a trailing <c>--port</c> matches no branch: the
+    /// run starts on the default port and exits on the normal gate, the one
+    /// malformed-argv case that is a silent workload change rather than a
+    /// usage error. Caught once here instead of in each lane's loop.</summary>
+    internal static string? MissingFlagValue(string[] args)
+    {
+        if (args.Length == 0) return null;
+        string last = args[^1];
+        return ValueFlags.Contains(last) ? last : null;
+    }
+
     /// <summary>Reject a flag removed from the CLI, naming its replacement.
     /// The parser ignores arguments it does not recognize, so a script still
     /// carrying a removed flag would otherwise start and run the default
@@ -364,6 +377,14 @@ public static partial class Program
         {
             Console.Error.WriteLine(
                 $"FAIL: unknown flag '{unknown}' (see --help for the accepted flags)");
+            return 2;
+        }
+
+        var missingValue = MissingFlagValue(args);
+        if (missingValue != null)
+        {
+            Console.Error.WriteLine(
+                $"FAIL: {missingValue} needs a value (see --help)");
             return 2;
         }
 
@@ -442,6 +463,8 @@ public static partial class Program
             "  --id N --scenario-id ID  base client id / scenario tag for artifacts\n" +
             "  --host --port --timeout --log --min-pass-rate --no-actions --ramp-ms --quiet\n" +
             "      --timeout is a wall-clock budget in ms, 1..2147483647 (~24.9 days)\n" +
+            "      --min-pass-rate is a fraction 0..1 (default 1.0 for --join, 0.95 for\n" +
+            "      the probe and self-test modes)\n" +
             "      --id is a base client id, 0..1000000; the cohort numbers base..base+count-1\n" +
             "      --quiet drops per-client progress lines, keeping the summary\n" +
             "  --observe-cvar NAME  observe one exact replicated CVar (repeatable)\n" +

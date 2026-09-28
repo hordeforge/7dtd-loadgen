@@ -103,8 +103,12 @@ case "$MODE" in
     ;;
 esac
 
-echo "=== 7DTD load generator ==="
-echo "Mode=$MODE Host=$HOST Port=$PORT Count=$COUNT Concurrency=${CONCURRENCY:-auto} Timeout=${TIMEOUT}ms bot=${BOT_MODE:-auto} death=${DEATH:-auto}"
+# The runner's own status goes to stderr: the client's stdout is the run
+# record (LOAD_SUMMARY, PASS: join, per-bot lines) and callers pipe it, so a
+# second "PASS:" line from the wrapper would give `| grep '^PASS'` two answers
+# for one run.
+echo "=== 7DTD load generator ===" >&2
+echo "Mode=$MODE Host=$HOST Port=$PORT Count=$COUNT Concurrency=${CONCURRENCY:-auto} Timeout=${TIMEOUT}ms bot=${BOT_MODE:-auto} death=${DEATH:-auto}" >&2
 
 if [[ ! -x "$DOTNET_ROOT/dotnet" && ! -x "$(command -v dotnet 2>/dev/null || true)" ]]; then
   echo "ERROR: dotnet SDK not found (set DOTNET_ROOT)" >&2
@@ -115,7 +119,7 @@ fi
 if (( COUNT >= 100 )); then
   # best-effort; ignore if not permitted
   ulimit -n 65535 2>/dev/null || ulimit -n 16384 2>/dev/null || true
-  echo "ulimit -n = $(ulimit -n 2>/dev/null || echo unknown)"
+  echo "ulimit -n = $(ulimit -n 2>/dev/null || echo unknown)" >&2
 fi
 
 # Empty GameDir pins the build to the NuGet LiteNetLib the CI graph restores,
@@ -211,7 +215,7 @@ if mkdir -p "$(dirname "$MANIFEST")" \
       LOADGEN_MAX_DYNAMITE="$MAX_DYNAMITE" LOADGEN_SEED="$SEED" LOADGEN_SPAWN_ENTITY="$SPAWN_ENTITY" \
       LOADGEN_SPAWN_PER_PLAYER="$SPAWN_PER_PLAYER" LOADGEN_SPAWN_EVERY_MS="$SPAWN_EVERY_MS" \
       run_python "$ROOT/scripts/loadgen_manifest.py"; then
-  echo "manifest: $MANIFEST"
+  echo "manifest: $MANIFEST" >&2
 else
   echo "WARN: manifest write failed for $MANIFEST; client exit code $rc preserved" >&2
 fi
@@ -229,8 +233,8 @@ if [[ -n "$SCRATCH_OUT" && -d "$SCRATCH_OUT" && -f "$LOG" ]]; then
 fi
 
 if (( rc == 0 )); then
-  echo "PASS: $COUNT simulated client(s) (exit 0)"
+  echo "PASS: $COUNT simulated client(s) (exit 0)" >&2
   exit 0
 fi
-echo "FAIL: simulated client load count=$COUNT exit=$rc"
+echo "FAIL: simulated client load count=$COUNT exit=$rc" >&2
 exit "$rc"

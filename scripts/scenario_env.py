@@ -142,7 +142,7 @@ def export_scenario(doc: dict, scenario_id: str) -> int:
 
 def main() -> int:
     args = sys.argv[1:]
-    if args and args[0] in ("-h", "--help"):
+    if any(a in ("-h", "--help") for a in args):
         print((__doc__ or "").strip())
         return 0
     if not args:

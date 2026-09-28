@@ -18,7 +18,7 @@ USAGE = "usage: webdash_password_hash.py (reads RE_ADMIN_WEB_PASSWORD from the e
 
 def main() -> int:
     args = sys.argv[1:]
-    if args and args[0] in ("-h", "--help"):
+    if any(a in ("-h", "--help") for a in args):
         print(__doc__.strip())
         print(USAGE)
         return 0

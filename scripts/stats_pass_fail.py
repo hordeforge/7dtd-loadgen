@@ -12,7 +12,7 @@ def main() -> int:
     # --help goes to stdout with exit 0, like every other CLI here. Taking it
     # as a path printed a fabricated "0 0" on stdout, which is a measurement
     # to bench_stock.sh, not a diagnostic.
-    if sys.argv[1:] in (["-h"], ["--help"]):
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
         print(__doc__)
         return 0
     if len(sys.argv) != 2:

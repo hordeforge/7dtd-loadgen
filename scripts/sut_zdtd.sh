@@ -17,6 +17,18 @@
 # stock-shaped telnet console for gettime/listents/listplayers snapshots).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Answered before the world dir is validated, wiped and rebuilt: everything
+# this script is configured by arrives through the RE_SUT_* environment, so
+# argv has no meaning beyond this question.
+case "${1:-}" in
+  -h|--help)
+    sed -n '2,4p;6,13p' "$0" | sed 's/^# \{0,1\}//'
+    exit 0
+    ;;
+  "") ;;
+  *) echo "ERROR: $0 takes no arguments, got '$1' (see --help)" >&2; exit 2 ;;
+esac
 ZIG="${ZIG:-zig}"
 ZDTD_ROOT="${ZDTD_ROOT:-$ROOT/../zdtd-server}"
 PORT="${RE_SUT_PORT:-27120}"
