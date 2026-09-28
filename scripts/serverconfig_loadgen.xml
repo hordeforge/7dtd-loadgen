@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <!--
   RealEarth dedicated test config.
-  Minimal network surface for local LiteNetLib load tests:
+  Local LiteNetLib load tests. Three listeners are open (game 26900/26902,
+  telnet 8081, web dashboard 8080); the dashboard is an admin surface, so this
+  config is only safe on a host that is not reachable from the internet.
     - EAC off, crossplay off
     - SteamNetworking disabled (LiteNetLib only)
     - Not publicly listed
