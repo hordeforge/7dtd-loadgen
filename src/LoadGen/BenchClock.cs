@@ -98,17 +98,20 @@ public sealed class BenchClock
         (Volatile.Read(ref _actionsInWindow), Volatile.Read(ref _deathsInWindow),
          Volatile.Read(ref _respawnsInWindow));
 
-    // Written by the sampler under _activeCurve, read by whoever renders the
-    // summary: same lock as the write, so the min/max pair is a consistent
-    // snapshot rather than two independent unsynchronized loads.
-    public int ActiveMin
+    /// <summary>Lowest and highest active sample as one consistent pair. The
+    /// sampler writes both fields under _activeCurve while the orchestrator
+    /// renders the summary, and they are two separate fields: read through two
+    /// lock acquisitions they come from two different instants, so the summary
+    /// can report a range wider than any single moment's cohort size (a low
+    /// sample landing between the two reads widens it). One lock, one tuple,
+    /// one instant.</summary>
+    public (int Min, int Max) ActiveBounds
     {
-        get { lock (_activeCurve) return _activeMin == int.MaxValue ? 0 : _activeMin; }
-    }
-
-    public int ActiveMax
-    {
-        get { lock (_activeCurve) return _activeMax; }
+        get
+        {
+            lock (_activeCurve)
+                return (_activeMin == int.MaxValue ? 0 : _activeMin, _activeMax);
+        }
     }
 
     /// <summary>Active clients at (or just before) the window start; 0 when no sample yet.</summary>

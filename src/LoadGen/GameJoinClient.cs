@@ -313,15 +313,25 @@ public sealed class GameJoinClient
         };
 
         // Bind per-client loopback IP so dedicated rate-limit (500ms/IP) and pending-login/IP do not serialize all 1000.
+        //
+        // Under SweepGate like StopNet and the courtesy BYE below: the manager
+        // is already in ActiveNets, so a shutdown sweep can reach it and drive
+        // DisconnectAll/Stop from the signal-handler thread while this thread
+        // is still inside Start, mutating the same non-thread-safe internals.
+        // The ShutdownRequested grace covers the poll loop, which cannot take
+        // the gate without serializing every bot; Start is one bind and does.
         bool started;
-        if (!string.IsNullOrWhiteSpace(opt.LocalBindIp) && opt.LocalBindIp != "0.0.0.0")
+        lock (SweepGate)
         {
-            var v4 = IPAddress.Parse(opt.LocalBindIp);
-            started = net.Start(v4, IPAddress.IPv6Any, 0);
-        }
-        else
-        {
-            started = net.Start();
+            if (!string.IsNullOrWhiteSpace(opt.LocalBindIp) && opt.LocalBindIp != "0.0.0.0")
+            {
+                var v4 = IPAddress.Parse(opt.LocalBindIp);
+                started = net.Start(v4, IPAddress.IPv6Any, 0);
+            }
+            else
+            {
+                started = net.Start();
+            }
         }
         if (!started)
         {

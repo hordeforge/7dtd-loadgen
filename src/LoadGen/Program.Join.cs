@@ -722,13 +722,14 @@ public static partial class Program
         {
             var (wStart, wEnd) = b.WindowBounds;
             var (wActions, wDeaths, wRespawns) = b.WindowCounts;
+            var (activeMin, activeMax) = b.ActiveBounds;
             double aps = b.WindowMs > 0 ? wActions * 1000.0 / b.WindowMs : 0;
             double jps = wStart > 0 ? pass * 1000.0 / wStart : 0;
             Console.WriteLine(
                 $"BENCH_SUMMARY warmupMs={b.WarmupMs} windowMs={b.WindowMs} " +
                 $"actionsInWindow={wActions} actionsPerSec={aps:0.00} " +
                 $"deathsInWindow={wDeaths} respawnsInWindow={wRespawns} " +
-                $"joinRatePerSec={jps:0.000} activeMin={b.ActiveMin} activeMax={b.ActiveMax} " +
+                $"joinRatePerSec={jps:0.000} activeMin={activeMin} activeMax={activeMax} " +
                 $"activeAtWindowStart={b.ActiveAtWindowStart} activeAtWindowEnd={b.ActiveAtWindowEnd}");
         }
         Console.WriteLine(report);
@@ -742,6 +743,7 @@ public static partial class Program
             {
                 var (wStart, wEnd) = b2.WindowBounds;
                 var (wActions, wDeaths, wRespawns) = b2.WindowCounts;
+                var (activeMin, activeMax) = b2.ActiveBounds;
                 payload["bench"] = new Dictionary<string, object?>
                 {
                     ["warmupMs"] = b2.WarmupMs,
@@ -753,8 +755,8 @@ public static partial class Program
                     ["deathsInWindow"] = wDeaths,
                     ["respawnsInWindow"] = wRespawns,
                     ["joinRatePerSec"] = Math.Round(wStart > 0 ? pass * 1000.0 / wStart : 0, 3),
-                    ["activeMin"] = b2.ActiveMin,
-                    ["activeMax"] = b2.ActiveMax,
+                    ["activeMin"] = activeMin,
+                    ["activeMax"] = activeMax,
                     ["activeAtWindowStart"] = b2.ActiveAtWindowStart,
                     ["activeAtWindowEnd"] = b2.ActiveAtWindowEnd,
                     ["activeCurve"] = b2.ActiveCurve().Select(s => new[] { s.Ms, s.Active }).ToList(),

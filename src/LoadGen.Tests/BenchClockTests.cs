@@ -73,8 +73,7 @@ public sealed class BenchClockTests
         now = 2000; c.SampleActive(16);  // inside the window
         now = 2000; c.SampleActive(16);  // same second: replaces, no duplicate
         now = 4000; c.SampleActive(8);   // past the end (ramp-down)
-        Assert.Equal(0, c.ActiveMin);
-        Assert.Equal(16, c.ActiveMax);
+        Assert.Equal((0, 16), c.ActiveBounds);
         Assert.Equal(4, c.ActiveAtWindowStart);  // last sample at/before warmup
         Assert.Equal(8, c.ActiveAtWindowEnd);    // last sample overall
         var curve = c.ActiveCurve();
@@ -118,71 +117,73 @@ public sealed class BenchClockTests
         var c = Clock(100, 200, 0);
         Assert.Equal(0, c.ActiveAtWindowStart);
         Assert.Equal(0, c.ActiveAtWindowEnd);
-        Assert.Equal(0, c.ActiveMin);
+        Assert.Equal((0, 0), c.ActiveBounds);
     }
 
     /// <summary>In a bench run one sampler thread feeds the curve while every
-    /// bot thread counts window events, and the summary reads min/max from the
-    /// orchestrator thread. The min/max pair must stay a consistent snapshot
-    /// (min never above max) across all three roles.</summary>
+    /// bot thread counts window events, and the summary reads the bounds from
+    /// the orchestrator thread. The bounds must arrive as one consistent pair
+    /// rather than two loads straddling a sample, and the interlocked window
+    /// counters must not lose an increment.</summary>
     [Fact]
     public async Task ConcurrentSampleAndCount_MinMaxStayConsistent()
     {
-        var c = new BenchClock(0, 60_000);
-        var stop = new CancellationTokenSource();
-        using var sampled = new CountdownEvent(4);
+        const int WorkerCount = 4;
+        // Window as wide as the clock allows: the workers run until cancelled,
+        // so no scheduling delay may push a count past the window end and
+        // silently drop it from the totals asserted below.
+        var c = new BenchClock(0, int.MaxValue);
+        using var stop = new CancellationTokenSource();
+        using var sampled = new CountdownEvent(WorkerCount);
+        long localActions = 0, localDeaths = 0, localRespawns = 0;
         var workers = new List<Task>();
-        // Every worker has sampled once before the read loop starts. Without
-        // that rendezvous the main loop can finish its reads (and cancel) while
-        // the pool still has not run the higher-valued workers, and the test
-        // then asserts against a curve that only ever saw active=0: the loop
-        // is 200 unsynchronized reads that finish in microseconds, so a
-        // preempted worker can miss its only chance to run and the end-of-test
-        // min/max assertions fail on scheduling, not on the clock. min and max
-        // are monotone, so the first sample of each value fixes the bounds for
-        // good.
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < WorkerCount; i++)
         {
             int active = i;
             workers.Add(Task.Run(() =>
             {
-                bool first = true;
+                // One sample before announcing, so the read phase and the final
+                // bounds never depend on how many of the four the pool had time
+                // to schedule: a queued worker that sees stop already cancelled
+                // never samples, which is a timing accident, not a contract.
+                c.SampleActive(active);
+                sampled.Signal();
+                long n = 0;
                 while (!stop.IsCancellationRequested)
                 {
                     c.SampleActive(active);
                     c.OnAction();
                     c.OnDeath();
                     c.OnRespawn();
-                    if (first)
-                    {
-                        first = false;
-                        sampled.Signal();
-                    }
+                    n++;
                 }
+                Interlocked.Add(ref localActions, n);
+                Interlocked.Add(ref localDeaths, n);
+                Interlocked.Add(ref localRespawns, n);
             }));
         }
-        Assert.True(sampled.Wait(TimeSpan.FromSeconds(5)), "samplers did not run");
+        Assert.True(sampled.Wait(TimeSpan.FromSeconds(10)), "workers never sampled");
         try
         {
             Assert.True(sampled.Wait(TimeSpan.FromSeconds(30)), "sampler workers did not start");
             for (int i = 0; i < 200; i++)
             {
-                int min = c.ActiveMin;
-                int max = c.ActiveMax;
+                var (min, max) = c.ActiveBounds;
                 Assert.True(min <= max, $"min={min} above max={max}");
-                Assert.InRange(max, 0, 3);
+                Assert.InRange(max, 0, WorkerCount - 1);
             }
         }
         finally
         {
             stop.Cancel();
-            await Task.WhenAll(workers).WaitAsync(TimeSpan.FromSeconds(5));
+            await Task.WhenAll(workers).WaitAsync(TimeSpan.FromSeconds(10));
         }
 
-        // All four sampler values are in the curve, so both ends are covered.
-        Assert.Equal(0, c.ActiveMin);
-        Assert.Equal(3, c.ActiveMax);
-        var (actions, deaths, respawns) = c.WindowCounts;
-        Assert.True(actions > 0 && deaths > 0 && respawns > 0);
+        // All four sampler values were recorded, so both ends are covered.
+        Assert.Equal((0, WorkerCount - 1), c.ActiveBounds);
+        // Interlocked increments from four threads must be exact: a plain
+        // _actionsInWindow++ loses updates and under-reports the window.
+        Assert.Equal((localActions, localDeaths, localRespawns), c.WindowCounts);
+        Assert.True(localActions > 0);
     }
 }
