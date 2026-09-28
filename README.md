@@ -453,18 +453,23 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
 
 ## Verified game builds
 
-Join + golden-wire fixtures are verified against **7DTD V3.1.0 (b14)** dedicated
-(`GameVersion 1.3.10.14`, `PackageCodec.GameVersion`). The join client reads the
+The client pins **7DTD V3.2.0 (b10)** (`GameVersion 1.3.20.10`,
+`PackageCodec.GameVersion`; the pin moved in 0.4.0). The join client reads the
 server's version from `NetPackagePackageIds` and builds its `PlayerLogin` from it
-(VersionAuthorizer compares `LongStringNoBuild`, e.g. "V 3.1"), so joining a
+(VersionAuthorizer compares `LongStringNoBuild`, e.g. "V 3.2"), so joining a
 nearby minor/branch build works without a client change; the golden-wire body
-size constants and `PackageIds` map count (189) are V3.1.0-specific and fail
-loudly (`FAIL golden-wire`) on a different build - bump `GameVersion` and
-re-verify against the new dump before shipping a fixture for another release.
-**Live re-verified 2026-08-10:** a full join against the stock V3.1.0 dedi
-reported `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
+size constants and the `PackageIds` map count (189) are captured-build-specific
+and fail loudly (`FAIL golden-wire`) on a different build - bump `GameVersion`
+and re-verify against the new dump before shipping a fixture for another release.
+**Last live-verified 2026-08-10, on the previous pin:** a full join against the
+stock V3.1.0 dedi reported
+`PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
 `LoginAnswered: allowed=True` - the golden-wire's map count and the census
-(`docs/network.md`: 189 of 193 registered) match observed traffic exactly.
+(`../7dtd-engine-research/docs/network/network.md`: 189 of 193 registered)
+match observed traffic exactly. The V3.2.0 b10 pin has golden-wire coverage
+(`VersionLongString` asserts the display form "V 3.2.0") but no recorded live
+join yet; the `PackageIds` head fixtures in the golden-wire body are the
+historical V3.0.1 (b4) and V3.1.0 (b14) captures.
 The post-login package set received by a fresh bot (ConfigFile x42, AuthState,
 IdMapping, WorldSpawnPoints, WorldInfo, WorldAreas, PlayerLoginAnswer,
 PlayerId, Localization, DecoUpdate; no EntitySpawn without other entities)

@@ -5,6 +5,10 @@ Pins four sources of truth together so they cannot drift:
   - <Version> in src/LoadGen/LoadGen.csproj
   - the newest released section in CHANGELOG.md
   - what the shipped binary prints for --version
+
+Also pins the game build the client targets, so the docs that declare it
+(README "Verified game builds", TODO residual table) cannot drift away from
+PackageCodec.GameVersion the way they did when the pin moved to V3.2.0 b10.
 """
 
 from __future__ import annotations
@@ -67,3 +71,40 @@ def test_binary_prints_declared_version():
     out = (r.stdout + r.stderr).strip()
     assert r.returncode == 0, out
     assert out == f"7dtd-loadgen {want}", f"--version printed '{out}', want '7dtd-loadgen {want}'"
+
+
+GAME_VERSION_RE = re.compile(
+    r"GameVersion\s*=\s*new\((\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)",
+)
+
+
+def pinned_game_version() -> tuple[int, int, int, int]:
+    """PackageCodec.VersionInfo is (ReleaseType, Major, Minor, Build)."""
+    text = (ROOT / "src" / "LoadGen" / "PackageCodec.cs").read_text(encoding="utf-8")
+    match = GAME_VERSION_RE.search(text)
+    assert match, "PackageCodec.GameVersion declaration not found"
+    release, major, minor, build = (int(g) for g in match.groups())
+    assert release == 1, f"EGameReleaseType.V expected, got {release}"
+    return major, minor, build
+
+
+def test_documented_game_build_matches_the_pin():
+    """The build the docs claim to target must be the one bots send.
+
+    README and TODO each state the pinned build. The pin moved to V3.2.0 b10
+    and both kept naming V3.1.0 b14, so a reader was told the wrong build was
+    live-verified.
+    """
+    major, minor, build = pinned_game_version()
+    dotted = f"{major}.{minor}.{build}"
+    # VersionLongString packs minor as mid*10+patch (PackageCodec.VersionLongString).
+    display = f"V {major}.{minor // 10}.{minor % 10}"
+    for name in ("README.md", "TODO.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        # Either spelling is accepted: README writes 1.3.20.10, TODO the
+        # (1,3,20,10) constructor form.
+        forms = (dotted, f"{major},{minor},{build}")
+        assert any(f in text for f in forms), (
+            f"{name} does not mention the pinned GameVersion {dotted}"
+        )
+        assert display in text, f"{name} does not mention the display form '{display}'"

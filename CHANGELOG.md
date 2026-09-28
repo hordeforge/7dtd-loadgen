@@ -29,6 +29,14 @@ under **Changed** with their migration path.
 
 ### Changed
 
+- The declared game build and the pin now agree. `README.md` and the `TODO.md`
+  residual table both still named V3.1.0 b14 after 0.4.0 moved the pin to
+  V3.2.0 b10, so a reader was told the wrong build was live-verified. The
+  release contract gate now pins the build the docs state to
+  `PackageCodec.GameVersion`, the way it already pins the tool version. The
+  open gap is honest: the V3.2.0 b10 pin has golden-wire coverage but no
+  recorded live join, and the `PackageIds` head fixtures are still the
+  V3.0.1/V3.1.0 captures.
 - Per-player identifiers no longer reach kept run evidence. Telnet
   transcripts pseudonymize each player name (`player-1`, ...) and replace
   `pltfmid`, `crossid` and `ip` with `redacted`; `surface.json` keeps the
@@ -64,6 +72,12 @@ under **Changed** with their migration path.
   r.returncode == 0`, so a successful run that joined nobody passed on the exit
   code alone. It now requires the summary line and checks total, pass, mode and
   the pass/fail split.
+- The banner scan in `tools/sut_capture.py` matched the gap after a banner key
+  with `\s+`, which spans newlines. A `Server IP:` line with no value pulled the
+  next console line into the banner, so a `listplayers` row (player name
+  included) could reach `surface.json` and the report. The gap is now spaces
+  and tabs, so a banner value stops at its own line. The transcript fuzz gate
+  covers it, and now asserts the player axis stays a count.
 - `TelnetAdmin.Connect` took its connect wait from `IAsyncResult.AsyncWaitHandle`,
   a `ManualResetEvent` only disposing the result releases. Nothing disposed it,
   so every pressure wave and every per-bot dynamite give leaked a handle for the

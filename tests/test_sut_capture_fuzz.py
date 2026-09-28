@@ -10,6 +10,7 @@ no exception escapes.
 
 from __future__ import annotations
 
+import json
 import math
 import random
 import time
@@ -17,6 +18,10 @@ from pathlib import Path
 
 import pytest
 import sut_capture
+
+# The one player name in the seeds. The noise pool has no letters that spell
+# it, so a leak can only come from the parser keeping a row.
+PLAYER_NAME = "bot1"
 
 # Real console shapes, so the generator explores around genuine layouts rather
 # than pure noise: the mutation only ever touches the tail of a well-formed row.
@@ -33,7 +38,7 @@ SEEDS = [
         "  2. id=172, [type=EntityPlayer, name=EntityPlayer, id=1], pos=1, 2, 3, "
         "lifetime=00:00:10, remote=127.0.0.1:26901, dead=True"
     ),
-    "  3. id=173, name=bot1, pos=4, 5, 6, deaths=2",
+    f"  3. id=173, name={PLAYER_NAME}, pos=4, 5, 6, deaths=2",
     "Total of 3 in the game",
     "GameStat.FPS = 60",
     "# ts=2026-08-12T00:00:04.123456Z mono=100000 cmd=gettime",
@@ -80,10 +85,13 @@ def _assert_invariants(snap: dict) -> None:
     entities = snap["entities"]
     assert entities["alive"] + entities["dead"] == entities["count"]
     assert sum(entities["types"].values()) == entities["count"]
-    assert len(snap["players"]["rows"]) == snap["players"]["count"]
-    for row in snap["players"]["rows"]:
-        assert row["id"] > 0
-        assert row["name"].strip() == row["name"]
+    # The player axis is a count and nothing else: player names are typed by
+    # humans and the evidence is kept, so no row may survive parsing. (The
+    # fuzz welds rows onto other lines, so a banner value can still carry the
+    # name a mutation put there; the redaction contract itself is asserted on
+    # a well-formed transcript below.)
+    assert set(snap["players"]) == {"count"}
+    assert snap["players"]["count"] >= 0
     total = snap["reportedTotal"]
     assert total is None or total >= 0
     rate = snap["clockRateGameMinPerRealSec"]
@@ -129,9 +137,27 @@ def test_banner_and_rows_survive_a_well_formed_transcript(tmp_path: Path) -> Non
     # to its type= value.
     assert snap["entities"]["types"]["name=zombieBoe"] == 1
     assert snap["entities"]["types"]["EntityPlayer"] == 1
-    assert snap["players"]["rows"] == [{"id": 173, "name": "name=bot1"}]
+    # The player row is counted and then dropped: the name is player-typed.
+    assert snap["players"] == {"count": 1}
+    assert PLAYER_NAME not in json.dumps(snap)
     assert snap["reportedTotal"] == 3
     assert snap["gamestats"] == {"FPS": "60"}
     assert snap["unknownCommands"] == ["bogus"]
     # One game minute elapsed over 60 real seconds, off the monotonic stamps.
     assert snap["clockRateGameMinPerRealSec"] == pytest.approx(1 / 60, rel=1e-2)
+
+
+def test_banner_value_stops_at_its_own_line(tmp_path: Path) -> None:
+    """A valueless banner line must not absorb the row printed under it.
+
+    The gap after the key used to be \\s+, which spans newlines, so "Server IP:"
+    followed by a listplayers row kept the row (player name included) in
+    surface.json.
+    """
+    text = "Server IP:\n" + f"  3. id=173, name={PLAYER_NAME}, pos=4, 5, 6, deaths=2\n"
+    snap = sut_capture.telnet_snapshot(str(_write_transcript(tmp_path, text)))
+
+    assert snap is not None
+    assert "Server IP" not in snap["banner"]
+    assert snap["players"] == {"count": 1}
+    assert PLAYER_NAME not in json.dumps(snap)

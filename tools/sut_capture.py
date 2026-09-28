@@ -144,7 +144,10 @@ def telnet_snapshot(run_dir):
     banner = {}
     for key in ("Server IP", "Server port", "Max players", "Game mode", "World",
                 "Game name", "Difficulty", "Server version"):
-        m = re.search(re.escape(key) + r":?\s+(\S.*)$", text, re.MULTILINE)
+        # The gap after the key must stay on the line: \s spans newlines, so a
+        # "Server IP:" with no value would pull the next console line (an
+        # entity or player row) into a kept report cell.
+        m = re.search(re.escape(key) + r":?[ \t]+(\S[^\r\n]*)", text)
         if m:
             banner[key] = m.group(1).strip()
     entities = []

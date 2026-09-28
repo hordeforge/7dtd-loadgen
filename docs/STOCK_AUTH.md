@@ -5,6 +5,11 @@ stock client against a test server without valid Steam auth. RE ground truth:
 `../7dtd-engine-research/docs/admin/platform-auth.md` (authorizer chain, Steam/EOS/Local
 platforms). This doc is the operational decision for the harness.
 
+**Status:** decided. Option A (`CLIENT_PLATFORM=local`, no mod) is the standing
+path for real-client runs; it was live-verified 2026-08-12 and the
+`7dtd-playtest` suites depend on it (see `SUT_COMPARE.md`). Option B stays the
+fallback and is not used by this repo. Last reviewed 2026-09-28.
+
 ## How join auth works (stock V3.1.0)
 
 A joining player carries a platform identity + auth ticket
