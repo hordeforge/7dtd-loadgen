@@ -1,4 +1,4 @@
-# 😱 Screamer (7DTD HordeLoadGen)
+# 😱 Screamer (LoadGen)
 
 > **Part of [HordeForge](https://github.com/hordeforge)**: High-Performance Systems Engineering for 7 Days to Die.
 
@@ -18,7 +18,7 @@ tests.
 
 **EAC/encrypted servers are unsupported.** The join client parses the
 `serverUseEAC` flag from `NetPackagePackageIds` and logs a NOTE, then proceeds
-and typically fails the login/encryption handshake - it does not implement the
+and typically fails the login/encryption handshake; it does not implement the
 EAC client or the encrypted channel. Do not imply current support for
 EAC-enabled or encrypted servers (see `TODO.md` Protocol compatibility); run
 bots against EAC-off test servers only.
@@ -212,7 +212,7 @@ pressure), soak-4bot (sustained multi-bot). Each side carries a cost axis:
 the zdtd run embeds an APM tick snapshot, the stock run gets a 7dtd-server-apm
 capture over the connected window (`COMPARE_APM=0` to skip, the sibling
 `7dtd-server-apm` repo must have its bridge installed in the stock dedicated
-server). Both cost snapshots are reported, not diffed - their formats differ
+server). Both cost snapshots are reported, not diffed: their formats differ
 by design. Cost numbers (wall time, APM counters) are host-relative: compare
 runs under like conditions, and a busy host skews them (the behavioral axes
 are unaffected).
@@ -311,7 +311,7 @@ allocation and name the churn. Traverse bots drop the spawn leash and march in
 a straight line, streaming fresh chunks and tile entities across the map
 (validated: single bot roamed ~1800 m, a 10-bot cohort spread ~3700 m). Bots
 move at a real run speed (~6 m/s) and continuously reconcile their position with
-the server's authoritative corrections, like a real client - moving faster than
+the server's authoritative corrections, like a real client. Moving faster than
 that outruns the server's chunk streamer. Even while roaming, kernel chunk
 bandwidth stays modest (chunks compress well); the chunk COST the server pays is
 CPU + allocation (serialization), not network bytes. Join-mode
@@ -367,7 +367,7 @@ overrides `--bot-mode`. The sibling `7dtd-server-apm` canonical HEAVY load profi
 `../7dtd-server-apm/plans/profile.tiers.json` (see `../7dtd-server-apm/docs/LOAD_PROFILE.md`).
 
 **Named workload profiles** (`--profile`): `probe` (1 bot, bounded steps, no
-death - join/handshake health), `join-burst` (24 bots, simultaneous joins,
+death, join/handshake health), `join-burst` (24 bots, simultaneous joins,
 short steps), `steady-wander` (8 bots, endless wander soak), `death-soak`
 (6 combat bots, self-kill + respawn loop), `mixed` (12 weighted wander/combat
 with deaths). Presets apply before the arg loop, so an explicit flag on the
@@ -509,7 +509,7 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
   unavailable` per bot and fall back to a shared `127.0.0.1`, the same
   slower-join cost rather than a failed cohort.
 - **Server-side caps:** the dedicated server has its own limits that bound a
-  bot cohort - MaxPlayers (join denial past it, `NetPackagePlayerDenied`
+  bot cohort: MaxPlayers (join denial past it, `NetPackagePlayerDenied`
   reason 2), the LiteNetLib join-churn race under >12 simultaneous joins
   (mitigate with `--ramp-ms`, see the Verified-game-builds / join-flake note
   above), and world-spawn caps (MaxSpawnedZombies).
@@ -545,12 +545,12 @@ Minor as `mid*10 + patch`, so 20 renders as "V 3.2.0"), so joining a nearby
 minor/branch build works without a client change; the golden-wire body size
 constants and the checked-in `PackageIds` head fixtures (V3.0.1 b4 and V3.1.0
 b14, map count 189) are build-specific and fail loudly (`FAIL golden-wire`) on a
-different build - bump `GameVersion` and re-verify against the new dump before
+different build. Bump `GameVersion` and re-verify against the new dump before
 shipping a fixture for another release.
 **Live re-verified 2026-08-10 against stock V3.1.0 (b14),** the last live join
 before the pin moved to V3.2.0: a full join reported
 `PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
-`LoginAnswered: allowed=True` - the golden-wire's map count and the census
+`LoginAnswered: allowed=True`; the golden-wire's map count and the census
 (`../7dtd-engine-research/docs/network/network.md`: 189 of 193 registered)
 match observed traffic exactly. The V3.2.0 b10 pin has golden-wire coverage
 (`VersionLongString` asserts the display form "V 3.2.0") but no recorded live
@@ -609,7 +609,7 @@ server run is still required to validate compatibility with a particular 7DTD
 release. `--golden-wire` cross-checks package body layouts against the
 independent IL-derived wire docs in `7dtd-engine-research/docs/network/protocol-packages.md`
 §6.23 (e.g. `NetPackageEntityPosAndRot`: `rot:Vector3` at byte 17 when
-`bUseQRotation=false`, `qrot:Quaternion` when true - both sources agree).
+`bUseQRotation=false`, `qrot:Quaternion` when true; both sources agree).
 
 Current protocol, workload, and operations work is tracked in
 [`TODO.md`](TODO.md).
@@ -625,7 +625,7 @@ Current protocol, workload, and operations work is tracked in
   mitigates. This repo's server wrapper is also the **live-verification rig** for
   scheduled stock behavior: the research corpus's live runs (air drop, wandering
   horde, blood-moon start, save-format round-trips, weather state; `settime`-driven,
-  bot-joined) boot through `scripts/start_dedicated_*.sh` - see
+  bot-joined) boot through `scripts/start_dedicated_*.sh`; see
   `7dtd-engine-research/docs/meta/re-methodology.md` 5e. Any save these sessions produce is
   machine-checked against the documented on-disk codecs by
   `7dtd-engine-research/tools/save_roundtrip_check.py` (`make save-roundtrip` there):
