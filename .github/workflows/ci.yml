@@ -68,9 +68,12 @@ jobs:
           # a URL lands in every error message, process listing and log line
           # that echoes the remote.
           auth="http.https://github.com/.extraheader=AUTHORIZATION: bearer ${GITHUB_TOKEN}"
-          if git -c "$auth" ls-remote --exit-code --heads origin badges >/dev/null 2>&1; then
-            git -c "$auth" clone --depth 1 --branch badges origin badge-repo
-          else
+          # Clone when the branch exists; the probe could not tell "absent"
+          # from "the probe failed", and its failure answer (a fresh root
+          # commit) is rejected by the branch that is there. A failed clone is
+          # the one signal that means the branch is genuinely missing.
+          if ! git -c "$auth" clone --depth 1 --branch badges origin badge-repo 2>/dev/null; then
+            rm -rf badge-repo
             git init -q -b badges badge-repo
             git -C badge-repo remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
           fi
