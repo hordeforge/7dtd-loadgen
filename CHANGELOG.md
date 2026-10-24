@@ -16,6 +16,12 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
+- Nothing yet since 0.7.0.
+
+## [0.7.0] - 2026-10-25
+
+### Changed
+
 - Target build moves to V3.3.0 b18: `GameVersion` is `VersionInfo(1, 3, 30, 18)`
   and the login display form is "V 3.3.0". The b18 wire registry is 184
   packages (was 187), with six transactional-inventory and lock packages
@@ -936,7 +942,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.1...v0.4.2
