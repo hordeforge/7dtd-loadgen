@@ -8,7 +8,8 @@ Pins four sources of truth together so they cannot drift:
 
 Also pins the game build the client targets, so the docs that declare it
 (README "Verified game builds", TODO residual table) cannot drift away from
-PackageCodec.GameVersion the way they did when the pin moved to V3.2.0 b10.
+PackageCodec.GameVersion (the pin moved from V3.2.0 b10 to V3.3.0 b18; both
+docs are gated against the tuple and its display form).
 """
 
 from __future__ import annotations
@@ -143,15 +144,15 @@ def pinned_game_version() -> tuple[int, int, int, int]:
 def test_documented_game_build_matches_the_pin():
     """The build the docs claim to target must be the one bots send.
 
-    README and TODO each state the pinned build. The pin moved to V3.2.0 b10
-    and both kept naming V3.1.0 b14, so a reader was told the wrong build was
-    live-verified.
+    README and TODO each state the pinned build. The pin moved from V3.2.0 b10
+    to V3.3.0 b18; both kept naming V3.1.0 b14 once, so a reader was told the
+    wrong build was live-verified.
     """
     release, major, minor, build = pinned_game_version()
     # VersionLongString packs minor as mid*10+patch (PackageCodec.VersionLongString).
     display = f"V {major}.{minor // 10}.{minor % 10}"
     # Either spelling is accepted: README writes the C# constructor form
-    # VersionInfo(1, 3, 20, 10), TODO the bare (1,3,20,10) tuple.
+    # VersionInfo(1, 3, 30, 18), TODO the bare (1,3,30,18) tuple.
     ctor = re.compile(rf"{release}\s*,\s*{major}\s*,\s*{minor}\s*,\s*{build}")
     for name in ("README.md", "TODO.md"):
         text = (ROOT / name).read_text(encoding="utf-8")

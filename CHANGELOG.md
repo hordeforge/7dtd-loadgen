@@ -16,7 +16,15 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
-- Nothing yet since 0.6.0.
+- Target build moves to V3.3.0 b18: `GameVersion` is `VersionInfo(1, 3, 30, 18)`
+  and the login display form is "V 3.3.0". The b18 wire registry is 184
+  packages (was 187), with six transactional-inventory and lock packages
+  removed and `NetPackageLockTarget`, `NetPackageSingleSignData` and
+  `NetPackageSignDelete` added. Ids are inferred from metadata order, not
+  observed; `StockWireIds` carries the derived table, `--golden-wire`
+  cross-checks it against the body builders, and the mapping-count fixture is
+  184. The client still joins a b10 server because it builds its login from the
+  version the server advertises.
 
 ## [0.6.0] - 2026-09-28
 

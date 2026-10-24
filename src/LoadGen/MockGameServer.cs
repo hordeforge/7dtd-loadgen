@@ -218,7 +218,7 @@ public sealed class MockGameServer : IDisposable
             else if (name == "NetPackageDamageEntity" && body.Length >= 10)
             {
                 // entityId i32, packed flags u32, damageSource u8, damageType u8
-                // (V3.2.0 layout, see PackageCodec.BuildDamageEntity).
+                // (V3.2.0 layout, unchanged in V3.3.0 b18, see PackageCodec.BuildDamageEntity).
                 byte src = body[8];
                 byte typ = body[9];
                 if (typ == PackageCodec.DamageTypeSuicide)

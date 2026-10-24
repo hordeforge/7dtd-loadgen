@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.IO.Compression;
+using System.Reflection;
 using System.Text;
 
 namespace SevenDTD.LoadGen;
@@ -86,8 +87,10 @@ public static class PackageCodec
         });
     }
 
-    /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.</summary>
-    public static readonly VersionInfo GameVersion = new(1, 3, 20, 10); // EGameReleaseType.V=1; V3.2.0 (b10)
+    /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.
+    /// Stock V3.3.0 (b18): Constants..cctor IL builds VersionInformation(1, 3, 30, 18), which
+    /// renders "V 3.3.0" and GSI "V.3.30.18". V3.2.0 clients are rejected with VersionMismatch.</summary>
+    public static readonly VersionInfo GameVersion = new(1, 3, 30, 18); // EGameReleaseType.V=1; V3.3.0 (b18)
 
     public readonly record struct VersionInfo(byte ReleaseType, int Major, int Minor, int Build);
 
@@ -363,7 +366,11 @@ public static class PackageCodec
         return (short)Math.Clamp((int)Math.Round(n / 360f * 256f), 0, 255);
     }
 
-    /// <summary>Body-only sizes from live Assembly-CSharp write IL (excludes frame len/id).</summary>
+    /// <summary>Body-only sizes from live Assembly-CSharp write IL (excludes frame len/id).
+    /// Unchanged in V3.3.0 b18: the delta changed NetPackagePlayerInventory,
+    /// NetPackagePlayerEquipment, NetPackageSingleSignData, NetPackageSignDelete and the
+    /// sign batch reader; ItemActionEffects kept its one-byte slot field (Byte -> SByte).
+    /// None of those bodies is built or decoded here, so no size is pinned for them.</summary>
     public static class GoldenBodySize
     {
         // entityId(4)+pos3f(12)+bUseQ(1)+rot3f(12)+onGround(1) = 30 when !bUseQ
@@ -377,6 +384,58 @@ public static class PackageCodec
         public const int EntityAliveFlags = 6;
         /// <summary>contentLen on wire = pkgId(2)+body (must match server parse).</summary>
         public const int EntityRelPosAndRotNoQContentLen = 22;
+    }
+
+    /// <summary>Stock V3.3.0 (b18) wire package ids and registry size.
+    /// <para>
+    /// Ids are inferred, not observed. The game stores none: NetPackageManager..cctor
+    /// calls ReflectionHelpers.FindTypesImplementingBase(NetPackage, ...), which walks
+    /// Assembly.GetTypes() in metadata order, and SetupBaseMapping pins
+    /// NetPackagePackageIds at 0 before StartServer numbers the rest from 1. This table
+    /// was derived from that order in the shipped b18 Assembly-CSharp.dll and checked
+    /// against the b10 table. No live V3.3.0 join capture exists, so the numeric values
+    /// are inferred; a live capture would settle them. A mod assembly that adds a
+    /// NetPackage subclass shifts every id after it, so the client still resolves ids
+    /// from the server's PackageIds table by name and never routes by these values.
+    /// </para>
+    /// <para>
+    /// b10 -> b18 moves ids in steps, not by the registry net of -3: b10 88 shifts -2;
+    /// b10 91..96 shift -4; NetPackageLockTarget is inserted at 93; b10 99..148 shift
+    /// -5; b10 149..186 shift -3 (NetPackageSingleSignData and NetPackageSignDelete are
+    /// inserted at 144/145). Six b10 packages are gone: NetPackageInventoryDataRequest
+    /// (86), NetPackageInventoryDataResponse (87), NetPackageInventoryTransactionRequest
+    /// (89), NetPackageInventoryTransactionResponse (90), NetPackageLockRequest (97) and
+    /// NetPackageLockResponse (98).
+    /// </para></summary>
+    public static class StockWireIds
+    {
+        /// <summary>Registered wire packages advertised in PackageIds (ids 0..183).</summary>
+        public const int PackageCount = 184;
+
+        public const ushort PackageIds = 0;
+        public const ushort AuthConfirmation = 17;
+        public const ushort Chat = 25;
+        public const ushort DamageEntity = 36;
+        public const ushort EntityAliveFlags = 55;
+        public const ushort EntityLookAt = 59;
+        public const ushort EntityPosAndRot = 62;
+        public const ushort EntityRelPosAndRot = 65;
+        public const ushort ExplosionInitiate = 78;
+        public const ushort ItemActionEffects = 87;
+        public const ushort LockTarget = 93;
+        public const ushort PlayerEquipment = 109;
+        public const ushort PlayerId = 110;
+        public const ushort PlayerInventory = 111;
+        public const ushort PlayerLogin = 114;
+        public const ushort PlayerLoginAnswer = 115;
+        public const ushort PlayerSpawnedInWorld = 118;
+        public const ushort RequestToEnterGame = 131;
+        public const ushort RequestToSpawnPlayer = 133;
+        public const ushort SignDataRequest = 142;
+        public const ushort SignDataResponse = 143;
+        public const ushort SingleSignData = 144;
+        public const ushort SignDelete = 145;
+        public const ushort SimpleChat = 146;
     }
 
     /// <summary>Extract first package body from a live-framed LiteNet game message.</summary>
@@ -493,7 +552,12 @@ public static class PackageCodec
         // PlayerLogin body: 8 fields (name, platform user+token, crossplatform
         // user+token, version, compVersion, discordId). Parse the body back and
         // verify the sequence (string fields: 4-byte length + UTF8; u64 at tail).
-        var login = BuildPlayerLogin(1, "golden", "V 3.2.0", "V 3.2.0", discordUserId: 0xDEADBEEF);
+        // The login sends the display form (VersionLongString), which is what
+        // VersionAuthorizer compares: b18 (1,3,30,18) renders "V 3.3.0".
+        string ver = VersionLongString(GameVersion);
+        if (ver != "V 3.3.0")
+            return $"VersionLongString want 'V 3.3.0' got '{ver}' (Minor packed)";
+        var login = BuildPlayerLogin(1, "golden", ver, ver, discordUserId: 0xDEADBEEF);
         var loginBody = ExtractBody(login);
         int off = 0;
         string ReadStr()
@@ -529,8 +593,8 @@ public static class PackageCodec
         if (ReadStr() != "") return "Login platform token want empty";
         ReadUserPair("Local");   // crossplatformUserAndToken
         if (ReadStr() != "") return "Login crossplatform token want empty";
-        if (ReadStr() != "V 3.2.0") return "Login version mismatch";
-        if (ReadStr() != "V 3.2.0") return "Login compVersion mismatch";
+        if (ReadStr() != ver) return "Login version mismatch";
+        if (ReadStr() != ver) return "Login compVersion mismatch";
         if (off + 8 != loginBody.Length) return $"Login tail want 8-byte u64 at {off}, body {loginBody.Length}";
         if (BinaryPrimitives.ReadUInt64LittleEndian(loginBody.AsSpan(off)) != 0xDEADBEEF) return "Login discordUserId mismatch";
 
@@ -573,14 +637,11 @@ public static class PackageCodec
             return "SpawnedInWorld position mismatch";
         if (BinaryPrimitives.ReadInt32LittleEndian(spawnBody.AsSpan(16)) != 99) return "SpawnedInWorld entityId want 99";
 
-        // Version string for VersionAuthorizer (V 3.x packs Minor as mid*10+patch)
-        string ver = VersionLongString(GameVersion);
-        if (ver != "V 3.2.0")
-            return $"VersionLongString want 'V 3.2.0' got '{ver}' (Minor packed)";
-
-        // Dual live PackageIds head fixtures (channel0, uncompressed, pkgId 0, maps=189).
-        // Envelope fields are identical across 3.0.1 and 3.1.0; only VersionInformation
-        // Major/Minor/Build differ. Captured from dedicated RECV (first 48 bytes).
+        // Historical live PackageIds head fixtures (channel0, uncompressed, pkgId 0,
+        // maps=189): V3.0.1 (b4) and V3.1.0 (b14). Envelope fields are identical
+        // across the two; only VersionInformation Major/Minor/Build differ. Captured
+        // from dedicated RECV (first 48 bytes). No V3.3.0 (b18) head was captured,
+        // so its mapping count is pinned from the derived table below instead.
         static string? CheckLivePackageIdsHead(byte[] liveHead, int minor, int build, string label)
         {
             if (liveHead[0] != 0) return label + " hex channel";
@@ -612,6 +673,46 @@ public static class PackageCodec
         if (err301 != null) return err301;
         var err310 = CheckLivePackageIdsHead(liveHead310, minor: 10, build: 14, label: "v3.1.0 fixture");
         if (err310 != null) return err310;
+
+        // Stock b18 id table <-> golden bodies: a frame built under the table id
+        // must parse back under that id with the pinned body length, so a table
+        // edit and a body-size edit cannot drift apart silently.
+        static string? CheckTableBody(byte[] frame, ushort wantId, int wantBody, string label)
+        {
+            var pkgs = ParseChannelPayload(frame);
+            if (pkgs.Count != 1) return label + " table frame package count";
+            if (pkgs[0].id != wantId) return $"{label} table id={pkgs[0].id} want {wantId}";
+            if (pkgs[0].body.Length != wantBody)
+                return $"{label} table body={pkgs[0].body.Length} want {wantBody}";
+            return null;
+        }
+        var tableBodyErr = CheckTableBody(
+            BuildEntityPosAndRot(StockWireIds.EntityPosAndRot, 1, 0f, 0f, 0f, 0f, 0f, 0f, true),
+            StockWireIds.EntityPosAndRot, GoldenBodySize.EntityPosAndRotNoQ, "PosAndRot");
+        if (tableBodyErr != null) return tableBodyErr;
+        tableBodyErr = CheckTableBody(
+            BuildEntityRelPosAndRot(StockWireIds.EntityRelPosAndRot, 1, 0, 0, 0, 0, 0, 0, true, 0),
+            StockWireIds.EntityRelPosAndRot, GoldenBodySize.EntityRelPosAndRotNoQ, "RelPos");
+        if (tableBodyErr != null) return tableBodyErr;
+        tableBodyErr = CheckTableBody(
+            BuildEntityAliveFlags(StockWireIds.EntityAliveFlags, 1, FlagSpawned),
+            StockWireIds.EntityAliveFlags, GoldenBodySize.EntityAliveFlags, "AliveFlags");
+        if (tableBodyErr != null) return tableBodyErr;
+
+        // Published ids must sit inside the advertised registry and be unique.
+        // The const fields under StockWireIds are the table: reflection keeps a
+        // single source instead of a parallel list that could disagree.
+        var seenStockIds = new HashSet<ushort>();
+        foreach (var field in typeof(StockWireIds).GetFields(BindingFlags.Public | BindingFlags.Static))
+        {
+            if (!field.IsLiteral || field.FieldType != typeof(ushort)) continue;
+            if (field.GetRawConstantValue() is not ushort id)
+                return field.Name + " stock id is not a ushort constant";
+            if (id >= StockWireIds.PackageCount)
+                return $"{field.Name} stock id {id} >= registry size {StockWireIds.PackageCount}";
+            if (!seenStockIds.Add(id))
+                return $"{field.Name} stock id {id} is duplicated in StockWireIds";
+        }
 
         return null;
     }
@@ -970,8 +1071,10 @@ public static class PackageCodec
         using var r = new BinaryReader(ms, Encoding.UTF8);
         var ver = ReadVersion(r);
         int n = r.ReadInt32();
-        // The server currently advertises 189 entries. A hostile count used to
-        // allocate a multi-gigabyte string array before the body was validated.
+        // Stock V3.3.0 (b18) advertises 184 entries (derived from metadata order,
+        // see StockWireIds); the bound below is a safety cap, not that count. A
+        // hostile count used to allocate a multi-gigabyte string array before the
+        // body was validated.
         if (n < 0 || n > MaxPackageMappings || n > ms.Length - ms.Position - 2)
             throw new InvalidDataException($"PackageIds mapping count {n} exceeds body or limit {MaxPackageMappings}");
         var maps = new string[n];

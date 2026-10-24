@@ -8,10 +8,11 @@ namespace SevenDTD.LoadGen.Tests;
 /// for EGameReleaseType.V with Major &gt;= 3 (VersionInformation.LongStringNoBuild).
 ///
 /// The Minor &gt;= 10 strings here are not sourced from a real VersionInformation
-/// build: the only live-observed accepted display forms are "V 3.0.1", "V 3.1.0"
-/// and the current pin "V 3.2.0" (the latter two checked against a stock
-/// VersionAuthorizer, the last by --golden-wire). The Minor=11 case asserts
-/// that the divisor logic separates the three Minors, not a captured value.
+/// build: the live-observed accepted display forms are "V 3.0.1" and "V 3.1.0"
+/// (checked against a stock VersionAuthorizer). The current pin, V3.3.0 (b18),
+/// derives "V 3.3.0" from the shipped Constants..cctor IL; no live V3.3.0 join
+/// has confirmed the gate yet. The Minor=11 case asserts that the divisor logic
+/// separates the three Minors, not a captured value.
 /// </summary>
 public sealed class VersionLongStringTests
 {
@@ -43,8 +44,9 @@ public sealed class VersionLongStringTests
         // from a real VersionInformation build (see the class note).
         Assert.Equal("V 3.1.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 10, 0)));
         Assert.Equal("V 3.1.1", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 11, 0)));
-        // V3.2.0 pin: Minor 20 packs to the display form the login gate accepts.
-        Assert.Equal("V 3.2.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 20, 10)));
+        // V3.3.0 (b18) pin: Minor 30 packs to the display form the login gate
+        // compares (Constants..cctor builds (1, 3, 30, 18)).
+        Assert.Equal("V 3.3.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 30, 18)));
     }
 
     [Fact]

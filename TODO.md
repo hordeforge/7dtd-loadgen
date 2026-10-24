@@ -132,13 +132,13 @@ record, and documentation of any protocol-version restriction.
 - R63: loadgen Traverse mode (BotMode.Traverse=9) - straight-line roam, exempt from the 45m origin leash + 20km outer leash, relies on GroundAdopted for Y. Built+selftest PASS.
 - R63 FINDING: Traverse steady chunk stream = 1.78 MB/s, IDENTICAL to wander (1.76). Bots stay ~70m from spawn with Y pinned at 72.0 despite 95% walk actions => 7DTD SERVER-SIDE MOVEMENT VALIDATION clamps client position updates exceeding walk-speed, so LiteNetLib bots cannot escape the spawn area. Steady chunk bandwidth does NOT scale with movement mode (reinforces R56: chunk streaming is a join-time burst, not a steady lag driver). To make bots truly roam, movement must respect server speed validation (small deltas at realistic walk speed) - deeper protocol work, deferred. Traverse leash removal is correct; caveat documented.
 
-## Residual (target V3.2.0 b10, reviewed 2026-09-28)
+## Residual (target V3.3.0 b18, reviewed 2026-10-24)
 
 | Residual | Status | Notes |
 |---|---|---|
-| GameVersion pin `(1,3,20,10)` / display V 3.2.0 | **done** | PackageCodec (pin moved in 0.4.0); dual PackageIds head fixtures are the historical 3.0.1 (b4) and 3.1.0 (b14) captures, so the head fixtures do not yet cover the current pin |
-| Golden-wire PackageIds head | **partial** | maps=189 asserted, but only for the 3.0.1/3.1.0 heads; capture a V3.2.0 b10 head and add it beside them |
-| V3.2.0 b10 live join | **open** | Pin is golden-wire-covered (`VersionLongString` -> "V 3.2.0"), no live join recorded yet; README "Verified game builds" carries the 2026-08-10 V3.1.0 join as the last evidence |
+| GameVersion pin `(1,3,30,18)` / display V 3.3.0 | **done** | PackageCodec (`Constants..cctor` on b18 builds that tuple); dual PackageIds head fixtures are the historical 3.0.1 (b4) and 3.1.0 (b14) captures, so the head fixtures do not yet cover the current pin |
+| Golden-wire PackageIds head | **partial** | maps=189 asserted, but only for the 3.0.1/3.1.0 heads; no V3.3.0 (b18) head captured. The b18 registry size (184) and the changed ids are derived in `StockWireIds` and checked by `--golden-wire` |
+| V3.3.0 b18 live join | **open** | Pin is golden-wire-covered (`VersionLongString` -> "V 3.3.0"), no live join recorded yet; README "Verified game builds" carries the 2026-08-10 V3.1.0 join as the last evidence. A b18 dedicated boot at `~/.cache/zdtd-scratch/sdtd_v3.3.0` did not complete a LiteNet connect from this client (ConnectionFailed on every port); unresolved |
 | Early join "still initializing" kick | **ops** | Wait for world ready; not version mismatch |
 | Login deny reason 14 on some soaks | **open if repro** | Earlier misread; re-verify if full bot soaks fail after ready |
 | H500 / expanded-world live validate | open | Next checkbox above |

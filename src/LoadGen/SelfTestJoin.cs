@@ -99,7 +99,8 @@ public static class SelfTestJoin
             log?.Invoke("FAIL server did not observe walk packages");
             return 1;
         }
-        // Pins the V3.2.0 damage-body offsets the mock decodes: the drown
+        // Pins the damage-body offsets the mock decodes (V3.2.0 layout, unchanged
+        // in V3.3.0 b18): the drown
         // damage source/type only land in these counters if the mock reads
         // them from behind the packed flags word, not from the flags bytes.
         if (server.DrownPackages < sm.DeathCount)

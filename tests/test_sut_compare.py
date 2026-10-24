@@ -151,7 +151,7 @@ def _make_run(run_dir: Path, sut: str, stock: bool) -> None:
         (run_dir / "server.log").write_text(
             "zdtd: config port=27120 max_players=64\n"
             "  map=... dtm=6144x6144 spawn=(-273,61,449)\n"
-            "  challenge=0xCA tick=20Hz mappings=189\n",
+            "  challenge=0xCA tick=20Hz mappings=184\n",
             encoding="utf-8",
         )
         world = run_dir / "world"
