@@ -491,7 +491,10 @@ public sealed partial class TelnetAdmin : IDisposable
     // shortcut needs a burst to measure: a window that has seen nothing at all
     // still waits out waitMs, so a slow console's banner and password prompt
     // are never cut short.
-    internal const int ReadQuietGapMs = 100;
+    // Not a const: the read-window test sets it low so the quiescence shortcut
+    // dominates a loaded runner's scheduler jitter. 100 ms is the value every
+    // production path uses; the upper bound below is ReadAvailable's waitMs.
+    internal static int ReadQuietGapMs = 100;
     // Read-poll interval; fine enough that the quiet gap is measured, not the
     // poll, and coarse enough to leave the loopbox to the server.
     const int ReadPollMs = 10;

@@ -122,23 +122,40 @@ public sealed class TelnetReadWindowTests
         // console that answers instantly must not cost the operator the full
         // window per command, or a spawn wave costs thousands of commands times
         // the window.
-        using var console = new FakeTelnetConsole(respond: cmd => $"ok: {cmd}");
-        using var admin = new TelnetAdmin("127.0.0.1", console.Port, password: "", log: null);
-        Assert.True(admin.Connect());
-        console.WaitForCommands(1, 5_000); // drain the banner-window read
-
-        var sw = System.Diagnostics.Stopwatch.StartNew();
-        const int Commands = 5;
-        for (int i = 0; i < Commands; i++)
+        // The shortcut is compared against the waitMs upper bound ReadAvailable
+        // is called with (500 ms), not against a wall-clock guess: a quiet gap
+        // of 10 ms makes the shortcut the dominant term, so a loop that ignored
+        // quiescence would cost Commands * 500 ms and fail by a wide margin even
+        // on a loaded, coverage-instrumented runner.
+        const int QuietGapMs = 10;
+        const int WaitUpperBoundMs = 500;
+        int previousGap = TelnetAdmin.ReadQuietGapMs;
+        TelnetAdmin.ReadQuietGapMs = QuietGapMs;
+        try
         {
-            string response = admin.Exec($"give {i} thrownDynamite 3");
-            Assert.Contains($"give {i} thrownDynamite 3", response);
-        }
-        sw.Stop();
+            using var console = new FakeTelnetConsole(respond: cmd => $"ok: {cmd}");
+            using var admin = new TelnetAdmin("127.0.0.1", console.Port, password: "", log: null);
+            Assert.True(admin.Connect());
+            console.WaitForCommands(1, 5_000); // drain the banner-window read
 
-        Assert.True(console.WaitForCommands(Commands, 5_000));
-        Assert.True(sw.ElapsedMilliseconds < Commands * 350,
-            $"{Commands} answered commands took {sw.ElapsedMilliseconds}ms: the read window is not closing on quiescence");
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            const int Commands = 5;
+            for (int i = 0; i < Commands; i++)
+            {
+                string response = admin.Exec($"give {i} thrownDynamite 3");
+                Assert.Contains($"give {i} thrownDynamite 3", response);
+            }
+            sw.Stop();
+
+            Assert.True(console.WaitForCommands(Commands, 5_000));
+            Assert.True(sw.ElapsedMilliseconds < Commands * 250,
+                $"{Commands} answered commands took {sw.ElapsedMilliseconds}ms with a {QuietGapMs}ms quiet gap: " +
+                $"the read window is not closing on quiescence (always-waiting would cost {Commands * WaitUpperBoundMs}ms)");
+        }
+        finally
+        {
+            TelnetAdmin.ReadQuietGapMs = previousGap;
+        }
     }
 
     [Fact]
