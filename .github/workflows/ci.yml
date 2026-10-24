@@ -67,7 +67,11 @@ jobs:
           # The token rides an http header, never a remote URL: a credential in
           # a URL lands in every error message, process listing and log line
           # that echoes the remote.
-          auth="http.https://github.com/.extraheader=AUTHORIZATION: bearer ${GITHUB_TOKEN}"
+          # git smart HTTP takes basic auth with the token as the password;
+          # `bearer` is the REST API scheme and git answers it with a
+          # credential prompt that cannot run on a runner.
+          basic="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+          auth="http.https://github.com/.extraheader=AUTHORIZATION: basic ${basic}"
           # Clone when the branch exists; the probe could not tell "absent"
           # from "the probe failed", and its failure answer (a fresh root
           # commit) is rejected by the branch that is there. A failed clone is
