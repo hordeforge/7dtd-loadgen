@@ -16,7 +16,22 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
-- Nothing yet since 0.7.0.
+- Target build moves to V3.4.0 b10: `GameVersion` is `VersionInfo(1, 3, 40, 10)`
+  and the login display form is "V 3.4.0". The b10 wire registry holds 190
+  packages (was 188): `NetPackageDroneRecoveryRequest` (45) and
+  `NetPackageDroneRecoveryResponse` (46) are new, every id above 46 moved +2,
+  and `NetPackageLight` is 187. No package body layout changed.
+- `StockWireIds` now carries the measured V3.4.0 table instead of the b18 table
+  inferred from IL metadata order, which was short by four nested registrations
+  the walk did not count (its ids above 12 were low by three). The measured ids
+  come from the 2026-11-05 stock join capture; `--golden-wire` still
+  cross-checks the table against the body builders, and the client resolves ids
+  from the server's advertised mapping by name either way.
+- Verified against a stock V3.4.0 b10 dedicated server: `maps=190` and
+  `LoginAnswered: allowed=True` on every bot, and a four-bot cohort met the
+  pass rate with no disconnects. The stock server needs `Local` listed in its
+  `serverplatforms`, and the live join needs the game's bundled `LiteNetLib.dll`
+  (build with `GAME_DIR`); the NuGet fallback fails with `ConnectionFailed`.
 
 ## [0.7.0] - 2026-10-25
 

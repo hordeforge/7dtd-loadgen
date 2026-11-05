@@ -9,9 +9,9 @@ namespace SevenDTD.LoadGen.Tests;
 ///
 /// The Minor &gt;= 10 strings here are not sourced from a real VersionInformation
 /// build: the live-observed accepted display forms are "V 3.0.1" and "V 3.1.0"
-/// (checked against a stock VersionAuthorizer). The current pin, V3.3.0 (b18),
-/// derives "V 3.3.0" from the shipped Constants..cctor IL; no live V3.3.0 join
-/// has confirmed the gate yet. The Minor=11 case asserts that the divisor logic
+/// (checked against a stock VersionAuthorizer). The current pin, V3.4.0 (b10),
+/// derives "V 3.4.0" from the shipped Constants..cctor IL; a live V3.4.0 join on
+/// 2026-11-05 accepted it. The Minor=11 case asserts that the divisor logic
 /// separates the three Minors, not a captured value.
 /// </summary>
 public sealed class VersionLongStringTests
@@ -44,9 +44,9 @@ public sealed class VersionLongStringTests
         // from a real VersionInformation build (see the class note).
         Assert.Equal("V 3.1.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 10, 0)));
         Assert.Equal("V 3.1.1", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 11, 0)));
-        // V3.3.0 (b18) pin: Minor 30 packs to the display form the login gate
-        // compares (Constants..cctor builds (1, 3, 30, 18)).
-        Assert.Equal("V 3.3.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 30, 18)));
+        // V3.4.0 (b10) pin: Minor 40 packs to the display form the login gate
+        // compares (Constants..cctor builds (1, 3, 40, 10)).
+        Assert.Equal("V 3.4.0", PackageCodec.VersionLongString(new PackageCodec.VersionInfo(1, 3, 40, 10)));
     }
 
     [Fact]

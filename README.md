@@ -33,7 +33,7 @@ whatever is missing. It does not look for a game install:
 | .NET SDK | build, selftest, C# unit tests | 8.0.x (pinned in `global.json`) |
 | `shellcheck` | `make lint` on `scripts/*.sh` | any recent release |
 | `uv` + Python | pytest gates, ruff, mypy, and the interpreter every repo shell script runs its tools with (locked env from `uv.lock`) | Python >= 3.11 (`pyproject.toml`) |
-| 7DTD dedicated server | live joins only | V3.3.0 |
+| 7DTD dedicated server | live joins only | V3.4.0 |
 
 `make test` (the lane CI runs) needs all three tools; a game install is never
 required for it, and `make build` always uses the pinned NuGet LiteNetLib so
@@ -536,35 +536,50 @@ dedicated host (validated on a stock V3.1.0 dedi, 2026-08-10):
 
 ## Verified game builds
 
-`PackageCodec.GameVersion` is pinned to **V3.3.0 (b18)** (previously V3.2.0
-b10), i.e. `VersionInfo(1, 3, 30, 18)`: the engine packs release `V` as
-release=1, major=3, and minor=30 for "3.3.0", and `Constants..cctor` builds that
+`PackageCodec.GameVersion` is pinned to **V3.4.0 (b10)** (previously V3.3.0
+b18), i.e. `VersionInfo(1, 3, 40, 10)`: the engine packs release `V` as
+release=1, major=3, and minor=40 for "3.4.0", and `Constants..cctor` builds that
 tuple. The join client reads the server's version from `NetPackagePackageIds`
 and builds its `PlayerLogin` from it (VersionAuthorizer compares
 `LongStringNoBuild`, where the display form packs Minor as `mid*10 + patch`, so
-30 renders as "V 3.3.0"), so joining another build of the same branch works
+40 renders as "V 3.4.0"), so joining another build of the same branch works
 without a client change. The golden-wire body size constants and the checked-in
 `PackageIds` head fixtures (V3.0.1 b4 and V3.1.0 b14, map count 189) are
 build-specific and fail loudly (`FAIL golden-wire`) on a different build. Bump
 `GameVersion` and re-verify against the new dump before shipping a fixture for
 another release.
 
-The b18 wire registry holds 184 packages (ids 0..183), down from 187 in b10: six
-transactional-inventory and lock packages are gone, and
-`NetPackageLockTarget`, `NetPackageSingleSignData` and `NetPackageSignDelete` are
-new. The ids are **inferred**, not observed: the game derives them from
-`Assembly.GetTypes()` metadata order, the client resolves them from the server's
-advertised mapping by name, and `StockWireIds` carries the derived table for the
-golden-wire cross-check. No live V3.3.0 join has been recorded.
-**Live re-verified 2026-08-10 against stock V3.1.0 (b14)**, before the pin
-moved: a full join reported
-`PackageIdsReceived: ver=V 3.1.0 (1.3.10.14) maps=189 eac=False`,
-`LoginAnswered: allowed=True`; the census
-(`../7dtd-engine-research/docs/network/network.md`) matches observed traffic
-exactly. The V3.2.0 b10 and V3.3.0 b18 pins have golden-wire coverage
-(`VersionLongString` asserts the display form) but no recorded live join yet;
-the `PackageIds` head fixtures in the golden-wire body are the historical
-V3.0.1 (b4) and V3.1.0 (b14) captures.
+The b10 wire registry holds 190 packages (ids 0..189), up from 188 in b18.
+`NetPackageDroneRecoveryRequest` (45, ToServer) and
+`NetPackageDroneRecoveryResponse` (46, ToClient) are new, every id above 46
+moved +2, and `NetPackageLight` is 187; no package body layout changed. The old
+b18 id table is gone: it was inferred from metadata order and was short by four
+nested registrations the IL walk did not count. `StockWireIds` now carries
+the table a stock V3.4.0 b10 client saw in a 2026-11-05 live join
+(`../7dtd-engine-research/.scratch/livejoin-v340/join-v340.pcap`, mirrored in
+that repo's `workspace/outputs/wire/netpackage-ids-v3.4.0.json`), and
+`--golden-wire` cross-checks it against the body builders. The client still
+resolves ids from the server's advertised mapping by name, so the table is
+evidence, not a routing path.
+
+**Live re-verified 2026-11-05 against stock V3.4.0 (b10)**, the dedicated
+install at `~/.cache/zdtd-scratch/sdtd_v340` (`LinuxServer 64 Bit`, Navezgane,
+Local platform, EAC off): a full join reported
+`PackageIdsReceived: ver=V 3.4.0 (1.3.40.10) maps=190 eac=False`,
+`LoginAnswered: allowed=True`, and a four-bot 45 s wander cohort met the pass
+rate at 100 % with no disconnects. Logs and hashes are under `.scratch/live/`
+(`loadgen-load.log`, `loadgen-stats.json`, `server_stdout2.log`).
+
+Two harness conditions came out of that run. The stock server accepts the Local
+platform only when its `platform.cfg` lists `Local` in `serverplatforms`; the
+shipped file does not, and the server then answers
+`Kicking player (Unsupported client platform: Local)`. The join also needs the
+game's bundled `LiteNetLib.dll`, not the NuGet fallback: `make build` restored
+the fallback and every bot failed with `ConnectionFailed` before a single
+package arrived, while `make build GAME_DIR=<install>` joined on the first
+attempt. Set `LOADGEN_GAME_DIR` for the shell runners, which pass it as
+`GameDir`.
+
 The post-login package set received by a fresh bot (ConfigFile x42, AuthState,
 IdMapping, WorldSpawnPoints, WorldInfo, WorldAreas, PlayerLoginAnswer,
 PlayerId, Localization, DecoUpdate; no EntitySpawn without other entities)

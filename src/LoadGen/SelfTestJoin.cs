@@ -100,7 +100,7 @@ public static class SelfTestJoin
             return 1;
         }
         // Pins the damage-body offsets the mock decodes (V3.2.0 layout, unchanged
-        // in V3.3.0 b18): the drown
+        // in V3.4.0 b10): the drown
         // damage source/type only land in these counters if the mock reads
         // them from behind the packed flags word, not from the flags bytes.
         if (server.DrownPackages < sm.DeathCount)

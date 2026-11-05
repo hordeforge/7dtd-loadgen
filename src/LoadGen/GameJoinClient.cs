@@ -470,8 +470,8 @@ public sealed class GameJoinClient
                         // PackageIds Minor=20 and the client echoes the display form; a
                         // server advertising Minor=10 was kicked with VersionMismatch=4,
                         // proving the gate is the display form, not the raw Minor. The
-                        // V3.3.0 (b18) server advertises (1, 3, 30, 18), so the same rule
-                        // sends "V 3.3.0"; no live b18 join has confirmed it yet.
+                        // V3.4.0 (b10) server advertises (1, 3, 40, 10), so the same rule
+                        // sends "V 3.4.0"; the 2026-11-05 stock join confirmed it.
                         string ver = PackageCodec.VersionLongString(State.ServerVersion);
                         var login = PackageCodec.BuildPlayerLogin(
                             loginId, opt.PlayerName + opt.ClientId, ver, ver);

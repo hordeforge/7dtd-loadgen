@@ -88,9 +88,9 @@ public static class PackageCodec
     }
 
     /// <summary>Fallback when PackageIds has not been received yet. Prefer server-advertised version.
-    /// Stock V3.3.0 (b18): Constants..cctor IL builds VersionInformation(1, 3, 30, 18), which
-    /// renders "V 3.3.0" and GSI "V.3.30.18". V3.2.0 clients are rejected with VersionMismatch.</summary>
-    public static readonly VersionInfo GameVersion = new(1, 3, 30, 18); // EGameReleaseType.V=1; V3.3.0 (b18)
+    /// Stock V3.4.0 (b10): Constants..cctor IL builds VersionInformation(1, 3, 40, 10), which
+    /// renders "V 3.4.0" and GSI "V.3.40.10". Older builds are rejected with VersionMismatch.</summary>
+    public static readonly VersionInfo GameVersion = new(1, 3, 40, 10); // EGameReleaseType.V=1; V3.4.0 (b10)
 
     public readonly record struct VersionInfo(byte ReleaseType, int Major, int Minor, int Build);
 
@@ -367,10 +367,9 @@ public static class PackageCodec
     }
 
     /// <summary>Body-only sizes from live Assembly-CSharp write IL (excludes frame len/id).
-    /// Unchanged in V3.3.0 b18: the delta changed NetPackagePlayerInventory,
-    /// NetPackagePlayerEquipment, NetPackageSingleSignData, NetPackageSignDelete and the
-    /// sign batch reader; ItemActionEffects kept its one-byte slot field (Byte -> SByte).
-    /// None of those bodies is built or decoded here, so no size is pinned for them.</summary>
+    /// Unchanged in V3.4.0 b10: the wire delta added two drone-recovery packages and
+    /// shifted ids, and no package body layout moved. None of the moved bodies is
+    /// built or decoded here, so no size is pinned for them.</summary>
     public static class GoldenBodySize
     {
         // entityId(4)+pos3f(12)+bUseQ(1)+rot3f(12)+onGround(1) = 30 when !bUseQ
@@ -386,56 +385,51 @@ public static class PackageCodec
         public const int EntityRelPosAndRotNoQContentLen = 22;
     }
 
-    /// <summary>Stock V3.3.0 (b18) wire package ids and registry size.
+    /// <summary>Stock V3.4.0 (b10) wire package ids and registry size.
     /// <para>
-    /// Ids are inferred, not observed. The game stores none: NetPackageManager..cctor
-    /// calls ReflectionHelpers.FindTypesImplementingBase(NetPackage, ...), which walks
-    /// Assembly.GetTypes() in metadata order, and SetupBaseMapping pins
-    /// NetPackagePackageIds at 0 before StartServer numbers the rest from 1. This table
-    /// was derived from that order in the shipped b18 Assembly-CSharp.dll and checked
-    /// against the b10 table. No live V3.3.0 join capture exists, so the numeric values
-    /// are inferred; a live capture would settle them. A mod assembly that adds a
-    /// NetPackage subclass shifts every id after it, so the client still resolves ids
-    /// from the server's PackageIds table by name and never routes by these values.
+    /// Measured, not inferred: the dedicated server's NetPackagePackageIds (id 0)
+    /// body advertises the table, and a stock V3.4.0 b10 client joining it on
+    /// 2026-11-05 sent the ids below over LiteNet. The capture is
+    /// 7dtd-engine-research/.scratch/livejoin-v340/join-v340.pcap.
+    /// NetPackageDroneRecoveryRequest (45, ToServer) and
+    /// NetPackageDroneRecoveryResponse (46, ToClient) are new, every id above 46
+    /// moved +2, and the registry grew from 188 to 190. NetPackageLight is 187.
+    /// No package body layout changed.
     /// </para>
     /// <para>
-    /// b10 -> b18 moves ids in steps, not by the registry net of -3: b10 88 shifts -2;
-    /// b10 91..96 shift -4; NetPackageLockTarget is inserted at 93; b10 99..148 shift
-    /// -5; b10 149..186 shift -3 (NetPackageSingleSignData and NetPackageSignDelete are
-    /// inserted at 144/145). Six b10 packages are gone: NetPackageInventoryDataRequest
-    /// (86), NetPackageInventoryDataResponse (87), NetPackageInventoryTransactionRequest
-    /// (89), NetPackageInventoryTransactionResponse (90), NetPackageLockRequest (97) and
-    /// NetPackageLockResponse (98).
+    /// The client resolves ids from the server's PackageIds table by name and never
+    /// routes by these values, so a mod assembly that adds a NetPackage subclass
+    /// shifts the wire ids without a client change.
     /// </para></summary>
     public static class StockWireIds
     {
-        /// <summary>Registered wire packages advertised in PackageIds (ids 0..183).</summary>
-        public const int PackageCount = 184;
+        /// <summary>Registered wire packages advertised in PackageIds (ids 0..189).</summary>
+        public const int PackageCount = 190;
 
         public const ushort PackageIds = 0;
-        public const ushort AuthConfirmation = 17;
-        public const ushort Chat = 25;
-        public const ushort DamageEntity = 36;
-        public const ushort EntityAliveFlags = 55;
-        public const ushort EntityLookAt = 59;
-        public const ushort EntityPosAndRot = 62;
-        public const ushort EntityRelPosAndRot = 65;
-        public const ushort ExplosionInitiate = 78;
-        public const ushort ItemActionEffects = 87;
-        public const ushort LockTarget = 93;
-        public const ushort PlayerEquipment = 109;
-        public const ushort PlayerId = 110;
-        public const ushort PlayerInventory = 111;
-        public const ushort PlayerLogin = 114;
-        public const ushort PlayerLoginAnswer = 115;
-        public const ushort PlayerSpawnedInWorld = 118;
-        public const ushort RequestToEnterGame = 131;
-        public const ushort RequestToSpawnPlayer = 133;
-        public const ushort SignDataRequest = 142;
-        public const ushort SignDataResponse = 143;
-        public const ushort SingleSignData = 144;
-        public const ushort SignDelete = 145;
-        public const ushort SimpleChat = 146;
+        public const ushort AuthConfirmation = 20;
+        public const ushort Chat = 28;
+        public const ushort DamageEntity = 39;
+        public const ushort EntityAliveFlags = 60;
+        public const ushort EntityLookAt = 64;
+        public const ushort EntityPosAndRot = 67;
+        public const ushort EntityRelPosAndRot = 70;
+        public const ushort ExplosionInitiate = 83;
+        public const ushort ItemActionEffects = 92;
+        public const ushort LockTarget = 98;
+        public const ushort PlayerEquipment = 114;
+        public const ushort PlayerId = 115;
+        public const ushort PlayerInventory = 116;
+        public const ushort PlayerLogin = 119;
+        public const ushort PlayerLoginAnswer = 120;
+        public const ushort PlayerSpawnedInWorld = 123;
+        public const ushort RequestToEnterGame = 136;
+        public const ushort RequestToSpawnPlayer = 138;
+        public const ushort SignDataRequest = 147;
+        public const ushort SignDataResponse = 148;
+        public const ushort SingleSignData = 149;
+        public const ushort SignDelete = 150;
+        public const ushort SimpleChat = 151;
     }
 
     /// <summary>Extract first package body from a live-framed LiteNet game message.</summary>
@@ -553,10 +547,10 @@ public static class PackageCodec
         // user+token, version, compVersion, discordId). Parse the body back and
         // verify the sequence (string fields: 4-byte length + UTF8; u64 at tail).
         // The login sends the display form (VersionLongString), which is what
-        // VersionAuthorizer compares: b18 (1,3,30,18) renders "V 3.3.0".
+        // VersionAuthorizer compares: b10 (1,3,40,10) renders "V 3.4.0".
         string ver = VersionLongString(GameVersion);
-        if (ver != "V 3.3.0")
-            return $"VersionLongString want 'V 3.3.0' got '{ver}' (Minor packed)";
+        if (ver != "V 3.4.0")
+            return $"VersionLongString want 'V 3.4.0' got '{ver}' (Minor packed)";
         var login = BuildPlayerLogin(1, "golden", ver, ver, discordUserId: 0xDEADBEEF);
         var loginBody = ExtractBody(login);
         int off = 0;
@@ -640,8 +634,8 @@ public static class PackageCodec
         // Historical live PackageIds head fixtures (channel0, uncompressed, pkgId 0,
         // maps=189): V3.0.1 (b4) and V3.1.0 (b14). Envelope fields are identical
         // across the two; only VersionInformation Major/Minor/Build differ. Captured
-        // from dedicated RECV (first 48 bytes). No V3.3.0 (b18) head was captured,
-        // so its mapping count is pinned from the derived table below instead.
+        // from dedicated RECV (first 48 bytes). No current-build head was captured,
+        // so its mapping count is not pinned against a head.
         static string? CheckLivePackageIdsHead(byte[] liveHead, int minor, int build, string label)
         {
             if (liveHead[0] != 0) return label + " hex channel";
@@ -674,7 +668,7 @@ public static class PackageCodec
         var err310 = CheckLivePackageIdsHead(liveHead310, minor: 10, build: 14, label: "v3.1.0 fixture");
         if (err310 != null) return err310;
 
-        // Stock b18 id table <-> golden bodies: a frame built under the table id
+        // Stock id table <-> golden bodies: a frame built under the table id
         // must parse back under that id with the pinned body length, so a table
         // edit and a body-size edit cannot drift apart silently.
         static string? CheckTableBody(byte[] frame, ushort wantId, int wantBody, string label)
@@ -1071,7 +1065,7 @@ public static class PackageCodec
         using var r = new BinaryReader(ms, Encoding.UTF8);
         var ver = ReadVersion(r);
         int n = r.ReadInt32();
-        // Stock V3.3.0 (b18) advertises 184 entries (derived from metadata order,
+        // Stock V3.4.0 (b10) advertises 190 entries (measured from a live join,
         // see StockWireIds); the bound below is a safety cap, not that count. A
         // hostile count used to allocate a multi-gigabyte string array before the
         // body was validated.
