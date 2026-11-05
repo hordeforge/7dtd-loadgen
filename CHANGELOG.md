@@ -16,6 +16,12 @@ migration step, and it is filed under **Changed** (a behavior change) or under
 
 ### Changed
 
+- Nothing yet since 0.8.0.
+
+## [0.8.0] - 2026-11-05
+
+### Changed
+
 - Target build moves to V3.4.0 b10: `GameVersion` is `VersionInfo(1, 3, 40, 10)`
   and the login display form is "V 3.4.0". The b10 wire registry holds 190
   packages (was 188): `NetPackageDroneRecoveryRequest` (45) and
@@ -957,7 +963,8 @@ V3.1.0. Bots join over the real game protocol, wander, take pressure, die,
 respawn, and rejoin until a wall-clock timeout. Includes protocol self-tests
 and golden-wire gates, dedicated start helpers, and bench/scenario runners.
 
-[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/hordeforge/7dtd-loadgen/compare/v0.4.2...v0.5.0
